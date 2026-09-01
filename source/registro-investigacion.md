@@ -1,5 +1,20 @@
 # Registro de investigación — barrido ampliado de oportunidades
 
+> **BARRIDO CERRADO** — 1 de septiembre de 2026, 07:50 UTC. Los ocho lotes se
+> ejecutaron y sus resultados están incorporados al informe.
+>
+> | Lote | Resultado en una línea |
+> |---:|---|
+> | 1 | **Candidato nuevo H:** los operadores declaran que sólo se inspeccionan uno o dos ductos superiores por parada en condensadores refrigerados por aire; ningún robot identificado para ese interior. |
+> | 2 | **No perseguir:** paredes de agua de caldera tienen incumbente consolidado y media docena de competidores. |
+> | 3 | **No perseguir:** cuatro proveedores en el interior de la pala eólica y el hueco restante bloqueado por la atenuación del vidrio-epoxi. |
+> | 4 | **Refuerza al candidato F:** un organismo federal declara que el buzo no puede entrar y que no tiene programa propio de vehículo remoto; el hardware ya es comercial, el valor está en el servicio. |
+> | 5 | **Descartado:** intercambiadores en mercado maduro; hornos pertenecen a siderurgia y la alta temperatura ya tiene patentes. |
+> | 6 | **Línea a investigar:** aparamenta blindada tiene costo de intervención documentado y ningún robot hallado, pero la búsqueda fue insuficiente; túneles de cables con prior art abundante. |
+> | 7 | **Dato clave:** horas-hombre por tarea de nivel A, advertencia de recurrencia decenal sobre el candidato A e inconsistencia detectada en la fuente primaria. |
+> | 8 | **Consolidado:** ficha del candidato H, esquema propio, resultado del barrido, anclaje de horas-hombre y seis fuentes nuevas incorporadas al informe. |
+
+
 Bitácora del barrido de oportunidades fuera de la lista inicial de candidatos A–G
 (sección 14 del informe). Registra consultas realizadas, hallazgos con su fuente y
 nivel de evidencia, y las pistas descartadas.
@@ -21,7 +36,7 @@ supuestos.
 | 5 | Chimeneas, hornos industriales e intercambiadores de calor | **Completo** |
 | 6 | Subestaciones: interior de aparamenta, sistemas de cables y transformadores | **Completo** |
 | 7 | Solar y tareas nucleares del catálogo sectorial aún no cubiertas | **Completo** |
-| 8 | Consolidación: fichas nuevas, ranking e integración al informe | Pendiente |
+| 8 | Consolidación: fichas nuevas, ranking e integración al informe | **Completo** |
 
 ---
 
@@ -598,3 +613,25 @@ barrido**: la tabla de horas-hombre por caso de uso, de nivel A, que permite dim
 de abajo hacia arriba; la advertencia de recurrencia decenal sobre el candidato A; y una
 inconsistencia detectada en la propia fuente primaria, que se documenta en lugar de
 propagarse.
+
+---
+
+## Lote 8 — Consolidación
+
+**Acciones ejecutadas:**
+
+1. Ficha completa del **candidato H — condensador refrigerado por aire** en la sección 13 del informe, con hipótesis, evidencia y nivel, competencia identificada, pregunta estratégica y agenda de verificación.
+2. Esquema propio nuevo del activo (`esq-acc`), con la misma retícula que los otros siete esquemas, y candidato H incorporado al mapa de posicionamiento.
+3. Resumen ejecutivo actualizado: indicadores, tabla de lectura rápida, tarjeta de evidencia e incógnita nueva sobre el andamiaje.
+4. Advertencia de recurrencia decenal incorporada al candidato A, junto con la nota de calidad de fuente sobre la inconsistencia detectada.
+5. Sección 15.1 nueva con el resultado del barrido por familia de activos y su razón determinante.
+6. Sección 17.1 nueva con la tabla de horas-hombre por caso de uso, de nivel A, como anclaje del dimensionamiento de abajo hacia arriba.
+7. Seis fuentes nuevas agregadas al Anexo A y dos hallazgos nuevos al Anexo B.
+8. Regeneración completa: 17 figuras, HTML autocontenido y PDF de 47 páginas, sin errores ni desbordes.
+
+**Pendientes que quedan anotados para la próxima jornada:**
+
+- Búsqueda de patentes en japonés, chino y coreano sobre inspección interna de aparamenta blindada, antes de decidir si el lote 6 abre un candidato.
+- Lectura del informe final del proyecto 9612 del Bureau of Reclamation y del material de la agencia de ingenieros del ejército estadounidense sobre inspección con vehículo remoto, ambos de nivel A, para reemplazar las cifras de proveedor del lote 4.
+- Consultas específicas sobre inspección robotizada de chimeneas y revestimientos de conductos de humos, que quedaron sin cubrir en el lote 5.
+- Screening de patentes sobre inspección interna de ductos de condensadores refrigerados por aire, para cerrar la afirmación de ausencia de competencia del candidato H.

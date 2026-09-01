@@ -760,7 +760,11 @@ TEXCH = {'\\': r'\textbackslash{}', '&': r'\&', '%': r'\%', '$': r'\$',
          '~': r'\textasciitilde{}', '^': r'\textasciicircum{}',
          '<': r'\textless{}', '>': r'\textgreater{}',
          '×': r'$\times$', '→': r'$\rightarrow$', '±': r'$\pm$',
-         '“': r'``', '”': r"''", '"': r"''", '│': r'|', '·': r'\textperiodcentered{}'}
+         '“': r'``', '”': r"''", '"': r"''", '│': r'|',
+         '·': r'\textperiodcentered{}', '≈': r'$\approx$', '≥': r'$\geq$',
+         '≤': r'$\leq$', '−': r'$-$', '°': r'\textdegree{}',
+         '•': r'\textbullet{}', '…': r'\dots{}', '™': r'\texttrademark{}',
+         '®': r'\textregistered{}', '½': r'$\frac{1}{2}$'}
 
 
 def esc_tex(s):

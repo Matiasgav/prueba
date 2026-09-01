@@ -24,15 +24,15 @@ No se busca responder *qué robots interesantes podrían construirse*, sino:
 ## Estado de la evidencia al cierre de esta edición
 
 ::: kpi
-7 || candidatos con hipótesis formulada || y ficha de evaluación asignada
+8 || candidatos con ficha de evaluación || uno de ellos surgido del barrido ampliado
 3 || con valor económico publicado || por fuente de nivel A
 2 || con incumbente comercial identificado || TesTex en HRSG, Diakont en piping
-20 || fuentes verificadas del paquete inicial || registradas en el Anexo A
+6 || familias de activos descartadas con evidencia || y registradas con su fuente
 :::
 
 ## Lectura rápida de los siete candidatos
 
-La tabla ordena los candidatos por el estado de la evidencia disponible hoy, no por preferencia. La columna de madurez usa la escala M0–M5 definida en la sección 3.4 y expresa una **hipótesis de partida**, no una medición.
+La tabla ordena los candidatos por el estado de la evidencia disponible hoy, no por preferencia. El candidato H proviene del barrido ampliado documentado en la sección 15. La columna de madurez usa la escala M0–M5 definida en la sección 3.4 y expresa una **hipótesis de partida**, no una medición.
 
 | Candidato | Activo | {{t:madurez-m|Madurez}} hipotética | Evidencia económica | {{t:incumbente|Incumbente}} conocido | Reutilización de plataforma |
 |---|---|:--:|---|---|:--:|
@@ -43,8 +43,9 @@ La tabla ordena los candidatos por el estado de la evidencia disponible hoy, no 
 | **E** | Contenedores de combustible en seco | {{mad:M3}} | Publicada, cualitativa | Robotic Technologies of Tennessee | Media |
 | **F** | Penstocks y túneles hidro | {{mad:M4}} | Parcial | Múltiples proveedores de ROV | Media-baja |
 | **G** | Robots everting (vine) | {{mad:M1}} | No publicada | No identificado aún | Baja |
+| **H** | Condensador refrigerado por aire | {{mad:M1}} | Dolor publicado, sin cifra de costo | Ninguno identificado para inspección interna | Alta |
 
-::: fig fig-mapa-candidatos | Figura 1 — Posicionamiento de partida de los siete candidatos. | Elaboración propia sobre las fuentes del Anexo A.
+::: fig fig-mapa-candidatos | Figura 1 — Posicionamiento de partida de los ocho candidatos. | Elaboración propia sobre las fuentes del Anexo A.
 :::
 
 ## Qué dice hoy la evidencia
@@ -56,9 +57,13 @@ El valor económico está **publicado y es alto** en bus isofásico y en piping 
 ::: tarjeta Donde hay incumbente | Candidatos B, D y F
 HRSG, piping enterrado y penstocks tienen proveedor establecido. Entrar exige demostrar un {{t:whitespace|espacio no cubierto (*whitespace*)}} concreto —una geometría, un acceso o una medición que el incumbente no cubre—, no una plataforma equivalente.
 :::
-::: tarjeta Donde el problema sigue abierto | Candidatos C y G
-Vaults subterráneos mantiene actividad de investigación vigente con prototipos y demostraciones en curso, sin producto consolidado. Los robots everting son una tecnología sin mercado asignado: sólo valen sobre un activo concreto.
+::: tarjeta Donde el problema sigue abierto | Candidatos C, G y H
+Vaults subterráneos mantiene actividad de investigación vigente con prototipos y demostraciones en curso, sin producto consolidado. Los robots everting son una tecnología sin mercado asignado. En condensadores refrigerados por aire, los propios operadores declaran que la mayor parte del activo **no se inspecciona** por razones de acceso.
 :::
+:::
+
+::: nota inferencia | El hallazgo más útil del barrido ampliado
+En seis de las siete familias de activos barridas, el mercado ya está ocupado o el hueco aparente está cerrado por una razón física conocida. La excepción —condensadores refrigerados por aire— no destaca porque la inspección sea cara, sino porque **hoy no se hace**: es una necesidad declarada por los operadores y no cubierta por los proveedores actuales.
 :::
 
 ## Qué no debería desarrollarse sin un hallazgo que lo justifique
@@ -75,6 +80,7 @@ Vaults subterráneos mantiene actividad de investigación vigente con prototipos
 3. Qué familias de patentes vigentes cubren las arquitecturas candidatas.
 4. Qué exige la calificación regulatoria en los candidatos nucleares y cuánto cuesta obtenerla.
 5. Si el problema de vaults subterráneos sostiene un ticket recurrente o es un servicio de baja frecuencia y bajo precio.
+6. Si en condensadores refrigerados por aire el robot puede evitar el andamiaje, que es donde está la mayor parte del costo, o si igual hay que montarlo para posicionarlo.
 
 ::: nota riesgo | El error que este estudio existe para evitar
 Descubrir dentro de dos años que el problema ya había sido investigado por una organización de referencia, que un fabricante ya había patentado la arquitectura, que existía un producto comercial establecido, que el cliente ya compraba ese servicio o que hubo un programa de desarrollo que fracasó por una razón física conocida.
@@ -273,6 +279,14 @@ Experiencia reportada por una utility con costo de proveedor de aproximadamente 
 ::: fig fig-ipb-economia | Figura 7 — Costo relativo de la inspección de bus isofásico e indicadores del caso reportado. | EPRI, Plant Modernization Toolbox, MTA-MA-029.
 :::
 
+::: nota riesgo | Advertencia de recurrencia, verificada en fuente primaria {{ev:A}}
+EPRI declara que las inspecciones de bus isofásico se realizan **típicamente cada 10 años**. El candidato A combina entonces valor alto por intervención con recurrencia baja: un activo que se inspecciona una vez por década sólo sostiene un negocio de servicio si la base instalada accesible es grande.
+
+El criterio de recurrencia del Ranking A penaliza a este candidato más de lo que suponía la hipótesis de partida, y el dimensionamiento debe hacerse sobre inspecciones por año, no sobre cantidad de activos.
+
+*Nota de calidad de fuente:* en ese mismo documento, la tabla del bus isofásico repite literalmente la frase de horas-hombre de la tabla de estructuras de toma de agua, incluida la explicación de que el rango depende de la calidad del agua, que no aplica a un ducto de barras. Por esa inconsistencia **no se utiliza** ninguna cifra de horas-hombre para este candidato desde esa fuente.
+:::
+
 De la guía de mantenimiento de bus aislado por fases (EPRI 1015057) deben extraerse: frecuencia típica de inspección, modos de defecto, condiciones de acceso, figuras de plataformas robóticas existentes, mantenimiento recomendado y mediciones eléctricas asociadas.
 
 ### 6.3 Competencia identificada para verificación
@@ -441,7 +455,55 @@ Un robot everting es **una tecnología, no un mercado**. Sólo se justifica si s
 Candidatos de activo a evaluar: conductos de aire y gases; calderas de recuperación; tramos de tubería compleja; espacios internos de turbina y caldera; conductos de cables; equipos confinados.
 :::
 
-## 13. Mercados con madurez probablemente alta
+## 13. Candidato H — Condensador refrigerado por aire (ACC)
+
+Candidato incorporado durante el barrido ampliado de oportunidades. Es el único de ese barrido que llegó a ficha: el resto se cerró como mercado maduro o quedó descartado, con el detalle registrado en la sección 15.
+
+::: fig esq-acc | Figura 15 — Acceso a los ductos de un condensador refrigerado por aire. | Esquema del autor.
+:::
+
+### 13.1 El problema, declarado por los propios operadores
+
+::: nota dato | Dato verificado — guía de inspección interna de ACC {{ev:B}}
+La guía de inspección interna de la asociación de usuarios de condensadores refrigerados por aire establece que los ductos inferiores se acceden sin gran dificultad, pero que **es probablemente irreal esperar que se inspeccione más de uno o dos de los ductos superiores de una unidad durante una parada**, y recomienda que la planta elija un ducto superior específico.
+
+Alcanzar ese ducto superior puede exigir andamiaje o escalera temporal y una trepada por barandas hasta el registro de acceso, con protección contra caídas. El ductwork se define como espacio confinado: exige aire respirable verificado, monitoreo durante la permanencia y plan de rescate, porque las riostras cruzadas pueden obstruir la extracción de una persona en una emergencia.
+:::
+
+Esto invierte la formulación habitual del problema. **El dolor no es que la inspección sea cara: es que no se hace** sobre la mayor parte del activo, y la razón es el acceso.
+
+El mecanismo de falla está documentado en la misma fuente: la corrosión del lado vapor transporta óxido de hierro al agua de alimentación de caldera, y las penetraciones pasantes en los tubos causan ingreso de aire con pérdida de rendimiento del condensador.
+
+### 13.2 Escala del activo
+
+Un condensador de este tipo puede tener del orden de 20.000 tubos y 40.000 soldaduras, y localizar una fuga puede equivaler a encontrar un orificio menor que una moneda en una superficie de tres o cuatro canchas de fútbol. {{ev:C}} — cifra de prensa técnica especializada, no verificada de forma independiente.
+
+### 13.3 Competencia identificada
+
+- **Conco Services** presta limpieza y detección de fugas con gas trazador. Resuelve la **localización de fugas desde el exterior**, no la evaluación interna del estado de corrosión. {{ev:C}}
+- **EPRI** desarrolla una metodología con cámara acústica montada en dron para inspección de estos condensadores, sobre la base de resultados con cámara acústica de mano, y reporta ensayos con dron infrarrojo para analizar distribución de calor. {{ev:B}}
+- **No se identificó** ningún crawler ni robot de inspección interna de ductos de este activo después de las búsquedas registradas en la bitácora. Esto **no equivale** a afirmar que no exista.
+
+::: nota clave | Pregunta estratégica que decide el candidato
+¿Puede un robot inspeccionar los ductos superiores que hoy se dejan sin inspeccionar, con calidad suficiente para sustituir la entrada humana, y sin exigir el andamiaje que constituye la mayor parte del costo evitado?
+
+Si la respuesta exige igualmente montar andamiaje para posicionar el robot, el caso se cae: el ahorro dejaría de ser el acceso y pasaría a ser sólo el tiempo de inspección.
+:::
+
+### 13.4 Por qué encaja con la plataforma existente
+
+Espacio confinado, tether, cámara e iluminación, mapeo y localización dentro de un ducto de sección constante, y generación automática de informe: la reutilización es alta y no exige un ensayo no destructivo nuevo, porque el hallazgo primario es visual y de estado de superficie.
+
+::: detalle Agenda de verificación pendiente
+- Cuantificar cuántas unidades con condensador refrigerado por aire existen en el mercado objetivo y en la región, y su antigüedad.
+- Obtener el costo real de una parada con andamiaje para inspección de ducto superior, en al menos dos plantas.
+- Verificar si algún proveedor de limpieza o de detección de fugas ya ofrece inspección interna robotizada, aunque no la publique.
+- Screening de patentes sobre inspección interna de ductos de condensadores refrigerados por aire.
+- Determinar si el comprador es mantenimiento, química o ingeniería de activos, y quién firma la orden de compra.
+- Confirmar con la asociación de usuarios si la limitación de cobertura declarada en 2015 sigue vigente en 2026.
+:::
+
+## 14. Mercados con madurez probablemente alta
 
 No se descartan sin investigación, pero se exige evidencia de hueco antes de invertir en ellos.
 
@@ -467,15 +529,33 @@ Framatome, Westinghouse, la familia SUSI de AREVA y los desarrollos de KHNP/KEPR
 :::
 :::
 
-## 14. Barrido de oportunidades fuera de la lista
+## 15. Barrido de oportunidades fuera de la lista
 
 El estudio no se limita a los siete candidatos: el barrido independiente es obligatorio y puede reordenar todo el ranking.
 
-### 14.1 Barrido por programa sectorial
+### 15.1 Resultado del barrido ejecutado
+
+El barrido se ejecutó por familias de activos y quedó registrado con sus consultas, fuentes y niveles de evidencia en la bitácora de investigación que acompaña a este informe. Resultado por familia:
+
+| Familia de activos | Veredicto | Razón determinante |
+|---|---|---|
+| Condensadores refrigerados por aire | **Candidato nuevo (H)** | Cobertura de inspección incompleta declarada por los operadores; ningún robot identificado para el interior de los ductos |
+| Paredes de agua de caldera e internos de hogar | No perseguir | Incumbente consolidado con producto, datos, canal y alianza con fabricante de calderas, más media docena de competidores |
+| Eólica: palas, torres y monopilotes | No perseguir | Cuatro proveedores en el interior de la pala; el hueco restante está limitado por la atenuación del material |
+| Presas, compuertas y válvulas | Refuerza al candidato F | Dolor documentado por el propietario del activo, pero el equipamiento base ya es comercial: el valor está en el paquete de servicio |
+| Intercambiadores de calor, hornos y chimeneas | Descartado | Intercambiadores en mercado M5; hornos pertenecen a siderurgia, con otro canal y prior art de alta temperatura ya patentado |
+| Aparamenta blindada y túneles de cables | Línea a investigar / no perseguir | Costo de intervención documentado en aparamenta pero búsqueda insuficiente; prior art abundante en túneles de cables |
+| Solar y tareas nucleares del catálogo | Sin candidato, con dato clave | El valor en solar es analítica, no robótica; el catálogo nuclear aportó las horas-hombre por tarea de la sección 17 |
+
+::: nota inferencia | Cómo leer este resultado
+Seis de siete familias se cerraron por evidencia de ocupación del mercado o por una limitación física documentada. Ese es el rendimiento normal de un barrido honesto: la mayoría de las ideas atractivas ya fueron intentadas, y el valor del ejercicio está en descartarlas rápido y por escrito.
+:::
+
+### 15.2 Barrido por programa sectorial
 
 Generación · nuclear · transmisión · distribución · hidroeléctrica · combustibles fósiles y ciclo combinado · eólica · solar · subestaciones · transmisión subterránea · modernización de plantas · ensayos no destructivos · transformación digital · grupos de colaboración en robótica.
 
-### 14.2 Tareas ya identificadas en la literatura sectorial
+### 15.3 Tareas ya identificadas en la literatura sectorial
 
 EPRI 3002023899 identifica, entre otras, oportunidades de automatización en: tuberías enterradas de agua de servicio; soportes de componentes; estructuras de toma y descarga de agua de refrigeración; ducto de bus isofásico; mapeo tridimensional de radiación; detección de fugas en contención; espárragos y alojamientos de la tapa del reactor; tanques de almacenamiento de agua; contenedores de combustible en seco; rondas de operación; protección contra incendios; y tubos de generador de vapor.
 
@@ -483,11 +563,11 @@ EPRI 3002023899 identifica, entre otras, oportunidades de automatización en: tu
 Varias de esas tareas corresponden a mercados ya maduros. La lista sirve para orientar la búsqueda y para cruzarla con horas-hombre y brechas tecnológicas, no para elegir un producto.
 :::
 
-### 14.3 Barrido por problema físico
+### 15.4 Barrido por problema físico
 
 Espacio confinado · inspección inaccesible · inspección con rotor instalado · sin desmontaje · sin andamiaje · sin excavación · sin drenaje · sin buceo · sin desenergización · en sitio · inspección en línea · inspección interna · ensayos no destructivos robotizados y remotos · inspección autónoma · inspección combinada con reparación · inspección combinada con limpieza · recuperación de material extraño.
 
-### 14.4 Activos adicionales a evaluar
+### 15.5 Activos adicionales a evaluar
 
 Condensadores refrigerados por aire · condensadores · torres de refrigeración · paredes de agua de caldera · headers de caldera · internos de hogar · zonas de escape y combustión de turbina de gas · internos de turbina de vapor · palas y torres de aerogeneradores · monopilotes marinos · presas · vertederos · compuertas de toma · válvulas de gran tamaño · intercambiadores de calor · chimeneas · hornos industriales · recipientes y tuberías petroquímicas · activos mineros cuando la tecnología sea transferible.
 
@@ -495,7 +575,7 @@ Condensadores refrigerados por aire · condensadores · torres de refrigeración
 
 # Parte III — Método de evaluación y economía
 
-## 15. Ficha estándar por candidato
+## 16. Ficha estándar por candidato
 
 Todos los candidatos se documentan con la misma ficha de 23 campos. La uniformidad es lo que permite comparar; una ficha incompleta se marca como incompleta y no se completa con supuestos.
 
@@ -571,12 +651,12 @@ Alta, media o baja, explicando qué dato falta para elevarla.
 :::
 :::
 
-### 15.1 Registro obligatorio de productos existentes
+### 16.1 Registro obligatorio de productos existentes
 
 | Producto | Fabricante | Año | Estado 2026 | Locomoción | Carga sensora / NDE | Dimensiones | Despliegues | Precio o servicio | Fuente |
 |---|---|---:|---|---|---|---|---|---|---|
 
-## 16. Dimensionamiento de mercado
+## 17. Dimensionamiento de mercado
 
 No se usan como base informes genéricos del tipo «mercado de robots de inspección». El cálculo se construye **{{t:bottom-up|de abajo hacia arriba}}**, y su resultado es el mercado total direccionable de servicios ({{t:tam|TAM}}):
 
@@ -584,7 +664,31 @@ No se usan como base informes genéricos del tipo «mercado de robots de inspecc
 
 Se publican tres escenarios —bajo, base y alto— con la fuente de cada entrada. **Si falta información crítica, no se fabrica el número.**
 
-### 16.1 Fuentes preferidas por región
+### 17.1 Anclaje verificado: horas-hombre por tarea
+
+EPRI publica, a partir del análisis de su base de órdenes de trabajo, el consumo de horas-hombre por caso de uso. Es el punto de partida para el cálculo de abajo hacia arriba del costo evitado, y evita construir el dimensionamiento sobre supuestos propios.
+
+| Caso de uso | Frecuencia declarada | Horas-hombre por unidad y por año |
+|---|---|---|
+| Tuberías de agua de servicio, enterradas y sobre nivel | Inspección dirigida cada 10 años; cada 3 a 5 años en la década previa al fin de vida de diseño | 5.000 a 10.000 |
+| Estructuras de toma y descarga de agua de refrigeración | Entre anual y cada 5 años, según condición observada | 50 a 1.500, con el rango gobernado por la calidad del agua |
+| Rondas de operación | Diarias | ≈ 1.400, unas 4 horas por día |
+| Vigilancia contra incendios | Variable, de semanal a mayor | 500 a 1.500 |
+| Mapa tridimensional de radiación | Línea de base cada 10 años | 250 a 750 en trabajo emergente |
+| Tanques de almacenamiento de agua | Inspección completa en cada período de 10 años | 50 a 500, tanques de condensado |
+| Espárragos y alojamientos de la tapa del reactor | Aproximadamente cada parada | 150 o más por parada |
+| Detección de fugas en contención | Emergente, creciente con la edad de la planta | ≈ 50 |
+| Tubos de generador de vapor | Cada parada o cada dos paradas | ≈ 50 con la tecnología existente |
+
+Fuente: EPRI, *Robotic Process Automation for Nuclear Power Plants: Evaluation of Near-Term Opportunities*, 3002023899, junio 2022, tablas 1 a 12. {{ev:A}}
+
+::: nota inferencia | Qué dice esta tabla sobre dónde está el negocio
+Las mayores bolsas de horas no corresponden a las tareas más difíciles: tuberías de agua de servicio, rondas de operación y vigilancia contra incendios concentran mucho más tiempo que las inspecciones especializadas. Pero son tareas de alta frecuencia y baja complejidad, que compiten contra plataformas de propósito general ya comerciales.
+
+El negocio del tipo de robot que este estudio evalúa no está en las horas totales sino en el **costo evitado por intervención**: parada, andamiaje, excavación, buceo o izaje pesado. La tabla sirve para dimensionar, no para elegir.
+:::
+
+### 17.2 Fuentes preferidas por región
 
 ::: tarjetas 2
 ::: tarjeta Estados Unidos
@@ -601,35 +705,35 @@ Ministerios, operadores de sistema y utilities; OLADE y CIER; siempre sobre base
 :::
 :::
 
-## 17. Economía del cliente
+## 18. Economía del cliente
 
 El análisis mira la decisión desde el lado del cliente, no desde el costo del producto.
 
-::: fig fig-valor | Figura 15 — Componentes del valor creado por una inspección robotizada. | Elaboración propia.
+::: fig fig-valor | Figura 16 — Componentes del valor creado por una inspección robotizada. | Elaboración propia.
 :::
 
 Cada componente se documenta por separado y con su fuente. **No se asigna valor monetario arbitrario a la seguridad**: se declara como beneficio no monetizado cuando no hay base para cuantificarlo.
 
 Se buscan ejemplos reales y verificables de: días de parada, andamiaje, excavación, vaciado de conducto, drenaje de tanque, extracción de rotor, entrada de personal a espacio confinado, operación de buceo y maniobras de izaje pesado.
 
-## 18. Rankings y análisis de sensibilidad
+## 19. Rankings y análisis de sensibilidad
 
 Se construyen dos rankings con criterios distintos, porque responden a preguntas distintas: cuál es el mejor próximo producto ({{t:fast-follow|seguidor rápido}}) y cuál es la posición más defendible a largo plazo ({{t:moat|moat}}, con su {{t:upside|potencial de crecimiento}}).
 
-::: fig fig-pesos | Figura 16 — Pesos comparados de los criterios en ambos rankings. | Elaboración propia; los pesos son una decisión de método.
+::: fig fig-pesos | Figura 17 — Pesos comparados de los criterios en ambos rankings. | Elaboración propia; los pesos son una decisión de método.
 :::
 
 ::: nota inferencia | Los puntajes no son mediciones
 Los puntajes son una **síntesis de ingeniería y de negocio**, y así deben etiquetarse en el informe. Los pesos pueden modificarse si se justifica el cambio, pero entonces debe recalcularse el orden completo.
 :::
 
-### 18.1 Sensibilidad obligatoria
+### 19.1 Sensibilidad obligatoria
 
 En el {{t:sensibilidad|análisis de sensibilidad}} se recalcula el ranking moviendo ±20 % el peso de competencia, de esfuerzo de desarrollo y de tamaño de mercado. Si el ganador cambia con esas variaciones, la recomendación debe declararse **inestable** y la decisión debe esperar a la evidencia que estabilice el criterio dominante.
 
-## 19. Prior art, patentes y competidores
+## 20. Prior art, patentes y competidores
 
-### 19.1 Screening preliminar de propiedad intelectual
+### 20.1 Screening preliminar de propiedad intelectual
 
 Para los cinco candidatos mejor posicionados se realiza búsqueda formal en Google Patents, Espacenet, WIPO Patentscope y USPTO, combinando el activo con: inspección robótica, crawler, inspección remota, ensayo no destructivo, trepado de paredes, robot serpiente, vehículo de inspección y manipulador.
 
@@ -640,7 +744,7 @@ Para los cinco candidatos mejor posicionados se realiza búsqueda formal en Goog
 Esto **no** constituye una opinión legal de libertad de operación. Es un screening preliminar orientado a detectar bloqueos evidentes y áreas potencialmente libres.
 :::
 
-### 19.2 Mapa de actores por oportunidad
+### 20.2 Mapa de actores por oportunidad
 
 Para cada oportunidad se identifican por separado seis papeles, porque rara vez los cumple la misma empresa:
 
@@ -653,13 +757,13 @@ Para cada oportunidad se identifican por separado seis papeles, porque rara vez 
 
 Se registra además el historial de adquisiciones —un producto puede haber cambiado de dueño o de nombre— y el estado a 2026: activo, discontinuado, adquirido, sin comercialización o indeterminado. Para productos desaparecidos se recurre al Internet Archive y a folletos archivados; las redes profesionales se usan sólo como pista inicial, nunca como evidencia.
 
-### 19.3 Licitaciones y contratos como fuente de verdad comercial
+### 20.3 Licitaciones y contratos como fuente de verdad comercial
 
 Un contrato adjudicado dice más sobre el mercado que cualquier informe de tamaño de mercado. Se buscan {{t:licitacion|licitaciones, pedidos de cotización}} y adjudicaciones reales por servicio de inspección, inspección robótica, bus isofásico, inspección de HRSG, inspección de vaults, tuberías enterradas, conductos forzados, contenedores en seco, crawlers e inspección visual remota, en portales oficiales de compras de utilities, estatales, federales, municipales y nucleares cuando sean públicos.
 
 De cada uno se extrae: alcance, frecuencia, requisitos, duración, monto adjudicado si aparece y proveedor ganador.
 
-## 20. Argentina y Latinoamérica
+## 21. Argentina y Latinoamérica
 
 Para los tres candidatos mejor posicionados se desarrolla un capítulo específico que responde:
 
@@ -675,7 +779,7 @@ Para los tres candidatos mejor posicionados se desarrolla un capítulo específi
 
 Las cantidades se toman de fuentes oficiales del sector y de los operadores. **No se estiman cantidades de activos sin fuente.**
 
-## 21. Costos de desarrollo
+## 22. Costos de desarrollo
 
 Para cada candidato de la lista corta se estima por separado: diseño mecánico, prototipo, electrónica, sensores y ensayos no destructivos, tether y alimentación, software y control, navegación autónoma, gestión de datos e informes, banco de pruebas, maqueta de ensayo, calificación de campo, certificación y utillaje de fabricación.
 
@@ -692,13 +796,13 @@ Se buscan precios reales de los componentes críticos siempre que sea posible.
 
 # Parte IV — Entregables, validación y cierre
 
-## 22. Estructura y requisitos del informe final
+## 23. Estructura y requisitos del informe final
 
-### 22.1 Estructura
+### 23.1 Estructura
 
 El informe final se organiza en: portada; resumen ejecutivo de tres páginas como máximo; objetivo y alcance; metodología y evidencia; qué hace atractivo un negocio de robótica de inspección; mapa completo de oportunidades; fichas por candidato; panorama competitivo transversal; panorama de patentes; mercado global, de Estados Unidos, de Latinoamérica y de Argentina; economía del cliente; matriz de comparación; rankings con sensibilidad; conceptos de producto para los tres primeros; lista de oportunidades a no perseguir por ahora; incógnitas y {{t:due-diligence|debida diligencia}} pendiente; conclusiones; y anexos de registro de búsquedas, competidores, patentes y fuentes.
 
-### 22.2 Requisitos de presentación
+### 23.2 Requisitos de presentación
 
 ::: tarjetas 2
 ::: tarjeta Estilo
@@ -717,13 +821,13 @@ Lenguaje de marketing, afirmaciones sin sustento, imágenes decorativas, gráfic
 
 Toda gráfica debe indicar su fuente, diferenciar dato de puntaje y no inventar precisión numérica.
 
-### 22.3 Imágenes
+### 23.3 Imágenes
 
 Se usan imágenes cuando ayudan a entender geometría del activo, robot existente, mecanismo de acceso, herramienta de ensayo o arquitectura propuesta, con este orden de preferencia: instituto de investigación sectorial, fabricante, caso de utility, literatura técnica y patente. Cada imagen lleva epígrafe, sistema y fabricante, fuente, dirección y fecha de consulta.
 
 Si la licencia no permite incorporación confiable, se enlaza la fuente o se elabora un esquema original claramente identificado como tal, como los de este documento. Los archivos gráficos se guardan localmente para que el informe sea autocontenido.
 
-### 22.4 Referencias
+### 23.4 Referencias
 
 Las referencias se colocan junto a la afirmación que sostienen, no en una bibliografía desconectada. Ejemplo del formato esperado:
 
@@ -731,7 +835,7 @@ Las referencias se colocan junto a la afirmación que sostienen, no en una bibli
 
 Cada referencia registra organización o autor, título, fecha, identificador de producto, DOI o número de patente, dirección, fecha de acceso y nivel de evidencia.
 
-### 22.5 Archivos que componen la entrega
+### 23.5 Archivos que componen la entrega
 
 - informe completo en formato navegable;
 - registro de fuentes con nota de qué sostiene cada una;
@@ -741,7 +845,7 @@ Cada referencia registra organización o autor, título, fecha, identificador de
 - carpeta de imágenes y gráficos generados;
 - registro de investigación con consultas realizadas, bases consultadas, pistas descartadas y fuentes que no pudieron obtenerse.
 
-## 23. Preguntas que el informe debe responder
+## 24. Preguntas que el informe debe responder
 
 ::: tarjetas 2
 ::: tarjeta Decisión
@@ -772,13 +876,13 @@ Cada referencia registra organización o autor, título, fecha, identificador de
 :::
 :::
 
-## 24. Programa de entrevistas
+## 25. Programa de entrevistas
 
 Para los tres candidatos mejor posicionados se define una lista concreta de entrevistas de {{t:customer-discovery|descubrimiento de clientes}}. Los perfiles a cubrir son: responsable de mantenimiento de generadores; responsable de paradas; responsable de ensayos no destructivos; jefe de planta; ingeniero de cables de transmisión; especialista en calderas de recuperación; responsable de servicio del fabricante de equipos; líder técnico del instituto de investigación sectorial; proveedor de servicios de ensayos no destructivos; e ingeniero de riesgo o de seguros cuando aplique.
 
 Se preparan entre 8 y 12 preguntas por segmento, orientadas a: costo actual, frecuencia, dolor operativo, fallas sufridas, disposición a pagar, requisitos de aceptación, recuperación de herramienta y material extraño, proceso de compra e incumbente.
 
-## 25. Criterio de finalización
+## 26. Criterio de finalización
 
 El informe no se cierra porque «haya suficiente información». Se cierra cuando esta lista está completa:
 
@@ -806,7 +910,7 @@ El informe no se cierra porque «haya suficiente información». Se cierra cuand
 - [ ] Se listaron las entrevistas y contactos prioritarios.
 - [ ] Se verificó que el informe sea autocontenido y abra correctamente.
 
-## 26. Conclusión operativa
+## 27. Conclusión operativa
 
 ::: nota clave | Principio rector
 La prioridad no es defender una solución: es no enamorarse de ninguna. Si la evidencia muestra que el bus isofásico está saturado, que el incumbente de HRSG cerró el hueco, que la robótica de vaults no tiene economía, que existe un producto desconocido que invalida la propuesta o que otra aplicación ofrece un negocio mucho mejor, **el ranking cambia**.
@@ -845,6 +949,19 @@ Fuentes iniciales verificadas a la fecha de corte. No reemplazan la investigaci�
 | 19 | Robotic Technologies of Tennessee | https://www.robotictechtn.com/ | {{ev:C}} | Declaración de uso de sus plataformas en instalaciones nucleares |
 | 20 | EPRI — Catálogo de informes de generación y portal tecnológico | https://dx-wiki.epri.com/Generation_Reports · https://techportal.epri.com/ | {{ev:A}} | Herramienta de descubrimiento de estudios adicionales, incluidos los de robots everting |
 
+### Fuentes incorporadas durante el barrido ampliado
+
+| # | Fuente | Referencia y dirección | Nivel | Qué sostiene |
+|---:|---|---|:--:|---|
+| 21 | Air Cooled Condenser Users Group — *ACC.01: Guidelines for Internal Inspection of Air-Cooled Condensers*, mayo 2015 | https://competitivepower.us/pub/pdfs/guidelines-for-internal-inspection-of-air-cooled-condensers-2015.pdf | {{ev:B}} | Cobertura de inspección incompleta en ductos superiores, condiciones de acceso y espacio confinado, y mecanismo de falla por corrosión del lado vapor |
+| 22 | EPRI 3002023899, tablas 1 a 12 | https://restservice.epri.com/publicdownload/000000003002023899/0/Product | {{ev:A}} | Horas-hombre y frecuencia por caso de uso; frecuencia decenal de la inspección de bus isofásico |
+| 23 | U.S. Bureau of Reclamation, ficha de proyecto 9612 | https://www.usbr.gov/research/projects/detail.cfm?id=9612 | {{ev:A}} | Túnel de toma inaccesible para buzos por profundidad, longitud y espacio confinado, y ausencia de programa propio de inspección con vehículo remoto |
+| 24 | *Combined Cycle Journal*, limpieza y detección de fugas en condensadores refrigerados por aire | https://www.ccj-online.com/air-cooled-condensers-effective-cleaning-and-leak-detection/ | {{ev:C}} | Escala del activo y práctica actual de detección de fugas con gas trazador |
+| 25 | EPRI Journal, robótica en centrales | https://eprijournal.com/robotics-in-power-plants-getting-smaller-smarter/ | {{ev:B}} | Metodología con cámara acústica en dron para condensadores refrigerados por aire |
+| 26 | Patente US 8717742, aparamenta blindada con interruptor extraíble | https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/8717742 | {{ev:A}} | Costo de intervención declarado: inspeccionar por dentro exige cortar servicio y evacuar el gas aislante |
+
+La bitácora completa del barrido —consultas realizadas, hallazgos con su clase y nivel, y pistas descartadas— se conserva junto a este informe como registro de investigación.
+
 ## Anexo B — Registro de hallazgos iniciales
 
 Hallazgos ya verificados en fuentes primarias o actuales. Deben releerse en su contexto antes de utilizarse en una conclusión.
@@ -856,6 +973,8 @@ Hallazgos ya verificados en fuentes primarias o actuales. Deben releerse en su c
 | B · HRSG | Ciertos tubos interiores no pueden inspeccionarse con ensayos convencionales sin acceso destructivo; la robótica tipo serpiente fue estudiada para ese problema | {{ev:A}} Hecho | El problema es real y está documentado |
 | B · HRSG | Herramienta de acceso interno con sonda de campo remoto y video, crawler dentro del header y despliegues en múltiples sitios | {{tipo:Declaración}} | La oportunidad debe reevaluarse contra un incumbente real y activo |
 | C · Vaults | Programa vigente 2025–2027 con prototipos, ensayos de laboratorio y demostraciones en sitios de utilities, orientado a seguridad y reducción de salidas de servicio | {{ev:A}} Hecho | Señal de problema vigente y tecnología aún en evolución |
+| H · Condensador por aire | Es irreal esperar que se inspeccione más de uno o dos de los ductos superiores de una unidad durante una parada | {{ev:B}} Hecho | La necesidad está declarada por los operadores y hoy no está cubierta |
+| A · Bus isofásico | Las inspecciones se realizan típicamente cada 10 años | {{ev:A}} Hecho | Recurrencia baja: penaliza el caso de servicio y obliga a dimensionar por inspecciones anuales |
 
 ## Anexo C — Glosario con fuente de cada definición
 

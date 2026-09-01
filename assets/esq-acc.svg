@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 396" width="720" height="396" role="img" aria-labelledby="ti de">
+<title id="ti">Esquema de acceso a un condensador refrigerado por aire</title><desc id="de">Ducto de distribución superior con registro de acceso y robot, módulos en A con haces de tubos, ductos de condensado y ventiladores.</desc>
+<style>
+  text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
+  .t-title { font-size: 15px; font-weight: 700; }
+  .t-sub   { font-size: 12px; fill: #52514e; }
+  .t-lab   { font-size: 12px; }
+  .t-labb  { font-size: 12px; font-weight: 600; }
+  .t-small { font-size: 11px; fill: #52514e; }
+  .t-axis  { font-size: 11px; fill: #8a8880; font-variant-numeric: tabular-nums; }
+  .t-val   { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .t-note  { font-size: 10.5px; fill: #8a8880; }
+  .t-inv   { fill: #ffffff; }
+  .grid    { stroke: #e4e6ea; stroke-width: 1; }
+  .axis    { stroke: #c3c2b7; stroke-width: 1; }
+  .st-thin { fill: none; stroke: #14496b; stroke-width: 1.6; }
+  .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
+  .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
+</style>
+<rect width="720" height="396" fill="#ffffff"/>
+<text x="2.0" y="18.0" class="t-title" text-anchor="start">Condensador refrigerado por aire: acceso a los ductos</text>
+<text x="2.0" y="36.0" class="t-sub" text-anchor="start">El ducto inferior se accede sin dificultad; el superior exige andamiaje, trabajo en altura y permiso de</text>
+<text x="2.0" y="51.0" class="t-sub" text-anchor="start">espacio confinado.</text>
+<rect x="150.0" y="104.0" width="470.0" height="38.0" fill="#f4f6f8" rx="19.0" stroke="#14496b" stroke-width="1.8"/>
+<rect x="60.0" y="110.0" width="92.0" height="26.0" fill="#e7eaee" rx="0.0" stroke="#8a8880" stroke-width="1"/>
+<path d="M152 123 h6 l-4 -4 m4 4 l-4 4" fill="none" stroke="#8a8880" stroke-width="1.6"/>
+<rect x="196.0" y="95.0" width="44.0" height="9.0" fill="#ffffff" rx="0.0" stroke="#14496b" stroke-width="1.4"/>
+<rect x="268.0" y="116.0" width="46.0" height="18.0" fill="#eb6834" rx="4.0"/>
+<circle cx="280" cy="137.0" r="4.5" fill="#8c4520"/>
+<circle cx="302" cy="137.0" r="4.5" fill="#8c4520"/>
+<path d="M268 125 C 240 108, 214 126, 218 95" class="st-dash"/>
+<path d="M246 142 L192 258" stroke="#d3d8de" stroke-width="13" stroke-linecap="round" fill="none"/>
+<path d="M254 142 L308 258" stroke="#d3d8de" stroke-width="13" stroke-linecap="round" fill="none"/>
+<rect x="176.0" y="258.0" width="148.0" height="16.0" fill="#e7eaee" rx="8.0" stroke="#8a8880" stroke-width="1"/>
+<ellipse cx="250" cy="292" rx="30" ry="7" fill="#eef0f3" stroke="#8a8880" stroke-width="1"/>
+<line x1="228.0" y1="292.0" x2="272.0" y2="292.0" class="st-hair"/>
+<path d="M381 142 L327 258" stroke="#d3d8de" stroke-width="13" stroke-linecap="round" fill="none"/>
+<path d="M389 142 L443 258" stroke="#d3d8de" stroke-width="13" stroke-linecap="round" fill="none"/>
+<rect x="311.0" y="258.0" width="148.0" height="16.0" fill="#e7eaee" rx="8.0" stroke="#8a8880" stroke-width="1"/>
+<ellipse cx="385" cy="292" rx="30" ry="7" fill="#eef0f3" stroke="#8a8880" stroke-width="1"/>
+<line x1="363.0" y1="292.0" x2="407.0" y2="292.0" class="st-hair"/>
+<path d="M516 142 L462 258" stroke="#d3d8de" stroke-width="13" stroke-linecap="round" fill="none"/>
+<path d="M524 142 L578 258" stroke="#d3d8de" stroke-width="13" stroke-linecap="round" fill="none"/>
+<rect x="446.0" y="258.0" width="148.0" height="16.0" fill="#e7eaee" rx="8.0" stroke="#8a8880" stroke-width="1"/>
+<ellipse cx="520" cy="292" rx="30" ry="7" fill="#eef0f3" stroke="#8a8880" stroke-width="1"/>
+<line x1="498.0" y1="292.0" x2="542.0" y2="292.0" class="st-hair"/>
+<path d="M300.0 82.0 L300.0 104.0" class="st-hair"/>
+<circle cx="300.0" cy="104.0" r="2" fill="#8a8880"/>
+<text x="300.0" y="76.0" class="t-small" text-anchor="middle">ducto de distribución superior</text>
+<path d="M560.0 82.0 L560.0 104.0" class="st-hair"/>
+<circle cx="560.0" cy="104.0" r="2" fill="#8a8880"/>
+<text x="560.0" y="76.0" class="t-small" text-anchor="middle">zona de acceso difícil</text>
+<path d="M120.0 178.0 L218.0 95.0" class="st-hair"/>
+<circle cx="218.0" cy="95.0" r="2" fill="#8a8880"/>
+<text x="120.0" y="190.0" class="t-small" text-anchor="start">registro de acceso</text>
+<path d="M668.0 176.0 L556.0 196.0" class="st-hair"/>
+<circle cx="556.0" cy="196.0" r="2" fill="#8a8880"/>
+<text x="668.0" y="170.0" class="t-small" text-anchor="end">haces de tubos aletados</text>
+<path d="M180.0 302.0 L250.0 274.0" class="st-hair"/>
+<circle cx="250.0" cy="274.0" r="2" fill="#8a8880"/>
+<text x="180.0" y="314.0" class="t-small" text-anchor="middle">ducto de condensado inferior</text>
+<path d="M560.0 302.0 L520.0 292.0" class="st-hair"/>
+<circle cx="520.0" cy="292.0" r="2" fill="#8a8880"/>
+<text x="560.0" y="314.0" class="t-small" text-anchor="middle">ventiladores</text>
+<text x="360.0" y="336.0" class="t-small" text-anchor="middle">En una parada se inspecciona uno o dos de los ductos superiores de la unidad: la cobertura es incompleta por acceso.</text>
+<rect x="2.0" y="356.0" width="9.0" height="9.0" fill="#eb6834" rx="2.0"/>
+<text x="17.0" y="364.0" class="t-small" text-anchor="start">Plataforma robótica</text>
+<rect x="242.0" y="356.0" width="9.0" height="9.0" fill="#d3d8de" rx="2.0"/>
+<text x="257.0" y="364.0" class="t-small" text-anchor="start">Haz de tubos</text>
+<rect x="482.0" y="356.0" width="9.0" height="9.0" fill="#e7eaee" rx="2.0"/>
+<text x="497.0" y="364.0" class="t-small" text-anchor="start">Ducto de vapor y de condensado</text>
+<text x="718.0" y="388.0" class="t-note" text-anchor="end">Esquema del autor. No a escala.</text>
+</svg>

@@ -442,7 +442,7 @@ def fig_piping_economia():
 # =========================================================================
 def fig_mapa_candidatos():
     W, H = 720, 500
-    b, _ = _head('Posicionamiento de partida de los siete candidatos',
+    b, _ = _head('Posicionamiento de partida de los ocho candidatos',
                  'Hipótesis de entrada al estudio, no una medición: cada '
                  'posición debe confirmarse o corregirse con evidencia.')
     px0, py0, pw, ph = 60, 74, 500, 280
@@ -476,6 +476,7 @@ def fig_mapa_candidatos():
         ('E', 3.0, 0.55, 'Dry casks'),
         ('F', 4.0, 0.75, 'Penstocks y túneles'),
         ('G', 1.0, 0.86, 'Vine / everting'),
+        ('H', 1.2, 0.22, 'Condensador por aire (ACC)'),
     ]
     for code, mx, my, name in cands:
         x = px0 + mx / 5.0 * pw
@@ -494,7 +495,7 @@ def fig_mapa_candidatos():
                   'de cuadrante al primer hallazgo de campo.', 't-small', 108))
     b.append(txt(2, H - 6, 'Esquema del autor.', 't-note'))
     return svg(W, H, '\n'.join(b), 'Mapa de posicionamiento de los candidatos',
-               'Dispersión de los siete candidatos según madurez comercial '
+               'Dispersión de los ocho candidatos según madurez comercial '
                'hipotética y reutilización de la plataforma existente.')
 
 
@@ -836,6 +837,67 @@ def esq_vine():
                'base con carrete.')
 
 
+
+def esq_acc():
+    W, H = 720, 396
+    yl, yn, yg, yf = H - 94, H - 60, H - 32, H - 8
+    b, _ = _head('Condensador refrigerado por aire: acceso a los ductos',
+                 'El ducto inferior se accede sin dificultad; el superior exige '
+                 'andamiaje, trabajo en altura y permiso de espacio confinado.')
+    # ducto de distribucion superior
+    dx0, dx1, dy0, dy1 = 150, 620, 104, 142
+    b.append(rect(dx0, dy0, dx1 - dx0, dy1 - dy0, '#f4f6f8', rx=19,
+                  extra='stroke="%s" stroke-width="1.8"' % NAV))
+    # ducto de vapor de entrada
+    b.append(rect(60, dy0 + 6, 92, dy1 - dy0 - 12, '#e7eaee',
+                  extra='stroke="%s" stroke-width="1"' % MUT))
+    b.append('<path d="M152 %d h6 l-4 -4 m4 4 l-4 4" fill="none" stroke="%s" '
+             'stroke-width="1.6"/>' % ((dy0 + dy1) // 2, MUT))
+    # registro de acceso
+    b.append(rect(196, dy0 - 9, 44, 9, SURF,
+                  extra='stroke="%s" stroke-width="1.4"' % NAV))
+    # robot dentro del ducto superior
+    b.append(rect(268, dy1 - 26, 46, 18, S2, rx=4))
+    for wx in (280, 302):
+        b.append('<circle cx="%d" cy="%.1f" r="4.5" fill="#8c4520"/>'
+                 % (wx, dy1 - 5))
+    b.append('<path d="M268 %d C 240 %d, 214 %d, 218 %d" class="st-dash"/>'
+             % (dy1 - 17, dy1 - 34, dy0 + 22, dy0 - 9))
+    # tres modulos en A
+    lower_y = 258
+    for cx in (250, 385, 520):
+        b.append('<path d="M%d %d L%d %d" stroke="#d3d8de" stroke-width="13" '
+                 'stroke-linecap="round" fill="none"/>' % (cx - 4, dy1, cx - 58, lower_y))
+        b.append('<path d="M%d %d L%d %d" stroke="#d3d8de" stroke-width="13" '
+                 'stroke-linecap="round" fill="none"/>' % (cx + 4, dy1, cx + 58, lower_y))
+        # ducto de condensado inferior
+        b.append(rect(cx - 74, lower_y, 148, 16, '#e7eaee', rx=8,
+                      extra='stroke="%s" stroke-width="1"' % MUT))
+        # ventilador
+        b.append('<ellipse cx="%d" cy="%d" rx="30" ry="7" fill="#eef0f3" '
+                 'stroke="%s" stroke-width="1"/>' % (cx, lower_y + 34, MUT))
+        b.append(line(cx - 22, lower_y + 34, cx + 22, lower_y + 34, 'st-hair'))
+    b += leader(300, 82, 300, dy0, 'ducto de distribución superior')
+    b += leader(560, 82, 560, dy0, 'zona de acceso difícil')
+    b += leader(120, 178, 218, dy0 - 9, 'registro de acceso', 'start')
+    b += leader(668, 176, 556, 196, 'haces de tubos aletados', 'end')
+    b += leader(180, yl, 250, lower_y + 16, 'ducto de condensado inferior')
+    b += leader(560, yl, 520, lower_y + 34, 'ventiladores')
+    b.append(txt(W / 2, yn,
+                 'En una parada se inspecciona uno o dos de los ductos superiores '
+                 'de la unidad: la cobertura es incompleta por acceso.',
+                 't-small', 'middle'))
+    b += _legend([(S2, 'Plataforma robótica'),
+                  ('#d3d8de', 'Haz de tubos'),
+                  ('#e7eaee', 'Ducto de vapor y de condensado')], 2, yg, 3, 240)
+    b.append(txt(W - 2, yf, 'Esquema del autor. No a escala.', 't-note', 'end'))
+    return svg(W, H, '\n'.join(b), 'Esquema de acceso a un condensador '
+               'refrigerado por aire',
+               'Ducto de distribución superior con registro de acceso y robot, '
+               'módulos en A con haces de tubos, ductos de condensado y '
+               'ventiladores.')
+
+
 FIGURAS = [
     ('fig-evidencia', fig_evidencia),
     ('fig-madurez', fig_madurez),
@@ -853,6 +915,7 @@ FIGURAS = [
     ('esq-cask', esq_cask),
     ('esq-penstock', esq_penstock),
     ('esq-vine', esq_vine),
+    ('esq-acc', esq_acc),
 ]
 
 
