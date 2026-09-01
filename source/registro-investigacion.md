@@ -15,7 +15,7 @@ supuestos.
 | Lote | Alcance | Estado |
 |---:|---|---|
 | 1 | Condensadores refrigerados por aire (ACC), condensadores y torres de refrigeración | **Completo** |
-| 2 | Paredes de agua de caldera, headers de caldera e internos de hogar | Pendiente |
+| 2 | Paredes de agua de caldera, headers de caldera e internos de hogar | **Completo** |
 | 3 | Eólica: palas, torres y monopilotes marinos | Pendiente |
 | 4 | Presas, vertederos, compuertas de toma y válvulas de gran tamaño | Pendiente |
 | 5 | Chimeneas, hornos industriales e intercambiadores de calor | Pendiente |
@@ -110,3 +110,65 @@ cámara, iluminación, mapeo).
 parque objetivo, costo real de una parada con andamiaje, screening de patentes y
 verificación de si algún proveedor de limpieza ya ofrece inspección interna
 robotizada.
+
+---
+
+## Lote 2 — Paredes de agua de caldera e internos de hogar
+
+**Consultas:** `Gecko Robotics boiler waterwall ultrasonic inspection robot utility deployments 2025` ·
+`boiler waterwall tube inspection robot competitors Gecko Robotics alternative wall climbing ultrasonic 2026 market`.
+
+### Hallazgo 2.1 — El nicho tiene un incumbente fuerte y consolidado
+
+Gecko Robotics opera una familia de robots trepadores con ruedas magnéticas que
+recorren superficies de acero —paredes de caldera, tanques, cascos de buque, exterior
+de tuberías— con ultrasonido de arreglo de fases, sensores acústicos, corrientes
+inducidas, cámara y LiDAR, y entrega los resultados como modelo digital del activo.
+El chorro de agua actúa como acoplante y permite un barrido continuo de gran densidad
+de puntos, frente a la cobertura parcial de una inspección manual con acceso por
+cuerdas.
+
+- **Clase:** declaración de fabricante y de prensa especializada, no verificada de
+  forma independiente. **Nivel:** C.
+- **Fuentes:** sitio del fabricante, https://www.geckorobotics.com/ ; Robotics 24/7,
+  ampliación de la alianza con Sumitomo SHI FW para inspección de calderas,
+  https://www.robotics247.com/article/sumitomo_expands_partnership_with_gecko_robotics_to_help_service_boilers
+
+### Hallazgo 2.2 — No es un proveedor aislado
+
+Además del anterior aparecen, en el mismo nicho de inspección robotizada de calderas y
+superficies de acero: Waygate Technologies, HiBot, ICM International Climbing
+Machines, Invert Robotics, Inuktun, ULC Robotics, Sarcos, Gridbots y varios
+fabricantes de origen chino.
+
+- **Clase:** listado de agregadores de mercado y perfiles de empresa. **Nivel:** D,
+  usado sólo para descubrir nombres; cada uno debe verificarse en fuente primaria.
+
+### Hallazgo 2.3 — Evidencia de que el mercado ya se comporta como servicio
+
+La alianza con un fabricante de calderas para prestar el servicio de inspección a
+escala global indica que el canal comercial ya está tomado por el eje
+fabricante-proveedor de servicio, no sólo el producto.
+
+- **Clase:** inferencia de ingeniería y de negocio sobre la fuente de 2.1.
+
+### Nota de calidad de fuente
+
+Un perfil comercial secundario atribuye a estos robots una velocidad de trepado de
+«60 pies por segundo». La cifra es físicamente inverosímil para un crawler magnético
+—equivale a 18 m/s— y probablemente corresponda a pies por minuto. **No se utiliza**;
+queda registrada como ejemplo de por qué las fuentes de nivel D no sostienen una
+conclusión.
+
+Las cifras de tamaño de mercado que aparecen en estas búsquedas provienen de informes
+comerciales opacos (nivel D) y, por la regla de metodología del informe, **no se usan
+como base** de ningún dimensionamiento.
+
+### Conclusión preliminar del lote 2
+
+**No perseguir** como producto genérico. La inspección robotizada de paredes de agua
+de caldera está ocupada por un incumbente con producto, datos, canal y contratos, y
+por al menos media docena de competidores adicionales. Sólo justificaría revisarse si
+apareciera un hueco muy concreto —geometría interna del hogar inaccesible al trepador
+externo, o headers de caldera, que se solapan con el candidato B— y ese hueco debería
+demostrarse antes de invertir, no suponerse.
