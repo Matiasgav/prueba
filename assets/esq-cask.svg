@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 396" width="720" height="396" role="img" aria-labelledby="ti de">
+<title id="ti">Esquema de contenedor de almacenamiento en seco</title><desc id="de">Sobre-contenedor, canister, espacio anular, respiraderos y robot trepador.</desc>
+<style>
+  text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
+  .t-title { font-size: 15px; font-weight: 700; }
+  .t-sub   { font-size: 12px; fill: #52514e; }
+  .t-lab   { font-size: 12px; }
+  .t-labb  { font-size: 12px; font-weight: 600; }
+  .t-small { font-size: 11px; fill: #52514e; }
+  .t-axis  { font-size: 11px; fill: #8a8880; font-variant-numeric: tabular-nums; }
+  .t-val   { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .t-note  { font-size: 10.5px; fill: #8a8880; }
+  .t-inv   { fill: #ffffff; }
+  .grid    { stroke: #e4e6ea; stroke-width: 1; }
+  .axis    { stroke: #c3c2b7; stroke-width: 1; }
+  .st-thin { fill: none; stroke: #14496b; stroke-width: 1.6; }
+  .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
+  .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
+</style>
+<rect width="720" height="396" fill="#ffffff"/>
+<text x="2.0" y="18.0" class="t-title" text-anchor="start">Contenedor de combustible gastado en seco</text>
+<text x="2.0" y="36.0" class="t-sub" text-anchor="start">La inspección ocurre en un espacio anular estrecho, con dosis y sin mover el canister.</text>
+<rect x="286.0" y="96.0" width="180.0" height="194.0" fill="#f4f6f8" rx="6.0" stroke="#14496b" stroke-width="1.8"/>
+<rect x="316.0" y="110.0" width="120.0" height="166.0" fill="#e7eaee" rx="4.0" stroke="#8a8880" stroke-width="1"/>
+<text x="376.0" y="197.0" class="t-small" text-anchor="middle">canister</text>
+<rect x="298.0" y="110.0" width="18.0" height="166.0" fill="#dbe9fb" rx="0.0" stroke="#2a78d6" stroke-width="0.8"/>
+<rect x="270.0" y="120.0" width="16.0" height="12.0" fill="#d9dee5" rx="0.0" stroke="#8a8880" stroke-width="1"/>
+<rect x="466.0" y="120.0" width="16.0" height="12.0" fill="#d9dee5" rx="0.0" stroke="#8a8880" stroke-width="1"/>
+<rect x="270.0" y="254.0" width="16.0" height="12.0" fill="#d9dee5" rx="0.0" stroke="#8a8880" stroke-width="1"/>
+<rect x="466.0" y="254.0" width="16.0" height="12.0" fill="#d9dee5" rx="0.0" stroke="#8a8880" stroke-width="1"/>
+<rect x="302.0" y="202.0" width="10.0" height="26.0" fill="#eb6834" rx="3.0"/>
+<path d="M250.0 140.0 L307.0 140.0" class="st-hair"/>
+<circle cx="307.0" cy="140.0" r="2" fill="#8a8880"/>
+<text x="250.0" y="152.0" class="t-small" text-anchor="end">espacio anular de pocos centímetros</text>
+<path d="M250.0 250.0 L302.0 215.0" class="st-hair"/>
+<circle cx="302.0" cy="215.0" r="2" fill="#8a8880"/>
+<text x="250.0" y="262.0" class="t-small" text-anchor="end">robot trepador</text>
+<path d="M500.0 140.0 L482.0 126.0" class="st-hair"/>
+<circle cx="482.0" cy="126.0" r="2" fill="#8a8880"/>
+<text x="500.0" y="152.0" class="t-small" text-anchor="start">respiraderos de entrada y salida</text>
+<path d="M500.0 250.0 L466.0 246.0" class="st-hair"/>
+<circle cx="466.0" cy="246.0" r="2" fill="#8a8880"/>
+<text x="500.0" y="262.0" class="t-small" text-anchor="start">sobre-contenedor de hormigón</text>
+<text x="360.0" y="336.0" class="t-small" text-anchor="middle">La alternativa convencional exige mover el canister o una maniobra de izaje pesado: ahí está el costo evitado.</text>
+<rect x="2.0" y="356.0" width="9.0" height="9.0" fill="#eb6834" rx="2.0"/>
+<text x="17.0" y="364.0" class="t-small" text-anchor="start">Plataforma robótica</text>
+<rect x="242.0" y="356.0" width="9.0" height="9.0" fill="#dbe9fb" rx="2.0"/>
+<text x="257.0" y="364.0" class="t-small" text-anchor="start">Espacio anular de inspección</text>
+<rect x="482.0" y="356.0" width="9.0" height="9.0" fill="#e7eaee" rx="2.0"/>
+<text x="497.0" y="364.0" class="t-small" text-anchor="start">Canister</text>
+<text x="718.0" y="388.0" class="t-note" text-anchor="end">Esquema del autor. No a escala.</text>
+</svg>

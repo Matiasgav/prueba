@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 360" width="720" height="360" role="img" aria-labelledby="ti de">
+<title id="ti">Esquema de robot everting</title><desc id="de">Cuerpo everting avanzando por un conducto ramificado desde una base con carrete.</desc>
+<style>
+  text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
+  .t-title { font-size: 15px; font-weight: 700; }
+  .t-sub   { font-size: 12px; fill: #52514e; }
+  .t-lab   { font-size: 12px; }
+  .t-labb  { font-size: 12px; font-weight: 600; }
+  .t-small { font-size: 11px; fill: #52514e; }
+  .t-axis  { font-size: 11px; fill: #8a8880; font-variant-numeric: tabular-nums; }
+  .t-val   { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .t-note  { font-size: 10.5px; fill: #8a8880; }
+  .t-inv   { fill: #ffffff; }
+  .grid    { stroke: #e4e6ea; stroke-width: 1; }
+  .axis    { stroke: #c3c2b7; stroke-width: 1; }
+  .st-thin { fill: none; stroke: #14496b; stroke-width: 1.6; }
+  .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
+  .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
+</style>
+<rect width="720" height="360" fill="#ffffff"/>
+<text x="2.0" y="18.0" class="t-title" text-anchor="start">Robot everting (vine) en equipos de planta</text>
+<text x="2.0" y="36.0" class="t-sub" text-anchor="start">Avanza por eversión: el cuerpo no roza la pared, por eso entra donde el crawler no pasa.</text>
+<rect x="176.0" y="96.0" width="464.0" height="152.0" fill="#f9fafb" rx="6.0" stroke="#8a8880" stroke-width="1.2"/>
+<path d="M192 174 H268 a24 24 0 0 0 24 -24 V132 a24 24 0 0 1 24 -24 H424 a24 24 0 0 1 24 24 V200 a24 24 0 0 0 24 24 H622" fill="none" stroke="#dfe4ea" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M192 174 H268 a24 24 0 0 0 24 -24 V132 a24 24 0 0 1 24 -24 H398" fill="none" stroke="#eb6834" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="398" cy="108" r="6.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<rect x="72.0" y="158.0" width="100.0" height="32.0" fill="#eb6834" rx="4.0"/>
+<path d="M398.0 74.0 L398.0 101.0" class="st-hair"/>
+<circle cx="398.0" cy="101.0" r="2" fill="#8a8880"/>
+<text x="398.0" y="68.0" class="t-small" text-anchor="middle">punta con cámara y sensor</text>
+<path d="M122.0 266.0 L122.0 190.0" class="st-hair"/>
+<circle cx="122.0" cy="190.0" r="2" fill="#8a8880"/>
+<text x="122.0" y="278.0" class="t-small" text-anchor="middle">base: presión y carrete</text>
+<path d="M600.0 266.0 L566.0 224.0" class="st-hair"/>
+<circle cx="566.0" cy="224.0" r="2" fill="#8a8880"/>
+<text x="600.0" y="278.0" class="t-small" text-anchor="end">tramo que el crawler no alcanza</text>
+<text x="360.0" y="304.0" class="t-small" text-anchor="middle">Es una tecnología, no un mercado: sólo se justifica sobre un activo donde además el desmontaje es caro.</text>
+<text x="718.0" y="352.0" class="t-note" text-anchor="end">Esquema del autor. No a escala.</text>
+</svg>

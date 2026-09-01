@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 370" width="720" height="370" role="img" aria-labelledby="ti de">
+<title id="ti">Esquema de inspección de penstock</title><desc id="de">Conducto forzado inclinado con vehículo remoto, tether y cono de sonar.</desc>
+<style>
+  text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
+  .t-title { font-size: 15px; font-weight: 700; }
+  .t-sub   { font-size: 12px; fill: #52514e; }
+  .t-lab   { font-size: 12px; }
+  .t-labb  { font-size: 12px; font-weight: 600; }
+  .t-small { font-size: 11px; fill: #52514e; }
+  .t-axis  { font-size: 11px; fill: #8a8880; font-variant-numeric: tabular-nums; }
+  .t-val   { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .t-note  { font-size: 10.5px; fill: #8a8880; }
+  .t-inv   { fill: #ffffff; }
+  .grid    { stroke: #e4e6ea; stroke-width: 1; }
+  .axis    { stroke: #c3c2b7; stroke-width: 1; }
+  .st-thin { fill: none; stroke: #14496b; stroke-width: 1.6; }
+  .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
+  .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
+</style>
+<rect width="720" height="370" fill="#ffffff"/>
+<text x="2.0" y="18.0" class="t-title" text-anchor="start">Penstock y túnel hidroeléctrico</text>
+<text x="2.0" y="36.0" class="t-sub" text-anchor="start">Kilómetros de conducto lleno, sin referencia satelital y con un único punto de lanzamiento.</text>
+<path d="M112 140 H300 L620 244 V282 L300 178 H112 Z" fill="#eef4fb" stroke="#14496b" stroke-width="1.6"/>
+<rect x="42.0" y="112.0" width="68.0" height="28.0" fill="#eb6834" rx="4.0"/>
+<path d="M110 156 C 200 154, 300 168, 424 202" class="st-dash"/>
+<ellipse cx="436" cy="205" rx="17" ry="10" fill="#eb6834"/>
+<path d="M452 205 L536 183 L536 229 Z" fill="#2a78d6" opacity="0.18"/>
+<path d="M76.0 96.0 L76.0 112.0" class="st-hair"/>
+<circle cx="76.0" cy="112.0" r="2" fill="#8a8880"/>
+<text x="76.0" y="90.0" class="t-small" text-anchor="middle">carrete, consola y energía</text>
+<path d="M330.0 112.0 L300.0 140.0" class="st-hair"/>
+<circle cx="300.0" cy="140.0" r="2" fill="#8a8880"/>
+<text x="330.0" y="106.0" class="t-small" text-anchor="middle">conducto forzado lleno de agua</text>
+<path d="M330.0 276.0 L436.0 215.0" class="st-hair"/>
+<circle cx="436.0" cy="215.0" r="2" fill="#8a8880"/>
+<text x="330.0" y="288.0" class="t-small" text-anchor="middle">vehículo remoto con tether</text>
+<path d="M640.0 250.0 L520.0 200.0" class="st-hair"/>
+<circle cx="520.0" cy="200.0" r="2" fill="#8a8880"/>
+<text x="640.0" y="262.0" class="t-small" text-anchor="end">barrido sonar</text>
+<text x="360.0" y="310.0" class="t-small" text-anchor="middle">El alcance útil lo fija el tether, el arrastre del flujo y la garantía de recuperación, no la cámara.</text>
+<rect x="2.0" y="330.0" width="9.0" height="9.0" fill="#eb6834" rx="2.0"/>
+<text x="17.0" y="338.0" class="t-small" text-anchor="start">Plataforma robótica</text>
+<rect x="242.0" y="330.0" width="9.0" height="9.0" fill="#2a78d6" rx="2.0"/>
+<text x="257.0" y="338.0" class="t-small" text-anchor="start">Visual y sonar</text>
+<rect x="482.0" y="330.0" width="9.0" height="9.0" fill="#1baf7a" rx="2.0"/>
+<text x="497.0" y="338.0" class="t-small" text-anchor="start">Espesor por ultrasonido</text>
+<text x="718.0" y="362.0" class="t-note" text-anchor="end">Esquema del autor. No a escala.</text>
+</svg>

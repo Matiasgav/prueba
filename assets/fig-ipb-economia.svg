@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 322" width="720" height="322" role="img" aria-labelledby="ti de">
+<title id="ti">Costo relativo de la inspección de bus isofásico</title><desc id="de">Dos barras comparando el costo relativo de la inspección manual y la robótica, y tres indicadores del caso EPRI.</desc>
+<style>
+  text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
+  .t-title { font-size: 15px; font-weight: 700; }
+  .t-sub   { font-size: 12px; fill: #52514e; }
+  .t-lab   { font-size: 12px; }
+  .t-labb  { font-size: 12px; font-weight: 600; }
+  .t-small { font-size: 11px; fill: #52514e; }
+  .t-axis  { font-size: 11px; fill: #8a8880; font-variant-numeric: tabular-nums; }
+  .t-val   { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .t-note  { font-size: 10.5px; fill: #8a8880; }
+  .t-inv   { fill: #ffffff; }
+  .grid    { stroke: #e4e6ea; stroke-width: 1; }
+  .axis    { stroke: #c3c2b7; stroke-width: 1; }
+  .st-thin { fill: none; stroke: #14496b; stroke-width: 1.6; }
+  .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
+  .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
+</style>
+<rect width="720" height="322" fill="#ffffff"/>
+<text x="2.0" y="18.0" class="t-title" text-anchor="start">Bus isofásico: costo relativo de la inspección</text>
+<text x="2.0" y="36.0" class="t-sub" text-anchor="start">Caso único reportado por una utility. La razón 10× es de ese caso; no está generalizada al mercado.</text>
+<line x1="210.0" y1="90.0" x2="210.0" y2="178.0" class="grid"/>
+<text x="210.0" y="84.0" class="t-axis" text-anchor="middle">0</text>
+<line x1="278.0" y1="90.0" x2="278.0" y2="178.0" class="grid"/>
+<text x="278.0" y="84.0" class="t-axis" text-anchor="middle">2</text>
+<line x1="346.0" y1="90.0" x2="346.0" y2="178.0" class="grid"/>
+<text x="346.0" y="84.0" class="t-axis" text-anchor="middle">4</text>
+<line x1="414.0" y1="90.0" x2="414.0" y2="178.0" class="grid"/>
+<text x="414.0" y="84.0" class="t-axis" text-anchor="middle">6</text>
+<line x1="482.0" y1="90.0" x2="482.0" y2="178.0" class="grid"/>
+<text x="482.0" y="84.0" class="t-axis" text-anchor="middle">8</text>
+<line x1="550.0" y1="90.0" x2="550.0" y2="178.0" class="grid"/>
+<text x="550.0" y="84.0" class="t-axis" text-anchor="middle">10</text>
+<text x="380.0" y="66.0" class="t-note" text-anchor="middle">costo relativo (base = 1)</text>
+<text x="2.0" y="110.0" class="t-small" text-anchor="start">Inspección manual con acceso y</text>
+<text x="2.0" y="123.0" class="t-small" text-anchor="start">andamiaje</text>
+<path d="M210.0 96.0 H546.0 a4.0 4.0 0 0 1 4.0 4.0 V114.0 a4.0 4.0 0 0 1 -4.0 4.0 H210.0 Z" fill="#c9ced6"/>
+<text x="558.0" y="112.0" class="t-val" text-anchor="start">10×</text>
+<text x="2.0" y="156.0" class="t-small" text-anchor="start">Inspección con crawler</text>
+<text x="2.0" y="169.0" class="t-small" text-anchor="start">robótico</text>
+<path d="M210.0 142.0 H240.0 a4.0 4.0 0 0 1 4.0 4.0 V160.0 a4.0 4.0 0 0 1 -4.0 4.0 H210.0 Z" fill="#2a78d6"/>
+<text x="252.0" y="158.0" class="t-val" text-anchor="start">1×</text>
+<line x1="210.0" y1="178.0" x2="550.0" y2="178.0" class="axis"/>
+<rect x="2.0" y="204.0" width="230.7" height="78.0" fill="#f2f6fa" rx="5.0"/>
+<rect x="2.0" y="204.0" width="3.0" height="78.0" fill="#14496b" rx="0.0"/>
+<text x="14.0" y="234.0" class="t-title" text-anchor="start">≈ USD 100.000</text>
+<text x="14.0" y="252.0" class="t-small" text-anchor="start">costo de vendor por implementación,</text>
+<text x="14.0" y="265.0" class="t-small" text-anchor="start">experiencia de una utility</text>
+<rect x="244.7" y="204.0" width="230.7" height="78.0" fill="#f2f6fa" rx="5.0"/>
+<rect x="244.7" y="204.0" width="3.0" height="78.0" fill="#14496b" rx="0.0"/>
+<text x="256.7" y="234.0" class="t-title" text-anchor="start">&lt; 1 día</text>
+<text x="256.7" y="252.0" class="t-small" text-anchor="start">duración de la ejecución</text>
+<text x="256.7" y="265.0" class="t-small" text-anchor="start">de la inspección</text>
+<rect x="487.3" y="204.0" width="230.7" height="78.0" fill="#f2f6fa" rx="5.0"/>
+<rect x="487.3" y="204.0" width="3.0" height="78.0" fill="#14496b" rx="0.0"/>
+<text x="499.3" y="234.0" class="t-title" text-anchor="start">Inmediato</text>
+<text x="499.3" y="252.0" class="t-small" text-anchor="start">payback según la evaluación</text>
+<text x="499.3" y="265.0" class="t-small" text-anchor="start">EPRI SWEEP</text>
+<text x="2.0" y="314.0" class="t-note" text-anchor="start">Fuente: EPRI, Plant Modernization Toolbox, MTA-MA-029 (dato publicado por EPRI sobre un caso de utility).</text>
+</svg>

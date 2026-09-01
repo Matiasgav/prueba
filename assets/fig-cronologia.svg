@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 210" width="720" height="210" role="img" aria-labelledby="ti de">
+<title id="ti">Línea temporal de prior art</title><desc id="de">Siete hitos desde la identificación del problema hasta el estado 2026.</desc>
+<style>
+  text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
+  .t-title { font-size: 15px; font-weight: 700; }
+  .t-sub   { font-size: 12px; fill: #52514e; }
+  .t-lab   { font-size: 12px; }
+  .t-labb  { font-size: 12px; font-weight: 600; }
+  .t-small { font-size: 11px; fill: #52514e; }
+  .t-axis  { font-size: 11px; fill: #8a8880; font-variant-numeric: tabular-nums; }
+  .t-val   { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .t-note  { font-size: 10.5px; fill: #8a8880; }
+  .t-inv   { fill: #ffffff; }
+  .grid    { stroke: #e4e6ea; stroke-width: 1; }
+  .axis    { stroke: #c3c2b7; stroke-width: 1; }
+  .st-thin { fill: none; stroke: #14496b; stroke-width: 1.6; }
+  .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
+  .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
+</style>
+<rect width="720" height="210" fill="#ffffff"/>
+<text x="2.0" y="18.0" class="t-title" text-anchor="start">Línea temporal que debe reconstruirse para cada candidato</text>
+<text x="2.0" y="36.0" class="t-sub" text-anchor="start">El objetivo es detectar programas anteriores y las razones físicas o económicas por las que se</text>
+<text x="2.0" y="51.0" class="t-sub" text-anchor="start">detuvieron.</text>
+<line x1="30.0" y1="92.0" x2="690.0" y2="92.0" class="axis"/>
+<circle cx="30.0" cy="92.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<text x="30.0" y="53.0" class="t-small" text-anchor="middle">Problema</text>
+<text x="30.0" y="66.0" class="t-small" text-anchor="middle">identificado</text>
+<circle cx="140.0" cy="92.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<text x="140.0" y="53.0" class="t-small" text-anchor="middle">Primer</text>
+<text x="140.0" y="66.0" class="t-small" text-anchor="middle">prototipo</text>
+<circle cx="250.0" cy="92.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<text x="250.0" y="53.0" class="t-small" text-anchor="middle">Investigación</text>
+<text x="250.0" y="66.0" class="t-small" text-anchor="middle">EPRI</text>
+<circle cx="360.0" cy="92.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<text x="360.0" y="53.0" class="t-small" text-anchor="middle">Familias de</text>
+<text x="360.0" y="66.0" class="t-small" text-anchor="middle">patentes</text>
+<circle cx="470.0" cy="92.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<text x="470.0" y="53.0" class="t-small" text-anchor="middle">Primeros</text>
+<text x="470.0" y="66.0" class="t-small" text-anchor="middle">despliegues</text>
+<circle cx="580.0" cy="92.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<text x="580.0" y="53.0" class="t-small" text-anchor="middle">Productos</text>
+<text x="580.0" y="66.0" class="t-small" text-anchor="middle">comerciales</text>
+<circle cx="690.0" cy="92.0" r="5.5" fill="#14496b" stroke="#ffffff" stroke-width="2"/>
+<text x="690.0" y="53.0" class="t-small" text-anchor="middle">Estado</text>
+<text x="690.0" y="66.0" class="t-small" text-anchor="middle">2026</text>
+<rect x="2.0" y="132.0" width="716.0" height="52.0" fill="#f7f9fb" rx="5.0"/>
+<text x="14.0" y="151.0" class="t-labb" text-anchor="start">Evidencia negativa: el hallazgo más valioso</text>
+<text x="14.0" y="169.0" class="t-small" text-anchor="start">Productos discontinuados · programas abandonados · resultados insuficientes · robots atascados · herramientas</text>
+<text x="14.0" y="183.0" class="t-small" text-anchor="start">que no entraron · fallas de tether · NDE sin sensibilidad · costos que destruyeron el caso de negocio.</text>
+<text x="2.0" y="204.0" class="t-note" text-anchor="start">Esquema del autor.</text>
+</svg>

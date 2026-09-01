@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 372" width="720" height="372" role="img" aria-labelledby="ti de">
+<title id="ti">Jerarquía de evidencia</title><desc id="de">Pirámide de cuatro niveles A a D con las familias de fuentes de cada nivel.</desc>
+<style>
+  text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
+  .t-title { font-size: 15px; font-weight: 700; }
+  .t-sub   { font-size: 12px; fill: #52514e; }
+  .t-lab   { font-size: 12px; }
+  .t-labb  { font-size: 12px; font-weight: 600; }
+  .t-small { font-size: 11px; fill: #52514e; }
+  .t-axis  { font-size: 11px; fill: #8a8880; font-variant-numeric: tabular-nums; }
+  .t-val   { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .t-note  { font-size: 10.5px; fill: #8a8880; }
+  .t-inv   { fill: #ffffff; }
+  .grid    { stroke: #e4e6ea; stroke-width: 1; }
+  .axis    { stroke: #c3c2b7; stroke-width: 1; }
+  .st-thin { fill: none; stroke: #14496b; stroke-width: 1.6; }
+  .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
+  .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
+</style>
+<rect width="720" height="372" fill="#ffffff"/>
+<text x="2.0" y="18.0" class="t-title" text-anchor="start">Jerarquía de evidencia aplicada al estudio</text>
+<text x="2.0" y="36.0" class="t-sub" text-anchor="start">La conclusión de cada afirmación se pondera por el nivel de la fuente que la sostiene.</text>
+<path d="M118.0 70.0 L162.0 70.0 L186.7 134.5 L93.3 134.5 Z" fill="#123f76"/>
+<text x="140.0" y="107.2" class="t-labb t-inv" text-anchor="middle">Nivel A</text>
+<text x="288.0" y="84.0" class="t-labb" text-anchor="start">Máxima prioridad</text>
+<text x="288.0" y="100.0" class="t-small" text-anchor="start">EPRI · DOE / NRC / IAEA / EIA / FERC / NERC · IEEE / IEC / ASME /</text>
+<text x="288.0" y="112.5" class="t-small" text-anchor="start">API / AMPP · CIGRE · documentos oficiales de utilities · papers</text>
+<text x="288.0" y="125.0" class="t-small" text-anchor="start">revisados por pares · patentes originales · documentación técnica</text>
+<text x="288.0" y="137.5" class="t-small" text-anchor="start">de fabricante · licitaciones y contratos oficiales</text>
+<path d="M92.5 136.5 L187.5 136.5 L212.2 201.0 L67.8 201.0 Z" fill="#256abf"/>
+<text x="140.0" y="173.8" class="t-labb t-inv" text-anchor="middle">Nivel B</text>
+<text x="288.0" y="150.5" class="t-labb" text-anchor="start">Respaldo sólido</text>
+<text x="288.0" y="166.5" class="t-small" text-anchor="start">Proceedings de congresos · tesis · informes institucionales ·</text>
+<text x="288.0" y="179.0" class="t-small" text-anchor="start">presentaciones técnicas EPRI/OEM · casos técnicos de utilities ·</text>
+<text x="288.0" y="191.5" class="t-small" text-anchor="start">asociaciones industriales (HRSG Forum, CCJ)</text>
+<path d="M67.0 203.0 L213.0 203.0 L237.7 267.5 L42.3 267.5 Z" fill="#5598e7"/>
+<text x="140.0" y="240.2" class="t-labb" text-anchor="middle">Nivel C</text>
+<text x="288.0" y="217.0" class="t-labb" text-anchor="start">Indicativo</text>
+<text x="288.0" y="233.0" class="t-small" text-anchor="start">Páginas de proveedores de servicios · casos comerciales · notas</text>
+<text x="288.0" y="245.5" class="t-small" text-anchor="start">técnicas secundarias · prensa especializada</text>
+<path d="M41.5 269.5 L238.5 269.5 L263.2 334.0 L16.8 334.0 Z" fill="#9ec5f4"/>
+<text x="140.0" y="306.8" class="t-labb" text-anchor="middle">Nivel D</text>
+<text x="288.0" y="283.5" class="t-labb" text-anchor="start">Solo para descubrir la fuente primaria</text>
+<text x="288.0" y="299.5" class="t-small" text-anchor="start">Agregadores de contratos · blogs · repositorios no revisados ·</text>
+<text x="288.0" y="312.0" class="t-small" text-anchor="start">notas de marketing de terceros. No se usa como evidencia final si</text>
+<text x="288.0" y="324.5" class="t-small" text-anchor="start">el original es localizable.</text>
+<text x="2.0" y="366.0" class="t-note" text-anchor="start">Esquema del autor a partir del marco metodológico del estudio.</text>
+</svg>

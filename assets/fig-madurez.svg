@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 230" width="720" height="230" role="img" aria-labelledby="ti de">
+<title id="ti">Escala de madurez comercial M0 a M5</title><desc id="de">Barra segmentada en seis niveles de madurez comercial.</desc>
+<style>
+  text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
+  .t-title { font-size: 15px; font-weight: 700; }
+  .t-sub   { font-size: 12px; fill: #52514e; }
+  .t-lab   { font-size: 12px; }
+  .t-labb  { font-size: 12px; font-weight: 600; }
+  .t-small { font-size: 11px; fill: #52514e; }
+  .t-axis  { font-size: 11px; fill: #8a8880; font-variant-numeric: tabular-nums; }
+  .t-val   { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .t-note  { font-size: 10.5px; fill: #8a8880; }
+  .t-inv   { fill: #ffffff; }
+  .grid    { stroke: #e4e6ea; stroke-width: 1; }
+  .axis    { stroke: #c3c2b7; stroke-width: 1; }
+  .st-thin { fill: none; stroke: #14496b; stroke-width: 1.6; }
+  .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
+  .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
+</style>
+<rect width="720" height="230" fill="#ffffff"/>
+<text x="2.0" y="18.0" class="t-title" text-anchor="start">Escala de madurez comercial (M0–M5)</text>
+<text x="2.0" y="36.0" class="t-sub" text-anchor="start">Mide despliegue real en el mercado, no nivel tecnológico (TRL): un TRL alto con un solo cliente sigue</text>
+<text x="2.0" y="51.0" class="t-sub" text-anchor="start">siendo M2.</text>
+<rect x="2.0" y="60.0" width="117.7" height="34.0" fill="#9ec5f4" rx="4.0"/>
+<text x="60.8" y="82.0" class="t-labb" text-anchor="middle">M0</text>
+<text x="60.8" y="112.0" class="t-small" text-anchor="middle">Sólo papers y</text>
+<text x="60.8" y="125.0" class="t-small" text-anchor="middle">conceptos</text>
+<rect x="121.7" y="60.0" width="117.7" height="34.0" fill="#6da7ec" rx="0.0"/>
+<text x="180.5" y="82.0" class="t-labb" text-anchor="middle">M1</text>
+<text x="180.5" y="112.0" class="t-small" text-anchor="middle">Prototipos de</text>
+<text x="180.5" y="125.0" class="t-small" text-anchor="middle">laboratorio</text>
+<rect x="241.3" y="60.0" width="117.7" height="34.0" fill="#3987e5" rx="0.0"/>
+<text x="300.2" y="82.0" class="t-labb t-inv" text-anchor="middle">M2</text>
+<text x="300.2" y="112.0" class="t-small" text-anchor="middle">Demostración</text>
+<text x="300.2" y="125.0" class="t-small" text-anchor="middle">industrial</text>
+<text x="300.2" y="138.0" class="t-small" text-anchor="middle">aislada</text>
+<rect x="361.0" y="60.0" width="117.7" height="34.0" fill="#256abf" rx="0.0"/>
+<text x="419.8" y="82.0" class="t-labb t-inv" text-anchor="middle">M3</text>
+<text x="419.8" y="112.0" class="t-small" text-anchor="middle">Servicios</text>
+<text x="419.8" y="125.0" class="t-small" text-anchor="middle">comerciales</text>
+<text x="419.8" y="138.0" class="t-small" text-anchor="middle">iniciales</text>
+<rect x="480.7" y="60.0" width="117.7" height="34.0" fill="#184f95" rx="0.0"/>
+<text x="539.5" y="82.0" class="t-labb t-inv" text-anchor="middle">M4</text>
+<text x="539.5" y="112.0" class="t-small" text-anchor="middle">Múltiples</text>
+<text x="539.5" y="125.0" class="t-small" text-anchor="middle">proveedores y</text>
+<text x="539.5" y="138.0" class="t-small" text-anchor="middle">despliegues</text>
+<rect x="600.3" y="60.0" width="117.7" height="34.0" fill="#0d366b" rx="4.0"/>
+<text x="659.2" y="82.0" class="t-labb t-inv" text-anchor="middle">M5</text>
+<text x="659.2" y="112.0" class="t-small" text-anchor="middle">Mercado maduro /</text>
+<text x="659.2" y="125.0" class="t-small" text-anchor="middle">commodity</text>
+<line x1="2.0" y1="168.0" x2="718.0" y2="168.0" class="grid"/>
+<text x="2.0" y="188.0" class="t-labb" text-anchor="start">Dónde compite un producto nuevo</text>
+<text x="2.0" y="206.0" class="t-small" text-anchor="start">M0–M2 · el riesgo dominante es técnico: hay que</text>
+<text x="2.0" y="220.0" class="t-small" text-anchor="start">demostrar que el robot resuelve el problema físico.</text>
+<text x="370.0" y="206.0" class="t-small" text-anchor="start">M3–M5 · el riesgo dominante es comercial: hay que</text>
+<text x="370.0" y="220.0" class="t-small" text-anchor="start">demostrar una ventaja frente a un incumbente que ya</text>
+<text x="370.0" y="234.0" class="t-small" text-anchor="start">cobra.</text>
+<text x="2.0" y="224.0" class="t-note" text-anchor="start">Esquema del autor.</text>
+</svg>

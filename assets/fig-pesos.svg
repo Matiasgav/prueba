@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 458" width="720" height="458" role="img" aria-labelledby="ti de">
+<title id="ti">Pesos de los dos rankings</title><desc id="de">Barras horizontales agrupadas comparando el peso de cada criterio en el Ranking A y en el Ranking B.</desc>
+<style>
+  text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
+  .t-title { font-size: 15px; font-weight: 700; }
+  .t-sub   { font-size: 12px; fill: #52514e; }
+  .t-lab   { font-size: 12px; }
+  .t-labb  { font-size: 12px; font-weight: 600; }
+  .t-small { font-size: 11px; fill: #52514e; }
+  .t-axis  { font-size: 11px; fill: #8a8880; font-variant-numeric: tabular-nums; }
+  .t-val   { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .t-note  { font-size: 10.5px; fill: #8a8880; }
+  .t-inv   { fill: #ffffff; }
+  .grid    { stroke: #e4e6ea; stroke-width: 1; }
+  .axis    { stroke: #c3c2b7; stroke-width: 1; }
+  .st-thin { fill: none; stroke: #14496b; stroke-width: 1.6; }
+  .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
+  .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
+</style>
+<rect width="720" height="458" fill="#ffffff"/>
+<text x="2.0" y="18.0" class="t-title" text-anchor="start">Pesos de los dos criterios de ranking</text>
+<text x="2.0" y="36.0" class="t-sub" text-anchor="start">Ranking A prioriza el próximo producto de bajo riesgo; Ranking B, la defensa a largo plazo. Los pesos</text>
+<text x="2.0" y="51.0" class="t-sub" text-anchor="start">son una decisión de método, no un dato medido.</text>
+<rect x="2.0" y="52.0" width="10.0" height="10.0" fill="#2a78d6" rx="2.0"/>
+<text x="18.0" y="61.0" class="t-small" text-anchor="start">Ranking A — fast-follow</text>
+<rect x="190.0" y="52.0" width="10.0" height="10.0" fill="#eb6834" rx="2.0"/>
+<text x="206.0" y="61.0" class="t-small" text-anchor="start">Ranking B — moat / upside</text>
+<line x1="360.0" y1="88.0" x2="360.0" y2="396.0" class="axis"/>
+<line x1="422.5" y1="88.0" x2="422.5" y2="396.0" class="grid"/>
+<text x="422.5" y="82.0" class="t-axis" text-anchor="middle">5%</text>
+<line x1="485.0" y1="88.0" x2="485.0" y2="396.0" class="grid"/>
+<text x="485.0" y="82.0" class="t-axis" text-anchor="middle">10%</text>
+<line x1="547.5" y1="88.0" x2="547.5" y2="396.0" class="grid"/>
+<text x="547.5" y="82.0" class="t-axis" text-anchor="middle">15%</text>
+<line x1="610.0" y1="88.0" x2="610.0" y2="396.0" class="grid"/>
+<text x="610.0" y="82.0" class="t-axis" text-anchor="middle">20%</text>
+<text x="2.0" y="105.0" class="t-small" text-anchor="start">Dolor económico / costo evitado</text>
+<path d="M360.0 92.0 H606.0 a4.0 4.0 0 0 1 4.0 4.0 V99.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
+<text x="616.0" y="101.0" class="t-val" text-anchor="start">20%</text>
+<path d="M360.0 105.0 H606.0 a4.0 4.0 0 0 1 4.0 4.0 V112.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
+<text x="616.0" y="114.0" class="t-val" text-anchor="start">20%</text>
+<text x="2.0" y="139.0" class="t-small" text-anchor="start">Whitespace y competencia (IP en B)</text>
+<path d="M360.0 126.0 H543.5 a4.0 4.0 0 0 1 4.0 4.0 V133.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
+<text x="553.5" y="135.0" class="t-val" text-anchor="start">15%</text>
+<path d="M360.0 139.0 H606.0 a4.0 4.0 0 0 1 4.0 4.0 V146.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
+<text x="616.0" y="148.0" class="t-val" text-anchor="start">20%</text>
+<text x="2.0" y="173.0" class="t-small" text-anchor="start">Barrera técnica: factibilidad (A) / defensa (B)</text>
+<path d="M360.0 160.0 H543.5 a4.0 4.0 0 0 1 4.0 4.0 V167.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
+<text x="553.5" y="169.0" class="t-val" text-anchor="start">15%</text>
+<path d="M360.0 173.0 H606.0 a4.0 4.0 0 0 1 4.0 4.0 V180.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
+<text x="616.0" y="182.0" class="t-val" text-anchor="start">20%</text>
+<text x="2.0" y="207.0" class="t-small" text-anchor="start">Tamaño de mercado</text>
+<path d="M360.0 194.0 H481.0 a4.0 4.0 0 0 1 4.0 4.0 V201.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
+<text x="491.0" y="203.0" class="t-val" text-anchor="start">10%</text>
+<path d="M360.0 207.0 H543.5 a4.0 4.0 0 0 1 4.0 4.0 V214.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
+<text x="553.5" y="216.0" class="t-val" text-anchor="start">15%</text>
+<text x="2.0" y="241.0" class="t-small" text-anchor="start">Ticket y margen</text>
+<path d="M360.0 228.0 H481.0 a4.0 4.0 0 0 1 4.0 4.0 V235.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
+<text x="491.0" y="237.0" class="t-val" text-anchor="start">10%</text>
+<path d="M360.0 241.0 H481.0 a4.0 4.0 0 0 1 4.0 4.0 V248.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
+<text x="491.0" y="250.0" class="t-val" text-anchor="start">10%</text>
+<text x="2.0" y="275.0" class="t-small" text-anchor="start">Reutilización de la plataforma RI</text>
+<path d="M360.0 262.0 H543.5 a4.0 4.0 0 0 1 4.0 4.0 V269.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
+<text x="553.5" y="271.0" class="t-val" text-anchor="start">15%</text>
+<path d="M360.0 275.0 H418.5 a4.0 4.0 0 0 1 4.0 4.0 V282.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
+<text x="428.5" y="284.0" class="t-val" text-anchor="start">5%</text>
+<text x="2.0" y="309.0" class="t-small" text-anchor="start">Frecuencia y recurrencia</text>
+<path d="M360.0 296.0 H481.0 a4.0 4.0 0 0 1 4.0 4.0 V303.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
+<text x="491.0" y="305.0" class="t-val" text-anchor="start">10%</text>
+<path d="M360.0 309.0 H418.5 a4.0 4.0 0 0 1 4.0 4.0 V316.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
+<text x="428.5" y="318.0" class="t-val" text-anchor="start">5%</text>
+<text x="2.0" y="343.0" class="t-small" text-anchor="start">Overlap de clientes / canal comercial</text>
+<path d="M360.0 330.0 H418.5 a4.0 4.0 0 0 1 4.0 4.0 V337.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
+<text x="428.5" y="339.0" class="t-val" text-anchor="start">5%</text>
+<text x="366.0" y="352.0" class="t-note" text-anchor="start">no aplica en este ranking</text>
+<text x="2.0" y="377.0" class="t-small" text-anchor="start">Carga regulatoria (inversa)</text>
+<text x="366.0" y="373.0" class="t-note" text-anchor="start">no aplica en este ranking</text>
+<path d="M360.0 377.0 H418.5 a4.0 4.0 0 0 1 4.0 4.0 V384.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
+<text x="428.5" y="386.0" class="t-val" text-anchor="start">5%</text>
+<text x="2.0" y="428.0" class="t-small" text-anchor="start">Sensibilidad obligatoria: se recalcula el orden moviendo ±20 % el peso de competencia, desarrollo y mercado.</text>
+<text x="2.0" y="450.0" class="t-note" text-anchor="start">Fuente: marco de evaluación del estudio. Los pesos son síntesis de ingeniería y negocio, no una medición.</text>
+</svg>

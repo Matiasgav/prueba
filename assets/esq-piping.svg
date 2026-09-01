@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 380" width="720" height="380" role="img" aria-labelledby="ti de">
+<title id="ti">Esquema de inspección de piping enterrado</title><desc id="de">Tubería enterrada con codos y una derivación, recorrida por un crawler desde un acceso único.</desc>
+<style>
+  text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
+  .t-title { font-size: 15px; font-weight: 700; }
+  .t-sub   { font-size: 12px; fill: #52514e; }
+  .t-lab   { font-size: 12px; }
+  .t-labb  { font-size: 12px; font-weight: 600; }
+  .t-small { font-size: 11px; fill: #52514e; }
+  .t-axis  { font-size: 11px; fill: #8a8880; font-variant-numeric: tabular-nums; }
+  .t-val   { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .t-note  { font-size: 10.5px; fill: #8a8880; }
+  .t-inv   { fill: #ffffff; }
+  .grid    { stroke: #e4e6ea; stroke-width: 1; }
+  .axis    { stroke: #c3c2b7; stroke-width: 1; }
+  .st-thin { fill: none; stroke: #14496b; stroke-width: 1.6; }
+  .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
+  .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
+</style>
+<rect width="720" height="380" fill="#ffffff"/>
+<text x="2.0" y="18.0" class="t-title" text-anchor="start">Piping enterrado: inspección sin excavación</text>
+<text x="2.0" y="36.0" class="t-sub" text-anchor="start">Un único punto de acceso debe cubrir codos, derivaciones y cambios de plano a lo largo de la traza.</text>
+<rect x="2.0" y="104.0" width="716.0" height="12.0" fill="#dfe2e6" rx="0.0"/>
+<rect x="2.0" y="116.0" width="716.0" height="160.0" fill="#f4f1ec" rx="0.0"/>
+<path d="M70 158 H250 a28 28 0 0 1 28 28 V212 H420 a28 28 0 0 0 28 -28 V158 H656" fill="none" stroke="#d3d8de" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M540 158 v-28" stroke="#d3d8de" stroke-width="14" stroke-linecap="round" fill="none"/>
+<rect x="44.0" y="128.0" width="32.0" height="32.0" fill="#ffffff" rx="3.0" stroke="#14496b" stroke-width="1.4"/>
+<rect x="150.0" y="149.0" width="54.0" height="18.0" fill="#eb6834" rx="4.0"/>
+<path d="M120 158 H150" class="st-dash"/>
+<path d="M60.0 92.0 L60.0 128.0" class="st-hair"/>
+<circle cx="60.0" cy="128.0" r="2" fill="#8a8880"/>
+<text x="60.0" y="86.0" class="t-small" text-anchor="middle">acceso único</text>
+<path d="M566.0 92.0 L540.0 132.0" class="st-hair"/>
+<circle cx="540.0" cy="132.0" r="2" fill="#8a8880"/>
+<text x="566.0" y="86.0" class="t-small" text-anchor="middle">derivación (tee)</text>
+<path d="M178.0 286.0 L178.0 167.0" class="st-hair"/>
+<circle cx="178.0" cy="167.0" r="2" fill="#8a8880"/>
+<text x="178.0" y="298.0" class="t-small" text-anchor="middle">crawler con NDE embarcado</text>
+<path d="M316.0 286.0 L288.0 196.0" class="st-hair"/>
+<circle cx="288.0" cy="196.0" r="2" fill="#8a8880"/>
+<text x="316.0" y="298.0" class="t-small" text-anchor="middle">codo 1D</text>
+<path d="M452.0 286.0 L448.0 190.0" class="st-hair"/>
+<circle cx="448.0" cy="190.0" r="2" fill="#8a8880"/>
+<text x="452.0" y="298.0" class="t-small" text-anchor="middle">codo de retorno</text>
+<text x="360.0" y="320.0" class="t-small" text-anchor="middle">El valor está en evitar la excavación; el riesgo está en el atascamiento. La recuperación es parte del producto.</text>
+<rect x="2.0" y="340.0" width="9.0" height="9.0" fill="#eb6834" rx="2.0"/>
+<text x="17.0" y="348.0" class="t-small" text-anchor="start">Plataforma robótica</text>
+<rect x="302.0" y="340.0" width="9.0" height="9.0" fill="#d3d8de" rx="2.0"/>
+<text x="317.0" y="348.0" class="t-small" text-anchor="start">Tubería enterrada revestida</text>
+<text x="718.0" y="372.0" class="t-note" text-anchor="end">Esquema del autor. No a escala.</text>
+</svg>

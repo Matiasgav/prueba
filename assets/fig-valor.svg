@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 250" width="720" height="250" role="img" aria-labelledby="ti de">
+<title id="ti">Ecuación de valor para el cliente</title><desc id="de">Cuatro componentes de valor menos el costo de robotización igual al valor creado.</desc>
+<style>
+  text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
+  .t-title { font-size: 15px; font-weight: 700; }
+  .t-sub   { font-size: 12px; fill: #52514e; }
+  .t-lab   { font-size: 12px; }
+  .t-labb  { font-size: 12px; font-weight: 600; }
+  .t-small { font-size: 11px; fill: #52514e; }
+  .t-axis  { font-size: 11px; fill: #8a8880; font-variant-numeric: tabular-nums; }
+  .t-val   { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .t-note  { font-size: 10.5px; fill: #8a8880; }
+  .t-inv   { fill: #ffffff; }
+  .grid    { stroke: #e4e6ea; stroke-width: 1; }
+  .axis    { stroke: #c3c2b7; stroke-width: 1; }
+  .st-thin { fill: none; stroke: #14496b; stroke-width: 1.6; }
+  .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
+  .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
+</style>
+<rect width="720" height="250" fill="#ffffff"/>
+<text x="2.0" y="18.0" class="t-title" text-anchor="start">Cómo se construye el valor para el cliente</text>
+<text x="2.0" y="36.0" class="t-sub" text-anchor="start">La venta no es el robot: es la información de condición confiable y el costo de mantenimiento que se</text>
+<text x="2.0" y="51.0" class="t-sub" text-anchor="start">evita.</text>
+<rect x="2.0" y="78.0" width="108.0" height="76.0" fill="#ffffff" rx="5.0" stroke="#1baf7a" stroke-width="1.4"/>
+<text x="14.0" y="102.0" class="t-title" text-anchor="start">+</text>
+<text x="14.0" y="122.0" class="t-labb" text-anchor="start">Costo convencional</text>
+<text x="14.0" y="136.0" class="t-labb" text-anchor="start">evitado</text>
+<text x="117.0" y="121.0" class="t-sub" text-anchor="middle">+</text>
+<rect x="124.0" y="78.0" width="108.0" height="76.0" fill="#ffffff" rx="5.0" stroke="#1baf7a" stroke-width="1.4"/>
+<text x="136.0" y="102.0" class="t-title" text-anchor="start">+</text>
+<text x="136.0" y="122.0" class="t-labb" text-anchor="start">Outage</text>
+<text x="136.0" y="136.0" class="t-labb" text-anchor="start">evitado</text>
+<text x="239.0" y="121.0" class="t-sub" text-anchor="middle">+</text>
+<rect x="246.0" y="78.0" width="108.0" height="76.0" fill="#ffffff" rx="5.0" stroke="#1baf7a" stroke-width="1.4"/>
+<text x="258.0" y="102.0" class="t-title" text-anchor="start">+</text>
+<text x="258.0" y="122.0" class="t-labb" text-anchor="start">Riesgo</text>
+<text x="258.0" y="136.0" class="t-labb" text-anchor="start">evitado</text>
+<text x="361.0" y="121.0" class="t-sub" text-anchor="middle">+</text>
+<rect x="368.0" y="78.0" width="108.0" height="76.0" fill="#ffffff" rx="5.0" stroke="#1baf7a" stroke-width="1.4"/>
+<text x="380.0" y="102.0" class="t-title" text-anchor="start">+</text>
+<text x="380.0" y="122.0" class="t-labb" text-anchor="start">Cobertura</text>
+<text x="380.0" y="136.0" class="t-labb" text-anchor="start">adicional</text>
+<text x="483.0" y="121.0" class="t-sub" text-anchor="middle">−</text>
+<rect x="490.0" y="78.0" width="108.0" height="76.0" fill="#ffffff" rx="5.0" stroke="#eb6834" stroke-width="1.4"/>
+<text x="502.0" y="102.0" class="t-title" text-anchor="start">−</text>
+<text x="502.0" y="122.0" class="t-labb" text-anchor="start">Costo de</text>
+<text x="502.0" y="136.0" class="t-labb" text-anchor="start">robotización</text>
+<rect x="2.0" y="176.0" width="716.0" height="52.0" fill="#f2f6fa" rx="5.0"/>
+<rect x="2.0" y="176.0" width="3.0" height="52.0" fill="#14496b" rx="0.0"/>
+<text x="14.0" y="198.0" class="t-title" text-anchor="start">=  Valor creado por inspección</text>
+<text x="14.0" y="218.0" class="t-small" text-anchor="start">Cada componente se documenta por separado y con su fuente. La seguridad no recibe un valor monetario arbitrario.</text>
+<text x="2.0" y="242.0" class="t-note" text-anchor="start">Esquema del autor.</text>
+</svg>
