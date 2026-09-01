@@ -6,13 +6,13 @@ Informe profesional en dos formatos, generados desde una única fuente.
 
 | Archivo | Descripción |
 |---|---|
-| `informe_robotica_inspeccion.html` | Informe HTML autocontenido: índice lateral con seguimiento de sección, resumen ejecutivo con indicadores, tarjetas comparativas, llamados tipificados, distintivos de nivel de evidencia y madurez, 16 figuras SVG embebidas, tablas con encabezado fijo y hoja de estilos de impresión. |
+| `informe_robotica_inspeccion.html` | Informe HTML autocontenido: índice lateral con seguimiento de sección, resumen ejecutivo con indicadores, tarjetas comparativas, llamados tipificados, distintivos de nivel de evidencia y madurez, 17 figuras SVG embebidas, tablas con encabezado fijo y hoja de estilos de impresión. |
 | `informe_robotica_inspeccion.tex` | Fuente LaTeX equivalente (pdfLaTeX + babel español, tcolorbox). |
 | `informe_robotica_inspeccion.pdf` | PDF compilado: 47 páginas, sin errores ni *overfull boxes*. |
 
 ## Estructura del informe
 
-- **Resumen ejecutivo** — pregunta central, estado de la evidencia, lectura rápida de los siete candidatos, qué no desarrollar e incógnitas que bloquean la decisión.
+- **Resumen ejecutivo** — pregunta central, estado de la evidencia, lectura rápida de los ocho candidatos, qué no desarrollar e incógnitas que bloquean la decisión.
 - **Parte I — Marco de decisión** — objetivo, lógica económica del producto de referencia, disciplina de evidencia (clases A–D, jerarquía de fuentes, reglas de verificación, escala de madurez) y proceso de evaluación.
 - **Parte II — Mapa de oportunidades** — ficha por candidato (A a H) con esquema del activo, evidencia, competencia, pregunta estratégica y agenda de verificación; mercados con madurez probablemente alta; barrido de oportunidades fuera de la lista.
 - **Parte III — Método y economía** — ficha estándar de 23 campos, dimensionamiento bottom-up, economía del cliente, rankings y sensibilidad, patentes y competidores, Argentina y Latinoamérica, costos de desarrollo.
