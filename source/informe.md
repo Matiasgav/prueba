@@ -30,7 +30,7 @@ No se busca responder *qué robots interesantes podrían construirse*, sino:
 6 || familias de activos descartadas con evidencia || y registradas con su fuente
 :::
 
-## Lectura rápida de los siete candidatos
+## Lectura rápida de los ocho candidatos
 
 La tabla ordena los candidatos por el estado de la evidencia disponible hoy, no por preferencia. El candidato H proviene del barrido ampliado documentado en la sección 15. La columna de madurez usa la escala M0–M5 definida en la sección 3.4 y expresa una **hipótesis de partida**, no una medición.
 
@@ -249,7 +249,7 @@ Un programa que se detuvo explica más que diez folletos comerciales. Se documen
 
 ## 5. Panorama y criterio de entrada
 
-Los siete candidatos que siguen no son una conclusión: son el punto de partida verificado hasta la fecha de corte. **Ninguno se da por válido**: cada uno se verifica desde cero y se descarta si la evidencia lo exige. Si durante la verificación aparece que un candidato está saturado, que el incumbente cerró el hueco o que otra aplicación ofrece un negocio mejor, el orden cambia.
+Los ocho candidatos que siguen no son una conclusión: son el punto de partida verificado hasta la fecha de corte. **Ninguno se da por válido**: cada uno se verifica desde cero y se descarta si la evidencia lo exige. Si durante la verificación aparece que un candidato está saturado, que el incumbente cerró el hueco o que otra aplicación ofrece un negocio mejor, el orden cambia.
 
 Cada ficha responde siempre a la misma estructura: geometría y problema, hipótesis de valor, evidencia disponible con su nivel, competencia identificada, pregunta estratégica que decide el caso y agenda de verificación pendiente.
 
@@ -531,7 +531,7 @@ Framatome, Westinghouse, la familia SUSI de AREVA y los desarrollos de KHNP/KEPR
 
 ## 15. Barrido de oportunidades fuera de la lista
 
-El estudio no se limita a los siete candidatos: el barrido independiente es obligatorio y puede reordenar todo el ranking.
+El estudio no se limita a los ocho candidatos: el barrido independiente es obligatorio y puede reordenar todo el ranking.
 
 ### 15.1 Resultado del barrido ejecutado
 
@@ -890,7 +890,7 @@ El informe no se cierra porque «haya suficiente información». Se cierra cuand
 - [ ] Se recorrió el catálogo de modernización de plantas buscando robótica e inspección.
 - [ ] Se buscó cada activo combinado con robótica.
 - [ ] Se buscó cada activo **sin** la palabra robot, para encontrar métodos competidores.
-- [ ] Se investigaron al menos los siete candidatos principales.
+- [ ] Se investigaron al menos los ocho candidatos principales.
 - [ ] Se buscaron candidatos nuevos fuera de la lista inicial.
 - [ ] Se hizo búsqueda profunda de competidores para los cinco primeros.
 - [ ] Se hizo screening de patentes para los cinco primeros.

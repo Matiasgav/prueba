@@ -38,13 +38,42 @@ CLOSE = re.compile(r'^:::\s*$')
 CHECK = re.compile(r'^\[( |x|X)\]\s*')
 
 
+def split_pipes(s):
+    """Divide por | ignorando los que están dentro de {{...}}.
+
+    El marcador de término usa | como separador interno, y | también separa
+    celdas de tabla y argumentos de bloque: sin esto, {{t:clave|texto}} se
+    partiría en dos.
+    """
+    out, buf, depth, i = [], [], 0, 0
+    while i < len(s):
+        if s.startswith('{{', i):
+            depth += 1
+            buf.append('{{')
+            i += 2
+            continue
+        if s.startswith('}}', i) and depth:
+            depth -= 1
+            buf.append('}}')
+            i += 2
+            continue
+        if s[i] == '|' and depth == 0:
+            out.append(''.join(buf))
+            buf = []
+        else:
+            buf.append(s[i])
+        i += 1
+    out.append(''.join(buf))
+    return out
+
+
 def split_row(line):
     line = line.strip()
     if line.startswith('|'):
         line = line[1:]
     if line.endswith('|'):
         line = line[:-1]
-    return [c.strip() for c in line.split('|')]
+    return [c.strip() for c in split_pipes(line)]
 
 
 def parse(lines, i=0, inside=False):
@@ -314,7 +343,7 @@ FIGN = {'n': 0}
 def render_dir_html(meta, body, out, ctx):
     kind, arg = meta['kind'], meta['arg']
     if kind == 'nota':
-        parts = [p.strip() for p in arg.split('|')]
+        parts = [p.strip() for p in split_pipes(arg)]
         clase = parts[0] if parts and parts[0] else 'clave'
         titulo = parts[1] if len(parts) > 1 else NOTA_LABEL.get(clase, '')
         out.append('<aside class="callout c-%s">' % clase)
@@ -339,7 +368,7 @@ def render_dir_html(meta, body, out, ctx):
                        % (inline_html(val), inline_html(lab), inline_html(note)))
         out.append('</div>')
     elif kind == 'fig':
-        parts = [p.strip() for p in arg.split('|')]
+        parts = [p.strip() for p in split_pipes(arg)]
         fid = parts[0]
         cap = parts[1] if len(parts) > 1 else ''
         src = parts[2] if len(parts) > 2 else ''
@@ -357,7 +386,7 @@ def render_dir_html(meta, body, out, ctx):
         render_html_blocks(body, out, ctx)
         out.append('</div>')
     elif kind == 'tarjeta':
-        parts = [p.strip() for p in arg.split('|')]
+        parts = [p.strip() for p in split_pipes(arg)]
         tit = parts[0] if parts else ''
         meta_txt = parts[1] if len(parts) > 1 else ''
         out.append('<div class="card">')
@@ -850,7 +879,7 @@ def render_list_tex(spec, items, out):
 def render_dir_tex(meta, body, out):
     kind, arg = meta['kind'], meta['arg']
     if kind == 'nota':
-        parts = [p.strip() for p in arg.split('|')]
+        parts = [p.strip() for p in split_pipes(arg)]
         clase = parts[0] if parts and parts[0] else 'clave'
         titulo = parts[1] if len(parts) > 1 else NOTA_LABEL.get(clase, '')
         env = 'nota' + (clase if clase in ('clave', 'dato', 'riesgo',
@@ -880,7 +909,7 @@ def render_dir_tex(meta, body, out):
         out.append(' & '.join(cells) + r' \\')
         out.append(r'\end{tabular}\end{center}')
     elif kind == 'fig':
-        parts = [p.strip() for p in arg.split('|')]
+        parts = [p.strip() for p in split_pipes(arg)]
         fid = parts[0]
         cap = parts[1] if len(parts) > 1 else ''
         src = parts[2] if len(parts) > 2 else ''
@@ -894,7 +923,7 @@ def render_dir_tex(meta, body, out):
     elif kind == 'tarjetas':
         render_tex_blocks(body, out)
     elif kind == 'tarjeta':
-        parts = [p.strip() for p in arg.split('|')]
+        parts = [p.strip() for p in split_pipes(arg)]
         tit = parts[0] if parts else ''
         met = parts[1] if len(parts) > 1 else ''
         out.append(r'\begin{tarjeta}{%s}{%s}' % (inline_tex(tit), inline_tex(met)))
@@ -961,14 +990,26 @@ def render_tex_blocks(blocks, out):
             out.append('')
 
 
+def _visible(cell):
+    """Texto tal como se ve, para estimar el ancho de columna.
+
+    Los marcadores ocupan mucho más en la fuente que en el papel: medir el
+    original inflaba unas columnas y estrujaba otras.
+    """
+    t = re.sub(r'\{\{t:[a-z0-9-]+\|([^}]+)\}\}', r'\1 ', cell)
+    t = re.sub(r'\{\{(?:ev|mad|tipo|conf):([^}]+)\}\}', r'\1 ', t)
+    return re.sub(r'\*\*|\*|`', '', t)
+
+
 def tex_table(header, aligns, rows):
     ncol = len(header)
     wide = ncol >= 8
     # ancho de columna proporcional al contenido, acotado
     widths = []
     for k in range(ncol):
-        cells = [header[k]] + [r[k] for r in rows if k < len(r)]
-        lens = [len(header[k]) * 1.35] + [len(c) for c in cells[1:]]
+        cells = [_visible(header[k])] + [_visible(r[k]) for r in rows
+                                         if k < len(r)]
+        lens = [len(cells[0]) * 1.35] + [len(c) for c in cells[1:]]
         # piso: la palabra mas larga debe entrar sin desbordar
         palabras = [len(w) for c in cells for w in c.split()] or [4]
         widths.append(min(max(max(lens), max(palabras) * 2.6, 10), 60))
@@ -978,7 +1019,7 @@ def tex_table(header, aligns, rows):
         '2\\tabcolsep\\relax}' % (0.995 * w / total) for w in widths)
     lines = ([r'\begin{landscape}'] if wide else []) + [
         r'\begingroup\footnotesize',
-        r'\setlength{\tabcolsep}{%dpt}' % (3 if wide else 4),
+        r'\setlength{\tabcolsep}{%dpt}' % (2 if wide else 3 if ncol >= 5 else 4),
         r'\setlength{\emergencystretch}{4em}',
         r'\hyphenpenalty=50 \exhyphenpenalty=50',
         r'\begin{longtable}{@{}%s@{}}' % colspec,
