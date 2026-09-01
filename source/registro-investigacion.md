@@ -18,7 +18,7 @@ supuestos.
 | 2 | Paredes de agua de caldera, headers de caldera e internos de hogar | **Completo** |
 | 3 | Eólica: palas, torres y monopilotes marinos | **Completo** |
 | 4 | Presas, vertederos, compuertas de toma y válvulas de gran tamaño | **Completo** |
-| 5 | Chimeneas, hornos industriales e intercambiadores de calor | Pendiente |
+| 5 | Chimeneas, hornos industriales e intercambiadores de calor | **Completo** |
 | 6 | Subestaciones: interior de aparamenta, sistemas de cables y transformadores | Pendiente |
 | 7 | Solar y tareas nucleares del catálogo sectorial aún no cubiertas | Pendiente |
 | 8 | Consolidación: fichas nuevas, ranking e integración al informe | Pendiente |
@@ -335,3 +335,76 @@ y garantía de recuperación.
 **Acción para el lote 8:** no crear ficha nueva; incorporar estos hallazgos como
 evidencia adicional del candidato F y mover su pregunta estratégica hacia el paquete de
 servicio y método, que es donde el propietario declara no tener capacidad.
+
+---
+
+## Lote 5 — Intercambiadores de calor, hornos industriales y chimeneas
+
+**Consultas:** `heat exchanger tube bundle inspection robot IRIS eddy current remote field automated vendor market mature` ·
+`industrial furnace refractory inspection robot high temperature online inspection stack chimney liner drone inspection service`.
+
+### Hallazgo 5.1 — Intercambiadores de calor: mercado maduro y multi-proveedor
+
+La inspección de haces tubulares se hace con una batería de técnicas ya
+estandarizadas —corrientes inducidas, campo remoto, campo cercano, fuga de flujo
+magnético, sistema rotatorio interno por ultrasonido y videoscopía— combinadas según
+el material del tubo. Los proveedores de instrumentación y de servicio están
+consolidados: Eddyfi, Evident (ex Olympus), TechCorr, TCR Engineering, entre otros.
+Existen además posicionadores robóticos sobre placa tubular con patentes concedidas
+desde hace más de una década, y trabajo publicado sobre robots autónomos para
+intercambiadores de casco y tubos con análisis automático por redes neuronales.
+
+- **Clase:** hechos técnicos de fabricantes de instrumentación más literatura
+  publicada. **Nivel:** B–C.
+- **Fuentes:** https://www.eddyfi.com/en/application/heat-exchangers-inspection ·
+  https://ims.evidentscientific.com/en/insights/a-faster-way-to-inspect-heat-exchanger-tubes ·
+  https://www.tcreng.com/tube-inspection ·
+  https://osti.gov/biblio/1853801-autonomous-robot-shell-tube-heat-exchanger-inspection ·
+  patentes US 8746089 y US 9273985 sobre posicionamiento automatizado de sonda de
+  corrientes inducidas.
+- **Madurez estimada:** M5. Técnica normalizada, instrumentación commodity y varios
+  proveedores de servicio compitiendo por precio.
+
+### Hallazgo 5.2 — Hornos industriales: hay actividad, pero fuera del sector objetivo
+
+La inspección robotizada de refractarios en siderurgia es un campo activo: sistemas de
+inspección para hornos de arco eléctrico, brazos robóticos con transductores
+ultrasónicos que miden espesor de refractario a través del casco, cámaras térmicas
+para detectar puntos calientes, y el proyecto europeo Robs4Steel, que propone
+robotizar la inspección visual del refractario después de cada colada y declara
+reducir la presencia humana alrededor del horno de diez veces a una.
+
+- **Clase:** proyecto de investigación europeo y material de proveedores.
+  **Nivel:** B para el proyecto, C para los proveedores.
+- **Fuentes:** https://trinityrobotics.eu/use-cases/robotized-inspection-system-for-high-temperature-electric-arc-furnaces-eaf/ ·
+  https://oxmaint.com/industries/steel-plant/steel-mill-refractory-inspection-robots-ladle-converter-furnace-lining-maintenance
+
+### Hallazgo 5.3 — Prior art de alta temperatura ya patentado
+
+Aparecen patentes recientes específicas sobre **ruedas de alta temperatura para robots
+de inspección** (US 12420585 y US 12420586) y sobre control térmico y refrigeración
+activa de robots de inspección (US 12302499, US 12156334). El problema de operar un
+crawler en ambiente caliente ya tiene titular.
+
+- **Clase:** patentes concedidas: prueban divulgación, no producto en el mercado.
+  **Nivel:** A como documento.
+- **Por qué importa:** si alguna vez se evaluara un crawler para ambiente caliente,
+  estas familias son el primer punto del screening de propiedad intelectual.
+
+### Hallazgo 5.4 — Chimeneas: no se profundizó
+
+Las búsquedas de este lote no arrojaron material específico sobre inspección
+robotizada de chimeneas y revestimientos de conducto de humos más allá de servicios
+con dron ya establecidos. **Registrado como no obtenido**; queda como consulta
+pendiente con términos más específicos de revestimiento refractario de chimenea y de
+inspección interna con parada.
+
+### Conclusión preliminar del lote 5
+
+**Descartado para el alcance de este estudio.** Los intercambiadores de calor son un
+mercado M5 donde competir significa competir por precio de servicio con instrumentación
+commodity. Los hornos industriales tienen actividad real, pero pertenecen a
+siderurgia: distinto cliente, distinto canal comercial, ambiente térmico que exige
+ingeniería específica y prior art ya patentado sobre el problema central de la alta
+temperatura. Ninguno de los dos aprovecha el canal ni la plataforma del activo de
+referencia.
