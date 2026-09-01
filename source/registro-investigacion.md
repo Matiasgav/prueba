@@ -20,7 +20,7 @@ supuestos.
 | 4 | Presas, vertederos, compuertas de toma y válvulas de gran tamaño | **Completo** |
 | 5 | Chimeneas, hornos industriales e intercambiadores de calor | **Completo** |
 | 6 | Subestaciones: interior de aparamenta, sistemas de cables y transformadores | **Completo** |
-| 7 | Solar y tareas nucleares del catálogo sectorial aún no cubiertas | Pendiente |
+| 7 | Solar y tareas nucleares del catálogo sectorial aún no cubiertas | **Completo** |
 | 8 | Consolidación: fichas nuevas, ranking e integración al informe | Pendiente |
 
 ---
@@ -490,3 +490,111 @@ consultas concretas anotadas.
 
 Para túneles y canaletas de cables la conclusión es la opuesta: prior art abundante,
 sin espacio para un producto nuevo genérico.
+
+---
+
+## Lote 7 — Solar y tareas nucleares del catálogo sectorial
+
+**Consultas:** `nuclear plant robotic inspection "component supports" OR "water storage tank" OR "intake structure" EPRI robot deployment cost avoided` ·
+descarga y lectura completa de EPRI 3002023899 ·
+`utility scale solar plant robotic inspection tracker module IV curve drone thermography incumbent vendors 2026`.
+
+### Hallazgo 7.1 — Horas-hombre por tarea, dato de nivel A
+
+La lectura directa de EPRI 3002023899 aporta el anclaje cuantitativo que faltaba para
+dimensionar de abajo hacia arriba. Todas las cifras provienen del análisis de la base
+de órdenes de trabajo de EPRI, por unidad y por año salvo donde se indica:
+
+| Caso de uso | Frecuencia declarada | Horas-hombre |
+|---|---|---|
+| Tuberías de agua de servicio, enterradas y sobre nivel | Inspección dirigida cada 10 años; cada 3 a 5 años en la década previa al fin de vida de diseño | **5.000 a 10.000** |
+| Estructuras de toma y descarga de agua de refrigeración | Entre anual y cada 5 años, según condición | **50 a 1.500**, con el rango gobernado por la calidad del agua |
+| Rondas de operación | Diarias | **≈ 1.400**, unas 4 horas por día; una utility estimó 20 a 30 horas-hombre diarias |
+| Vigilancia contra incendios | Variable, de semanal a mayor | **500 a 1.500** |
+| Mapa tridimensional de radiación | Línea de base cada 10 años | **250 a 750** en trabajo emergente |
+| Tanques de almacenamiento de agua | Inspección completa en cada período de 10 años | **50 a 500**, tanques de condensado |
+| Espárragos y alojamientos de la tapa del reactor | Aproximadamente cada parada | **150 o más por parada** |
+| Detección de fugas en contención | Emergente, creciente con la edad de la planta | **≈ 50** |
+| Tubos de generador de vapor | Cada parada o cada dos paradas | **≈ 50** con la tecnología existente |
+
+- **Clase:** hecho publicado por el instituto de investigación del sector.
+  **Nivel:** A.
+- **Fuente:** EPRI, *Robotic Process Automation for Nuclear Power Plants: Evaluation of
+  Near-Term Opportunities*, 3002023899, junio 2022, tablas 1 a 12.
+  https://restservice.epri.com/publicdownload/000000003002023899/0/Product
+
+### Hallazgo 7.2 — Advertencia sobre el candidato A: la frecuencia es baja
+
+La misma fuente declara: *«Typically, isophase bus duct inspections are performed every
+10 years»*.
+
+- **Clase:** hecho publicado. **Nivel:** A. **Fuente:** ídem 7.1, tabla del bus
+  isofásico.
+- **Por qué importa:** el candidato A tiene valor por inspección alto y **recurrencia
+  baja**. Un activo que se inspecciona cada diez años sostiene un negocio de servicio
+  sólo si la base instalada accesible es grande. Esto debe entrar en el ranking: el
+  criterio de recurrencia penaliza a A más de lo que suponía la hipótesis inicial.
+
+### Hallazgo 7.3 — Error detectado en la fuente primaria
+
+La tabla del bus isofásico de ese mismo documento repite **literalmente** la frase de
+horas-hombre de la tabla de estructuras de toma, incluida la explicación de que el
+rango está gobernado por *«water quality»*, algo que no tiene sentido para un ducto de
+barras.
+
+- **Clase:** inconsistencia editorial verificada por lectura directa de ambas tablas.
+- **Consecuencia:** **no se usa** ninguna cifra de horas-hombre para el bus isofásico
+  de esta fuente. Queda pendiente pedir aclaración a EPRI o buscar el dato en la guía
+  de mantenimiento 1015057.
+
+### Hallazgo 7.4 — Dónde está realmente el volumen de horas
+
+Las mayores bolsas de trabajo del catálogo no son las tareas más vistosas: tuberías de
+agua de servicio, rondas de operación y vigilancia contra incendios concentran mucho
+más tiempo que las inspecciones especializadas.
+
+::: inferencia de ingeniería
+Las tareas de alto volumen son de baja complejidad técnica y alta frecuencia, y
+compiten contra plataformas de propósito general ya comerciales. Las de bajo volumen y
+alta dificultad —el perfil del activo de referencia— son las que sostienen un ticket
+alto. La conclusión no cambia, pero ahora está cuantificada: el negocio no está en las
+horas totales sino en el costo evitado por intervención.
+:::
+
+### Hallazgo 7.5 — Tanques y estructuras de toma: valor real, competencia presente
+
+EPRI reporta que las utilities ya emplean métodos robotizados desplegados para evitar
+vaciar y entrar a los tanques, con robots sumergibles que realizan ensayos no
+destructivos sin drenaje, y que en estructuras de toma y descarga ya se usan robots
+para retirar material extraño. Los beneficios declarados incluyen reducción de costos
+de equipos de buceo.
+
+- **Clase:** hecho publicado. **Nivel:** A. **Fuente:** ídem 7.1.
+- **Competencia identificada:** Square Robot, con paso por el programa de incubación de
+  EPRI; Newton Labs, con robot sumergible que posiciona sondas de detección de
+  defectos; Structural Integrity Associates, con soluciones no intrusivas para gestión
+  de tanques. **Nivel:** C.
+- **Conclusión:** confirma lo que el informe ya clasificaba como mercado maduro para
+  tanques.
+
+### Hallazgo 7.6 — Solar: no es un mercado de robots, es de software
+
+La inspección de plantas fotovoltaicas de escala utility se resolvió con termografía
+aérea con dron más analítica: se declara un relevamiento térmico de unos 10 minutos por
+megavatio frente a 2 a 5 horas por megavatio con trazado de curva I-V, y la cadencia
+recomendada es dos veces al año en plantas mayores a 10 MW, con la termografía sujeta a
+la especificación técnica IEC TS 62446-3. Los actores dominantes son plataformas de
+software —Sitemark, Raptor Maps, Zeitview y similares—, no fabricantes de robots.
+
+- **Clase:** cifras de proveedores y guías comerciales; la norma citada sí es de nivel
+  A. **Nivel:** C para las cifras, A para IEC TS 62446-3.
+- **Conclusión:** descartado. El valor está en la analítica y en el dato, no en una
+  plataforma robótica nueva.
+
+### Conclusión preliminar del lote 7
+
+Sin candidato nuevo, pero con **el aporte cuantitativo más importante de todo el
+barrido**: la tabla de horas-hombre por caso de uso, de nivel A, que permite dimensionar
+de abajo hacia arriba; la advertencia de recurrencia decenal sobre el candidato A; y una
+inconsistencia detectada en la propia fuente primaria, que se documenta en lugar de
+propagarse.
