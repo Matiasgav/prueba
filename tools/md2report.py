@@ -180,12 +180,26 @@ def parse_list(lines, i):
 URL_RE = re.compile(r'https?://[^\s<>()\[\]]+[^\s<>()\[\].,;:]')
 MDLINK = re.compile(r'\[([^\]\n]+)\]\((https?://[^)\s]+)\)')
 BADGE = re.compile(r'\{\{(ev|mad|tipo|conf):([^}]+)\}\}')
+TERM = re.compile(r'\{\{t:([a-z0-9-]+)\|([^}]+)\}\}')
+GLOSARIO = {}
 
 BADGE_CLS = {'ev': 'ev', 'mad': 'mad', 'tipo': 'tipo', 'conf': 'conf'}
 
 
 def esc_html(s):
     return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+
+
+def _emph_html(text):
+    t = esc_html(text)
+    t = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', t)
+    return re.sub(r'(?<!\*)\*([^*\n]+)\*(?!\*)', r'<em>\1</em>', t)
+
+
+def _emph_tex(text):
+    t = esc_tex(text)
+    t = re.sub(r'\*\*([^*]+)\*\*', r'\\textbf{\1}', t)
+    return re.sub(r'(?<!\*)\*([^*\n]+)\*(?!\*)', r'\\emph{\1}', t)
 
 
 def badge_html(kind, value):
@@ -210,6 +224,10 @@ def inline_html(text):
 
     text = re.sub(r'`([^`]+)`',
                   lambda m: stash('<code>%s</code>' % esc_html(m.group(1))), text)
+    text = TERM.sub(lambda m: stash(
+        '<a class="term" href="#g-%s" title="%s">%s</a>'
+        % (m.group(1), esc_html(GLOSARIO.get(m.group(1), '')[:180]),
+           _emph_html(m.group(2)))), text)
     text = BADGE.sub(lambda m: stash(badge_html(m.group(1), m.group(2))), text)
     text = MDLINK.sub(lambda m: stash('<a href="%s">%s</a>'
                                       % (esc_html(m.group(2)),
@@ -349,6 +367,24 @@ def render_dir_html(meta, body, out, ctx):
             out.append('<div class="card-m">%s</div>' % inline_html(meta_txt))
         render_html_blocks(body, out, ctx)
         out.append('</div>')
+    elif kind == 'glosario':
+        rows = []
+        for blk in body:
+            if blk[0] == 'para':
+                rows.extend(blk[2])
+        out.append('<dl class="gloss">')
+        for r in rows:
+            c = [x.strip() for x in r.split('||')]
+            if len(c) < 3:
+                continue
+            key, term, definicion = c[0], c[1], c[2]
+            fuente = c[3] if len(c) > 3 else ''
+            out.append('<dt id="g-%s">%s</dt>' % (key, inline_html(term)))
+            out.append('<dd>%s%s</dd>'
+                       % (inline_html(definicion),
+                          '<span class="gsrc">%s</span>' % inline_html(fuente)
+                          if fuente else ''))
+        out.append('</dl>')
     elif kind == 'detalle':
         out.append('<details class="det"><summary>%s</summary><div class="det-b">'
                    % inline_html(arg))
@@ -523,7 +559,7 @@ HTML = """<!DOCTYPE html>
   /* medida de lectura para el texto; medios a ancho completo */
   .sheet > p, .sheet > ul, .sheet > ol, .sheet > blockquote,
   .sheet > h3, .sheet > h4, .sheet > h5, .sheet > .callout,
-  .sheet > details.det {{ max-width:46rem; }}
+  .sheet > details.det, .sheet > dl.gloss {{ max-width:46rem; }}
 
   /* ---------------- portada ---------------- */
   .cover {{ border-bottom:3px solid var(--nav); padding-bottom:2rem;
@@ -638,6 +674,18 @@ HTML = """<!DOCTYPE html>
             padding-top:.8rem; }}
   .det-b p:last-child, .det-b ul:last-child {{ margin-bottom:0; }}
 
+  /* ---------------- glosario ---------------- */
+  a.term {{ color:inherit; text-decoration:none;
+            border-bottom:1px dotted var(--nav-2); cursor:help; }}
+  a.term:hover {{ color:var(--nav-2); border-bottom-style:solid; }}
+  dl.gloss {{ margin:1.2rem 0; }}
+  dl.gloss dt {{ font-weight:700; color:var(--nav); margin-top:.9rem;
+                 scroll-margin-top:1rem; }}
+  dl.gloss dt:target {{ background:var(--blue-bg); box-shadow:0 0 0 .3rem var(--blue-bg); }}
+  dl.gloss dd {{ margin:.15rem 0 0; font-size:.94rem; }}
+  dl.gloss .gsrc {{ display:block; font-size:.78rem; color:var(--ink-3);
+                    margin-top:.15rem; }}
+
   /* ---------------- tablas ---------------- */
   .tw {{ overflow-x:auto; margin:1.3rem 0 1.6rem; border:1px solid var(--line);
          border-radius:5px; }}
@@ -742,6 +790,9 @@ def inline_tex(text):
 
     text = re.sub(r'`([^`]+)`',
                   lambda m: stash(r'\texttt{%s}' % esc_tex(m.group(1))), text)
+    text = TERM.sub(lambda m: stash(
+        r'\hyperlink{g-%s}{%s}\textsuperscript{\textsc{g}}'
+        % (m.group(1), _emph_tex(m.group(2)))), text)
     text = BADGE.sub(lambda m: stash(badge_tex(m.group(1), m.group(2))), text)
     text = MDLINK.sub(lambda m: stash(r'\href{%s}{%s}'
                                       % (m.group(2).replace('%', r'\%'),
@@ -845,6 +896,24 @@ def render_dir_tex(meta, body, out):
         out.append(r'\begin{tarjeta}{%s}{%s}' % (inline_tex(tit), inline_tex(met)))
         render_tex_blocks(body, out)
         out.append(r'\end{tarjeta}')
+    elif kind == 'glosario':
+        rows = []
+        for blk in body:
+            if blk[0] == 'para':
+                rows.extend(blk[2])
+        out.append(r'\begin{description}[leftmargin=0pt,style=unboxed,'
+                   r'font=\normalfont\bfseries\sffamily,itemsep=3pt]')
+        for r in rows:
+            c = [x.strip() for x in r.split('||')]
+            if len(c) < 3:
+                continue
+            key, term, definicion = c[0], c[1], c[2]
+            fuente = c[3] if len(c) > 3 else ''
+            out.append(r'\item[\hypertarget{g-%s}{%s}] %s%s'
+                       % (key, inline_tex(term), inline_tex(definicion),
+                          r' {\footnotesize\color{gray2}%s}' % inline_tex(fuente)
+                          if fuente else ''))
+        out.append(r'\end{description}')
     elif kind == 'detalle':
         out.append(r'\begin{detalle}{%s}' % inline_tex(arg))
         render_tex_blocks(body, out)
@@ -1120,11 +1189,30 @@ def read_meta(text):
     return meta, text
 
 
+def cargar_glosario(blocks):
+    """Indexa las entradas del glosario para los tooltips del HTML."""
+    for kind, a, b in blocks:
+        if kind == 'dir':
+            if a['kind'] == 'glosario':
+                for blk in b:
+                    if blk[0] != 'para':
+                        continue
+                    for r in blk[2]:
+                        c = [x.strip() for x in r.split('||')]
+                        if len(c) >= 3:
+                            limpio = re.sub(r'\{\{[^}]+\}\}', '',
+                                            '%s: %s' % (c[1], c[2]))
+                            GLOSARIO[c[0]] = limpio.replace('*', '').strip()
+            else:
+                cargar_glosario(b)
+
+
 def main():
     src, out_html, out_tex = sys.argv[1], sys.argv[2], sys.argv[3]
     raw = open(src, encoding='utf-8').read()
     meta, body = read_meta(raw)
     blocks, _ = parse(body.split('\n'))
+    cargar_glosario(blocks)
     with open(out_html, 'w', encoding='utf-8') as fh:
         fh.write(render_html(meta, blocks))
     with open(out_tex, 'w', encoding='utf-8') as fh:

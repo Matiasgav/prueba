@@ -9,6 +9,12 @@ fecha: Fecha de corte de la evidencia recopilada: 31 de agosto de 2026
 
 Este documento define **qué robot de inspección industrial conviene desarrollar como próximo producto**, con qué evidencia se decide y qué queda por verificar antes de comprometer inversión. No es un catálogo de ideas técnicas: es el marco de decisión, el mapa de las siete oportunidades candidatas y el plan de verificación que las confirma o las descarta.
 
+::: nota dato | Cómo leer este informe
+Los términos de negocio y del sector están definidos en el **Anexo C**, cada uno con la fuente donde puede verificarse la definición. En el texto, la primera aparición de cada término enlaza a su entrada. Cuando un término no tiene definición normativa, el anexo lo declara como definición operativa de este informe en lugar de atribuirle una fuente inexistente.
+
+Las afirmaciones llevan su clase: {{ev:A}} a {{ev:D}} indican el nivel de la fuente, {{tipo:Declaración}} señala una afirmación comercial del fabricante no verificada de forma independiente, y {{mad:M4}} indica madurez comercial en la escala de la sección 3.4.
+:::
+
 ::: nota clave | La pregunta que ordena todo el estudio
 No se busca responder *qué robots interesantes podrían construirse*, sino:
 
@@ -28,10 +34,10 @@ No se busca responder *qué robots interesantes podrían construirse*, sino:
 
 La tabla ordena los candidatos por el estado de la evidencia disponible hoy, no por preferencia. La columna de madurez usa la escala M0–M5 definida en la sección 3.4 y expresa una **hipótesis de partida**, no una medición.
 
-| Candidato | Activo | Madurez hipotética | Evidencia económica | Incumbente conocido | Reutilización de plataforma |
+| Candidato | Activo | {{t:madurez-m|Madurez}} hipotética | Evidencia económica | {{t:incumbente|Incumbente}} conocido | Reutilización de plataforma |
 |---|---|:--:|---|---|:--:|
-| **A** | Bus isofásico (IPB) | {{mad:M3}} {{mad:M4}} | Publicada, nivel A | Servicios de inspección especializados | Alta |
-| **B** | HRSG: headers y tubos | {{mad:M4}} | Parcial; parte declarada por fabricante | TesTex (IAT, Claw) | Media-alta |
+| **A** | {{t:ipb|Bus isofásico (IPB)}} | {{mad:M3}} {{mad:M4}} | Publicada, nivel A | Servicios de inspección especializados | Alta |
+| **B** | {{t:hrsg|HRSG}}: headers y tubos | {{mad:M4}} | Parcial; parte declarada por fabricante | TesTex (IAT, Claw) | Media-alta |
 | **C** | Vaults subterráneos de transmisión | {{mad:M1}} {{mad:M2}} | No publicada | No identificado aún | Media |
 | **D** | Piping enterrado e inaccesible | {{mad:M4}} {{mad:M5}} | Publicada, nivel A | Diakont y otros | Media |
 | **E** | Contenedores de combustible en seco | {{mad:M3}} | Publicada, cualitativa | Robotic Technologies of Tennessee | Media |
@@ -48,7 +54,7 @@ La tabla ordena los candidatos por el estado de la evidencia disponible hoy, no 
 El valor económico está **publicado y es alto** en bus isofásico y en piping enterrado: reducción de costo cercana a un orden de magnitud en un caso reportado, y ahorros de entre uno y cinco millones de dólares por utilización, respectivamente. En ambos casos la contrapartida es madurez comercial alta.
 :::
 ::: tarjeta Donde hay incumbente | Candidatos B, D y F
-HRSG, piping enterrado y penstocks tienen proveedor establecido. Entrar exige demostrar un *whitespace* concreto —una geometría, un acceso o una medición que el incumbente no cubre—, no una plataforma equivalente.
+HRSG, piping enterrado y penstocks tienen proveedor establecido. Entrar exige demostrar un {{t:whitespace|espacio no cubierto (*whitespace*)}} concreto —una geometría, un acceso o una medición que el incumbente no cubre—, no una plataforma equivalente.
 :::
 ::: tarjeta Donde el problema sigue abierto | Candidatos C y G
 Vaults subterráneos mantiene actividad de investigación vigente con prototipos y demostraciones en curso, sin producto consolidado. Los robots everting son una tecnología sin mercado asignado: sólo valen sobre un activo concreto.
@@ -57,7 +63,7 @@ Vaults subterráneos mantiene actividad de investigación vigente con prototipos
 
 ## Qué no debería desarrollarse sin un hallazgo que lo justifique
 
-- Un **crawler genérico de tuberías**: el problema ya está resuelto comercialmente y el valor lo captura un proveedor establecido.
+- Un **{{t:crawler|crawler}} genérico de tuberías**: el problema ya está resuelto comercialmente y el valor lo captura un proveedor establecido.
 - Un **robot nadador para transformadores** que replique una función ya cubierta por el producto de referencia del mercado.
 - **Otro cuadrúpedo o vehículo de patrulla** de subestaciones: el valor diferencial está en la carga sensora y la analítica, no en la plataforma.
 - Un **crawler de línea de transmisión** para inspección visual de rutina, salvo que se demuestre que los drones no lo hicieron económicamente obsoleto.
@@ -95,31 +101,31 @@ La conclusión debe responder sin ambigüedad: **¿cuál debería ser el próxim
 El estudio combina seis competencias, porque una oportunidad puede caerse por cualquiera de ellas:
 
 - ingeniería sénior de robótica de inspección;
-- especialidad en ensayos no destructivos (NDE/NDT);
+- especialidad en {{t:nde|ensayos no destructivos (NDE/NDT)}};
 - análisis de mercado industrial B2B;
 - mantenimiento de generación eléctrica;
-- investigación de *prior art* y patentes;
+- investigación de {{t:prior-art|*prior art*}} y patentes;
 - análisis de producto y estrategia.
 
 ### 1.3 Qué queda fuera
 
 - No es un diseño de detalle: las propuestas de robot se definen por requisitos funcionales, no por ingeniería de producto.
-- No es una opinión legal de libertad de operación. El análisis de patentes es un **screening preliminar de propiedad intelectual**.
+- No es una opinión legal de {{t:fto|libertad de operación}}. El análisis de patentes es un **screening preliminar de propiedad intelectual**.
 - No es un dimensionamiento de mercado basado en informes genéricos de la industria. Cuando no hay datos suficientes para un cálculo defendible, el tamaño de mercado no se publica.
 
 ## 2. Qué hace rentable un negocio de robótica de inspección
 
 ### 2.1 La lógica del producto de referencia
 
-Existe un proyecto de robot de inspección (RI) para generadores con rotor instalado. Se usa como **benchmark económico y tecnológico**, no como oportunidad nueva. Su lógica de negocio define el patrón que se busca replicar:
+Existe un proyecto de robot de inspección (RI) para generadores con rotor instalado. Se usa como **{{t:benchmark|benchmark}} económico y tecnológico**, no como oportunidad nueva. Su lógica de negocio define el patrón que se busca replicar:
 
 - activo extremadamente caro;
 - acceso difícil;
 - la inspección convencional puede exigir gran desmontaje, personal especializado o una parada prolongada;
-- el robot reduce salida de servicio, desmontaje y riesgo;
+- el robot reduce {{t:outage|salida de servicio}}, desmontaje y riesgo;
 - el cliente no compra un robot: compra **información de condición confiable** y ahorro de mantenimiento;
 - el valor del servicio puede superar ampliamente el costo del hardware;
-- la plataforma integra locomoción, cámaras, iluminación, sensado especializado, posicionamiento, tether y comunicaciones, procesamiento y generación automática de informes.
+- la plataforma integra locomoción, cámaras, iluminación, sensado especializado, posicionamiento, {{t:tether|tether}} y comunicaciones, procesamiento y generación automática de informes.
 
 ::: nota inferencia | Consecuencia para la selección de candidatos
 Una oportunidad es comparable al producto de referencia sólo si reproduce la estructura completa del valor: activo caro **y** acceso difícil **y** costo convencional alto **y** decisión de mantenimiento que depende del resultado. Un activo caro con acceso sencillo no sostiene el modelo.
@@ -148,11 +154,11 @@ Disponibilidad de componentes, soporte, importación y exportación, y potencial
 ::: tarjeta 6. Precio real
 Se buscan precios efectivos: distribuidores, contratos públicos, licitaciones, integradores o mercado usado. Las estimaciones se etiquetan como tales.
 :::
-::: tarjeta 7. Recuperación y FME
+::: tarjeta 7. Recuperación y {{t:fme|FME}}
 En generación eléctrica y nuclear, un robot atrapado puede ser peor que no inspeccionar. La estrategia de recuperación es parte del producto.
 :::
 ::: tarjeta 8. Servicio antes que hardware
-Si la frecuencia por activo es baja pero el ticket por inspección es alto, el modelo de inspección como servicio puede superar a la venta de equipos.
+Si la frecuencia por activo es baja pero el ticket por inspección es alto, el modelo de {{t:raas|inspección como servicio}} puede superar a la venta de equipos.
 :::
 :::
 
@@ -205,7 +211,7 @@ El nivel D sirve únicamente para **descubrir** la fuente primaria. No se usa co
 :::
 
 ::: nota riesgo | No confundir madurez con nivel tecnológico
-Un desarrollo puede tener nivel tecnológico alto y madurez comercial baja: la escala mide **despliegue real en el mercado**, no capacidad demostrada en laboratorio.
+Un desarrollo puede tener {{t:trl|nivel tecnológico}} alto y madurez comercial baja: la escala mide **despliegue real en el mercado**, no capacidad demostrada en laboratorio.
 :::
 
 ## 4. Proceso de evaluación
@@ -229,7 +235,7 @@ Un programa que se detuvo explica más que diez folletos comerciales. Se documen
 - robots que quedaron atascados y herramientas que no entraron;
 - eventos de material extraño (FME) y fallas de tether;
 - ensayos no destructivos que no alcanzaron la sensibilidad requerida;
-- costos que destruyeron el caso de negocio.
+- costos que destruyeron el {{t:caso-negocio|caso de negocio}}.
 
 ---
 
@@ -259,7 +265,7 @@ Puede ser la extensión inmediata más natural del producto de referencia:
 ### 6.2 Evidencia disponible
 
 ::: nota dato | Dato EPRI verificado — MTA-MA-029 {{ev:A}}
-Experiencia reportada por una utility con costo de proveedor de aproximadamente **USD 100.000 por implementación**; ejecución de la inspección en **menos de un día**; reducción de costo de aproximadamente **10×** frente a la inspección manual en ese caso; payback inmediato según la evaluación SWEEP; tecnología comercialmente disponible; riesgos identificados de falla de crawler o de herramienta. Una parte sustancial del ahorro proviene de evitar andamiaje y acceso humano.
+Experiencia reportada por una utility con costo de proveedor de aproximadamente **USD 100.000 por implementación**; ejecución de la inspección en **menos de un día**; reducción de costo de aproximadamente **10×** frente a la inspección manual en ese caso; {{t:payback|payback}} inmediato según la evaluación {{t:sweep|SWEEP}}; tecnología comercialmente disponible; riesgos identificados de falla de crawler o de herramienta. Una parte sustancial del ahorro proviene de evitar andamiaje y acceso humano.
 
 **Este dato no se generaliza al mercado completo sin evidencia adicional.**
 :::
@@ -296,12 +302,12 @@ De cada uno debe registrarse: nombre exacto del equipo, fabricante, tipo de loco
 
 ### 7.1 El problema físico
 
-El estudio EPRI 1017635 sobre tecnología de robots tipo serpiente para inspección de headers y tubos en calderas de recuperación de calor documenta el punto de partida: ciertos tubos interiores **no pueden inspeccionarse fácilmente con ensayos no destructivos convencionales sin acceso destructivo**. De ese informe deben extraerse las razones por las que la inspección convencional no llega, las geometrías y diámetros involucrados, las longitudes, los tipos de caldera, los puntos de acceso, las modalidades de inspección evaluadas, los conceptos de robot analizados, lo que se demostró, lo que quedó sin resolver y por qué ese concepto no se comercializó directamente.
+El estudio EPRI 1017635 sobre tecnología de robots tipo serpiente para inspección de {{t:header|headers}} y tubos en calderas de recuperación de calor documenta el punto de partida: ciertos tubos interiores **no pueden inspeccionarse fácilmente con ensayos no destructivos convencionales sin acceso destructivo**. De ese informe deben extraerse las razones por las que la inspección convencional no llega, las geometrías y diámetros involucrados, las longitudes, los tipos de caldera, los puntos de acceso, las modalidades de inspección evaluadas, los conceptos de robot analizados, lo que se demostró, lo que quedó sin resolver y por qué ese concepto no se comercializó directamente.
 
 ### 7.2 El incumbente
 
 ::: nota dato | Declarado por el fabricante — TesTex {{tipo:Declaración}}
-La herramienta de acceso interno (IAT) es un crawler que se coloca dentro del header; puede ingresar por la tapa del extremo o, en versión modular, por un orificio de aproximadamente 8 pulgadas; empuja una sonda de corrientes inducidas por campo remoto junto con una cámara a lo largo de los tubos; se opera en forma remota; según el fabricante inspecciona todos los tubos de un header en tres o cuatro turnos y declara cobertura del 100 % de los tubos dentro de sus condiciones de aplicación, con despliegues en múltiples utilities.
+La herramienta de acceso interno (IAT) es un crawler que se coloca dentro del header; puede ingresar por la tapa del extremo o, en versión modular, por un orificio de aproximadamente 8 pulgadas; empuja una sonda de {{t:rfet|corrientes inducidas por campo remoto}} junto con una cámara a lo largo de los tubos; se opera en forma remota; según el fabricante inspecciona todos los tubos de un header en tres o cuatro turnos y declara cobertura del 100 % de los tubos dentro de sus condiciones de aplicación, con despliegues en múltiples utilities.
 
 La herramienta complementaria de inspección de soldaduras por campo lejano declara del orden de 200 soldaduras por turno.
 
@@ -335,7 +341,7 @@ Si no aparece un hueco defendible, el candidato baja en el ranking.
 ### 8.1 Estado de la investigación
 
 ::: nota dato | Investigación vigente {{ev:A}}
-El programa de transmisión subterránea de EPRI publicó *Underground Transmission Vault Inspection Using Robotic Techniques* (3002000878) en 2013 y mantiene el trabajo con la actualización 2025 (3002032834) y actividad declarada para 2026 y 2027. Los objetivos declarados son mejorar la seguridad de los trabajadores y reducir los requerimientos de salida de servicio del circuito. Se reportan conceptos y prototipos demostrados en laboratorio y en sitios de utilities, con demostraciones en planificación.
+El programa de transmisión subterránea de EPRI publicó *Underground Transmission Vault Inspection Using Robotic Techniques* (3002000878) sobre inspección de {{t:vault|vaults}} en 2013 y mantiene el trabajo con la actualización 2025 (3002032834) y actividad declarada para 2026 y 2027. Los objetivos declarados son mejorar la seguridad de los trabajadores y reducir los requerimientos de salida de servicio del circuito. Se reportan conceptos y prototipos demostrados en laboratorio y en sitios de utilities, con demostraciones en planificación.
 :::
 
 Existe además un proyecto complementario sobre inspección de bocas de registro con cable extruido dentro de los proyectos suplementarios colaborativos 2025–2026, cuya arquitectura debe caracterizarse: inspección desde la superficie, cable energizado, termografía infrarroja, cámara, detección de gases, brazo mecánico y, si aplica, descargas parciales o medición acústica y ultrasónica.
@@ -364,13 +370,13 @@ Este candidato puede estar **menos maduro** que el bus isofásico o el piping en
 ### 9.1 Evidencia disponible
 
 ::: nota dato | Dato EPRI verificado — MTA-MA-017 {{ev:A}}
-Inspección desde un único punto de acceso, que puede evitar la excavación. La técnica electromagnética acústica permite determinados exámenes volumétricos sin remover el revestimiento. Según la evaluación SWEEP: costo de implementación menor a un millón de dólares; ahorro mayor a un millón y menor a cinco millones por utilización; payback inmediato o menor a un año; tecnología ya comercialmente implementada en el sector nuclear.
+Inspección desde un único punto de acceso, que puede evitar la excavación. La {{t:emat|técnica electromagnética acústica (EMAT)}} permite determinados exámenes volumétricos sin remover el revestimiento. Según la evaluación SWEEP: costo de implementación menor a un millón de dólares; ahorro mayor a un millón y menor a cinco millones por utilización; payback inmediato o menor a un año; tecnología ya comercialmente implementada en el sector nuclear.
 :::
 
 ::: fig fig-piping-economia | Figura 11 — Costo de implementación y rango de ahorro esperado por utilización. | EPRI, Plant Modernization Toolbox, MTA-MA-017.
 :::
 
-De la compilación de lecciones aprendidas sobre tuberías enterradas y subterráneas (EPRI 1025272) deben extraerse: por qué la inspección en línea convencional no funciona bien en instalaciones nucleares, ausencia de estaciones de lanzamiento y recepción, codos, derivaciones, tramos verticales, revestimientos, diámetros, condición con y sin agua, y los eventos de material extraño y recuperación.
+De la compilación de lecciones aprendidas sobre tuberías enterradas y subterráneas (EPRI 1025272) deben extraerse: por qué la {{t:ili|inspección en línea}} convencional no funciona bien en instalaciones nucleares, ausencia de estaciones de lanzamiento y recepción, codos, derivaciones, tramos verticales, revestimientos, diámetros, condición con y sin agua, y los eventos de material extraño y recuperación.
 
 ### 9.2 Competencia
 
@@ -393,7 +399,7 @@ La evidencia clasifica este candidato como **comercialmente implementado**. Por 
 
 ### 10.1 Evidencia disponible
 
-EPRI desarrolla sistemas de inspección y de entrega robótica para almacenamiento en canister seco (3002008234, *Dry Canister Storage System Inspection and Robotic Delivery System Development*), con difusión adicional en EPRI Journal sobre robots trepadores para contenedores. Los elementos verificados hasta la fecha: espacios anulares muy estrechos; combinación de cámara, corrientes inducidas, técnica electromagnética acústica y medición de dosis y temperatura en ciertas configuraciones; múltiples ensayos de campo; y una reducción de costo muy alta frente a los métodos que exigen izaje pesado o movimiento del canister.
+EPRI desarrolla sistemas de inspección y de entrega robótica para almacenamiento en {{t:canister|canister}} seco (3002008234, *Dry Canister Storage System Inspection and Robotic Delivery System Development*), con difusión adicional en EPRI Journal sobre robots trepadores para contenedores. Los elementos verificados hasta la fecha: espacios anulares muy estrechos; combinación de cámara, {{t:eca|corrientes inducidas}}, técnica electromagnética acústica y medición de dosis y temperatura en ciertas configuraciones; múltiples ensayos de campo; y una reducción de costo muy alta frente a los métodos que exigen izaje pesado o movimiento del canister.
 
 ### 10.2 Competencia
 
@@ -410,7 +416,7 @@ El valor por inspección es alto, pero el mercado es limitado, la calificación 
 
 ### 11.1 Base de evidencia
 
-El informe EPRI sobre tecnología de vehículos operados remotamente en instalaciones hidroeléctricas (TR-113584-V7 / 1007576) aporta: aplicaciones en túnel y conducto forzado, inspección visual, sonar, medición de espesor por ultrasonido, limitaciones de tether, alcance, recuperación, casos de estudio y ahorro por evitar vaciado y salida de servicio. Debe complementarse con EPRI 3002011682, *Autonomous Underwater Vehicles for Tunnel and Penstock Inspection*, y con la actividad vigente del EPRI Unmanned Mobile Technologies Collaboration Group.
+El informe EPRI sobre tecnología de {{t:rov|vehículos operados remotamente}} en instalaciones hidroeléctricas (TR-113584-V7 / 1007576) aporta: aplicaciones en túnel y {{t:penstock|conducto forzado}}, inspección visual, sonar, medición de espesor por ultrasonido, limitaciones de tether, alcance, recuperación, casos de estudio y ahorro por evitar vaciado y salida de servicio. Debe complementarse con EPRI 3002011682, *Autonomous Underwater Vehicles for Tunnel and Penstock Inspection*, y con la actividad vigente del EPRI Unmanned Mobile Technologies Collaboration Group.
 
 ### 11.2 Competencia
 
@@ -427,7 +433,7 @@ La inspección visual con vehículo remoto es probablemente madura. El hueco, si
 
 ### 12.1 Estado
 
-EPRI registra el estudio 3002032954, *Everting Vine Robots for Plant Equipment Inspection – Technology Review and Feasibility Study*, cuyos resultados deben verificarse directamente y sin asumir contenidos no públicos. Como fuentes externas iniciales: la literatura de *IEEE Robotics & Automation Magazine* sobre robots vine de gran escala para inspección industrial; el trabajo conjunto de UCSB y Bechtel; los desarrollos de Stanford; y las empresas emergentes Trellis Robotics e IvySpec.
+EPRI registra sobre {{t:vine|robots everting}} el estudio 3002032954, *Everting Vine Robots for Plant Equipment Inspection – Technology Review and Feasibility Study*, cuyos resultados deben verificarse directamente y sin asumir contenidos no públicos. Como fuentes externas iniciales: la literatura de *IEEE Robotics & Automation Magazine* sobre robots vine de gran escala para inspección industrial; el trabajo conjunto de UCSB y Bechtel; los desarrollos de Stanford; y las empresas emergentes Trellis Robotics e IvySpec.
 
 ::: nota clave | Pregunta estratégica que decide el candidato
 Un robot everting es **una tecnología, no un mercado**. Sólo se justifica si se identifica un activo concreto donde el crawler no pasa, el boroscopio no alcanza, el desmontaje es costoso y el robot puede transportar un ensayo no destructivo útil.
@@ -548,7 +554,7 @@ Fundamentada con evidencia, no supuesta.
 ::: tarjeta 18 · Tamaño de mercado
 Sólo si hay datos suficientes. Separado en global, Estados Unidos, Latinoamérica y Argentina.
 :::
-::: tarjeta 19 · Precio y ticket
+::: tarjeta 19 · Precio y {{t:ticket|ticket}}
 Precios publicados, licitaciones, contratos, cotizaciones o comparables. No se inventa.
 :::
 ::: tarjeta 20 · Reutilización de la plataforma existente
@@ -557,7 +563,7 @@ Puntuación por subsistema: locomoción, cómputo, cámaras, iluminación, tethe
 ::: tarjeta 21 · Defensa posible
 Mecánica, ensayo no destructivo, conjunto de datos, calibración, software, calificación, flujo de trabajo de servicio y patentes.
 :::
-::: tarjeta 22 · Decisión
+::: tarjeta 22 · {{t:go-nogo|Decisión de avance}}
 Avanzar o no avanzar, con conclusión breve y sin ambigüedad.
 :::
 ::: tarjeta 23 · Confianza
@@ -572,7 +578,7 @@ Alta, media o baja, explicando qué dato falta para elevarla.
 
 ## 16. Dimensionamiento de mercado
 
-No se usan como base informes genéricos del tipo «mercado de robots de inspección». El cálculo se construye **de abajo hacia arriba**:
+No se usan como base informes genéricos del tipo «mercado de robots de inspección». El cálculo se construye **{{t:bottom-up|de abajo hacia arriba}}**, y su resultado es el mercado total direccionable de servicios ({{t:tam|TAM}}):
 
 `Activos direccionables × inspecciones por año × ticket de servicio = mercado de servicios`
 
@@ -608,7 +614,7 @@ Se buscan ejemplos reales y verificables de: días de parada, andamiaje, excavac
 
 ## 18. Rankings y análisis de sensibilidad
 
-Se construyen dos rankings con criterios distintos, porque responden a preguntas distintas: cuál es el mejor próximo producto y cuál es la mejor posición defendible a largo plazo.
+Se construyen dos rankings con criterios distintos, porque responden a preguntas distintas: cuál es el mejor próximo producto ({{t:fast-follow|seguidor rápido}}) y cuál es la posición más defendible a largo plazo ({{t:moat|moat}}, con su {{t:upside|potencial de crecimiento}}).
 
 ::: fig fig-pesos | Figura 16 — Pesos comparados de los criterios en ambos rankings. | Elaboración propia; los pesos son una decisión de método.
 :::
@@ -619,7 +625,7 @@ Los puntajes son una **síntesis de ingeniería y de negocio**, y así deben eti
 
 ### 18.1 Sensibilidad obligatoria
 
-Se recalcula el ranking moviendo ±20 % el peso de competencia, de esfuerzo de desarrollo y de tamaño de mercado. Si el ganador cambia con esas variaciones, la recomendación debe declararse **inestable** y la decisión debe esperar a la evidencia que estabilice el criterio dominante.
+En el {{t:sensibilidad|análisis de sensibilidad}} se recalcula el ranking moviendo ±20 % el peso de competencia, de esfuerzo de desarrollo y de tamaño de mercado. Si el ganador cambia con esas variaciones, la recomendación debe declararse **inestable** y la decisión debe esperar a la evidencia que estabilice el criterio dominante.
 
 ## 19. Prior art, patentes y competidores
 
@@ -649,7 +655,7 @@ Se registra además el historial de adquisiciones —un producto puede haber cam
 
 ### 19.3 Licitaciones y contratos como fuente de verdad comercial
 
-Un contrato adjudicado dice más sobre el mercado que cualquier informe de tamaño de mercado. Se buscan licitaciones, pedidos de cotización y adjudicaciones reales por servicio de inspección, inspección robótica, bus isofásico, inspección de HRSG, inspección de vaults, tuberías enterradas, conductos forzados, contenedores en seco, crawlers e inspección visual remota, en portales oficiales de compras de utilities, estatales, federales, municipales y nucleares cuando sean públicos.
+Un contrato adjudicado dice más sobre el mercado que cualquier informe de tamaño de mercado. Se buscan {{t:licitacion|licitaciones, pedidos de cotización}} y adjudicaciones reales por servicio de inspección, inspección robótica, bus isofásico, inspección de HRSG, inspección de vaults, tuberías enterradas, conductos forzados, contenedores en seco, crawlers e inspección visual remota, en portales oficiales de compras de utilities, estatales, federales, municipales y nucleares cuando sean públicos.
 
 De cada uno se extrae: alcance, frecuencia, requisitos, duración, monto adjudicado si aparece y proveedor ganador.
 
@@ -676,7 +682,7 @@ Para cada candidato de la lista corta se estima por separado: diseño mecánico,
 Se prefieren **rangos amplios antes que falsa precisión**, y se distinguen cuatro magnitudes que suelen confundirse:
 
 - costo de construir un prototipo;
-- ingeniería no recurrente para industrializar;
+- {{t:nre|ingeniería no recurrente}} para industrializar;
 - costo unitario aproximado en producción;
 - costo del kit de servicio de campo.
 
@@ -690,7 +696,7 @@ Se buscan precios reales de los componentes críticos siempre que sea posible.
 
 ### 22.1 Estructura
 
-El informe final se organiza en: portada; resumen ejecutivo de tres páginas como máximo; objetivo y alcance; metodología y evidencia; qué hace atractivo un negocio de robótica de inspección; mapa completo de oportunidades; fichas por candidato; panorama competitivo transversal; panorama de patentes; mercado global, de Estados Unidos, de Latinoamérica y de Argentina; economía del cliente; matriz de comparación; rankings con sensibilidad; conceptos de producto para los tres primeros; lista de oportunidades a no perseguir por ahora; incógnitas y debida diligencia pendiente; conclusiones; y anexos de registro de búsquedas, competidores, patentes y fuentes.
+El informe final se organiza en: portada; resumen ejecutivo de tres páginas como máximo; objetivo y alcance; metodología y evidencia; qué hace atractivo un negocio de robótica de inspección; mapa completo de oportunidades; fichas por candidato; panorama competitivo transversal; panorama de patentes; mercado global, de Estados Unidos, de Latinoamérica y de Argentina; economía del cliente; matriz de comparación; rankings con sensibilidad; conceptos de producto para los tres primeros; lista de oportunidades a no perseguir por ahora; incógnitas y {{t:due-diligence|debida diligencia}} pendiente; conclusiones; y anexos de registro de búsquedas, competidores, patentes y fuentes.
 
 ### 22.2 Requisitos de presentación
 
@@ -754,7 +760,7 @@ Cada referencia registra organización o autor, título, fecha, identificador de
 ::: tarjeta Ejecución
 10. ¿Qué parte de la plataforma actual se reutiliza?
 11. ¿Cuánto desarrollo falta?
-12. ¿Cuál es el primer producto mínimo que un cliente pagaría por probar?
+12. ¿Cuál es el primer {{t:mvp|producto mínimo viable}} que un cliente pagaría por probar?
 13. ¿Qué validación técnica sería suficiente?
 14. ¿Cuál es el principal mecanismo de fracaso?
 :::
@@ -768,7 +774,7 @@ Cada referencia registra organización o autor, título, fecha, identificador de
 
 ## 24. Programa de entrevistas
 
-Para los tres candidatos mejor posicionados se define una lista concreta de entrevistas. Los perfiles a cubrir son: responsable de mantenimiento de generadores; responsable de paradas; responsable de ensayos no destructivos; jefe de planta; ingeniero de cables de transmisión; especialista en calderas de recuperación; responsable de servicio del fabricante de equipos; líder técnico del instituto de investigación sectorial; proveedor de servicios de ensayos no destructivos; e ingeniero de riesgo o de seguros cuando aplique.
+Para los tres candidatos mejor posicionados se define una lista concreta de entrevistas de {{t:customer-discovery|descubrimiento de clientes}}. Los perfiles a cubrir son: responsable de mantenimiento de generadores; responsable de paradas; responsable de ensayos no destructivos; jefe de planta; ingeniero de cables de transmisión; especialista en calderas de recuperación; responsable de servicio del fabricante de equipos; líder técnico del instituto de investigación sectorial; proveedor de servicios de ensayos no destructivos; e ingeniero de riesgo o de seguros cuando aplique.
 
 Se preparan entre 8 y 12 preguntas por segmento, orientadas a: costo actual, frecuencia, dolor operativo, fallas sufridas, disposición a pagar, requisitos de aceptación, recuperación de herramienta y material extraño, proceso de compra e incumbente.
 
@@ -851,22 +857,61 @@ Hallazgos ya verificados en fuentes primarias o actuales. Deben releerse en su c
 | B · HRSG | Herramienta de acceso interno con sonda de campo remoto y video, crawler dentro del header y despliegues en múltiples sitios | {{tipo:Declaración}} | La oportunidad debe reevaluarse contra un incumbente real y activo |
 | C · Vaults | Programa vigente 2025–2027 con prototipos, ensayos de laboratorio y demostraciones en sitios de utilities, orientado a seguridad y reducción de salidas de servicio | {{ev:A}} Hecho | Señal de problema vigente y tecnología aún en evolución |
 
-## Anexo C — Glosario
+## Anexo C — Glosario con fuente de cada definición
 
-| Término | Significado |
-|---|---|
-| **Bus isofásico (IPB)** | Conducto de barras aisladas por fase que conecta el generador con el transformador principal |
-| **Crawler** | Vehículo de inspección que se desplaza por contacto dentro o sobre el activo |
-| **ECA** | Ensayo por arreglo de corrientes inducidas |
-| **EMAT** | Transductor ultrasónico electromagnético-acústico; permite ensayo sin acoplante |
-| **FME** | Exclusión de material extraño: conjunto de controles para evitar que un objeto quede dentro del activo |
-| **HRSG** | Caldera de recuperación de calor de un ciclo combinado |
-| **ILI** | Inspección en línea de tuberías |
-| **NDE / NDT** | Ensayos no destructivos |
-| **Penstock** | Conducto forzado que lleva agua a la turbina hidráulica |
-| **RFET / BFET** | Ensayos electromagnéticos por campo remoto y por campo lejano |
-| **ROV / AUV** | Vehículo submarino operado remotamente / vehículo submarino autónomo |
-| **Tether** | Cable de energía, datos y recuperación que une el robot con la superficie |
-| **Ticket** | Precio efectivo cobrado por una inspección o servicio |
-| **Vault** | Cámara subterránea de empalmes de cables de transmisión |
-| **Whitespace** | Espacio de mercado no cubierto por los proveedores existentes |
+Cada entrada indica **dónde puede verificarse la definición**. Cuando un término no tiene definición normativa y se usa como convención comercial, se declara explícitamente como *definición operativa de este informe* en lugar de atribuirle una fuente que no existe.
+
+En el cuerpo del informe, la primera aparición de cada término enlaza a su entrada: con línea de puntos en la versión navegable y con una marca <sup>G</sup> en la versión impresa.
+
+### C.1 Términos de negocio
+
+::: glosario
+tam || Mercado total direccionable (TAM) || Valor anual de todo el mercado al que un producto podría aspirar si capturara el 100 % de la demanda que resuelve. Se acompaña de SAM (la parte alcanzable con el canal y la geografía reales) y SOM (la parte capturable en el horizonte de planificación). || Blank, S. y Dorf, B., *The Startup Owner's Manual*, K&S Ranch, 2012. {{ev:B}}
+bottom-up || Dimensionamiento de abajo hacia arriba || Cálculo del mercado partiendo de unidades verificables —cantidad de activos, inspecciones por año, precio por inspección— en lugar de tomar un porcentaje de una cifra global publicada. Es el método que este informe exige. || Blank, S. y Dorf, B., *The Startup Owner's Manual*, K&S Ranch, 2012. {{ev:B}}
+payback || Período de repago (payback) || Tiempo que tarda un proyecto en generar flujos de caja suficientes para recuperar la inversión inicial. Es un criterio de liquidez y de riesgo, no de rentabilidad: no considera el valor del dinero en el tiempo ni lo que ocurre después de recuperada la inversión. || Brealey, R., Myers, S. y Allen, F., *Principles of Corporate Finance*, McGraw-Hill (capítulo de criterios de decisión de inversión). {{ev:B}}
+caso-negocio || Caso de negocio || Documento que justifica la inversión: necesidad, alternativas evaluadas, costos, beneficios esperados, riesgos y criterio de éxito. Es la base sobre la que se aprueba o se rechaza el desarrollo. || Project Management Institute, *Guía de los fundamentos para la dirección de proyectos* (Guía del PMBOK). {{ev:B}}
+moat || Ventaja defendible (moat) || Característica estructural que permite sostener rentabilidad frente a la competencia durante años: patentes, costos de cambio, escala, datos propietarios, calificación regulatoria o relación de servicio. El término proviene del análisis de inversión y equivale a una barrera de entrada sostenida en el tiempo. || Porter, M., *Competitive Strategy*, Free Press, 1980 (barreras de entrada); Buffett, W., carta anual a los accionistas de Berkshire Hathaway, 2007 (uso del término *economic moat*). {{ev:B}}
+incumbente || Incumbente || Empresa que ya vende hoy el producto o servicio en el mercado que se analiza. Su existencia no invalida una oportunidad, pero obliga a demostrar una ventaja concreta y no una capacidad equivalente. || Porter, M., *Competitive Strategy*, Free Press, 1980. {{ev:B}}
+whitespace || Espacio no cubierto (whitespace) || Parte de la necesidad del cliente que ningún proveedor actual resuelve: una geometría a la que no llega la herramienta existente, una medición que no se ofrece o un modo de despliegue que no está disponible. || Johnson, M. W., *Seizing the White Space*, Harvard Business Press, 2010. {{ev:B}}
+ticket || Precio por servicio (ticket) || Monto efectivamente facturado por una inspección o intervención. En este informe se usa siempre con su fuente: precio publicado, contrato, licitación adjudicada o cotización. No es un término normalizado. || Definición operativa de este informe.
+recurrencia || Recurrencia || Frecuencia con la que un mismo cliente vuelve a comprar el servicio, medida en inspecciones por activo y por año. Determina si el negocio es un proyecto aislado o un ingreso repetido. || Definición operativa de este informe.
+raas || Robótica como servicio (RaaS) || Modelo en el que el cliente no compra el robot sino el resultado de la inspección, y el proveedor conserva la propiedad, el mantenimiento y la calibración del equipo. Es preferible cuando la frecuencia por activo es baja y el precio por intervención es alto. || Definición operativa de este informe, sobre el modelo general de servicios gestionados.
+mvp || Producto mínimo viable (MVP) || Versión más reducida del producto que permite aprender del cliente real con el menor esfuerzo: en este contexto, la primera inspección que un cliente pagaría por probar. || Ries, E., *The Lean Startup*, Crown Business, 2011. {{ev:B}}
+customer-discovery || Descubrimiento de clientes || Proceso de entrevistas estructuradas con clientes potenciales para verificar que el problema, el costo actual y la disposición a pagar existen antes de construir el producto. || Blank, S., *The Four Steps to the Epiphany*, Cafepress, 2005. {{ev:B}}
+go-nogo || Decisión de avance (go / no-go) || Punto formal de decisión en el que un proyecto se aprueba, se detiene o se reorienta según criterios definidos de antemano. || Cooper, R. G., *Winning at New Products* (proceso por etapas y compuertas). {{ev:B}}
+due-diligence || Debida diligencia || Verificación sistemática de los supuestos de una inversión —mercado, competencia, propiedad intelectual, costos y riesgos— antes de comprometer capital. || Uso estándar en finanzas corporativas; definición de referencia divulgativa en Investopedia, *Due Diligence*. {{ev:C}}
+nre || Ingeniería no recurrente (NRE) || Costo que se paga una sola vez para dejar un producto en condiciones de fabricarse: diseño, herramientas, moldes, ensayos de calificación. No se reparte por unidad producida salvo que se amortice. || Uso estándar en manufactura electrónica y de bienes de capital; definición operativa de este informe.
+licitacion || Licitación y pedido de cotización (RFP / RFQ) || Documentos con los que un comprador solicita propuestas o precios. El pliego revela alcance, frecuencia y requisitos reales; la adjudicación revela precio y proveedor ganador. Por eso este informe los prefiere frente a los informes de tamaño de mercado. || Project Management Institute, *Guía del PMBOK*, procesos de adquisiciones. {{ev:B}}
+sensibilidad || Análisis de sensibilidad || Recálculo de un resultado variando los supuestos de entrada, para saber si la conclusión depende de un dato incierto. Aquí se aplica a los pesos del ranking. || Brealey, R., Myers, S. y Allen, F., *Principles of Corporate Finance*, McGraw-Hill. {{ev:B}}
+benchmark || Referencia de comparación (benchmark) || Caso ya conocido contra el cual se mide una oportunidad nueva. En este informe, el proyecto de robot de inspección de generadores. || Definición operativa de este informe.
+fast-follow || Seguidor rápido (fast-follow) || Estrategia de entrar a un mercado que otro abrió, con menor riesgo técnico y menor margen de diferenciación. Es el criterio del Ranking A. || Definición operativa de este informe.
+upside || Potencial de crecimiento (upside) || Valor que una oportunidad podría alcanzar en el escenario favorable, por encima del caso base. Es el criterio del Ranking B. || Definición operativa de este informe.
+:::
+
+### C.2 Términos técnicos y del sector
+
+::: glosario
+outage || Salida de servicio o parada (outage) || Período en que un equipo o una unidad de generación deja de estar disponible, sea por mantenimiento programado o por falla. Es el costo dominante en casi todos los casos de negocio de este informe: cada día de parada tiene un valor de energía no vendida. || North American Electric Reliability Corporation, *Glossary of Terms Used in NERC Reliability Standards*. {{ev:A}}
+nde || Ensayos no destructivos (NDE / NDT) || Conjunto de técnicas que evalúan la integridad de un material o componente sin dañarlo: ultrasonido, corrientes inducidas, radiografía, líquidos penetrantes, inspección visual remota. || American Society for Nondestructive Testing (ASNT), cuerpo normativo y de certificación de la disciplina. {{ev:A}}
+trl || Nivel de madurez tecnológica (TRL) || Escala que mide cuán probada está una tecnología, desde el principio observado hasta el sistema validado en operación. **No mide despliegue comercial**: para eso este informe usa la escala M0–M5. || ISO 16290:2013, *Space systems — Definition of the Technology Readiness Levels (TRL) and their criteria of assessment*. {{ev:A}}
+madurez-m || Escala de madurez comercial (M0–M5) || Escala propia de este informe que mide despliegue real en el mercado: M0 conceptos, M1 prototipos de laboratorio, M2 demostración industrial aislada, M3 servicios comerciales iniciales, M4 múltiples proveedores y despliegues, M5 mercado maduro. || Definición operativa de este informe; ver sección 3.4.
+ipb || Bus isofásico (IPB) || Conducto de barras con una envolvente metálica independiente por fase, que conecta el generador con el transformador principal. Su interior es un espacio confinado con obstáculos periódicos. || EPRI, *Isolated Phase Bus Maintenance Guide*, 1015057. {{ev:A}}
+hrsg || Caldera de recuperación de calor (HRSG) || Intercambiador que recupera el calor de los gases de escape de una turbina de gas para generar vapor en una central de ciclo combinado. Sus headers y tubos son el activo del candidato B. || EPRI, *Study for Snake Robot Technology for Inspection of Headers and Tubes in HRSGs*, 1017635. {{ev:A}}
+header || Header o colector || Tubo de gran diámetro al que se conectan decenas de tubos menores. La unión soldada tubo-header es un punto de falla frecuente y de inspección difícil. || EPRI, 1017635. {{ev:A}}
+crawler || Crawler || Vehículo de inspección que avanza por contacto dentro o sobre el activo, con ruedas, orugas o adhesión magnética. || Definición operativa de este informe, de uso corriente en inspección industrial.
+tether || Cable de conexión (tether) || Cable que une el robot con la superficie y transporta energía, datos y, cuando hace falta, la fuerza para recuperarlo. Su longitud y su arrastre suelen fijar el alcance útil del sistema. || Definición operativa de este informe, de uso corriente en robótica de inspección.
+fme || Exclusión de material extraño (FME) || Conjunto de controles para evitar que un objeto quede dentro de un sistema tras una intervención. Un robot atrapado en un activo nuclear puede costar más que la inspección evitada, por lo que la estrategia de recuperación es parte del producto. || Práctica normalizada de la industria nuclear; ver EPRI, *Compilation of Lessons Learned on Buried and Underground Piping*, 1025272. {{ev:B}}
+emat || Transductor electromagnético-acústico (EMAT) || Sensor que genera ondas ultrasónicas en la propia pieza mediante campos electromagnéticos, sin necesidad de gel acoplante y, en ciertos casos, sin remover el revestimiento. || Hirao, M. y Ogi, H., *EMATs for Science and Industry: Noncontacting Ultrasonic Measurements*, Springer, 2003. {{ev:B}}
+eca || Corrientes inducidas y arreglos (ECA) || Técnica electromagnética que detecta discontinuidades superficiales y subsuperficiales en materiales conductores; en versión de arreglo cubre más superficie por pasada. || American Society for Nondestructive Testing (ASNT). {{ev:A}}
+rfet || Ensayo por campo remoto y campo lejano (RFET / BFET) || Variantes electromagnéticas usadas para inspeccionar tubos y soldaduras desde el interior, incluso a través de la pared del tubo. || TesTex, documentación técnica de producto. {{tipo:Declaración}}
+ili || Inspección en línea (ILI) || Inspección de una tubería mediante un dispositivo que recorre su interior. En instalaciones nucleares suele ser inviable por la falta de estaciones de lanzamiento y recepción. || API 1163, *In-line Inspection Systems Qualification*. {{ev:A}}
+penstock || Conducto forzado (penstock) || Tubería que conduce el agua desde la toma hasta la turbina en una central hidroeléctrica. Su inspección exige vaciar el conducto o entrar con vehículo sumergible. || EPRI, *ROV Technology: Applications and Advancements at Hydro Facilities*, 1007576. {{ev:A}}
+rov || Vehículo remoto y vehículo autónomo (ROV / AUV) || Vehículos sumergibles: el primero opera unido por cable y comandado por un operador; el segundo navega sin cable, siguiendo un plan de misión. || EPRI, 1007576 y 3002011682. {{ev:A}}
+vault || Cámara subterránea (vault) || Recinto de hormigón bajo la calzada donde se alojan empalmes de cables de transmisión. Es un espacio confinado con cables energizados y riesgo de gases. || EPRI, programa de transmisión subterránea. {{ev:A}}
+canister || Canister y sobre-contenedor || En almacenamiento en seco de combustible gastado, el canister sellado contiene el combustible y el sobre-contenedor de hormigón lo blinda. Entre ambos queda el espacio anular donde debe entrar el robot. || EPRI, *Dry Canister Storage System Inspection and Robotic Delivery System Development*, 3002008234. {{ev:A}}
+vine || Robot everting (vine) || Robot que avanza dando vuelta su propio cuerpo desde la punta, por presión interna, de modo que la superficie no se arrastra contra la pared. Permite recorrer conductos con curvas donde un crawler no entra. || Hawkes, E. W. et al., «A soft robot that navigates its environment through growth», *Science Robotics*, 2017. {{ev:A}}
+sweep || Evaluación económica SWEEP || Método de evaluación con el que EPRI estima costo de implementación, ahorro esperado y repago de una tecnología en su catálogo de modernización de plantas. Los valores citados en este informe provienen de esas fichas; la metodología detallada debe verificarse en la fuente. || EPRI, Plant Modernization Toolbox, fichas MTA-MA-017 y MTA-MA-029. {{ev:A}}
+prior-art || Estado de la técnica (prior art) || Todo conocimiento divulgado antes de la fecha de prioridad de una solicitud de patente. Una patente concedida prueba divulgación, no que el producto exista ni que se venda. || Organización Mundial de la Propiedad Intelectual (OMPI), glosario de términos de propiedad intelectual; USPTO, *Manual of Patent Examining Procedure*, capítulo 2100. {{ev:A}}
+fto || Libertad de operación (FTO) || Análisis legal que determina si un producto puede comercializarse sin infringir patentes vigentes de terceros en un territorio. El presente informe **no** realiza este análisis: sólo un screening preliminar. || Organización Mundial de la Propiedad Intelectual (OMPI), material de divulgación sobre libertad de operación. {{ev:B}}
+:::
+

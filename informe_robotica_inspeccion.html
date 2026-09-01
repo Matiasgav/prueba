@@ -54,7 +54,7 @@
   /* medida de lectura para el texto; medios a ancho completo */
   .sheet > p, .sheet > ul, .sheet > ol, .sheet > blockquote,
   .sheet > h3, .sheet > h4, .sheet > h5, .sheet > .callout,
-  .sheet > details.det { max-width:46rem; }
+  .sheet > details.det, .sheet > dl.gloss { max-width:46rem; }
 
   /* ---------------- portada ---------------- */
   .cover { border-bottom:3px solid var(--nav); padding-bottom:2rem;
@@ -169,6 +169,18 @@
             padding-top:.8rem; }
   .det-b p:last-child, .det-b ul:last-child { margin-bottom:0; }
 
+  /* ---------------- glosario ---------------- */
+  a.term { color:inherit; text-decoration:none;
+            border-bottom:1px dotted var(--nav-2); cursor:help; }
+  a.term:hover { color:var(--nav-2); border-bottom-style:solid; }
+  dl.gloss { margin:1.2rem 0; }
+  dl.gloss dt { font-weight:700; color:var(--nav); margin-top:.9rem;
+                 scroll-margin-top:1rem; }
+  dl.gloss dt:target { background:var(--blue-bg); box-shadow:0 0 0 .3rem var(--blue-bg); }
+  dl.gloss dd { margin:.15rem 0 0; font-size:.94rem; }
+  dl.gloss .gsrc { display:block; font-size:.78rem; color:var(--ink-3);
+                    margin-top:.15rem; }
+
   /* ---------------- tablas ---------------- */
   .tw { overflow-x:auto; margin:1.3rem 0 1.6rem; border:1px solid var(--line);
          border-radius:5px; }
@@ -216,7 +228,7 @@
 </head>
 <body>
 <div class="layout">
-<nav id="toc"><div class="toc-t">Contenido</div><ul><li class="l1"><a href="#resumen-ejecutivo">Resumen ejecutivo</a></li><li class="l2"><a href="#estado-de-la-evidencia-al-cierre-de-esta-edicion">Estado de la evidencia al cierre de esta edición</a></li><li class="l2"><a href="#lectura-rapida-de-los-siete-candidatos">Lectura rápida de los siete candidatos</a></li><li class="l2"><a href="#que-dice-hoy-la-evidencia">Qué dice hoy la evidencia</a></li><li class="l2"><a href="#que-no-deberia-desarrollarse-sin-un-hallazgo-que-lo-justifique">Qué no debería desarrollarse sin un hallazgo que lo justifique</a></li><li class="l2"><a href="#las-incognitas-que-bloquean-la-decision">Las incógnitas que bloquean la decisión</a></li><li class="l1"><a href="#parte-i-marco-de-decision">Parte I — Marco de decisión</a></li><li class="l2"><a href="#1-objetivo-y-alcance">1. Objetivo y alcance</a></li><li class="l2"><a href="#2-que-hace-rentable-un-negocio-de-robotica-de-inspeccion">2. Qué hace rentable un negocio de robótica de inspección</a></li><li class="l2"><a href="#3-disciplina-de-evidencia">3. Disciplina de evidencia</a></li><li class="l2"><a href="#4-proceso-de-evaluacion">4. Proceso de evaluación</a></li><li class="l1"><a href="#parte-ii-mapa-de-oportunidades">Parte II — Mapa de oportunidades</a></li><li class="l2"><a href="#5-panorama-y-criterio-de-entrada">5. Panorama y criterio de entrada</a></li><li class="l2"><a href="#6-candidato-a-bus-isofasico-ipb">6. Candidato A — Bus isofásico (IPB)</a></li><li class="l2"><a href="#7-candidato-b-hrsg-headers-soldaduras-y-tubos">7. Candidato B — HRSG: headers, soldaduras y tubos</a></li><li class="l2"><a href="#8-candidato-c-vaults-subterraneos-de-transmision">8. Candidato C — Vaults subterráneos de transmisión</a></li><li class="l2"><a href="#9-candidato-d-piping-enterrado-e-inaccesible">9. Candidato D — Piping enterrado e inaccesible</a></li><li class="l2"><a href="#10-candidato-e-contenedores-de-combustible-gastado-en-seco">10. Candidato E — Contenedores de combustible gastado en seco</a></li><li class="l2"><a href="#11-candidato-f-penstocks-y-tuneles-hidroelectricos">11. Candidato F — Penstocks y túneles hidroeléctricos</a></li><li class="l2"><a href="#12-candidato-g-robots-everting-vine-para-equipos-de-planta">12. Candidato G — Robots everting (vine) para equipos de planta</a></li><li class="l2"><a href="#13-mercados-con-madurez-probablemente-alta">13. Mercados con madurez probablemente alta</a></li><li class="l2"><a href="#14-barrido-de-oportunidades-fuera-de-la-lista">14. Barrido de oportunidades fuera de la lista</a></li><li class="l1"><a href="#parte-iii-metodo-de-evaluacion-y-economia">Parte III — Método de evaluación y economía</a></li><li class="l2"><a href="#15-ficha-estandar-por-candidato">15. Ficha estándar por candidato</a></li><li class="l2"><a href="#16-dimensionamiento-de-mercado">16. Dimensionamiento de mercado</a></li><li class="l2"><a href="#17-economia-del-cliente">17. Economía del cliente</a></li><li class="l2"><a href="#18-rankings-y-analisis-de-sensibilidad">18. Rankings y análisis de sensibilidad</a></li><li class="l2"><a href="#19-prior-art-patentes-y-competidores">19. Prior art, patentes y competidores</a></li><li class="l2"><a href="#20-argentina-y-latinoamerica">20. Argentina y Latinoamérica</a></li><li class="l2"><a href="#21-costos-de-desarrollo">21. Costos de desarrollo</a></li><li class="l1"><a href="#parte-iv-entregables-validacion-y-cierre">Parte IV — Entregables, validación y cierre</a></li><li class="l2"><a href="#22-estructura-y-requisitos-del-informe-final">22. Estructura y requisitos del informe final</a></li><li class="l2"><a href="#23-preguntas-que-el-informe-debe-responder">23. Preguntas que el informe debe responder</a></li><li class="l2"><a href="#24-programa-de-entrevistas">24. Programa de entrevistas</a></li><li class="l2"><a href="#25-criterio-de-finalizacion">25. Criterio de finalización</a></li><li class="l2"><a href="#26-conclusion-operativa">26. Conclusión operativa</a></li><li class="l1"><a href="#anexos">Anexos</a></li><li class="l2"><a href="#anexo-a-paquete-de-fuentes-verificado">Anexo A — Paquete de fuentes verificado</a></li><li class="l2"><a href="#anexo-b-registro-de-hallazgos-iniciales">Anexo B — Registro de hallazgos iniciales</a></li><li class="l2"><a href="#anexo-c-glosario">Anexo C — Glosario</a></li></ul></nav>
+<nav id="toc"><div class="toc-t">Contenido</div><ul><li class="l1"><a href="#resumen-ejecutivo">Resumen ejecutivo</a></li><li class="l2"><a href="#estado-de-la-evidencia-al-cierre-de-esta-edicion">Estado de la evidencia al cierre de esta edición</a></li><li class="l2"><a href="#lectura-rapida-de-los-siete-candidatos">Lectura rápida de los siete candidatos</a></li><li class="l2"><a href="#que-dice-hoy-la-evidencia">Qué dice hoy la evidencia</a></li><li class="l2"><a href="#que-no-deberia-desarrollarse-sin-un-hallazgo-que-lo-justifique">Qué no debería desarrollarse sin un hallazgo que lo justifique</a></li><li class="l2"><a href="#las-incognitas-que-bloquean-la-decision">Las incógnitas que bloquean la decisión</a></li><li class="l1"><a href="#parte-i-marco-de-decision">Parte I — Marco de decisión</a></li><li class="l2"><a href="#1-objetivo-y-alcance">1. Objetivo y alcance</a></li><li class="l2"><a href="#2-que-hace-rentable-un-negocio-de-robotica-de-inspeccion">2. Qué hace rentable un negocio de robótica de inspección</a></li><li class="l2"><a href="#3-disciplina-de-evidencia">3. Disciplina de evidencia</a></li><li class="l2"><a href="#4-proceso-de-evaluacion">4. Proceso de evaluación</a></li><li class="l1"><a href="#parte-ii-mapa-de-oportunidades">Parte II — Mapa de oportunidades</a></li><li class="l2"><a href="#5-panorama-y-criterio-de-entrada">5. Panorama y criterio de entrada</a></li><li class="l2"><a href="#6-candidato-a-bus-isofasico-ipb">6. Candidato A — Bus isofásico (IPB)</a></li><li class="l2"><a href="#7-candidato-b-hrsg-headers-soldaduras-y-tubos">7. Candidato B — HRSG: headers, soldaduras y tubos</a></li><li class="l2"><a href="#8-candidato-c-vaults-subterraneos-de-transmision">8. Candidato C — Vaults subterráneos de transmisión</a></li><li class="l2"><a href="#9-candidato-d-piping-enterrado-e-inaccesible">9. Candidato D — Piping enterrado e inaccesible</a></li><li class="l2"><a href="#10-candidato-e-contenedores-de-combustible-gastado-en-seco">10. Candidato E — Contenedores de combustible gastado en seco</a></li><li class="l2"><a href="#11-candidato-f-penstocks-y-tuneles-hidroelectricos">11. Candidato F — Penstocks y túneles hidroeléctricos</a></li><li class="l2"><a href="#12-candidato-g-robots-everting-vine-para-equipos-de-planta">12. Candidato G — Robots everting (vine) para equipos de planta</a></li><li class="l2"><a href="#13-mercados-con-madurez-probablemente-alta">13. Mercados con madurez probablemente alta</a></li><li class="l2"><a href="#14-barrido-de-oportunidades-fuera-de-la-lista">14. Barrido de oportunidades fuera de la lista</a></li><li class="l1"><a href="#parte-iii-metodo-de-evaluacion-y-economia">Parte III — Método de evaluación y economía</a></li><li class="l2"><a href="#15-ficha-estandar-por-candidato">15. Ficha estándar por candidato</a></li><li class="l2"><a href="#16-dimensionamiento-de-mercado">16. Dimensionamiento de mercado</a></li><li class="l2"><a href="#17-economia-del-cliente">17. Economía del cliente</a></li><li class="l2"><a href="#18-rankings-y-analisis-de-sensibilidad">18. Rankings y análisis de sensibilidad</a></li><li class="l2"><a href="#19-prior-art-patentes-y-competidores">19. Prior art, patentes y competidores</a></li><li class="l2"><a href="#20-argentina-y-latinoamerica">20. Argentina y Latinoamérica</a></li><li class="l2"><a href="#21-costos-de-desarrollo">21. Costos de desarrollo</a></li><li class="l1"><a href="#parte-iv-entregables-validacion-y-cierre">Parte IV — Entregables, validación y cierre</a></li><li class="l2"><a href="#22-estructura-y-requisitos-del-informe-final">22. Estructura y requisitos del informe final</a></li><li class="l2"><a href="#23-preguntas-que-el-informe-debe-responder">23. Preguntas que el informe debe responder</a></li><li class="l2"><a href="#24-programa-de-entrevistas">24. Programa de entrevistas</a></li><li class="l2"><a href="#25-criterio-de-finalizacion">25. Criterio de finalización</a></li><li class="l2"><a href="#26-conclusion-operativa">26. Conclusión operativa</a></li><li class="l1"><a href="#anexos">Anexos</a></li><li class="l2"><a href="#anexo-a-paquete-de-fuentes-verificado">Anexo A — Paquete de fuentes verificado</a></li><li class="l2"><a href="#anexo-b-registro-de-hallazgos-iniciales">Anexo B — Registro de hallazgos iniciales</a></li><li class="l2"><a href="#anexo-c-glosario-con-fuente-de-cada-definicion">Anexo C — Glosario con fuente de cada definición</a></li></ul></nav>
 <main>
   <article class="sheet">
     <header class="cover">
@@ -227,6 +239,11 @@
     </header>
 <h2 class="part" id="resumen-ejecutivo">Resumen ejecutivo</h2>
 <p>Este documento define <strong>qué robot de inspección industrial conviene desarrollar como próximo producto</strong>, con qué evidencia se decide y qué queda por verificar antes de comprometer inversión. No es un catálogo de ideas técnicas: es el marco de decisión, el mapa de las siete oportunidades candidatas y el plan de verificación que las confirma o las descarta.</p>
+<aside class="callout c-dato">
+<div class="callout-h">Cómo leer este informe</div>
+<p>Los términos de negocio y del sector están definidos en el <strong>Anexo C</strong>, cada uno con la fuente donde puede verificarse la definición. En el texto, la primera aparición de cada término enlaza a su entrada. Cuando un término no tiene definición normativa, el anexo lo declara como definición operativa de este informe en lugar de atribuirle una fuente inexistente.</p>
+<p>Las afirmaciones llevan su clase: <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span> a <span class="badge b-ev b-ev-d" title="Nivel de evidencia D">D</span> indican el nivel de la fuente, <span class="badge b-tipo">Declaración</span> señala una afirmación comercial del fabricante no verificada de forma independiente, y <span class="badge b-mad" title="Madurez comercial">M4</span> indica madurez comercial en la escala de la sección 3.4.</p>
+</aside>
 <aside class="callout c-clave">
 <div class="callout-h">La pregunta que ordena todo el estudio</div>
 <p>No se busca responder <em>qué robots interesantes podrían construirse</em>, sino:</p>
@@ -244,27 +261,31 @@
 <div class="tw"><table><thead><tr>
 <th class="left">Candidato</th>
 <th class="left">Activo</th>
-<th class="center">Madurez hipotética</th>
+<th class="center">{{t:madurez-m</th>
+<th class="left">Madurez}} hipotética</th>
 <th class="left">Evidencia económica</th>
-<th class="left">Incumbente conocido</th>
-<th class="center">Reutilización de plataforma</th>
+<th class="center">{{t:incumbente</th>
+<th class="left">Incumbente}} conocido</th>
+<th class="left">Reutilización de plataforma</th>
 </tr></thead>
 <tbody>
 <tr>
 <td class="left"><strong>A</strong></td>
-<td class="left">Bus isofásico (IPB)</td>
-<td class="center"><span class="badge b-mad" title="Madurez comercial">M3</span> <span class="badge b-mad" title="Madurez comercial">M4</span></td>
+<td class="left">{{t:ipb</td>
+<td class="center">Bus isofásico (IPB)}}</td>
+<td class="left"><span class="badge b-mad" title="Madurez comercial">M3</span> <span class="badge b-mad" title="Madurez comercial">M4</span></td>
 <td class="left">Publicada, nivel A</td>
-<td class="left">Servicios de inspección especializados</td>
-<td class="center">Alta</td>
+<td class="center">Servicios de inspección especializados</td>
+<td class="left">Alta</td>
 </tr>
 <tr>
 <td class="left"><strong>B</strong></td>
-<td class="left">HRSG: headers y tubos</td>
-<td class="center"><span class="badge b-mad" title="Madurez comercial">M4</span></td>
+<td class="left">{{t:hrsg</td>
+<td class="center">HRSG}}: headers y tubos</td>
+<td class="left"><span class="badge b-mad" title="Madurez comercial">M4</span></td>
 <td class="left">Parcial; parte declarada por fabricante</td>
-<td class="left">TesTex (IAT, Claw)</td>
-<td class="center">Media-alta</td>
+<td class="center">TesTex (IAT, Claw)</td>
+<td class="left">Media-alta</td>
 </tr>
 <tr>
 <td class="left"><strong>C</strong></td>
@@ -395,7 +416,7 @@
 <div class="card">
 <div class="card-h">Donde hay incumbente</div>
 <div class="card-m">Candidatos B, D y F</div>
-<p>HRSG, piping enterrado y penstocks tienen proveedor establecido. Entrar exige demostrar un <em>whitespace</em> concreto —una geometría, un acceso o una medición que el incumbente no cubre—, no una plataforma equivalente.</p>
+<p>HRSG, piping enterrado y penstocks tienen proveedor establecido. Entrar exige demostrar un <a class="term" href="#g-whitespace" title="Espacio no cubierto (whitespace): Parte de la necesidad del cliente que ningún proveedor actual resuelve: una geometría a la que no llega la herramienta existente, una medición que">espacio no cubierto (<em>whitespace</em>)</a> concreto —una geometría, un acceso o una medición que el incumbente no cubre—, no una plataforma equivalente.</p>
 </div>
 <div class="card">
 <div class="card-h">Donde el problema sigue abierto</div>
@@ -405,7 +426,7 @@
 </div>
 <h3 id="que-no-deberia-desarrollarse-sin-un-hallazgo-que-lo-justifique">Qué no debería desarrollarse sin un hallazgo que lo justifique</h3>
 <ul>
-<li>Un <strong>crawler genérico de tuberías</strong>: el problema ya está resuelto comercialmente y el valor lo captura un proveedor establecido.
+<li>Un <strong><a class="term" href="#g-crawler" title="Crawler: Vehículo de inspección que avanza por contacto dentro o sobre el activo, con ruedas, orugas o adhesión magnética.">crawler</a> genérico de tuberías</strong>: el problema ya está resuelto comercialmente y el valor lo captura un proveedor establecido.
 </li>
 <li>Un <strong>robot nadador para transformadores</strong> que replique una función ya cubierta por el producto de referencia del mercado.
 </li>
@@ -449,13 +470,13 @@
 <ul>
 <li>ingeniería sénior de robótica de inspección;
 </li>
-<li>especialidad en ensayos no destructivos (NDE/NDT);
+<li>especialidad en <a class="term" href="#g-nde" title="Ensayos no destructivos (NDE / NDT): Conjunto de técnicas que evalúan la integridad de un material o componente sin dañarlo: ultrasonido, corrientes inducidas, radiografía, líquido">ensayos no destructivos (NDE/NDT)</a>;
 </li>
 <li>análisis de mercado industrial B2B;
 </li>
 <li>mantenimiento de generación eléctrica;
 </li>
-<li>investigación de <em>prior art</em> y patentes;
+<li>investigación de <a class="term" href="#g-prior-art" title="Estado de la técnica (prior art): Todo conocimiento divulgado antes de la fecha de prioridad de una solicitud de patente. Una patente concedida prueba divulgación, no que el produc"><em>prior art</em></a> y patentes;
 </li>
 <li>análisis de producto y estrategia.
 </li>
@@ -464,14 +485,14 @@
 <ul>
 <li>No es un diseño de detalle: las propuestas de robot se definen por requisitos funcionales, no por ingeniería de producto.
 </li>
-<li>No es una opinión legal de libertad de operación. El análisis de patentes es un <strong>screening preliminar de propiedad intelectual</strong>.
+<li>No es una opinión legal de <a class="term" href="#g-fto" title="Libertad de operación (FTO): Análisis legal que determina si un producto puede comercializarse sin infringir patentes vigentes de terceros en un territorio. El presente informe no ">libertad de operación</a>. El análisis de patentes es un <strong>screening preliminar de propiedad intelectual</strong>.
 </li>
 <li>No es un dimensionamiento de mercado basado en informes genéricos de la industria. Cuando no hay datos suficientes para un cálculo defendible, el tamaño de mercado no se publica.
 </li>
 </ul>
 <h3 id="2-que-hace-rentable-un-negocio-de-robotica-de-inspeccion">2. Qué hace rentable un negocio de robótica de inspección</h3>
 <h4 id="2-1-la-logica-del-producto-de-referencia">2.1 La lógica del producto de referencia</h4>
-<p>Existe un proyecto de robot de inspección (RI) para generadores con rotor instalado. Se usa como <strong>benchmark económico y tecnológico</strong>, no como oportunidad nueva. Su lógica de negocio define el patrón que se busca replicar:</p>
+<p>Existe un proyecto de robot de inspección (RI) para generadores con rotor instalado. Se usa como <strong><a class="term" href="#g-benchmark" title="Referencia de comparación (benchmark): Caso ya conocido contra el cual se mide una oportunidad nueva. En este informe, el proyecto de robot de inspección de generadores.">benchmark</a> económico y tecnológico</strong>, no como oportunidad nueva. Su lógica de negocio define el patrón que se busca replicar:</p>
 <ul>
 <li>activo extremadamente caro;
 </li>
@@ -479,13 +500,13 @@
 </li>
 <li>la inspección convencional puede exigir gran desmontaje, personal especializado o una parada prolongada;
 </li>
-<li>el robot reduce salida de servicio, desmontaje y riesgo;
+<li>el robot reduce <a class="term" href="#g-outage" title="Salida de servicio o parada (outage): Período en que un equipo o una unidad de generación deja de estar disponible, sea por mantenimiento programado o por falla. Es el costo domina">salida de servicio</a>, desmontaje y riesgo;
 </li>
 <li>el cliente no compra un robot: compra <strong>información de condición confiable</strong> y ahorro de mantenimiento;
 </li>
 <li>el valor del servicio puede superar ampliamente el costo del hardware;
 </li>
-<li>la plataforma integra locomoción, cámaras, iluminación, sensado especializado, posicionamiento, tether y comunicaciones, procesamiento y generación automática de informes.
+<li>la plataforma integra locomoción, cámaras, iluminación, sensado especializado, posicionamiento, <a class="term" href="#g-tether" title="Cable de conexión (tether): Cable que une el robot con la superficie y transporta energía, datos y, cuando hace falta, la fuerza para recuperarlo. Su longitud y su arrastre suelen ">tether</a> y comunicaciones, procesamiento y generación automática de informes.
 </li>
 </ul>
 <aside class="callout c-inferencia">
@@ -520,12 +541,13 @@
 <p>Se buscan precios efectivos: distribuidores, contratos públicos, licitaciones, integradores o mercado usado. Las estimaciones se etiquetan como tales.</p>
 </div>
 <div class="card">
-<div class="card-h">7. Recuperación y FME</div>
+<div class="card-h">7. Recuperación y {{t:fme</div>
+<div class="card-m">FME}}</div>
 <p>En generación eléctrica y nuclear, un robot atrapado puede ser peor que no inspeccionar. La estrategia de recuperación es parte del producto.</p>
 </div>
 <div class="card">
 <div class="card-h">8. Servicio antes que hardware</div>
-<p>Si la frecuencia por activo es baja pero el ticket por inspección es alto, el modelo de inspección como servicio puede superar a la venta de equipos.</p>
+<p>Si la frecuencia por activo es baja pero el ticket por inspección es alto, el modelo de <a class="term" href="#g-raas" title="Robótica como servicio (RaaS): Modelo en el que el cliente no compra el robot sino el resultado de la inspección, y el proveedor conserva la propiedad, el mantenimiento y la calibr">inspección como servicio</a> puede superar a la venta de equipos.</p>
 </div>
 </div>
 <h3 id="3-disciplina-de-evidencia">3. Disciplina de evidencia</h3>
@@ -632,7 +654,7 @@
 </ol>
 <h4 id="3-4-escala-de-madurez-comercial">3.4 Escala de madurez comercial</h4>
 <figure class="fig" id="fig-madurez">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 230" role="img" aria-labelledby="ti-fig-madurez de-fig-madurez">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 284" role="img" aria-labelledby="ti-fig-madurez de-fig-madurez">
 <title id="ti-fig-madurez">Escala de madurez comercial M0 a M5</title><desc id="de-fig-madurez">Barra segmentada en seis niveles de madurez comercial.</desc>
 <style>
   text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
@@ -651,51 +673,51 @@
   .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
   .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
 </style>
-<rect width="720" height="230" fill="#ffffff"/>
+<rect width="720" height="284" fill="#ffffff"/>
 <text x="2.0" y="18.0" class="t-title" text-anchor="start">Escala de madurez comercial (M0–M5)</text>
 <text x="2.0" y="36.0" class="t-sub" text-anchor="start">Mide despliegue real en el mercado, no nivel tecnológico (TRL): un TRL alto con un solo cliente sigue</text>
 <text x="2.0" y="51.0" class="t-sub" text-anchor="start">siendo M2.</text>
-<rect x="2.0" y="60.0" width="117.7" height="34.0" fill="#9ec5f4" rx="4.0"/>
-<text x="60.8" y="82.0" class="t-labb" text-anchor="middle">M0</text>
-<text x="60.8" y="112.0" class="t-small" text-anchor="middle">Sólo papers y</text>
-<text x="60.8" y="125.0" class="t-small" text-anchor="middle">conceptos</text>
-<rect x="121.7" y="60.0" width="117.7" height="34.0" fill="#6da7ec" rx="0.0"/>
-<text x="180.5" y="82.0" class="t-labb" text-anchor="middle">M1</text>
-<text x="180.5" y="112.0" class="t-small" text-anchor="middle">Prototipos de</text>
-<text x="180.5" y="125.0" class="t-small" text-anchor="middle">laboratorio</text>
-<rect x="241.3" y="60.0" width="117.7" height="34.0" fill="#3987e5" rx="0.0"/>
-<text x="300.2" y="82.0" class="t-labb t-inv" text-anchor="middle">M2</text>
-<text x="300.2" y="112.0" class="t-small" text-anchor="middle">Demostración</text>
-<text x="300.2" y="125.0" class="t-small" text-anchor="middle">industrial</text>
-<text x="300.2" y="138.0" class="t-small" text-anchor="middle">aislada</text>
-<rect x="361.0" y="60.0" width="117.7" height="34.0" fill="#256abf" rx="0.0"/>
-<text x="419.8" y="82.0" class="t-labb t-inv" text-anchor="middle">M3</text>
-<text x="419.8" y="112.0" class="t-small" text-anchor="middle">Servicios</text>
-<text x="419.8" y="125.0" class="t-small" text-anchor="middle">comerciales</text>
-<text x="419.8" y="138.0" class="t-small" text-anchor="middle">iniciales</text>
-<rect x="480.7" y="60.0" width="117.7" height="34.0" fill="#184f95" rx="0.0"/>
-<text x="539.5" y="82.0" class="t-labb t-inv" text-anchor="middle">M4</text>
-<text x="539.5" y="112.0" class="t-small" text-anchor="middle">Múltiples</text>
-<text x="539.5" y="125.0" class="t-small" text-anchor="middle">proveedores y</text>
-<text x="539.5" y="138.0" class="t-small" text-anchor="middle">despliegues</text>
-<rect x="600.3" y="60.0" width="117.7" height="34.0" fill="#0d366b" rx="4.0"/>
-<text x="659.2" y="82.0" class="t-labb t-inv" text-anchor="middle">M5</text>
-<text x="659.2" y="112.0" class="t-small" text-anchor="middle">Mercado maduro /</text>
-<text x="659.2" y="125.0" class="t-small" text-anchor="middle">commodity</text>
-<line x1="2.0" y1="168.0" x2="718.0" y2="168.0" class="grid"/>
-<text x="2.0" y="188.0" class="t-labb" text-anchor="start">Dónde compite un producto nuevo</text>
-<text x="2.0" y="206.0" class="t-small" text-anchor="start">M0–M2 · el riesgo dominante es técnico: hay que</text>
-<text x="2.0" y="220.0" class="t-small" text-anchor="start">demostrar que el robot resuelve el problema físico.</text>
-<text x="370.0" y="206.0" class="t-small" text-anchor="start">M3–M5 · el riesgo dominante es comercial: hay que</text>
-<text x="370.0" y="220.0" class="t-small" text-anchor="start">demostrar una ventaja frente a un incumbente que ya</text>
-<text x="370.0" y="234.0" class="t-small" text-anchor="start">cobra.</text>
-<text x="2.0" y="224.0" class="t-note" text-anchor="start">Esquema del autor.</text>
+<rect x="2.0" y="76.0" width="117.7" height="34.0" fill="#9ec5f4" rx="4.0"/>
+<text x="60.8" y="98.0" class="t-labb" text-anchor="middle">M0</text>
+<text x="60.8" y="128.0" class="t-small" text-anchor="middle">Sólo papers y</text>
+<text x="60.8" y="141.0" class="t-small" text-anchor="middle">conceptos</text>
+<rect x="121.7" y="76.0" width="117.7" height="34.0" fill="#6da7ec" rx="0.0"/>
+<text x="180.5" y="98.0" class="t-labb" text-anchor="middle">M1</text>
+<text x="180.5" y="128.0" class="t-small" text-anchor="middle">Prototipos de</text>
+<text x="180.5" y="141.0" class="t-small" text-anchor="middle">laboratorio</text>
+<rect x="241.3" y="76.0" width="117.7" height="34.0" fill="#3987e5" rx="0.0"/>
+<text x="300.2" y="98.0" class="t-labb t-inv" text-anchor="middle">M2</text>
+<text x="300.2" y="128.0" class="t-small" text-anchor="middle">Demostración</text>
+<text x="300.2" y="141.0" class="t-small" text-anchor="middle">industrial</text>
+<text x="300.2" y="154.0" class="t-small" text-anchor="middle">aislada</text>
+<rect x="361.0" y="76.0" width="117.7" height="34.0" fill="#256abf" rx="0.0"/>
+<text x="419.8" y="98.0" class="t-labb t-inv" text-anchor="middle">M3</text>
+<text x="419.8" y="128.0" class="t-small" text-anchor="middle">Servicios</text>
+<text x="419.8" y="141.0" class="t-small" text-anchor="middle">comerciales</text>
+<text x="419.8" y="154.0" class="t-small" text-anchor="middle">iniciales</text>
+<rect x="480.7" y="76.0" width="117.7" height="34.0" fill="#184f95" rx="0.0"/>
+<text x="539.5" y="98.0" class="t-labb t-inv" text-anchor="middle">M4</text>
+<text x="539.5" y="128.0" class="t-small" text-anchor="middle">Múltiples</text>
+<text x="539.5" y="141.0" class="t-small" text-anchor="middle">proveedores y</text>
+<text x="539.5" y="154.0" class="t-small" text-anchor="middle">despliegues</text>
+<rect x="600.3" y="76.0" width="117.7" height="34.0" fill="#0d366b" rx="4.0"/>
+<text x="659.2" y="98.0" class="t-labb t-inv" text-anchor="middle">M5</text>
+<text x="659.2" y="128.0" class="t-small" text-anchor="middle">Mercado maduro /</text>
+<text x="659.2" y="141.0" class="t-small" text-anchor="middle">commodity</text>
+<line x1="2.0" y1="184.0" x2="718.0" y2="184.0" class="grid"/>
+<text x="2.0" y="204.0" class="t-labb" text-anchor="start">Dónde compite un producto nuevo</text>
+<text x="2.0" y="222.0" class="t-small" text-anchor="start">M0–M2 · el riesgo dominante es técnico: hay que</text>
+<text x="2.0" y="236.0" class="t-small" text-anchor="start">demostrar que el robot resuelve el problema físico.</text>
+<text x="370.0" y="222.0" class="t-small" text-anchor="start">M3–M5 · el riesgo dominante es comercial: hay que</text>
+<text x="370.0" y="236.0" class="t-small" text-anchor="start">demostrar una ventaja frente a un incumbente que ya</text>
+<text x="370.0" y="250.0" class="t-small" text-anchor="start">cobra.</text>
+<text x="2.0" y="278.0" class="t-note" text-anchor="start">Esquema del autor.</text>
 </svg>
 <figcaption>Figura 3 — Escala de madurez comercial M0–M5 usada en todo el documento. <span class="src">Elaboración propia.</span></figcaption>
 </figure>
 <aside class="callout c-riesgo">
 <div class="callout-h">No confundir madurez con nivel tecnológico</div>
-<p>Un desarrollo puede tener nivel tecnológico alto y madurez comercial baja: la escala mide <strong>despliegue real en el mercado</strong>, no capacidad demostrada en laboratorio.</p>
+<p>Un desarrollo puede tener <a class="term" href="#g-trl" title="Nivel de madurez tecnológica (TRL): Escala que mide cuán probada está una tecnología, desde el principio observado hasta el sistema validado en operación. No mide despliegue comerc">nivel tecnológico</a> alto y madurez comercial baja: la escala mide <strong>despliegue real en el mercado</strong>, no capacidad demostrada en laboratorio.</p>
 </aside>
 <h3 id="4-proceso-de-evaluacion">4. Proceso de evaluación</h3>
 <figure class="fig" id="fig-proceso">
@@ -772,7 +794,7 @@
 <h4 id="4-1-la-busqueda-historica-es-obligatoria">4.1 La búsqueda histórica es obligatoria</h4>
 <p>Para cada candidato se reconstruye una línea temporal completa, además de la búsqueda del estado actual.</p>
 <figure class="fig" id="fig-cronologia">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 210" role="img" aria-labelledby="ti-fig-cronologia de-fig-cronologia">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 244" role="img" aria-labelledby="ti-fig-cronologia de-fig-cronologia">
 <title id="ti-fig-cronologia">Línea temporal de prior art</title><desc id="de-fig-cronologia">Siete hitos desde la identificación del problema hasta el estado 2026.</desc>
 <style>
   text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
@@ -791,37 +813,38 @@
   .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
   .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
 </style>
-<rect width="720" height="210" fill="#ffffff"/>
+<rect width="720" height="244" fill="#ffffff"/>
 <text x="2.0" y="18.0" class="t-title" text-anchor="start">Línea temporal que debe reconstruirse para cada candidato</text>
 <text x="2.0" y="36.0" class="t-sub" text-anchor="start">El objetivo es detectar programas anteriores y las razones físicas o económicas por las que se</text>
 <text x="2.0" y="51.0" class="t-sub" text-anchor="start">detuvieron.</text>
-<line x1="30.0" y1="92.0" x2="690.0" y2="92.0" class="axis"/>
-<circle cx="30.0" cy="92.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
-<text x="30.0" y="53.0" class="t-small" text-anchor="middle">Problema</text>
-<text x="30.0" y="66.0" class="t-small" text-anchor="middle">identificado</text>
-<circle cx="140.0" cy="92.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
-<text x="140.0" y="53.0" class="t-small" text-anchor="middle">Primer</text>
-<text x="140.0" y="66.0" class="t-small" text-anchor="middle">prototipo</text>
-<circle cx="250.0" cy="92.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
-<text x="250.0" y="53.0" class="t-small" text-anchor="middle">Investigación</text>
-<text x="250.0" y="66.0" class="t-small" text-anchor="middle">EPRI</text>
-<circle cx="360.0" cy="92.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
-<text x="360.0" y="53.0" class="t-small" text-anchor="middle">Familias de</text>
-<text x="360.0" y="66.0" class="t-small" text-anchor="middle">patentes</text>
-<circle cx="470.0" cy="92.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
-<text x="470.0" y="53.0" class="t-small" text-anchor="middle">Primeros</text>
-<text x="470.0" y="66.0" class="t-small" text-anchor="middle">despliegues</text>
-<circle cx="580.0" cy="92.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
-<text x="580.0" y="53.0" class="t-small" text-anchor="middle">Productos</text>
-<text x="580.0" y="66.0" class="t-small" text-anchor="middle">comerciales</text>
-<circle cx="690.0" cy="92.0" r="5.5" fill="#14496b" stroke="#ffffff" stroke-width="2"/>
-<text x="690.0" y="53.0" class="t-small" text-anchor="middle">Estado</text>
-<text x="690.0" y="66.0" class="t-small" text-anchor="middle">2026</text>
-<rect x="2.0" y="132.0" width="716.0" height="52.0" fill="#f7f9fb" rx="5.0"/>
-<text x="14.0" y="151.0" class="t-labb" text-anchor="start">Evidencia negativa: el hallazgo más valioso</text>
-<text x="14.0" y="169.0" class="t-small" text-anchor="start">Productos discontinuados · programas abandonados · resultados insuficientes · robots atascados · herramientas</text>
-<text x="14.0" y="183.0" class="t-small" text-anchor="start">que no entraron · fallas de tether · NDE sin sensibilidad · costos que destruyeron el caso de negocio.</text>
-<text x="2.0" y="204.0" class="t-note" text-anchor="start">Esquema del autor.</text>
+<line x1="58.0" y1="120.0" x2="662.0" y2="120.0" class="axis"/>
+<circle cx="58.0" cy="120.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<text x="58.0" y="81.0" class="t-small" text-anchor="middle">Problema</text>
+<text x="58.0" y="94.0" class="t-small" text-anchor="middle">identificado</text>
+<circle cx="158.7" cy="120.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<text x="158.7" y="81.0" class="t-small" text-anchor="middle">Primer</text>
+<text x="158.7" y="94.0" class="t-small" text-anchor="middle">prototipo</text>
+<circle cx="259.3" cy="120.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<text x="259.3" y="81.0" class="t-small" text-anchor="middle">Investigación</text>
+<text x="259.3" y="94.0" class="t-small" text-anchor="middle">EPRI</text>
+<circle cx="360.0" cy="120.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<text x="360.0" y="81.0" class="t-small" text-anchor="middle">Familias de</text>
+<text x="360.0" y="94.0" class="t-small" text-anchor="middle">patentes</text>
+<circle cx="460.7" cy="120.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<text x="460.7" y="81.0" class="t-small" text-anchor="middle">Primeros</text>
+<text x="460.7" y="94.0" class="t-small" text-anchor="middle">despliegues</text>
+<circle cx="561.3" cy="120.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<text x="561.3" y="81.0" class="t-small" text-anchor="middle">Productos</text>
+<text x="561.3" y="94.0" class="t-small" text-anchor="middle">comerciales</text>
+<circle cx="662.0" cy="120.0" r="5.5" fill="#14496b" stroke="#ffffff" stroke-width="2"/>
+<text x="662.0" y="81.0" class="t-small" text-anchor="middle">Estado</text>
+<text x="662.0" y="94.0" class="t-small" text-anchor="middle">2026</text>
+<rect x="2.0" y="158.0" width="716.0" height="58.0" fill="#f7f9fb" rx="5.0"/>
+<text x="14.0" y="178.0" class="t-labb" text-anchor="start">Evidencia negativa: el hallazgo más valioso</text>
+<text x="14.0" y="196.0" class="t-small" text-anchor="start">Productos discontinuados · programas abandonados · resultados insuficientes · robots atascados · herramientas</text>
+<text x="14.0" y="210.0" class="t-small" text-anchor="start">que no entraron · fallas del cable de conexión · ensayos que no alcanzaron la sensibilidad necesaria · costos</text>
+<text x="14.0" y="224.0" class="t-small" text-anchor="start">que destruyeron el caso de negocio.</text>
+<text x="2.0" y="238.0" class="t-note" text-anchor="start">Esquema del autor.</text>
 </svg>
 <figcaption>Figura 5 — Línea temporal de prior art que debe reconstruirse por candidato. <span class="src">Elaboración propia.</span></figcaption>
 </figure>
@@ -838,7 +861,7 @@
 </li>
 <li>ensayos no destructivos que no alcanzaron la sensibilidad requerida;
 </li>
-<li>costos que destruyeron el caso de negocio.
+<li>costos que destruyeron el <a class="term" href="#g-caso-negocio" title="Caso de negocio: Documento que justifica la inversión: necesidad, alternativas evaluadas, costos, beneficios esperados, riesgos y criterio de éxito. Es la base sobre la que se apru">caso de negocio</a>.
 </li>
 </ul>
 <h2 class="part" id="parte-ii-mapa-de-oportunidades">Parte II — Mapa de oportunidades</h2>
@@ -929,7 +952,7 @@
 <h4 id="6-2-evidencia-disponible">6.2 Evidencia disponible</h4>
 <aside class="callout c-dato">
 <div class="callout-h">Dato EPRI verificado — MTA-MA-029 <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></div>
-<p>Experiencia reportada por una utility con costo de proveedor de aproximadamente <strong>USD 100.000 por implementación</strong>; ejecución de la inspección en <strong>menos de un día</strong>; reducción de costo de aproximadamente <strong>10×</strong> frente a la inspección manual en ese caso; payback inmediato según la evaluación SWEEP; tecnología comercialmente disponible; riesgos identificados de falla de crawler o de herramienta. Una parte sustancial del ahorro proviene de evitar andamiaje y acceso humano.</p>
+<p>Experiencia reportada por una utility con costo de proveedor de aproximadamente <strong>USD 100.000 por implementación</strong>; ejecución de la inspección en <strong>menos de un día</strong>; reducción de costo de aproximadamente <strong>10×</strong> frente a la inspección manual en ese caso; <a class="term" href="#g-payback" title="Período de repago (payback): Tiempo que tarda un proyecto en generar flujos de caja suficientes para recuperar la inversión inicial. Es un criterio de liquidez y de riesgo, no de r">payback</a> inmediato según la evaluación <a class="term" href="#g-sweep" title="Evaluación económica SWEEP: Método de evaluación con el que EPRI estima costo de implementación, ahorro esperado y repago de una tecnología en su catálogo de modernización de plant">SWEEP</a>; tecnología comercialmente disponible; riesgos identificados de falla de crawler o de herramienta. Una parte sustancial del ahorro proviene de evitar andamiaje y acceso humano.</p>
 <p><strong>Este dato no se generaliza al mercado completo sin evidencia adicional.</strong></p>
 </aside>
 <figure class="fig" id="fig-ipb-economia">
@@ -1101,11 +1124,11 @@
 <figcaption>Figura 8 — Acceso a header, soldaduras tubo-header y tubos en una caldera de recuperación. <span class="src">Esquema del autor.</span></figcaption>
 </figure>
 <h4 id="7-1-el-problema-fisico">7.1 El problema físico</h4>
-<p>El estudio EPRI 1017635 sobre tecnología de robots tipo serpiente para inspección de headers y tubos en calderas de recuperación de calor documenta el punto de partida: ciertos tubos interiores <strong>no pueden inspeccionarse fácilmente con ensayos no destructivos convencionales sin acceso destructivo</strong>. De ese informe deben extraerse las razones por las que la inspección convencional no llega, las geometrías y diámetros involucrados, las longitudes, los tipos de caldera, los puntos de acceso, las modalidades de inspección evaluadas, los conceptos de robot analizados, lo que se demostró, lo que quedó sin resolver y por qué ese concepto no se comercializó directamente.</p>
+<p>El estudio EPRI 1017635 sobre tecnología de robots tipo serpiente para inspección de <a class="term" href="#g-header" title="Header o colector: Tubo de gran diámetro al que se conectan decenas de tubos menores. La unión soldada tubo-header es un punto de falla frecuente y de inspección difícil.">headers</a> y tubos en calderas de recuperación de calor documenta el punto de partida: ciertos tubos interiores <strong>no pueden inspeccionarse fácilmente con ensayos no destructivos convencionales sin acceso destructivo</strong>. De ese informe deben extraerse las razones por las que la inspección convencional no llega, las geometrías y diámetros involucrados, las longitudes, los tipos de caldera, los puntos de acceso, las modalidades de inspección evaluadas, los conceptos de robot analizados, lo que se demostró, lo que quedó sin resolver y por qué ese concepto no se comercializó directamente.</p>
 <h4 id="7-2-el-incumbente">7.2 El incumbente</h4>
 <aside class="callout c-dato">
 <div class="callout-h">Declarado por el fabricante — TesTex <span class="badge b-tipo">Declaración</span></div>
-<p>La herramienta de acceso interno (IAT) es un crawler que se coloca dentro del header; puede ingresar por la tapa del extremo o, en versión modular, por un orificio de aproximadamente 8 pulgadas; empuja una sonda de corrientes inducidas por campo remoto junto con una cámara a lo largo de los tubos; se opera en forma remota; según el fabricante inspecciona todos los tubos de un header en tres o cuatro turnos y declara cobertura del 100 % de los tubos dentro de sus condiciones de aplicación, con despliegues en múltiples utilities.</p>
+<p>La herramienta de acceso interno (IAT) es un crawler que se coloca dentro del header; puede ingresar por la tapa del extremo o, en versión modular, por un orificio de aproximadamente 8 pulgadas; empuja una sonda de <a class="term" href="#g-rfet" title="Ensayo por campo remoto y campo lejano (RFET / BFET): Variantes electromagnéticas usadas para inspeccionar tubos y soldaduras desde el interior, incluso a través de la pared del tu">corrientes inducidas por campo remoto</a> junto con una cámara a lo largo de los tubos; se opera en forma remota; según el fabricante inspecciona todos los tubos de un header en tres o cuatro turnos y declara cobertura del 100 % de los tubos dentro de sus condiciones de aplicación, con despliegues en múltiples utilities.</p>
 <p>La herramienta complementaria de inspección de soldaduras por campo lejano declara del orden de 200 soldaduras por turno.</p>
 <p><strong>Ninguna de estas cifras es evidencia independiente hasta que se contraste con clientes, contratos o literatura técnica.</strong></p>
 </aside>
@@ -1199,7 +1222,7 @@
 <h4 id="8-1-estado-de-la-investigacion">8.1 Estado de la investigación</h4>
 <aside class="callout c-dato">
 <div class="callout-h">Investigación vigente <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></div>
-<p>El programa de transmisión subterránea de EPRI publicó <em>Underground Transmission Vault Inspection Using Robotic Techniques</em> (3002000878) en 2013 y mantiene el trabajo con la actualización 2025 (3002032834) y actividad declarada para 2026 y 2027. Los objetivos declarados son mejorar la seguridad de los trabajadores y reducir los requerimientos de salida de servicio del circuito. Se reportan conceptos y prototipos demostrados en laboratorio y en sitios de utilities, con demostraciones en planificación.</p>
+<p>El programa de transmisión subterránea de EPRI publicó <em>Underground Transmission Vault Inspection Using Robotic Techniques</em> (3002000878) sobre inspección de <a class="term" href="#g-vault" title="Cámara subterránea (vault): Recinto de hormigón bajo la calzada donde se alojan empalmes de cables de transmisión. Es un espacio confinado con cables energizados y riesgo de gases.">vaults</a> en 2013 y mantiene el trabajo con la actualización 2025 (3002032834) y actividad declarada para 2026 y 2027. Los objetivos declarados son mejorar la seguridad de los trabajadores y reducir los requerimientos de salida de servicio del circuito. Se reportan conceptos y prototipos demostrados en laboratorio y en sitios de utilities, con demostraciones en planificación.</p>
 </aside>
 <p>Existe además un proyecto complementario sobre inspección de bocas de registro con cable extruido dentro de los proyectos suplementarios colaborativos 2025–2026, cuya arquitectura debe caracterizarse: inspección desde la superficie, cable energizado, termografía infrarroja, cámara, detección de gases, brazo mecánico y, si aplica, descargas parciales o medición acústica y ultrasónica.</p>
 <h4 id="8-2-competencia-a-investigar">8.2 Competencia a investigar</h4>
@@ -1261,7 +1284,7 @@
 <text x="566.0" y="86.0" class="t-small" text-anchor="middle">derivación (tee)</text>
 <path d="M178.0 286.0 L178.0 167.0" class="st-hair"/>
 <circle cx="178.0" cy="167.0" r="2" fill="#8a8880"/>
-<text x="178.0" y="298.0" class="t-small" text-anchor="middle">crawler con NDE embarcado</text>
+<text x="178.0" y="298.0" class="t-small" text-anchor="middle">crawler con ensayo no destructivo a bordo</text>
 <path d="M316.0 286.0 L288.0 196.0" class="st-hair"/>
 <circle cx="288.0" cy="196.0" r="2" fill="#8a8880"/>
 <text x="316.0" y="298.0" class="t-small" text-anchor="middle">codo 1D</text>
@@ -1280,10 +1303,10 @@
 <h4 id="9-1-evidencia-disponible">9.1 Evidencia disponible</h4>
 <aside class="callout c-dato">
 <div class="callout-h">Dato EPRI verificado — MTA-MA-017 <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></div>
-<p>Inspección desde un único punto de acceso, que puede evitar la excavación. La técnica electromagnética acústica permite determinados exámenes volumétricos sin remover el revestimiento. Según la evaluación SWEEP: costo de implementación menor a un millón de dólares; ahorro mayor a un millón y menor a cinco millones por utilización; payback inmediato o menor a un año; tecnología ya comercialmente implementada en el sector nuclear.</p>
+<p>Inspección desde un único punto de acceso, que puede evitar la excavación. La <a class="term" href="#g-emat" title="Transductor electromagnético-acústico (EMAT): Sensor que genera ondas ultrasónicas en la propia pieza mediante campos electromagnéticos, sin necesidad de gel acoplante y, en cierto">técnica electromagnética acústica (EMAT)</a> permite determinados exámenes volumétricos sin remover el revestimiento. Según la evaluación SWEEP: costo de implementación menor a un millón de dólares; ahorro mayor a un millón y menor a cinco millones por utilización; payback inmediato o menor a un año; tecnología ya comercialmente implementada en el sector nuclear.</p>
 </aside>
 <figure class="fig" id="fig-piping-economia">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 268" role="img" aria-labelledby="ti-fig-piping-economia de-fig-piping-economia">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 322" role="img" aria-labelledby="ti-fig-piping-economia de-fig-piping-economia">
 <title id="ti-fig-piping-economia">Rango de valor por utilización en piping enterrado</title><desc id="de-fig-piping-economia">Barra del costo de implementación y banda del ahorro esperado por utilización.</desc>
 <style>
   text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
@@ -1302,7 +1325,7 @@
   .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
   .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
 </style>
-<rect width="720" height="268" fill="#ffffff"/>
+<rect width="720" height="322" fill="#ffffff"/>
 <text x="2.0" y="18.0" class="t-title" text-anchor="start">Piping enterrado: rango de valor por utilización</text>
 <text x="2.0" y="36.0" class="t-sub" text-anchor="start">Evaluación EPRI SWEEP. El ahorro se expresa como rango acotado, no como valor puntual.</text>
 <line x1="200.0" y1="82.0" x2="200.0" y2="176.0" class="grid"/>
@@ -1325,17 +1348,17 @@
 <rect x="280.0" y="140.0" width="320.0" height="20.0" fill="#2a78d6" rx="4.0"/>
 <text x="440.0" y="155.0" class="t-val t-inv" text-anchor="middle">&gt; 1 M   y   &lt; 5 M</text>
 <line x1="200.0" y1="176.0" x2="600.0" y2="176.0" class="axis"/>
-<rect x="2.0" y="192.0" width="716.0" height="70.0" fill="#f2f6fa" rx="5.0"/>
-<rect x="2.0" y="192.0" width="3.0" height="70.0" fill="#14496b" rx="0.0"/>
+<rect x="2.0" y="192.0" width="716.0" height="96.0" fill="#f2f6fa" rx="5.0"/>
+<rect x="2.0" y="192.0" width="3.0" height="96.0" fill="#14496b" rx="0.0"/>
 <text x="14.0" y="212.0" class="t-labb" text-anchor="start">Lectura de negocio</text>
-<text x="14.0" y="230.0" class="t-small" text-anchor="start">Payback inmediato o menor a un año y tecnología ya comercialmente implementada en el sector nuclear: valor</text>
-<text x="14.0" y="244.0" class="t-small" text-anchor="start">alto con madurez alta. Un crawler genérico de tuberías no es una oportunidad; sólo lo es un whitespace</text>
+<text x="14.0" y="230.0" class="t-small" text-anchor="start">La inversión se recupera en menos de un año (payback) y la comercialmente implementada en el sector nuclear:</text>
+<text x="14.0" y="244.0" class="t-small" text-anchor="start">valor alto con madurez alta. Un crawler genérico de tuberías no es una oportunidad; sólo lo es un whitespace</text>
 <text x="14.0" y="258.0" class="t-small" text-anchor="start">geométrico o de despliegue concreto.</text>
-<text x="2.0" y="260.0" class="t-note" text-anchor="start">Fuente: EPRI, Plant Modernization Toolbox, MTA-MA-017.</text>
+<text x="2.0" y="314.0" class="t-note" text-anchor="start">Fuente: EPRI, Plant Modernization Toolbox, MTA-MA-017.</text>
 </svg>
 <figcaption>Figura 11 — Costo de implementación y rango de ahorro esperado por utilización. <span class="src">EPRI, Plant Modernization Toolbox, MTA-MA-017.</span></figcaption>
 </figure>
-<p>De la compilación de lecciones aprendidas sobre tuberías enterradas y subterráneas (EPRI 1025272) deben extraerse: por qué la inspección en línea convencional no funciona bien en instalaciones nucleares, ausencia de estaciones de lanzamiento y recepción, codos, derivaciones, tramos verticales, revestimientos, diámetros, condición con y sin agua, y los eventos de material extraño y recuperación.</p>
+<p>De la compilación de lecciones aprendidas sobre tuberías enterradas y subterráneas (EPRI 1025272) deben extraerse: por qué la <a class="term" href="#g-ili" title="Inspección en línea (ILI): Inspección de una tubería mediante un dispositivo que recorre su interior. En instalaciones nucleares suele ser inviable por la falta de estaciones de la">inspección en línea</a> convencional no funciona bien en instalaciones nucleares, ausencia de estaciones de lanzamiento y recepción, codos, derivaciones, tramos verticales, revestimientos, diámetros, condición con y sin agua, y los eventos de material extraño y recuperación.</p>
 <h4 id="9-2-competencia">9.2 Competencia</h4>
 <p>Diakont, con caso documentado de primera inspección en línea de tubería enterrada en el sector nuclear · Structural Integrity Associates · Westinghouse · Framatome · Eddyfi/Inuktun, incluida la familia VersaTrax · Waygate Technologies · Gecko Robotics · MISTRAS · ROSEN y NDT Global en inspección en línea de hidrocarburos · empresas de inspección de tuberías industriales.</p>
 <aside class="callout c-clave">
@@ -1409,7 +1432,7 @@
 <figcaption>Figura 12 — Espacio anular de inspección en un contenedor de almacenamiento en seco. <span class="src">Esquema del autor.</span></figcaption>
 </figure>
 <h4 id="10-1-evidencia-disponible">10.1 Evidencia disponible</h4>
-<p>EPRI desarrolla sistemas de inspección y de entrega robótica para almacenamiento en canister seco (3002008234, <em>Dry Canister Storage System Inspection and Robotic Delivery System Development</em>), con difusión adicional en EPRI Journal sobre robots trepadores para contenedores. Los elementos verificados hasta la fecha: espacios anulares muy estrechos; combinación de cámara, corrientes inducidas, técnica electromagnética acústica y medición de dosis y temperatura en ciertas configuraciones; múltiples ensayos de campo; y una reducción de costo muy alta frente a los métodos que exigen izaje pesado o movimiento del canister.</p>
+<p>EPRI desarrolla sistemas de inspección y de entrega robótica para almacenamiento en <a class="term" href="#g-canister" title="Canister y sobre-contenedor: En almacenamiento en seco de combustible gastado, el canister sellado contiene el combustible y el sobre-contenedor de hormigón lo blinda. Entre ambos ">canister</a> seco (3002008234, <em>Dry Canister Storage System Inspection and Robotic Delivery System Development</em>), con difusión adicional en EPRI Journal sobre robots trepadores para contenedores. Los elementos verificados hasta la fecha: espacios anulares muy estrechos; combinación de cámara, <a class="term" href="#g-eca" title="Corrientes inducidas y arreglos (ECA): Técnica electromagnética que detecta discontinuidades superficiales y subsuperficiales en materiales conductores; en versión de arreglo cubre">corrientes inducidas</a>, técnica electromagnética acústica y medición de dosis y temperatura en ciertas configuraciones; múltiples ensayos de campo; y una reducción de costo muy alta frente a los métodos que exigen izaje pesado o movimiento del canister.</p>
 <h4 id="10-2-competencia">10.2 Competencia</h4>
 <p>Robotic Technologies of Tennessee declara que instalaciones nucleares utilizan sus plataformas para inspección de almacenamiento en seco. Deben verificarse: los modelos exactos; los programas de EPRI y del Departamento de Energía; el caso de San Onofre (SONGS); los fabricantes de sistemas de almacenamiento —Holtec, Orano, NAC—; los requisitos de la Comisión Reguladora Nuclear; los desarrollos universitarios asociados, entre ellos los de Penn State y la iniciativa PRINSE; la calificación frente a radiación; y el panorama de patentes.</p>
 <aside class="callout c-clave">
@@ -1469,7 +1492,7 @@
 <figcaption>Figura 13 — Inspección de conducto forzado con vehículo remoto y tether. <span class="src">Esquema del autor.</span></figcaption>
 </figure>
 <h4 id="11-1-base-de-evidencia">11.1 Base de evidencia</h4>
-<p>El informe EPRI sobre tecnología de vehículos operados remotamente en instalaciones hidroeléctricas (TR-113584-V7 / 1007576) aporta: aplicaciones en túnel y conducto forzado, inspección visual, sonar, medición de espesor por ultrasonido, limitaciones de tether, alcance, recuperación, casos de estudio y ahorro por evitar vaciado y salida de servicio. Debe complementarse con EPRI 3002011682, <em>Autonomous Underwater Vehicles for Tunnel and Penstock Inspection</em>, y con la actividad vigente del EPRI Unmanned Mobile Technologies Collaboration Group.</p>
+<p>El informe EPRI sobre tecnología de <a class="term" href="#g-rov" title="Vehículo remoto y vehículo autónomo (ROV / AUV): Vehículos sumergibles: el primero opera unido por cable y comandado por un operador; el segundo navega sin cable, siguiendo un plan">vehículos operados remotamente</a> en instalaciones hidroeléctricas (TR-113584-V7 / 1007576) aporta: aplicaciones en túnel y <a class="term" href="#g-penstock" title="Conducto forzado (penstock): Tubería que conduce el agua desde la toma hasta la turbina en una central hidroeléctrica. Su inspección exige vaciar el conducto o entrar con vehículo ">conducto forzado</a>, inspección visual, sonar, medición de espesor por ultrasonido, limitaciones de tether, alcance, recuperación, casos de estudio y ahorro por evitar vaciado y salida de servicio. Debe complementarse con EPRI 3002011682, <em>Autonomous Underwater Vehicles for Tunnel and Penstock Inspection</em>, y con la actividad vigente del EPRI Unmanned Mobile Technologies Collaboration Group.</p>
 <h4 id="11-2-competencia">11.2 Competencia</h4>
 <p>Deep Trekker · VideoRay · Eddyfi/Inuktun · Deep Ocean Engineering · Saab Seaeye · integradores sobre plataformas Blue Robotics · vehículos propios de utilities como Hydro-Québec · fabricantes de turbinas con área de servicio: Voith, Andritz y GE Vernova Hydro · proveedores especializados en inspección de túneles.</p>
 <aside class="callout c-clave">
@@ -1505,6 +1528,7 @@
 <path d="M192 174 H268 a24 24 0 0 0 24 -24 V132 a24 24 0 0 1 24 -24 H398" fill="none" stroke="#eb6834" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="398" cy="108" r="6.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
 <rect x="72.0" y="158.0" width="100.0" height="32.0" fill="#eb6834" rx="4.0"/>
+<path d="M172 174 H192" fill="none" stroke="#eb6834" stroke-width="9" stroke-linecap="round"/>
 <path d="M398.0 74.0 L398.0 101.0" class="st-hair"/>
 <circle cx="398.0" cy="101.0" r="2" fill="#8a8880"/>
 <text x="398.0" y="68.0" class="t-small" text-anchor="middle">punta con cámara y sensor</text>
@@ -1520,7 +1544,7 @@
 <figcaption>Figura 14 — Avance por eversión en un conducto ramificado de equipo de planta. <span class="src">Esquema del autor.</span></figcaption>
 </figure>
 <h4 id="12-1-estado">12.1 Estado</h4>
-<p>EPRI registra el estudio 3002032954, <em>Everting Vine Robots for Plant Equipment Inspection – Technology Review and Feasibility Study</em>, cuyos resultados deben verificarse directamente y sin asumir contenidos no públicos. Como fuentes externas iniciales: la literatura de <em>IEEE Robotics &amp; Automation Magazine</em> sobre robots vine de gran escala para inspección industrial; el trabajo conjunto de UCSB y Bechtel; los desarrollos de Stanford; y las empresas emergentes Trellis Robotics e IvySpec.</p>
+<p>EPRI registra sobre <a class="term" href="#g-vine" title="Robot everting (vine): Robot que avanza dando vuelta su propio cuerpo desde la punta, por presión interna, de modo que la superficie no se arrastra contra la pared. Permite recorre">robots everting</a> el estudio 3002032954, <em>Everting Vine Robots for Plant Equipment Inspection – Technology Review and Feasibility Study</em>, cuyos resultados deben verificarse directamente y sin asumir contenidos no públicos. Como fuentes externas iniciales: la literatura de <em>IEEE Robotics &amp; Automation Magazine</em> sobre robots vine de gran escala para inspección industrial; el trabajo conjunto de UCSB y Bechtel; los desarrollos de Stanford; y las empresas emergentes Trellis Robotics e IvySpec.</p>
 <aside class="callout c-clave">
 <div class="callout-h">Pregunta estratégica que decide el candidato</div>
 <p>Un robot everting es <strong>una tecnología, no un mercado</strong>. Sólo se justifica si se identifica un activo concreto donde el crawler no pasa, el boroscopio no alcanza, el desmontaje es costoso y el robot puede transportar un ensayo no destructivo útil.</p>
@@ -1648,7 +1672,8 @@
 <p>Sólo si hay datos suficientes. Separado en global, Estados Unidos, Latinoamérica y Argentina.</p>
 </div>
 <div class="card">
-<div class="card-h">19 · Precio y ticket</div>
+<div class="card-h">19 · Precio y {{t:ticket</div>
+<div class="card-m">ticket}}</div>
 <p>Precios publicados, licitaciones, contratos, cotizaciones o comparables. No se inventa.</p>
 </div>
 <div class="card">
@@ -1660,7 +1685,8 @@
 <p>Mecánica, ensayo no destructivo, conjunto de datos, calibración, software, calificación, flujo de trabajo de servicio y patentes.</p>
 </div>
 <div class="card">
-<div class="card-h">22 · Decisión</div>
+<div class="card-h">22 · {{t:go-nogo</div>
+<div class="card-m">Decisión de avance}}</div>
 <p>Avanzar o no avanzar, con conclusión breve y sin ambigüedad.</p>
 </div>
 <div class="card">
@@ -1684,7 +1710,7 @@
 <tbody><tr><td class="empty" colspan="10">Plantilla de registro: se completa durante la investigación.</td></tr></tbody>
 </table></div>
 <h3 id="16-dimensionamiento-de-mercado">16. Dimensionamiento de mercado</h3>
-<p>No se usan como base informes genéricos del tipo «mercado de robots de inspección». El cálculo se construye <strong>de abajo hacia arriba</strong>:</p>
+<p>No se usan como base informes genéricos del tipo «mercado de robots de inspección». El cálculo se construye <strong><a class="term" href="#g-bottom-up" title="Dimensionamiento de abajo hacia arriba: Cálculo del mercado partiendo de unidades verificables —cantidad de activos, inspecciones por año, precio por inspección— en lugar de tomar ">de abajo hacia arriba</a></strong>, y su resultado es el mercado total direccionable de servicios (<a class="term" href="#g-tam" title="Mercado total direccionable (TAM): Valor anual de todo el mercado al que un producto podría aspirar si capturara el 100 % de la demanda que resuelve. Se acompaña de SAM (la parte a">TAM</a>):</p>
 <p><code>Activos direccionables × inspecciones por año × ticket de servicio = mercado de servicios</code></p>
 <p>Se publican tres escenarios —bajo, base y alto— con la fuente de cada entrada. <strong>Si falta información crítica, no se fabrica el número.</strong></p>
 <h4 id="16-1-fuentes-preferidas-por-region">16.1 Fuentes preferidas por región</h4>
@@ -1709,7 +1735,7 @@
 <h3 id="17-economia-del-cliente">17. Economía del cliente</h3>
 <p>El análisis mira la decisión desde el lado del cliente, no desde el costo del producto.</p>
 <figure class="fig" id="fig-valor">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 250" role="img" aria-labelledby="ti-fig-valor de-fig-valor">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 276" role="img" aria-labelledby="ti-fig-valor de-fig-valor">
 <title id="ti-fig-valor">Ecuación de valor para el cliente</title><desc id="de-fig-valor">Cuatro componentes de valor menos el costo de robotización igual al valor creado.</desc>
 <style>
   text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
@@ -1728,48 +1754,50 @@
   .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
   .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
 </style>
-<rect width="720" height="250" fill="#ffffff"/>
+<rect width="720" height="276" fill="#ffffff"/>
 <text x="2.0" y="18.0" class="t-title" text-anchor="start">Cómo se construye el valor para el cliente</text>
 <text x="2.0" y="36.0" class="t-sub" text-anchor="start">La venta no es el robot: es la información de condición confiable y el costo de mantenimiento que se</text>
 <text x="2.0" y="51.0" class="t-sub" text-anchor="start">evita.</text>
-<rect x="2.0" y="78.0" width="108.0" height="76.0" fill="#ffffff" rx="5.0" stroke="#1baf7a" stroke-width="1.4"/>
-<text x="14.0" y="102.0" class="t-title" text-anchor="start">+</text>
-<text x="14.0" y="122.0" class="t-labb" text-anchor="start">Costo convencional</text>
-<text x="14.0" y="136.0" class="t-labb" text-anchor="start">evitado</text>
-<text x="117.0" y="121.0" class="t-sub" text-anchor="middle">+</text>
-<rect x="124.0" y="78.0" width="108.0" height="76.0" fill="#ffffff" rx="5.0" stroke="#1baf7a" stroke-width="1.4"/>
-<text x="136.0" y="102.0" class="t-title" text-anchor="start">+</text>
-<text x="136.0" y="122.0" class="t-labb" text-anchor="start">Outage</text>
-<text x="136.0" y="136.0" class="t-labb" text-anchor="start">evitado</text>
-<text x="239.0" y="121.0" class="t-sub" text-anchor="middle">+</text>
-<rect x="246.0" y="78.0" width="108.0" height="76.0" fill="#ffffff" rx="5.0" stroke="#1baf7a" stroke-width="1.4"/>
-<text x="258.0" y="102.0" class="t-title" text-anchor="start">+</text>
-<text x="258.0" y="122.0" class="t-labb" text-anchor="start">Riesgo</text>
-<text x="258.0" y="136.0" class="t-labb" text-anchor="start">evitado</text>
-<text x="361.0" y="121.0" class="t-sub" text-anchor="middle">+</text>
-<rect x="368.0" y="78.0" width="108.0" height="76.0" fill="#ffffff" rx="5.0" stroke="#1baf7a" stroke-width="1.4"/>
-<text x="380.0" y="102.0" class="t-title" text-anchor="start">+</text>
-<text x="380.0" y="122.0" class="t-labb" text-anchor="start">Cobertura</text>
-<text x="380.0" y="136.0" class="t-labb" text-anchor="start">adicional</text>
-<text x="483.0" y="121.0" class="t-sub" text-anchor="middle">−</text>
-<rect x="490.0" y="78.0" width="108.0" height="76.0" fill="#ffffff" rx="5.0" stroke="#eb6834" stroke-width="1.4"/>
-<text x="502.0" y="102.0" class="t-title" text-anchor="start">−</text>
-<text x="502.0" y="122.0" class="t-labb" text-anchor="start">Costo de</text>
-<text x="502.0" y="136.0" class="t-labb" text-anchor="start">robotización</text>
-<rect x="2.0" y="176.0" width="716.0" height="52.0" fill="#f2f6fa" rx="5.0"/>
-<rect x="2.0" y="176.0" width="3.0" height="52.0" fill="#14496b" rx="0.0"/>
-<text x="14.0" y="198.0" class="t-title" text-anchor="start">=  Valor creado por inspección</text>
-<text x="14.0" y="218.0" class="t-small" text-anchor="start">Cada componente se documenta por separado y con su fuente. La seguridad no recibe un valor monetario arbitrario.</text>
-<text x="2.0" y="242.0" class="t-note" text-anchor="start">Esquema del autor.</text>
+<rect x="2.0" y="88.0" width="132.0" height="84.0" fill="#ffffff" rx="5.0" stroke="#1baf7a" stroke-width="1.4"/>
+<text x="12.0" y="110.0" class="t-title" text-anchor="start">+</text>
+<text x="12.0" y="130.0" class="t-labb" text-anchor="start">Costo</text>
+<text x="12.0" y="144.0" class="t-labb" text-anchor="start">convencional</text>
+<text x="12.0" y="158.0" class="t-labb" text-anchor="start">evitado</text>
+<text x="138.0" y="135.0" class="t-sub" text-anchor="middle">+</text>
+<rect x="142.0" y="88.0" width="132.0" height="84.0" fill="#ffffff" rx="5.0" stroke="#1baf7a" stroke-width="1.4"/>
+<text x="152.0" y="110.0" class="t-title" text-anchor="start">+</text>
+<text x="152.0" y="130.0" class="t-labb" text-anchor="start">Parada de planta</text>
+<text x="152.0" y="144.0" class="t-labb" text-anchor="start">evitada</text>
+<text x="152.0" y="158.0" class="t-labb" text-anchor="start">(outage)</text>
+<text x="278.0" y="135.0" class="t-sub" text-anchor="middle">+</text>
+<rect x="282.0" y="88.0" width="132.0" height="84.0" fill="#ffffff" rx="5.0" stroke="#1baf7a" stroke-width="1.4"/>
+<text x="292.0" y="110.0" class="t-title" text-anchor="start">+</text>
+<text x="292.0" y="130.0" class="t-labb" text-anchor="start">Riesgo</text>
+<text x="292.0" y="144.0" class="t-labb" text-anchor="start">evitado</text>
+<text x="418.0" y="135.0" class="t-sub" text-anchor="middle">+</text>
+<rect x="422.0" y="88.0" width="132.0" height="84.0" fill="#ffffff" rx="5.0" stroke="#1baf7a" stroke-width="1.4"/>
+<text x="432.0" y="110.0" class="t-title" text-anchor="start">+</text>
+<text x="432.0" y="130.0" class="t-labb" text-anchor="start">Cobertura</text>
+<text x="432.0" y="144.0" class="t-labb" text-anchor="start">adicional</text>
+<text x="558.0" y="135.0" class="t-sub" text-anchor="middle">−</text>
+<rect x="562.0" y="88.0" width="132.0" height="84.0" fill="#ffffff" rx="5.0" stroke="#eb6834" stroke-width="1.4"/>
+<text x="572.0" y="110.0" class="t-title" text-anchor="start">−</text>
+<text x="572.0" y="130.0" class="t-labb" text-anchor="start">Costo de</text>
+<text x="572.0" y="144.0" class="t-labb" text-anchor="start">robotización</text>
+<rect x="2.0" y="194.0" width="716.0" height="52.0" fill="#f2f6fa" rx="5.0"/>
+<rect x="2.0" y="194.0" width="3.0" height="52.0" fill="#14496b" rx="0.0"/>
+<text x="14.0" y="216.0" class="t-title" text-anchor="start">=  Valor creado por inspección</text>
+<text x="14.0" y="236.0" class="t-small" text-anchor="start">Cada componente se documenta por separado y con su fuente. La seguridad no recibe un valor monetario arbitrario.</text>
+<text x="2.0" y="268.0" class="t-note" text-anchor="start">Esquema del autor.</text>
 </svg>
 <figcaption>Figura 15 — Componentes del valor creado por una inspección robotizada. <span class="src">Elaboración propia.</span></figcaption>
 </figure>
 <p>Cada componente se documenta por separado y con su fuente. <strong>No se asigna valor monetario arbitrario a la seguridad</strong>: se declara como beneficio no monetizado cuando no hay base para cuantificarlo.</p>
 <p>Se buscan ejemplos reales y verificables de: días de parada, andamiaje, excavación, vaciado de conducto, drenaje de tanque, extracción de rotor, entrada de personal a espacio confinado, operación de buceo y maniobras de izaje pesado.</p>
 <h3 id="18-rankings-y-analisis-de-sensibilidad">18. Rankings y análisis de sensibilidad</h3>
-<p>Se construyen dos rankings con criterios distintos, porque responden a preguntas distintas: cuál es el mejor próximo producto y cuál es la mejor posición defendible a largo plazo.</p>
+<p>Se construyen dos rankings con criterios distintos, porque responden a preguntas distintas: cuál es el mejor próximo producto (<a class="term" href="#g-fast-follow" title="Seguidor rápido (fast-follow): Estrategia de entrar a un mercado que otro abrió, con menor riesgo técnico y menor margen de diferenciación. Es el criterio del Ranking A.">seguidor rápido</a>) y cuál es la posición más defendible a largo plazo (<a class="term" href="#g-moat" title="Ventaja defendible (moat): Característica estructural que permite sostener rentabilidad frente a la competencia durante años: patentes, costos de cambio, escala, datos propietarios">moat</a>, con su <a class="term" href="#g-upside" title="Potencial de crecimiento (upside): Valor que una oportunidad podría alcanzar en el escenario favorable, por encima del caso base. Es el criterio del Ranking B.">potencial de crecimiento</a>).</p>
 <figure class="fig" id="fig-pesos">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 458" role="img" aria-labelledby="ti-fig-pesos de-fig-pesos">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 482" role="img" aria-labelledby="ti-fig-pesos de-fig-pesos">
 <title id="ti-fig-pesos">Pesos de los dos rankings</title><desc id="de-fig-pesos">Barras horizontales agrupadas comparando el peso de cada criterio en el Ranking A y en el Ranking B.</desc>
 <style>
   text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
@@ -1788,68 +1816,68 @@
   .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
   .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
 </style>
-<rect width="720" height="458" fill="#ffffff"/>
+<rect width="720" height="482" fill="#ffffff"/>
 <text x="2.0" y="18.0" class="t-title" text-anchor="start">Pesos de los dos criterios de ranking</text>
 <text x="2.0" y="36.0" class="t-sub" text-anchor="start">Ranking A prioriza el próximo producto de bajo riesgo; Ranking B, la defensa a largo plazo. Los pesos</text>
 <text x="2.0" y="51.0" class="t-sub" text-anchor="start">son una decisión de método, no un dato medido.</text>
-<rect x="2.0" y="52.0" width="10.0" height="10.0" fill="#2a78d6" rx="2.0"/>
-<text x="18.0" y="61.0" class="t-small" text-anchor="start">Ranking A — fast-follow</text>
-<rect x="190.0" y="52.0" width="10.0" height="10.0" fill="#eb6834" rx="2.0"/>
-<text x="206.0" y="61.0" class="t-small" text-anchor="start">Ranking B — moat / upside</text>
-<line x1="360.0" y1="88.0" x2="360.0" y2="396.0" class="axis"/>
-<line x1="422.5" y1="88.0" x2="422.5" y2="396.0" class="grid"/>
-<text x="422.5" y="82.0" class="t-axis" text-anchor="middle">5%</text>
-<line x1="485.0" y1="88.0" x2="485.0" y2="396.0" class="grid"/>
-<text x="485.0" y="82.0" class="t-axis" text-anchor="middle">10%</text>
-<line x1="547.5" y1="88.0" x2="547.5" y2="396.0" class="grid"/>
-<text x="547.5" y="82.0" class="t-axis" text-anchor="middle">15%</text>
-<line x1="610.0" y1="88.0" x2="610.0" y2="396.0" class="grid"/>
-<text x="610.0" y="82.0" class="t-axis" text-anchor="middle">20%</text>
-<text x="2.0" y="105.0" class="t-small" text-anchor="start">Dolor económico / costo evitado</text>
-<path d="M360.0 92.0 H606.0 a4.0 4.0 0 0 1 4.0 4.0 V99.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
-<text x="616.0" y="101.0" class="t-val" text-anchor="start">20%</text>
-<path d="M360.0 105.0 H606.0 a4.0 4.0 0 0 1 4.0 4.0 V112.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
-<text x="616.0" y="114.0" class="t-val" text-anchor="start">20%</text>
-<text x="2.0" y="139.0" class="t-small" text-anchor="start">Whitespace y competencia (IP en B)</text>
-<path d="M360.0 126.0 H543.5 a4.0 4.0 0 0 1 4.0 4.0 V133.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
-<text x="553.5" y="135.0" class="t-val" text-anchor="start">15%</text>
-<path d="M360.0 139.0 H606.0 a4.0 4.0 0 0 1 4.0 4.0 V146.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
-<text x="616.0" y="148.0" class="t-val" text-anchor="start">20%</text>
-<text x="2.0" y="173.0" class="t-small" text-anchor="start">Barrera técnica: factibilidad (A) / defensa (B)</text>
-<path d="M360.0 160.0 H543.5 a4.0 4.0 0 0 1 4.0 4.0 V167.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
-<text x="553.5" y="169.0" class="t-val" text-anchor="start">15%</text>
-<path d="M360.0 173.0 H606.0 a4.0 4.0 0 0 1 4.0 4.0 V180.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
-<text x="616.0" y="182.0" class="t-val" text-anchor="start">20%</text>
-<text x="2.0" y="207.0" class="t-small" text-anchor="start">Tamaño de mercado</text>
-<path d="M360.0 194.0 H481.0 a4.0 4.0 0 0 1 4.0 4.0 V201.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
-<text x="491.0" y="203.0" class="t-val" text-anchor="start">10%</text>
-<path d="M360.0 207.0 H543.5 a4.0 4.0 0 0 1 4.0 4.0 V214.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
-<text x="553.5" y="216.0" class="t-val" text-anchor="start">15%</text>
-<text x="2.0" y="241.0" class="t-small" text-anchor="start">Ticket y margen</text>
-<path d="M360.0 228.0 H481.0 a4.0 4.0 0 0 1 4.0 4.0 V235.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
-<text x="491.0" y="237.0" class="t-val" text-anchor="start">10%</text>
-<path d="M360.0 241.0 H481.0 a4.0 4.0 0 0 1 4.0 4.0 V248.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
-<text x="491.0" y="250.0" class="t-val" text-anchor="start">10%</text>
-<text x="2.0" y="275.0" class="t-small" text-anchor="start">Reutilización de la plataforma RI</text>
-<path d="M360.0 262.0 H543.5 a4.0 4.0 0 0 1 4.0 4.0 V269.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
-<text x="553.5" y="271.0" class="t-val" text-anchor="start">15%</text>
-<path d="M360.0 275.0 H418.5 a4.0 4.0 0 0 1 4.0 4.0 V282.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
-<text x="428.5" y="284.0" class="t-val" text-anchor="start">5%</text>
-<text x="2.0" y="309.0" class="t-small" text-anchor="start">Frecuencia y recurrencia</text>
-<path d="M360.0 296.0 H481.0 a4.0 4.0 0 0 1 4.0 4.0 V303.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
-<text x="491.0" y="305.0" class="t-val" text-anchor="start">10%</text>
-<path d="M360.0 309.0 H418.5 a4.0 4.0 0 0 1 4.0 4.0 V316.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
-<text x="428.5" y="318.0" class="t-val" text-anchor="start">5%</text>
-<text x="2.0" y="343.0" class="t-small" text-anchor="start">Overlap de clientes / canal comercial</text>
-<path d="M360.0 330.0 H418.5 a4.0 4.0 0 0 1 4.0 4.0 V337.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
-<text x="428.5" y="339.0" class="t-val" text-anchor="start">5%</text>
-<text x="366.0" y="352.0" class="t-note" text-anchor="start">no aplica en este ranking</text>
-<text x="2.0" y="377.0" class="t-small" text-anchor="start">Carga regulatoria (inversa)</text>
-<text x="366.0" y="373.0" class="t-note" text-anchor="start">no aplica en este ranking</text>
-<path d="M360.0 377.0 H418.5 a4.0 4.0 0 0 1 4.0 4.0 V384.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
-<text x="428.5" y="386.0" class="t-val" text-anchor="start">5%</text>
-<text x="2.0" y="428.0" class="t-small" text-anchor="start">Sensibilidad obligatoria: se recalcula el orden moviendo ±20 % el peso de competencia, desarrollo y mercado.</text>
-<text x="2.0" y="450.0" class="t-note" text-anchor="start">Fuente: marco de evaluación del estudio. Los pesos son síntesis de ingeniería y negocio, no una medición.</text>
+<rect x="2.0" y="74.0" width="10.0" height="10.0" fill="#2a78d6" rx="2.0"/>
+<text x="18.0" y="83.0" class="t-small" text-anchor="start">Ranking A — próximo producto, bajo riesgo</text>
+<rect x="300.0" y="74.0" width="10.0" height="10.0" fill="#eb6834" rx="2.0"/>
+<text x="316.0" y="83.0" class="t-small" text-anchor="start">Ranking B — ventaja defendible a largo plazo</text>
+<line x1="360.0" y1="112.0" x2="360.0" y2="420.0" class="axis"/>
+<line x1="422.5" y1="112.0" x2="422.5" y2="420.0" class="grid"/>
+<text x="422.5" y="106.0" class="t-axis" text-anchor="middle">5%</text>
+<line x1="485.0" y1="112.0" x2="485.0" y2="420.0" class="grid"/>
+<text x="485.0" y="106.0" class="t-axis" text-anchor="middle">10%</text>
+<line x1="547.5" y1="112.0" x2="547.5" y2="420.0" class="grid"/>
+<text x="547.5" y="106.0" class="t-axis" text-anchor="middle">15%</text>
+<line x1="610.0" y1="112.0" x2="610.0" y2="420.0" class="grid"/>
+<text x="610.0" y="106.0" class="t-axis" text-anchor="middle">20%</text>
+<text x="2.0" y="129.0" class="t-small" text-anchor="start">Dolor económico / costo evitado</text>
+<path d="M360.0 116.0 H606.0 a4.0 4.0 0 0 1 4.0 4.0 V123.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
+<text x="616.0" y="125.0" class="t-val" text-anchor="start">20%</text>
+<path d="M360.0 129.0 H606.0 a4.0 4.0 0 0 1 4.0 4.0 V136.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
+<text x="616.0" y="138.0" class="t-val" text-anchor="start">20%</text>
+<text x="2.0" y="163.0" class="t-small" text-anchor="start">Espacio no cubierto por la competencia</text>
+<path d="M360.0 150.0 H543.5 a4.0 4.0 0 0 1 4.0 4.0 V157.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
+<text x="553.5" y="159.0" class="t-val" text-anchor="start">15%</text>
+<path d="M360.0 163.0 H606.0 a4.0 4.0 0 0 1 4.0 4.0 V170.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
+<text x="616.0" y="172.0" class="t-val" text-anchor="start">20%</text>
+<text x="2.0" y="197.0" class="t-small" text-anchor="start">Barrera técnica: factibilidad (A) / defensa (B)</text>
+<path d="M360.0 184.0 H543.5 a4.0 4.0 0 0 1 4.0 4.0 V191.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
+<text x="553.5" y="193.0" class="t-val" text-anchor="start">15%</text>
+<path d="M360.0 197.0 H606.0 a4.0 4.0 0 0 1 4.0 4.0 V204.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
+<text x="616.0" y="206.0" class="t-val" text-anchor="start">20%</text>
+<text x="2.0" y="231.0" class="t-small" text-anchor="start">Tamaño de mercado</text>
+<path d="M360.0 218.0 H481.0 a4.0 4.0 0 0 1 4.0 4.0 V225.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
+<text x="491.0" y="227.0" class="t-val" text-anchor="start">10%</text>
+<path d="M360.0 231.0 H543.5 a4.0 4.0 0 0 1 4.0 4.0 V238.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
+<text x="553.5" y="240.0" class="t-val" text-anchor="start">15%</text>
+<text x="2.0" y="265.0" class="t-small" text-anchor="start">Precio por servicio y margen</text>
+<path d="M360.0 252.0 H481.0 a4.0 4.0 0 0 1 4.0 4.0 V259.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
+<text x="491.0" y="261.0" class="t-val" text-anchor="start">10%</text>
+<path d="M360.0 265.0 H481.0 a4.0 4.0 0 0 1 4.0 4.0 V272.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
+<text x="491.0" y="274.0" class="t-val" text-anchor="start">10%</text>
+<text x="2.0" y="299.0" class="t-small" text-anchor="start">Reutilización de la plataforma RI</text>
+<path d="M360.0 286.0 H543.5 a4.0 4.0 0 0 1 4.0 4.0 V293.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
+<text x="553.5" y="295.0" class="t-val" text-anchor="start">15%</text>
+<path d="M360.0 299.0 H418.5 a4.0 4.0 0 0 1 4.0 4.0 V306.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
+<text x="428.5" y="308.0" class="t-val" text-anchor="start">5%</text>
+<text x="2.0" y="333.0" class="t-small" text-anchor="start">Frecuencia y recurrencia</text>
+<path d="M360.0 320.0 H481.0 a4.0 4.0 0 0 1 4.0 4.0 V327.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
+<text x="491.0" y="329.0" class="t-val" text-anchor="start">10%</text>
+<path d="M360.0 333.0 H418.5 a4.0 4.0 0 0 1 4.0 4.0 V340.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
+<text x="428.5" y="342.0" class="t-val" text-anchor="start">5%</text>
+<text x="2.0" y="367.0" class="t-small" text-anchor="start">Superposición de clientes y canal comercial</text>
+<path d="M360.0 354.0 H418.5 a4.0 4.0 0 0 1 4.0 4.0 V361.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#2a78d6"/>
+<text x="428.5" y="363.0" class="t-val" text-anchor="start">5%</text>
+<text x="366.0" y="376.0" class="t-note" text-anchor="start">no aplica en este ranking</text>
+<text x="2.0" y="401.0" class="t-small" text-anchor="start">Carga regulatoria (inversa)</text>
+<text x="366.0" y="397.0" class="t-note" text-anchor="start">no aplica en este ranking</text>
+<path d="M360.0 401.0 H418.5 a4.0 4.0 0 0 1 4.0 4.0 V408.0 a4.0 4.0 0 0 1 -4.0 4.0 H360.0 Z" fill="#eb6834"/>
+<text x="428.5" y="410.0" class="t-val" text-anchor="start">5%</text>
+<text x="2.0" y="452.0" class="t-small" text-anchor="start">Sensibilidad obligatoria: se recalcula el orden moviendo ±20 % el peso de competencia, desarrollo y mercado.</text>
+<text x="2.0" y="474.0" class="t-note" text-anchor="start">Fuente: marco de evaluación del estudio. Los pesos son síntesis de ingeniería y negocio, no una medición.</text>
 </svg>
 <figcaption>Figura 16 — Pesos comparados de los criterios en ambos rankings. <span class="src">Elaboración propia; los pesos son una decisión de método.</span></figcaption>
 </figure>
@@ -1858,7 +1886,7 @@
 <p>Los puntajes son una <strong>síntesis de ingeniería y de negocio</strong>, y así deben etiquetarse en el informe. Los pesos pueden modificarse si se justifica el cambio, pero entonces debe recalcularse el orden completo.</p>
 </aside>
 <h4 id="18-1-sensibilidad-obligatoria">18.1 Sensibilidad obligatoria</h4>
-<p>Se recalcula el ranking moviendo ±20 % el peso de competencia, de esfuerzo de desarrollo y de tamaño de mercado. Si el ganador cambia con esas variaciones, la recomendación debe declararse <strong>inestable</strong> y la decisión debe esperar a la evidencia que estabilice el criterio dominante.</p>
+<p>En el <a class="term" href="#g-sensibilidad" title="Análisis de sensibilidad: Recálculo de un resultado variando los supuestos de entrada, para saber si la conclusión depende de un dato incierto. Aquí se aplica a los pesos del ranki">análisis de sensibilidad</a> se recalcula el ranking moviendo ±20 % el peso de competencia, de esfuerzo de desarrollo y de tamaño de mercado. Si el ganador cambia con esas variaciones, la recomendación debe declararse <strong>inestable</strong> y la decisión debe esperar a la evidencia que estabilice el criterio dominante.</p>
 <h3 id="19-prior-art-patentes-y-competidores">19. Prior art, patentes y competidores</h3>
 <h4 id="19-1-screening-preliminar-de-propiedad-intelectual">19.1 Screening preliminar de propiedad intelectual</h4>
 <p>Para los cinco candidatos mejor posicionados se realiza búsqueda formal en Google Patents, Espacenet, WIPO Patentscope y USPTO, combinando el activo con: inspección robótica, crawler, inspección remota, ensayo no destructivo, trepado de paredes, robot serpiente, vehículo de inspección y manipulador.</p>
@@ -1894,7 +1922,7 @@
 </ol>
 <p>Se registra además el historial de adquisiciones —un producto puede haber cambiado de dueño o de nombre— y el estado a 2026: activo, discontinuado, adquirido, sin comercialización o indeterminado. Para productos desaparecidos se recurre al Internet Archive y a folletos archivados; las redes profesionales se usan sólo como pista inicial, nunca como evidencia.</p>
 <h4 id="19-3-licitaciones-y-contratos-como-fuente-de-verdad-comercial">19.3 Licitaciones y contratos como fuente de verdad comercial</h4>
-<p>Un contrato adjudicado dice más sobre el mercado que cualquier informe de tamaño de mercado. Se buscan licitaciones, pedidos de cotización y adjudicaciones reales por servicio de inspección, inspección robótica, bus isofásico, inspección de HRSG, inspección de vaults, tuberías enterradas, conductos forzados, contenedores en seco, crawlers e inspección visual remota, en portales oficiales de compras de utilities, estatales, federales, municipales y nucleares cuando sean públicos.</p>
+<p>Un contrato adjudicado dice más sobre el mercado que cualquier informe de tamaño de mercado. Se buscan <a class="term" href="#g-licitacion" title="Licitación y pedido de cotización (RFP / RFQ): Documentos con los que un comprador solicita propuestas o precios. El pliego revela alcance, frecuencia y requisitos reales; la adjud">licitaciones, pedidos de cotización</a> y adjudicaciones reales por servicio de inspección, inspección robótica, bus isofásico, inspección de HRSG, inspección de vaults, tuberías enterradas, conductos forzados, contenedores en seco, crawlers e inspección visual remota, en portales oficiales de compras de utilities, estatales, federales, municipales y nucleares cuando sean públicos.</p>
 <p>De cada uno se extrae: alcance, frecuencia, requisitos, duración, monto adjudicado si aparece y proveedor ganador.</p>
 <h3 id="20-argentina-y-latinoamerica">20. Argentina y Latinoamérica</h3>
 <p>Para los tres candidatos mejor posicionados se desarrolla un capítulo específico que responde:</p>
@@ -1925,7 +1953,7 @@
 <ul>
 <li>costo de construir un prototipo;
 </li>
-<li>ingeniería no recurrente para industrializar;
+<li><a class="term" href="#g-nre" title="Ingeniería no recurrente (NRE): Costo que se paga una sola vez para dejar un producto en condiciones de fabricarse: diseño, herramientas, moldes, ensayos de calificación. No se rep">ingeniería no recurrente</a> para industrializar;
 </li>
 <li>costo unitario aproximado en producción;
 </li>
@@ -1936,7 +1964,7 @@
 <h2 class="part" id="parte-iv-entregables-validacion-y-cierre">Parte IV — Entregables, validación y cierre</h2>
 <h3 id="22-estructura-y-requisitos-del-informe-final">22. Estructura y requisitos del informe final</h3>
 <h4 id="22-1-estructura">22.1 Estructura</h4>
-<p>El informe final se organiza en: portada; resumen ejecutivo de tres páginas como máximo; objetivo y alcance; metodología y evidencia; qué hace atractivo un negocio de robótica de inspección; mapa completo de oportunidades; fichas por candidato; panorama competitivo transversal; panorama de patentes; mercado global, de Estados Unidos, de Latinoamérica y de Argentina; economía del cliente; matriz de comparación; rankings con sensibilidad; conceptos de producto para los tres primeros; lista de oportunidades a no perseguir por ahora; incógnitas y debida diligencia pendiente; conclusiones; y anexos de registro de búsquedas, competidores, patentes y fuentes.</p>
+<p>El informe final se organiza en: portada; resumen ejecutivo de tres páginas como máximo; objetivo y alcance; metodología y evidencia; qué hace atractivo un negocio de robótica de inspección; mapa completo de oportunidades; fichas por candidato; panorama competitivo transversal; panorama de patentes; mercado global, de Estados Unidos, de Latinoamérica y de Argentina; economía del cliente; matriz de comparación; rankings con sensibilidad; conceptos de producto para los tres primeros; lista de oportunidades a no perseguir por ahora; incógnitas y <a class="term" href="#g-due-diligence" title="Debida diligencia: Verificación sistemática de los supuestos de una inversión —mercado, competencia, propiedad intelectual, costos y riesgos— antes de comprometer capital.">debida diligencia</a> pendiente; conclusiones; y anexos de registro de búsquedas, competidores, patentes y fuentes.</p>
 <h4 id="22-2-requisitos-de-presentacion">22.2 Requisitos de presentación</h4>
 <div class="cards cards-2">
 <div class="card">
@@ -2018,7 +2046,7 @@
 </li>
 <li>¿Cuánto desarrollo falta?
 </li>
-<li>¿Cuál es el primer producto mínimo que un cliente pagaría por probar?
+<li>¿Cuál es el primer <a class="term" href="#g-mvp" title="Producto mínimo viable (MVP): Versión más reducida del producto que permite aprender del cliente real con el menor esfuerzo: en este contexto, la primera inspección que un cliente ">producto mínimo viable</a> que un cliente pagaría por probar?
 </li>
 <li>¿Qué validación técnica sería suficiente?
 </li>
@@ -2041,7 +2069,7 @@
 </div>
 </div>
 <h3 id="24-programa-de-entrevistas">24. Programa de entrevistas</h3>
-<p>Para los tres candidatos mejor posicionados se define una lista concreta de entrevistas. Los perfiles a cubrir son: responsable de mantenimiento de generadores; responsable de paradas; responsable de ensayos no destructivos; jefe de planta; ingeniero de cables de transmisión; especialista en calderas de recuperación; responsable de servicio del fabricante de equipos; líder técnico del instituto de investigación sectorial; proveedor de servicios de ensayos no destructivos; e ingeniero de riesgo o de seguros cuando aplique.</p>
+<p>Para los tres candidatos mejor posicionados se define una lista concreta de entrevistas de <a class="term" href="#g-customer-discovery" title="Descubrimiento de clientes: Proceso de entrevistas estructuradas con clientes potenciales para verificar que el problema, el costo actual y la disposición a pagar existen antes de ">descubrimiento de clientes</a>. Los perfiles a cubrir son: responsable de mantenimiento de generadores; responsable de paradas; responsable de ensayos no destructivos; jefe de planta; ingeniero de cables de transmisión; especialista en calderas de recuperación; responsable de servicio del fabricante de equipos; líder técnico del instituto de investigación sectorial; proveedor de servicios de ensayos no destructivos; e ingeniero de riesgo o de seguros cuando aplique.</p>
 <p>Se preparan entre 8 y 12 preguntas por segmento, orientadas a: costo actual, frecuencia, dolor operativo, fallas sufridas, disposición a pagar, requisitos de aceptación, recuperación de herramienta y material extraño, proceso de compra e incumbente.</p>
 <h3 id="25-criterio-de-finalizacion">25. Criterio de finalización</h3>
 <p>El informe no se cierra porque «haya suficiente información». Se cierra cuando esta lista está completa:</p>
@@ -2293,74 +2321,99 @@
 </tr>
 </tbody>
 </table></div>
-<h3 id="anexo-c-glosario">Anexo C — Glosario</h3>
-<div class="tw"><table><thead><tr>
-<th class="left">Término</th>
-<th class="left">Significado</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="left"><strong>Bus isofásico (IPB)</strong></td>
-<td class="left">Conducto de barras aisladas por fase que conecta el generador con el transformador principal</td>
-</tr>
-<tr>
-<td class="left"><strong>Crawler</strong></td>
-<td class="left">Vehículo de inspección que se desplaza por contacto dentro o sobre el activo</td>
-</tr>
-<tr>
-<td class="left"><strong>ECA</strong></td>
-<td class="left">Ensayo por arreglo de corrientes inducidas</td>
-</tr>
-<tr>
-<td class="left"><strong>EMAT</strong></td>
-<td class="left">Transductor ultrasónico electromagnético-acústico; permite ensayo sin acoplante</td>
-</tr>
-<tr>
-<td class="left"><strong>FME</strong></td>
-<td class="left">Exclusión de material extraño: conjunto de controles para evitar que un objeto quede dentro del activo</td>
-</tr>
-<tr>
-<td class="left"><strong>HRSG</strong></td>
-<td class="left">Caldera de recuperación de calor de un ciclo combinado</td>
-</tr>
-<tr>
-<td class="left"><strong>ILI</strong></td>
-<td class="left">Inspección en línea de tuberías</td>
-</tr>
-<tr>
-<td class="left"><strong>NDE / NDT</strong></td>
-<td class="left">Ensayos no destructivos</td>
-</tr>
-<tr>
-<td class="left"><strong>Penstock</strong></td>
-<td class="left">Conducto forzado que lleva agua a la turbina hidráulica</td>
-</tr>
-<tr>
-<td class="left"><strong>RFET / BFET</strong></td>
-<td class="left">Ensayos electromagnéticos por campo remoto y por campo lejano</td>
-</tr>
-<tr>
-<td class="left"><strong>ROV / AUV</strong></td>
-<td class="left">Vehículo submarino operado remotamente / vehículo submarino autónomo</td>
-</tr>
-<tr>
-<td class="left"><strong>Tether</strong></td>
-<td class="left">Cable de energía, datos y recuperación que une el robot con la superficie</td>
-</tr>
-<tr>
-<td class="left"><strong>Ticket</strong></td>
-<td class="left">Precio efectivo cobrado por una inspección o servicio</td>
-</tr>
-<tr>
-<td class="left"><strong>Vault</strong></td>
-<td class="left">Cámara subterránea de empalmes de cables de transmisión</td>
-</tr>
-<tr>
-<td class="left"><strong>Whitespace</strong></td>
-<td class="left">Espacio de mercado no cubierto por los proveedores existentes</td>
-</tr>
-</tbody>
-</table></div>
+<h3 id="anexo-c-glosario-con-fuente-de-cada-definicion">Anexo C — Glosario con fuente de cada definición</h3>
+<p>Cada entrada indica <strong>dónde puede verificarse la definición</strong>. Cuando un término no tiene definición normativa y se usa como convención comercial, se declara explícitamente como <em>definición operativa de este informe</em> en lugar de atribuirle una fuente que no existe.</p>
+<p>En el cuerpo del informe, la primera aparición de cada término enlaza a su entrada: con línea de puntos en la versión navegable y con una marca &lt;sup&gt;G&lt;/sup&gt; en la versión impresa.</p>
+<h4 id="c-1-terminos-de-negocio">C.1 Términos de negocio</h4>
+<dl class="gloss">
+<dt id="g-tam">Mercado total direccionable (TAM)</dt>
+<dd>Valor anual de todo el mercado al que un producto podría aspirar si capturara el 100 % de la demanda que resuelve. Se acompaña de SAM (la parte alcanzable con el canal y la geografía reales) y SOM (la parte capturable en el horizonte de planificación).<span class="gsrc">Blank, S. y Dorf, B., <em>The Startup Owner's Manual</em>, K&amp;S Ranch, 2012. <span class="badge b-ev b-ev-b" title="Nivel de evidencia B">B</span></span></dd>
+<dt id="g-bottom-up">Dimensionamiento de abajo hacia arriba</dt>
+<dd>Cálculo del mercado partiendo de unidades verificables —cantidad de activos, inspecciones por año, precio por inspección— en lugar de tomar un porcentaje de una cifra global publicada. Es el método que este informe exige.<span class="gsrc">Blank, S. y Dorf, B., <em>The Startup Owner's Manual</em>, K&amp;S Ranch, 2012. <span class="badge b-ev b-ev-b" title="Nivel de evidencia B">B</span></span></dd>
+<dt id="g-payback">Período de repago (payback)</dt>
+<dd>Tiempo que tarda un proyecto en generar flujos de caja suficientes para recuperar la inversión inicial. Es un criterio de liquidez y de riesgo, no de rentabilidad: no considera el valor del dinero en el tiempo ni lo que ocurre después de recuperada la inversión.<span class="gsrc">Brealey, R., Myers, S. y Allen, F., <em>Principles of Corporate Finance</em>, McGraw-Hill (capítulo de criterios de decisión de inversión). <span class="badge b-ev b-ev-b" title="Nivel de evidencia B">B</span></span></dd>
+<dt id="g-caso-negocio">Caso de negocio</dt>
+<dd>Documento que justifica la inversión: necesidad, alternativas evaluadas, costos, beneficios esperados, riesgos y criterio de éxito. Es la base sobre la que se aprueba o se rechaza el desarrollo.<span class="gsrc">Project Management Institute, <em>Guía de los fundamentos para la dirección de proyectos</em> (Guía del PMBOK). <span class="badge b-ev b-ev-b" title="Nivel de evidencia B">B</span></span></dd>
+<dt id="g-moat">Ventaja defendible (moat)</dt>
+<dd>Característica estructural que permite sostener rentabilidad frente a la competencia durante años: patentes, costos de cambio, escala, datos propietarios, calificación regulatoria o relación de servicio. El término proviene del análisis de inversión y equivale a una barrera de entrada sostenida en el tiempo.<span class="gsrc">Porter, M., <em>Competitive Strategy</em>, Free Press, 1980 (barreras de entrada); Buffett, W., carta anual a los accionistas de Berkshire Hathaway, 2007 (uso del término <em>economic moat</em>). <span class="badge b-ev b-ev-b" title="Nivel de evidencia B">B</span></span></dd>
+<dt id="g-incumbente">Incumbente</dt>
+<dd>Empresa que ya vende hoy el producto o servicio en el mercado que se analiza. Su existencia no invalida una oportunidad, pero obliga a demostrar una ventaja concreta y no una capacidad equivalente.<span class="gsrc">Porter, M., <em>Competitive Strategy</em>, Free Press, 1980. <span class="badge b-ev b-ev-b" title="Nivel de evidencia B">B</span></span></dd>
+<dt id="g-whitespace">Espacio no cubierto (whitespace)</dt>
+<dd>Parte de la necesidad del cliente que ningún proveedor actual resuelve: una geometría a la que no llega la herramienta existente, una medición que no se ofrece o un modo de despliegue que no está disponible.<span class="gsrc">Johnson, M. W., <em>Seizing the White Space</em>, Harvard Business Press, 2010. <span class="badge b-ev b-ev-b" title="Nivel de evidencia B">B</span></span></dd>
+<dt id="g-ticket">Precio por servicio (ticket)</dt>
+<dd>Monto efectivamente facturado por una inspección o intervención. En este informe se usa siempre con su fuente: precio publicado, contrato, licitación adjudicada o cotización. No es un término normalizado.<span class="gsrc">Definición operativa de este informe.</span></dd>
+<dt id="g-recurrencia">Recurrencia</dt>
+<dd>Frecuencia con la que un mismo cliente vuelve a comprar el servicio, medida en inspecciones por activo y por año. Determina si el negocio es un proyecto aislado o un ingreso repetido.<span class="gsrc">Definición operativa de este informe.</span></dd>
+<dt id="g-raas">Robótica como servicio (RaaS)</dt>
+<dd>Modelo en el que el cliente no compra el robot sino el resultado de la inspección, y el proveedor conserva la propiedad, el mantenimiento y la calibración del equipo. Es preferible cuando la frecuencia por activo es baja y el precio por intervención es alto.<span class="gsrc">Definición operativa de este informe, sobre el modelo general de servicios gestionados.</span></dd>
+<dt id="g-mvp">Producto mínimo viable (MVP)</dt>
+<dd>Versión más reducida del producto que permite aprender del cliente real con el menor esfuerzo: en este contexto, la primera inspección que un cliente pagaría por probar.<span class="gsrc">Ries, E., <em>The Lean Startup</em>, Crown Business, 2011. <span class="badge b-ev b-ev-b" title="Nivel de evidencia B">B</span></span></dd>
+<dt id="g-customer-discovery">Descubrimiento de clientes</dt>
+<dd>Proceso de entrevistas estructuradas con clientes potenciales para verificar que el problema, el costo actual y la disposición a pagar existen antes de construir el producto.<span class="gsrc">Blank, S., <em>The Four Steps to the Epiphany</em>, Cafepress, 2005. <span class="badge b-ev b-ev-b" title="Nivel de evidencia B">B</span></span></dd>
+<dt id="g-go-nogo">Decisión de avance (go / no-go)</dt>
+<dd>Punto formal de decisión en el que un proyecto se aprueba, se detiene o se reorienta según criterios definidos de antemano.<span class="gsrc">Cooper, R. G., <em>Winning at New Products</em> (proceso por etapas y compuertas). <span class="badge b-ev b-ev-b" title="Nivel de evidencia B">B</span></span></dd>
+<dt id="g-due-diligence">Debida diligencia</dt>
+<dd>Verificación sistemática de los supuestos de una inversión —mercado, competencia, propiedad intelectual, costos y riesgos— antes de comprometer capital.<span class="gsrc">Uso estándar en finanzas corporativas; definición de referencia divulgativa en Investopedia, <em>Due Diligence</em>. <span class="badge b-ev b-ev-c" title="Nivel de evidencia C">C</span></span></dd>
+<dt id="g-nre">Ingeniería no recurrente (NRE)</dt>
+<dd>Costo que se paga una sola vez para dejar un producto en condiciones de fabricarse: diseño, herramientas, moldes, ensayos de calificación. No se reparte por unidad producida salvo que se amortice.<span class="gsrc">Uso estándar en manufactura electrónica y de bienes de capital; definición operativa de este informe.</span></dd>
+<dt id="g-licitacion">Licitación y pedido de cotización (RFP / RFQ)</dt>
+<dd>Documentos con los que un comprador solicita propuestas o precios. El pliego revela alcance, frecuencia y requisitos reales; la adjudicación revela precio y proveedor ganador. Por eso este informe los prefiere frente a los informes de tamaño de mercado.<span class="gsrc">Project Management Institute, <em>Guía del PMBOK</em>, procesos de adquisiciones. <span class="badge b-ev b-ev-b" title="Nivel de evidencia B">B</span></span></dd>
+<dt id="g-sensibilidad">Análisis de sensibilidad</dt>
+<dd>Recálculo de un resultado variando los supuestos de entrada, para saber si la conclusión depende de un dato incierto. Aquí se aplica a los pesos del ranking.<span class="gsrc">Brealey, R., Myers, S. y Allen, F., <em>Principles of Corporate Finance</em>, McGraw-Hill. <span class="badge b-ev b-ev-b" title="Nivel de evidencia B">B</span></span></dd>
+<dt id="g-benchmark">Referencia de comparación (benchmark)</dt>
+<dd>Caso ya conocido contra el cual se mide una oportunidad nueva. En este informe, el proyecto de robot de inspección de generadores.<span class="gsrc">Definición operativa de este informe.</span></dd>
+<dt id="g-fast-follow">Seguidor rápido (fast-follow)</dt>
+<dd>Estrategia de entrar a un mercado que otro abrió, con menor riesgo técnico y menor margen de diferenciación. Es el criterio del Ranking A.<span class="gsrc">Definición operativa de este informe.</span></dd>
+<dt id="g-upside">Potencial de crecimiento (upside)</dt>
+<dd>Valor que una oportunidad podría alcanzar en el escenario favorable, por encima del caso base. Es el criterio del Ranking B.<span class="gsrc">Definición operativa de este informe.</span></dd>
+</dl>
+<h4 id="c-2-terminos-tecnicos-y-del-sector">C.2 Términos técnicos y del sector</h4>
+<dl class="gloss">
+<dt id="g-outage">Salida de servicio o parada (outage)</dt>
+<dd>Período en que un equipo o una unidad de generación deja de estar disponible, sea por mantenimiento programado o por falla. Es el costo dominante en casi todos los casos de negocio de este informe: cada día de parada tiene un valor de energía no vendida.<span class="gsrc">North American Electric Reliability Corporation, <em>Glossary of Terms Used in NERC Reliability Standards</em>. <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></span></dd>
+<dt id="g-nde">Ensayos no destructivos (NDE / NDT)</dt>
+<dd>Conjunto de técnicas que evalúan la integridad de un material o componente sin dañarlo: ultrasonido, corrientes inducidas, radiografía, líquidos penetrantes, inspección visual remota.<span class="gsrc">American Society for Nondestructive Testing (ASNT), cuerpo normativo y de certificación de la disciplina. <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></span></dd>
+<dt id="g-trl">Nivel de madurez tecnológica (TRL)</dt>
+<dd>Escala que mide cuán probada está una tecnología, desde el principio observado hasta el sistema validado en operación. <strong>No mide despliegue comercial</strong>: para eso este informe usa la escala M0–M5.<span class="gsrc">ISO 16290:2013, <em>Space systems — Definition of the Technology Readiness Levels (TRL) and their criteria of assessment</em>. <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></span></dd>
+<dt id="g-madurez-m">Escala de madurez comercial (M0–M5)</dt>
+<dd>Escala propia de este informe que mide despliegue real en el mercado: M0 conceptos, M1 prototipos de laboratorio, M2 demostración industrial aislada, M3 servicios comerciales iniciales, M4 múltiples proveedores y despliegues, M5 mercado maduro.<span class="gsrc">Definición operativa de este informe; ver sección 3.4.</span></dd>
+<dt id="g-ipb">Bus isofásico (IPB)</dt>
+<dd>Conducto de barras con una envolvente metálica independiente por fase, que conecta el generador con el transformador principal. Su interior es un espacio confinado con obstáculos periódicos.<span class="gsrc">EPRI, <em>Isolated Phase Bus Maintenance Guide</em>, 1015057. <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></span></dd>
+<dt id="g-hrsg">Caldera de recuperación de calor (HRSG)</dt>
+<dd>Intercambiador que recupera el calor de los gases de escape de una turbina de gas para generar vapor en una central de ciclo combinado. Sus headers y tubos son el activo del candidato B.<span class="gsrc">EPRI, <em>Study for Snake Robot Technology for Inspection of Headers and Tubes in HRSGs</em>, 1017635. <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></span></dd>
+<dt id="g-header">Header o colector</dt>
+<dd>Tubo de gran diámetro al que se conectan decenas de tubos menores. La unión soldada tubo-header es un punto de falla frecuente y de inspección difícil.<span class="gsrc">EPRI, 1017635. <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></span></dd>
+<dt id="g-crawler">Crawler</dt>
+<dd>Vehículo de inspección que avanza por contacto dentro o sobre el activo, con ruedas, orugas o adhesión magnética.<span class="gsrc">Definición operativa de este informe, de uso corriente en inspección industrial.</span></dd>
+<dt id="g-tether">Cable de conexión (tether)</dt>
+<dd>Cable que une el robot con la superficie y transporta energía, datos y, cuando hace falta, la fuerza para recuperarlo. Su longitud y su arrastre suelen fijar el alcance útil del sistema.<span class="gsrc">Definición operativa de este informe, de uso corriente en robótica de inspección.</span></dd>
+<dt id="g-fme">Exclusión de material extraño (FME)</dt>
+<dd>Conjunto de controles para evitar que un objeto quede dentro de un sistema tras una intervención. Un robot atrapado en un activo nuclear puede costar más que la inspección evitada, por lo que la estrategia de recuperación es parte del producto.<span class="gsrc">Práctica normalizada de la industria nuclear; ver EPRI, <em>Compilation of Lessons Learned on Buried and Underground Piping</em>, 1025272. <span class="badge b-ev b-ev-b" title="Nivel de evidencia B">B</span></span></dd>
+<dt id="g-emat">Transductor electromagnético-acústico (EMAT)</dt>
+<dd>Sensor que genera ondas ultrasónicas en la propia pieza mediante campos electromagnéticos, sin necesidad de gel acoplante y, en ciertos casos, sin remover el revestimiento.<span class="gsrc">Hirao, M. y Ogi, H., <em>EMATs for Science and Industry: Noncontacting Ultrasonic Measurements</em>, Springer, 2003. <span class="badge b-ev b-ev-b" title="Nivel de evidencia B">B</span></span></dd>
+<dt id="g-eca">Corrientes inducidas y arreglos (ECA)</dt>
+<dd>Técnica electromagnética que detecta discontinuidades superficiales y subsuperficiales en materiales conductores; en versión de arreglo cubre más superficie por pasada.<span class="gsrc">American Society for Nondestructive Testing (ASNT). <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></span></dd>
+<dt id="g-rfet">Ensayo por campo remoto y campo lejano (RFET / BFET)</dt>
+<dd>Variantes electromagnéticas usadas para inspeccionar tubos y soldaduras desde el interior, incluso a través de la pared del tubo.<span class="gsrc">TesTex, documentación técnica de producto. <span class="badge b-tipo">Declaración</span></span></dd>
+<dt id="g-ili">Inspección en línea (ILI)</dt>
+<dd>Inspección de una tubería mediante un dispositivo que recorre su interior. En instalaciones nucleares suele ser inviable por la falta de estaciones de lanzamiento y recepción.<span class="gsrc">API 1163, <em>In-line Inspection Systems Qualification</em>. <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></span></dd>
+<dt id="g-penstock">Conducto forzado (penstock)</dt>
+<dd>Tubería que conduce el agua desde la toma hasta la turbina en una central hidroeléctrica. Su inspección exige vaciar el conducto o entrar con vehículo sumergible.<span class="gsrc">EPRI, <em>ROV Technology: Applications and Advancements at Hydro Facilities</em>, 1007576. <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></span></dd>
+<dt id="g-rov">Vehículo remoto y vehículo autónomo (ROV / AUV)</dt>
+<dd>Vehículos sumergibles: el primero opera unido por cable y comandado por un operador; el segundo navega sin cable, siguiendo un plan de misión.<span class="gsrc">EPRI, 1007576 y 3002011682. <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></span></dd>
+<dt id="g-vault">Cámara subterránea (vault)</dt>
+<dd>Recinto de hormigón bajo la calzada donde se alojan empalmes de cables de transmisión. Es un espacio confinado con cables energizados y riesgo de gases.<span class="gsrc">EPRI, programa de transmisión subterránea. <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></span></dd>
+<dt id="g-canister">Canister y sobre-contenedor</dt>
+<dd>En almacenamiento en seco de combustible gastado, el canister sellado contiene el combustible y el sobre-contenedor de hormigón lo blinda. Entre ambos queda el espacio anular donde debe entrar el robot.<span class="gsrc">EPRI, <em>Dry Canister Storage System Inspection and Robotic Delivery System Development</em>, 3002008234. <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></span></dd>
+<dt id="g-vine">Robot everting (vine)</dt>
+<dd>Robot que avanza dando vuelta su propio cuerpo desde la punta, por presión interna, de modo que la superficie no se arrastra contra la pared. Permite recorrer conductos con curvas donde un crawler no entra.<span class="gsrc">Hawkes, E. W. et al., «A soft robot that navigates its environment through growth», <em>Science Robotics</em>, 2017. <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></span></dd>
+<dt id="g-sweep">Evaluación económica SWEEP</dt>
+<dd>Método de evaluación con el que EPRI estima costo de implementación, ahorro esperado y repago de una tecnología en su catálogo de modernización de plantas. Los valores citados en este informe provienen de esas fichas; la metodología detallada debe verificarse en la fuente.<span class="gsrc">EPRI, Plant Modernization Toolbox, fichas MTA-MA-017 y MTA-MA-029. <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></span></dd>
+<dt id="g-prior-art">Estado de la técnica (prior art)</dt>
+<dd>Todo conocimiento divulgado antes de la fecha de prioridad de una solicitud de patente. Una patente concedida prueba divulgación, no que el producto exista ni que se venda.<span class="gsrc">Organización Mundial de la Propiedad Intelectual (OMPI), glosario de términos de propiedad intelectual; USPTO, <em>Manual of Patent Examining Procedure</em>, capítulo 2100. <span class="badge b-ev b-ev-a" title="Nivel de evidencia A">A</span></span></dd>
+<dt id="g-fto">Libertad de operación (FTO)</dt>
+<dd>Análisis legal que determina si un producto puede comercializarse sin infringir patentes vigentes de terceros en un territorio. El presente informe <strong>no</strong> realiza este análisis: sólo un screening preliminar.<span class="gsrc">Organización Mundial de la Propiedad Intelectual (OMPI), material de divulgación sobre libertad de operación. <span class="badge b-ev b-ev-b" title="Nivel de evidencia B">B</span></span></dd>
+</dl>
   </article>
 </main>
 </div>

@@ -25,6 +25,7 @@
 <path d="M192 174 H268 a24 24 0 0 0 24 -24 V132 a24 24 0 0 1 24 -24 H398" fill="none" stroke="#eb6834" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="398" cy="108" r="6.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
 <rect x="72.0" y="158.0" width="100.0" height="32.0" fill="#eb6834" rx="4.0"/>
+<path d="M172 174 H192" fill="none" stroke="#eb6834" stroke-width="9" stroke-linecap="round"/>
 <path d="M398.0 74.0 L398.0 101.0" class="st-hair"/>
 <circle cx="398.0" cy="101.0" r="2" fill="#8a8880"/>
 <text x="398.0" y="68.0" class="t-small" text-anchor="middle">punta con cámara y sensor</text>

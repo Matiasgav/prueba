@@ -35,7 +35,7 @@
 <text x="566.0" y="86.0" class="t-small" text-anchor="middle">derivación (tee)</text>
 <path d="M178.0 286.0 L178.0 167.0" class="st-hair"/>
 <circle cx="178.0" cy="167.0" r="2" fill="#8a8880"/>
-<text x="178.0" y="298.0" class="t-small" text-anchor="middle">crawler con NDE embarcado</text>
+<text x="178.0" y="298.0" class="t-small" text-anchor="middle">crawler con ensayo no destructivo a bordo</text>
 <path d="M316.0 286.0 L288.0 196.0" class="st-hair"/>
 <circle cx="288.0" cy="196.0" r="2" fill="#8a8880"/>
 <text x="316.0" y="298.0" class="t-small" text-anchor="middle">codo 1D</text>

@@ -17,7 +17,7 @@ Informe profesional en dos formatos, generados desde una única fuente.
 - **Parte II — Mapa de oportunidades** — ficha por candidato (A a G) con esquema del activo, evidencia, competencia, pregunta estratégica y agenda de verificación; mercados con madurez probablemente alta; barrido de oportunidades fuera de la lista.
 - **Parte III — Método y economía** — ficha estándar de 23 campos, dimensionamiento bottom-up, economía del cliente, rankings y sensibilidad, patentes y competidores, Argentina y Latinoamérica, costos de desarrollo.
 - **Parte IV — Entregables y cierre** — estructura y requisitos del informe final, preguntas a responder, programa de entrevistas, criterio de finalización y conclusión operativa.
-- **Anexos** — paquete de fuentes verificado con direcciones, registro de hallazgos iniciales y glosario.
+- **Anexos** — paquete de fuentes verificado con direcciones, registro de hallazgos iniciales y **glosario con la fuente de cada definición**: 20 términos de negocio y 22 términos técnicos, cada uno con la obra o el organismo donde puede verificarse, o declarado explícitamente como definición operativa del informe cuando no existe definición normativa. La primera aparición de cada término en el texto enlaza a su entrada.
 
 ## Fuente y generación
 
@@ -29,7 +29,7 @@ Informe profesional en dos formatos, generados desde una única fuente.
 | `tools/make_figures.py` | Genera las 16 figuras en SVG (y en PDF para LaTeX). |
 | `assets/` | Figuras generadas: 9 gráficos y esquemas de método, 7 esquemas de activos. |
 
-Las figuras son originales. Los gráficos con datos llevan la fuente al pie; los esquemas de activo están marcados como esquema del autor y no están a escala. La paleta de los gráficos está validada para daltonismo y contraste sobre fondo claro.
+Las figuras son originales. Los gráficos con datos llevan la fuente al pie; los esquemas de activo están marcados como esquema del autor y no están a escala. La paleta de los gráficos está validada para daltonismo y contraste sobre fondo claro, y las 16 figuras se revisaron una por una en render para descartar colisiones de etiquetas, texto recortado y jerga sin desarrollar.
 
 ## Regenerar
 

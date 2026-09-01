@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 268" width="720" height="268" role="img" aria-labelledby="ti de">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 322" width="720" height="322" role="img" aria-labelledby="ti de">
 <title id="ti">Rango de valor por utilización en piping enterrado</title><desc id="de">Barra del costo de implementación y banda del ahorro esperado por utilización.</desc>
 <style>
   text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
@@ -17,7 +17,7 @@
   .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
   .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
 </style>
-<rect width="720" height="268" fill="#ffffff"/>
+<rect width="720" height="322" fill="#ffffff"/>
 <text x="2.0" y="18.0" class="t-title" text-anchor="start">Piping enterrado: rango de valor por utilización</text>
 <text x="2.0" y="36.0" class="t-sub" text-anchor="start">Evaluación EPRI SWEEP. El ahorro se expresa como rango acotado, no como valor puntual.</text>
 <line x1="200.0" y1="82.0" x2="200.0" y2="176.0" class="grid"/>
@@ -40,11 +40,11 @@
 <rect x="280.0" y="140.0" width="320.0" height="20.0" fill="#2a78d6" rx="4.0"/>
 <text x="440.0" y="155.0" class="t-val t-inv" text-anchor="middle">&gt; 1 M   y   &lt; 5 M</text>
 <line x1="200.0" y1="176.0" x2="600.0" y2="176.0" class="axis"/>
-<rect x="2.0" y="192.0" width="716.0" height="70.0" fill="#f2f6fa" rx="5.0"/>
-<rect x="2.0" y="192.0" width="3.0" height="70.0" fill="#14496b" rx="0.0"/>
+<rect x="2.0" y="192.0" width="716.0" height="96.0" fill="#f2f6fa" rx="5.0"/>
+<rect x="2.0" y="192.0" width="3.0" height="96.0" fill="#14496b" rx="0.0"/>
 <text x="14.0" y="212.0" class="t-labb" text-anchor="start">Lectura de negocio</text>
-<text x="14.0" y="230.0" class="t-small" text-anchor="start">Payback inmediato o menor a un año y tecnología ya comercialmente implementada en el sector nuclear: valor</text>
-<text x="14.0" y="244.0" class="t-small" text-anchor="start">alto con madurez alta. Un crawler genérico de tuberías no es una oportunidad; sólo lo es un whitespace</text>
+<text x="14.0" y="230.0" class="t-small" text-anchor="start">La inversión se recupera en menos de un año (payback) y la comercialmente implementada en el sector nuclear:</text>
+<text x="14.0" y="244.0" class="t-small" text-anchor="start">valor alto con madurez alta. Un crawler genérico de tuberías no es una oportunidad; sólo lo es un whitespace</text>
 <text x="14.0" y="258.0" class="t-small" text-anchor="start">geométrico o de despliegue concreto.</text>
-<text x="2.0" y="260.0" class="t-note" text-anchor="start">Fuente: EPRI, Plant Modernization Toolbox, MTA-MA-017.</text>
+<text x="2.0" y="314.0" class="t-note" text-anchor="start">Fuente: EPRI, Plant Modernization Toolbox, MTA-MA-017.</text>
 </svg>

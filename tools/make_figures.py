@@ -165,7 +165,7 @@ def fig_evidencia():
 # F2 - Escala de madurez comercial
 # =========================================================================
 def fig_madurez():
-    W, H = 720, 230
+    W, H = 720, 284
     b, _ = _head('Escala de madurez comercial (M0–M5)',
                  'Mide despliegue real en el mercado, no nivel tecnológico '
                     '(TRL): un TRL alto con un solo cliente sigue siendo M2.')
@@ -177,7 +177,7 @@ def fig_madurez():
         ('M4', 'Múltiples proveedores y despliegues'),
         ('M5', 'Mercado maduro / commodity'),
     ]
-    x0, y0, seg_h = 2, 60, 34
+    x0, y0, seg_h = 2, 76, 34
     total_w = W - 4
     seg_w = (total_w - 5 * 2) / 6.0
     ramp = ['#9ec5f4', '#6da7ec', '#3987e5', '#256abf', '#184f95', '#0d366b']
@@ -253,15 +253,15 @@ def fig_proceso():
 # F4 - Cronologia de prior art
 # =========================================================================
 def fig_cronologia():
-    W, H = 720, 210
+    W, H = 720, 244
     b, _ = _head('Línea temporal que debe reconstruirse para cada candidato',
                  'El objetivo es detectar programas anteriores y las razones '
                  'físicas o económicas por las que se detuvieron.')
     hitos = ['Problema\nidentificado', 'Primer\nprototipo', 'Investigación\nEPRI',
              'Familias de\npatentes', 'Primeros\ndespliegues',
              'Productos\ncomerciales', 'Estado\n2026']
-    y = 92
-    x0, x1 = 30, W - 30
+    y = 120
+    x0, x1 = 58, W - 58
     step = (x1 - x0) / (len(hitos) - 1)
     b.append(line(x0, y, x1, y, 'axis'))
     for i, h in enumerate(hitos):
@@ -272,13 +272,14 @@ def fig_cronologia():
         for k, ln in enumerate(h.split('\n')):
             b.append(txt(x, y - 26 + k * 13 - (13 if len(h.split('\n')) > 1 else 0),
                          ln, 't-small', 'middle'))
-    b.append(rect(2, 132, W - 4, 52, '#f7f9fb', rx=5))
-    b.append(txt(14, 151, 'Evidencia negativa: el hallazgo más valioso', 't-labb'))
-    b.append(wrap(14, 169,
+    b.append(rect(2, 158, W - 4, 58, '#f7f9fb', rx=5))
+    b.append(txt(14, 178, 'Evidencia negativa: el hallazgo más valioso', 't-labb'))
+    b.append(wrap(14, 196,
                   'Productos discontinuados · programas abandonados · resultados '
                   'insuficientes · robots atascados · herramientas que no '
-                  'entraron · fallas de tether · NDE sin sensibilidad · costos '
-                  'que destruyeron el caso de negocio.', 't-small', 110))
+                  'entraron · fallas del cable de conexión · ensayos que no '
+                  'alcanzaron la sensibilidad necesaria · costos que '
+                  'destruyeron el caso de negocio.', 't-small', 110))
     b.append(txt(2, H - 6, 'Esquema del autor.', 't-note'))
     return svg(W, H, '\n'.join(b), 'Línea temporal de prior art',
                'Siete hitos desde la identificación del problema hasta el '
@@ -292,26 +293,27 @@ def fig_pesos():
     W = 720
     filas = [
         ('Dolor económico / costo evitado', 20, 20),
-        ('Whitespace y competencia (IP en B)', 15, 20),
+        ('Espacio no cubierto por la competencia', 15, 20),
         ('Barrera técnica: factibilidad (A) / defensa (B)', 15, 20),
         ('Tamaño de mercado', 10, 15),
-        ('Ticket y margen', 10, 10),
+        ('Precio por servicio y margen', 10, 10),
         ('Reutilización de la plataforma RI', 15, 5),
         ('Frecuencia y recurrencia', 10, 5),
-        ('Overlap de clientes / canal comercial', 5, None),
+        ('Superposición de clientes y canal comercial', 5, None),
         ('Carga regulatoria (inversa)', None, 5),
     ]
-    top, rh = 96, 34
+    top, rh = 120, 34
     H = top + len(filas) * rh + 56
     b, _ = _head('Pesos de los dos criterios de ranking',
                  'Ranking A prioriza el próximo producto de bajo riesgo; '
                  'Ranking B, la defensa a largo plazo. Los pesos son una '
                  'decisión de método, no un dato medido.')
     # leyenda
-    b += [rect(2, 52, 10, 10, S1, rx=2), txt(18, 61, 'Ranking A — fast-follow',
-                                             't-small'),
-          rect(190, 52, 10, 10, S2, rx=2),
-          txt(206, 61, 'Ranking B — moat / upside', 't-small')]
+    b += [rect(2, 74, 10, 10, S1, rx=2),
+          txt(18, 83, 'Ranking A — próximo producto, bajo riesgo', 't-small'),
+          rect(300, 74, 10, 10, S2, rx=2),
+          txt(316, 83, 'Ranking B — ventaja defendible a largo plazo',
+              't-small')]
     lx, bx, bw_max = 2, 360, 250
     scale = bw_max / 20.0
     b.append(line(bx, top - 8, bx, top + len(filas) * rh - 6, 'axis'))
@@ -392,7 +394,7 @@ def fig_ipb_economia():
 # F7 - Economia del crawler NDE en piping enterrado
 # =========================================================================
 def fig_piping_economia():
-    W, H = 720, 268
+    W, H = 720, 322
     b, _ = _head('Piping enterrado: rango de valor por utilización',
                  'Evaluación EPRI SWEEP. El ahorro se expresa como rango '
                     'acotado, no como valor puntual.')
@@ -418,11 +420,11 @@ def fig_piping_economia():
     b.append(line(x0, y0 + 84, x0 + maxw, y0 + 84, 'axis'))
 
     ty = y0 + 100
-    b.append(rect(2, ty, W - 4, 70, '#f2f6fa', rx=5))
-    b.append(rect(2, ty, 3, 70, NAV))
+    b.append(rect(2, ty, W - 4, 96, '#f2f6fa', rx=5))
+    b.append(rect(2, ty, 3, 96, NAV))
     b.append(txt(14, ty + 20, 'Lectura de negocio', 't-labb'))
     b.append(wrap(14, ty + 38,
-                  'Payback inmediato o menor a un año y tecnología ya '
+                  'La inversión se recupera en menos de un año (payback) y la '
                   'comercialmente implementada en el sector nuclear: valor alto '
                   'con madurez alta. Un crawler genérico de tuberías no es una '
                   'oportunidad; sólo lo es un whitespace geométrico o de '
@@ -500,25 +502,25 @@ def fig_mapa_candidatos():
 # F9 - Ecuacion de valor para el cliente
 # =========================================================================
 def fig_valor():
-    W, H = 720, 250
+    W, H = 720, 276
     b, _ = _head('Cómo se construye el valor para el cliente',
                  'La venta no es el robot: es la información de condición '
                     'confiable y el costo de mantenimiento que se evita.')
     comps = [
-        ('+', 'Costo convencional\nevitado', S3),
-        ('+', 'Outage\nevitado', S3),
+        ('+', 'Costo\nconvencional\nevitado', S3),
+        ('+', 'Parada de planta\nevitada\n(outage)', S3),
         ('+', 'Riesgo\nevitado', S3),
         ('+', 'Cobertura\nadicional', S3),
         ('−', 'Costo de\nrobotización', S2),
     ]
-    bw, gap, y0, bh = 108, 14, 78, 76
+    bw, gap, y0, bh = 132, 8, 88, 84
     for i, (sign, lab, color) in enumerate(comps):
         x = 2 + i * (bw + gap)
         b.append(rect(x, y0, bw, bh, SURF, rx=5,
                       extra='stroke="%s" stroke-width="1.4"' % color))
-        b.append(txt(x + 12, y0 + 24, sign, 't-title'))
+        b.append(txt(x + 10, y0 + 22, sign, 't-title'))
         for k, ln in enumerate(lab.split('\n')):
-            b.append(txt(x + 12, y0 + 44 + k * 14, ln, 't-labb'))
+            b.append(txt(x + 10, y0 + 42 + k * 14, ln, 't-labb'))
         if i < len(comps) - 1:
             b.append(txt(x + bw + gap / 2, y0 + bh / 2 + 5,
                          '+' if comps[i + 1][0] == '+' else '−', 't-sub',
@@ -716,7 +718,8 @@ def esq_piping():
     b.append('<path d="M120 158 H150" class="st-dash"/>')
     b += leader(60, 92, 60, 128, 'acceso único')
     b += leader(566, 92, 540, 132, 'derivación (tee)')
-    b += leader(178, yl, 178, 167, 'crawler con NDE embarcado')
+    b += leader(178, yl, 178, 167,
+                'crawler con ensayo no destructivo a bordo')
     b += leader(316, yl, 288, 196, 'codo 1D')
     b += leader(452, yl, 448, 190, 'codo de retorno')
     b.append(txt(W / 2, yn,
@@ -818,6 +821,8 @@ def esq_vine():
     b.append('<circle cx="398" cy="108" r="6.5" fill="%s" stroke="%s" '
              'stroke-width="2"/>' % (S1, SURF))
     b.append(rect(72, 158, 100, 32, S2, rx=4))
+    b.append('<path d="M172 174 H192" fill="none" stroke="%s" '
+             'stroke-width="9" stroke-linecap="round"/>' % S2)
     b += leader(398, 74, 398, 101, 'punta con cámara y sensor')
     b += leader(122, yl, 122, 190, 'base: presión y carrete')
     b += leader(600, yl, 566, 224, 'tramo que el crawler no alcanza', 'end')
