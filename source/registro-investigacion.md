@@ -16,7 +16,7 @@ supuestos.
 |---:|---|---|
 | 1 | Condensadores refrigerados por aire (ACC), condensadores y torres de refrigeración | **Completo** |
 | 2 | Paredes de agua de caldera, headers de caldera e internos de hogar | **Completo** |
-| 3 | Eólica: palas, torres y monopilotes marinos | Pendiente |
+| 3 | Eólica: palas, torres y monopilotes marinos | **Completo** |
 | 4 | Presas, vertederos, compuertas de toma y válvulas de gran tamaño | Pendiente |
 | 5 | Chimeneas, hornos industriales e intercambiadores de calor | Pendiente |
 | 6 | Subestaciones: interior de aparamenta, sistemas de cables y transformadores | Pendiente |
@@ -172,3 +172,90 @@ por al menos media docena de competidores adicionales. Sólo justificaría revis
 apareciera un hueco muy concreto —geometría interna del hogar inaccesible al trepador
 externo, o headers de caldera, que se solapan con el candidato B— y ese hueco debería
 demostrarse antes de invertir, no suponerse.
+
+---
+
+## Lote 3 — Eólica: palas, torres y monopilotes marinos
+
+**Consultas:** `wind turbine blade internal inspection robot inside blade cavity crawler 2025 2026` ·
+`wind blade bond line delamination NDT ultrasonic inspection inside blade limitation visual only spar cap` ·
+`offshore wind monopile internal inspection robot transition piece weld corrosion ROV crawler service provider`.
+
+### Hallazgo 3.1 — El interior de la pala ya tiene al menos cuatro proveedores
+
+Existen crawlers comerciales específicos para inspección interna de palas, con cámara,
+iluminación LED y tether de recuperación:
+
+- **Aerones**, con un crawler de tercera generación que declara escaneo LiDAR, video
+  360°, mayor alcance dentro de la pala y cobertura declarada de hasta el 90 % del
+  interior.
+- **Clobotics Wind Services**, con un crawler que declara dos cámaras de alto rango
+  dinámico, iluminación LED, línea de recuperación, unos 6 kg y 50 × 23 × 28 cm, y un
+  rendimiento declarado de dos aerogeneradores completos por día con dos técnicos.
+- **CERBERUS**, de TSR Wind, con cámara panorámica frontal y dos laterales de alta
+  resolución bajo iluminación LED autorregulada.
+- **Sensoar**, que ofrece crawlers para diagnosticar fracturas y fallas de alma de
+  cortante.
+
+- **Clase:** declaraciones de fabricante, no verificadas de forma independiente.
+  **Nivel:** C.
+- **Fuentes:** https://aerones.com/meet-the-new-crawler-gen-3/ ·
+  https://clobotics.com/news/clobotics-wind-services-announces-its-new-clobotics-crawler-robot/ ·
+  https://tsrwind.com/cerberus-crawler-internal-blade-inspections-tsrwind/?lang=en ·
+  https://www.sensoar.io/solutions/windturbine/internal-blade-inspection.html
+- **Madurez estimada:** M4. Múltiples proveedores con producto y servicio.
+
+### Hallazgo 3.2 — El hueco aparente está bloqueado por una razón física conocida
+
+Los crawlers internos citados son **visuales**: cámara, luz y, en un caso, LiDAR. La
+medición cuantitativa de pegado de largueros y alma de cortante se hace con ultrasonido
+de baja frecuencia y arreglo de fases, y la literatura técnica documenta sus límites:
+el vidrio-epoxi atenúa fuertemente el haz, los defectos cercanos a la superficie —menos
+de unos 5 mm en laminados gruesos— caen en la zona muerta de la sonda y en el ruido de
+la interfaz agua–vidrio, y **no es posible determinar la condición de regiones que no
+son directamente accesibles**.
+
+- **Clase:** hecho técnico publicado en literatura y notas de aplicación de
+  fabricantes de instrumentación. **Nivel:** B.
+- **Fuentes:** https://www.windpowerengineering.com/low-frequency-ultrasonic-solutions-for-spar-cap-and-shear-web-bonding-inspection-in-wind-blades/ ·
+  https://ims.evidentscientific.com/en/applications/shear-web-bonding-inspection ·
+  https://forcetechnology.com/en/expertise/inspection-verification-and-maintenance/inspection-and-non-destructive-testing-ndt/blade-inspection
+- **Por qué importa:** el hueco que quedaba —llevar medición cuantitativa dentro de la
+  pala— no está libre por falta de intentos, sino condicionado por la física del
+  material. Es exactamente el tipo de razón por la que un programa de desarrollo
+  fracasa, que este estudio busca detectar antes de invertir.
+
+### Hallazgo 3.3 — Monopilotes marinos: también ocupado
+
+En estructuras marinas operan al menos: **iFROG** (InnoTecUK con ORE Catapult, TWI y
+Brunel University London, financiado por Innovate UK) para limpieza e inspección de
+monopilotes con verificación de soldaduras; **Eddyfi**, con crawlers que acceden a
+soldaduras en T para evaluación por método de foco total; **TSC Subsea**, con
+verificación de integridad de grout, inspección de soldaduras, mapeo de corrosión y
+detección de miembros inundados; **Intertek**, con servicios de ROV de integridad
+submarina; e **InnovaIR** y otros proveedores de servicio en zona de salpicadura.
+
+- **Clase:** mezcla de nota de prensa técnica y declaraciones de proveedor.
+  **Nivel:** C. Existe además material de la agencia federal estadounidense de
+  seguridad y cumplimiento ambiental marino sobre tecnología remota para inspección y
+  mantenimiento de eólica marina, que debe leerse como fuente de nivel A antes de
+  cualquier conclusión.
+- **Fuentes:** https://www.oedigital.com/news/483611-ifrog-robot-for-cleaning-and-inspection-of-offshore-wind-monopiles-completes-trials ·
+  https://blog.eddyfi.com/en/renewable-energy-robotic-inspection-solutions ·
+  https://www.tscsubsea.com/offshore-wind-subsea-ndt-inspection/ ·
+  https://www.bsee.gov/sites/bsee.gov/files/2023-03/802ac.pdf *(no leído en este lote;
+  queda registrado como pendiente)*
+
+### Conclusión preliminar del lote 3
+
+**No perseguir.** Tres razones convergentes:
+
+1. El interior de la pala es un mercado M4 con al menos cuatro proveedores y modelo de
+   servicio ya instalado.
+2. El único hueco funcional aparente —medición cuantitativa desde el interior— está
+   limitado por la atenuación del material, un obstáculo físico documentado y no un
+   descuido del mercado.
+3. La eólica marina, además de estar ocupada, tiene un canal comercial y una logística
+   que no se solapan con el activo de referencia ni con el mercado regional
+   sudamericano, lo que anula la ventaja de reutilización que sostiene a los mejores
+   candidatos.
