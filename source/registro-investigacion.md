@@ -19,7 +19,7 @@ supuestos.
 | 3 | Eólica: palas, torres y monopilotes marinos | **Completo** |
 | 4 | Presas, vertederos, compuertas de toma y válvulas de gran tamaño | **Completo** |
 | 5 | Chimeneas, hornos industriales e intercambiadores de calor | **Completo** |
-| 6 | Subestaciones: interior de aparamenta, sistemas de cables y transformadores | Pendiente |
+| 6 | Subestaciones: interior de aparamenta, sistemas de cables y transformadores | **Completo** |
 | 7 | Solar y tareas nucleares del catálogo sectorial aún no cubiertas | Pendiente |
 | 8 | Consolidación: fichas nuevas, ranking e integración al informe | Pendiente |
 
@@ -408,3 +408,85 @@ siderurgia: distinto cliente, distinto canal comercial, ambiente térmico que ex
 ingeniería específica y prior art ya patentado sobre el problema central de la alta
 temperatura. Ninguno de los dos aprovecha el canal ni la plataforma del activo de
 referencia.
+
+---
+
+## Lote 6 — Subestaciones: aparamenta blindada, cables y transformadores
+
+**Consultas:** `gas insulated switchgear GIS internal inspection robot SF6 enclosure without disassembly research prototype` ·
+`"inspection robot" GIS busbar enclosure crawler research paper power cable tunnel inspection robot utility deployment`.
+
+### Hallazgo 6.1 — La aparamenta blindada tiene un costo de intervención documentado
+
+En una patente concedida sobre aparamenta blindada con interruptor extraíble se
+establece, como problema de partida, que
+
+> *«If the circuit breaker of a conventional GIS requires service or inspection, it is
+> necessary to interrupt the power supply and evacuate the insulating gas from the
+> sealed container»*
+
+Es decir: inspeccionar por dentro cuesta corte de servicio más recuperación y
+reposición del gas aislante.
+
+- **Clase:** hecho técnico establecido en el fondo de una patente concedida.
+  **Nivel:** A como documento.
+- **Fuente:** patente US 8717742, aparamenta blindada con unidad de interruptor
+  extraíble. https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/8717742
+
+### Hallazgo 6.2 — Lo que existe hoy es monitoreo, no inspección interna
+
+La práctica actual se apoya en medición de densidad y de descomposición del gas
+aislante, y en descargas parciales por vía eléctrica y acústica, es decir en
+diagnóstico **desde fuera** del recinto. La inspección visual sigue asociada al
+desarmado.
+
+- **Clase:** hechos de proveedores de instrumentación y literatura técnica.
+  **Nivel:** B–C.
+- **Fuentes:** https://www.omicronenergy.com/en/application/online-monitoring-and-testing/gas-insulated-switchgear-gis-testing/ ·
+  https://cambridge-sensotec.co.uk/wp-content/uploads/2024/08/GIS-monitoring-of-SF6-IET-2024.pdf
+
+### Hallazgo 6.3 — No se identificó robot de inspección interna de aparamenta blindada
+
+**No se identificó competencia** después de las dos consultas listadas. Es un resultado
+débil: una sola pasada de búsqueda, sin bases de patentes en japonés, chino ni coreano,
+que es exactamente donde el informe advierte que pueden estar los desarrollos no
+indexados en inglés. **Queda como pendiente de verificación, no como whitespace.**
+
+::: inferencia de ingeniería
+Aunque no exista producto, la física acota el valor: el robot igual exige recinto
+desenergizado y gas evacuado, porque no puede operar dentro del aislante presurizado en
+servicio. El ahorro no sería evitar la parada, sino evitar el **desarmado sucesivo de
+cámaras** para llegar a un punto concreto. Ese diferencial debe cuantificarse con una
+utility antes de considerarlo una oportunidad.
+:::
+
+### Hallazgo 6.4 — Túneles y canaletas de cables: prior art abundante
+
+Existe una literatura y un cuerpo de patentes considerable, sobre todo de origen chino,
+para robots de inspección de túneles y canaletas de cables: orugas dobles con cámara,
+sensores de temperatura, humedad y gases, imagen térmica, navegación con mapeo
+simultáneo, y trabajos publicados desde 2008 hasta la actualidad. También hay patente
+estadounidense reciente sobre robot para canaleta de cables.
+
+- **Clase:** patentes y literatura revisada. **Nivel:** A–B.
+- **Fuentes:** https://patents.google.com/patent/CN202217963U/en ·
+  https://www.mdpi.com/2075-1702/10/11/1011 ·
+  https://ieeexplore.ieee.org/document/8521077 ·
+  patente US 11731280, robot de inspección de canaleta de cables.
+- **Por qué importa:** el espacio adyacente al candidato C ya está poblado de prior
+  art. Refuerza que el valor del candidato C, si existe, está en el **vault** con
+  cables energizados y sus requisitos de seguridad, no en recorrer un túnel con una
+  cámara.
+
+### Conclusión preliminar del lote 6
+
+**Un candidato posible pero no confirmado, y una advertencia para el candidato C.**
+
+La inspección interna de aparamenta blindada reúne un costo de intervención alto y
+documentado y ninguna solución robótica identificada, pero el hallazgo es demasiado
+débil para promoverlo: falta búsqueda de patentes en asiático y falta cuantificar qué
+parte del costo se evita realmente. Se registra como **línea a investigar**, con las
+consultas concretas anotadas.
+
+Para túneles y canaletas de cables la conclusión es la opuesta: prior art abundante,
+sin espacio para un producto nuevo genérico.
