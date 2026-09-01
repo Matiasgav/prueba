@@ -17,7 +17,7 @@ supuestos.
 | 1 | Condensadores refrigerados por aire (ACC), condensadores y torres de refrigeración | **Completo** |
 | 2 | Paredes de agua de caldera, headers de caldera e internos de hogar | **Completo** |
 | 3 | Eólica: palas, torres y monopilotes marinos | **Completo** |
-| 4 | Presas, vertederos, compuertas de toma y válvulas de gran tamaño | Pendiente |
+| 4 | Presas, vertederos, compuertas de toma y válvulas de gran tamaño | **Completo** |
 | 5 | Chimeneas, hornos industriales e intercambiadores de calor | Pendiente |
 | 6 | Subestaciones: interior de aparamenta, sistemas de cables y transformadores | Pendiente |
 | 7 | Solar y tareas nucleares del catálogo sectorial aún no cubiertas | Pendiente |
@@ -259,3 +259,79 @@ submarina; e **InnovaIR** y otros proveedores de servicio en zona de salpicadura
    que no se solapan con el activo de referencia ni con el mercado regional
    sudamericano, lo que anula la ventaja de reutilización que sostiene a los mejores
    candidatos.
+
+---
+
+## Lote 4 — Presas, compuertas de toma y válvulas de gran tamaño
+
+**Consultas:** `dam intake gate inspection diver dewatering cost ROV alternative USACE Bureau of Reclamation underwater inspection guidance` ·
+lectura de la ficha del proyecto de investigación del Bureau of Reclamation ·
+`"large valve" internal inspection robot hydro penstock butterfly valve in-situ inspection without disassembly service`.
+
+### Hallazgo 4.1 — Un organismo federal declara que el buzo no puede entrar
+
+El Bureau of Reclamation de Estados Unidos mantiene un proyecto de investigación sobre
+la estructura de toma de Trinity, donde declara que
+
+> *«the tunnel is too dangerous to deploy divers due to its depth, length and confined
+> spaces»*
+
+y se pregunta si un vehículo remoto submarino puede realizar evaluaciones de condición
+y fotogrametría subacuática. La misma ficha declara que
+
+> *«Reclamation does not have an official underwater ROV inspection program»*
+
+y que el organismo no tiene experiencia previa con fotogrametría subacuática como
+alternativa al sonar y al modelado láser 3D.
+
+- **Clase:** hecho publicado por el organismo propietario del activo. **Nivel:** A.
+- **Fuente:** U.S. Bureau of Reclamation, Research and Development Office, ficha de
+  proyecto 9612. https://www.usbr.gov/research/projects/detail.cfm?id=9612
+- **Por qué importa:** es la combinación que este estudio busca —el método convencional
+  no puede ejecutarse por seguridad **y** el propietario declara no tener programa
+  propio—, pero apunta a una oportunidad de **servicio y método**, no de hardware
+  nuevo: los vehículos remotos ya existen comercialmente.
+
+### Hallazgo 4.2 — Las cifras de ahorro que circulan son de proveedor
+
+En material comercial de proveedores de inspección robótica circulan cifras del orden
+de USD 2 a 8 millones y de cuatro a seis meses para un ciclo de inspección con vaciado
+de embalse en una presa mediana, frente a menos de USD 200.000 y cinco a diez días con
+vehículo remoto; y de USD 50.000 a 500.000 de generación perdida por vaciar un canal.
+
+- **Clase:** **declaración de proveedor con interés comercial directo en la
+  comparación.** **Nivel:** C, y no se usa como base de ningún cálculo.
+- **Por qué se registra igual:** marca el orden de magnitud a verificar contra un
+  contrato, una licitación o un informe de utility. Si se confirmara con fuente
+  independiente, sería uno de los mayores costos evitados de todo este estudio.
+- **Pendiente:** localizar el informe final del proyecto del Bureau of Reclamation y
+  documentos de la agencia de ingenieros del ejército estadounidense sobre inspección
+  con vehículos remotos de estructuras de navegación, ambos de nivel A.
+
+### Hallazgo 4.3 — Penstocks y válvulas: el equipamiento ya existe
+
+Para inspección interna de conductos y válvulas de gran diámetro se usan crawlers
+comerciales —por ejemplo la familia VersaTrax de Eddyfi/Inuktun con cámara de
+paneo, inclinación y zoom— para evaluar costuras de soldadura y remaches. La literatura
+técnica describe además robots para tuberías de 900 a 1200 mm con cámaras y LiDAR. Las
+válvulas mariposa de guarda existen precisamente para permitir inspeccionar el conducto
+forzado sin vaciar todo el túnel de aducción.
+
+- **Clase:** mezcla de declaración de fabricante y literatura técnica. **Nivel:** B–C.
+- **Fuentes:** https://blog.eddyfi.com/en/how-the-versatrax-goes-the-distance-for-internal-pipeline-inspection ·
+  https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11174578/ ·
+  https://www.avkvalves.eu/en/insights/product-insights/dams-reservoirs-and-hydropower/dams-and-reservoirs
+
+### Conclusión preliminar del lote 4
+
+**No es un candidato nuevo de hardware, pero refuerza al candidato F.** El activo
+—túneles, tomas y compuertas— tiene un dolor documentado por el propietario, con el
+agravante de que el método convencional está vedado por seguridad en ciertos casos. El
+equipamiento base ya es comercial, de modo que el valor no está en construir otro
+vehículo sino en el paquete de servicio: navegación y localización sin señal satelital
+en tramos largos, medición de espesor en contacto, fotogrametría y modelo del activo,
+y garantía de recuperación.
+
+**Acción para el lote 8:** no crear ficha nueva; incorporar estos hallazgos como
+evidencia adicional del candidato F y mover su pregunta estratégica hacia el paquete de
+servicio y método, que es donde el propietario declara no tener capacidad.
