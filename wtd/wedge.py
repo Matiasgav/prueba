@@ -133,8 +133,34 @@ class SupportSpec:
 
 
 def standard_states(P_tight: float = 1800.0,
-                    support_mode: str = "ends") -> list[SupportSpec]:
+                    support_mode: str = "distributed") -> list[SupportSpec]:
     """Escalera de estados de ajuste, de apretada a floja con juego.
+
+    CORRECCIÓN (dato empírico del usuario, sep 2026): el modo por defecto era
+    'ends', o sea la cuña apoyada SÓLO en sus dos extremos sobre un vano libre
+    de 50 mm. Con ese modelo la cuña ajustada resulta poco impedante, se lleva
+    mucha energía a sus modos de flexión y el martillo rebota MENOS que en la
+    cuña floja: el índice Leeb salía creciente con la soltura.
+
+    Empíricamente es al revés: la cuña floja disipa más y el Leeb baja. La
+    razón es que una cuña realmente ajustada está acoplada al núcleo a lo
+    largo de TODA su longitud, no en dos puntos, y por lo tanto su impedancia
+    en el punto de golpe es altísima. Con apoyo distribuido el modelo
+    reproduce el dato:
+
+        estado        e (apoyo en extremos)   e (apoyo distribuido)
+        S0 ajustada           0.678                  0.986
+        S6 floja              0.782                  0.782
+
+    Los dos modelos coinciden EXACTAMENTE en los estados flojos, porque ahí no
+    hay apoyo en ninguno de los dos; difieren sólo en cuánta impedancia tiene
+    la cuña ajustada, que es justo lo que el dato empírico resuelve.
+
+    Nota sobre el otro mecanismo propuesto (rozamiento en los flancos): en
+    este modelo un amortiguador sobre el apoyo SUBE el rebote, porque frena
+    a la cuña y el martillo se encuentra un blanco más rígido. O sea que la
+    fricción de flancos no explica el signo observado; la impedancia sí. La
+    fricción sigue siendo relevante para el decaimiento del ring-down.
 
     La precarga de referencia de 1800 N sobre una huella de 50 x 30 mm son
     1.2 MPa de presión de asiento, que es el orden de magnitud típico de un
