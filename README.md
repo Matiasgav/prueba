@@ -1,7 +1,10 @@
 # Módulo de impacto para el Wedge Tightness Test (GRIS)
 
-Estudio de diseño mecánico de un módulo de **10 × 10 × 50–60 mm** que acelera una masa dentro de
-su volumen, la suelta en vuelo libre y mide la energía que le entrega a la cuña de ranura.
+Evaluación de desempeño de un módulo de **10 × 10 × 50 mm acostado** que golpea la cuña de ranura
+con 5 mJ y mide, con dos canales independientes, si la cuña está ajustada o floja.
+
+La pregunta que contesta es una sola: **¿esta cadena distingue una cuña floja de una ajustada, con
+cuánto margen, y de qué depende ese margen?**
 
 **El informe completo, interactivo, está en [`docs/index.html`](docs/index.html).**
 
@@ -25,6 +28,8 @@ wtd/                 paquete de modelado (numpy + scipy, nada más)
   module_design.py   dimensionado de las dos familias de módulo
   catalog.py         catálogo de 14 arquitecturas con números
   sensing.py         sensor inductivo, acelerómetro, micrófono, adquisición
+  palpator.py        palpador con masa y precarga: f0 de contacto y despegue
+  charger.py         la máquina que carga un acumulador, y cuánto volumen come
   montecarlo.py      presupuesto de repetibilidad
   reliability.py     vida, desgaste, retroceso, AMFE
 
@@ -45,38 +50,65 @@ python3 studies/build_report.py   # regenera docs/index.html
 
 `run_all.py` acepta nombres de estudio para correr sólo algunos:
 `anchors damage mass accum freeflight sensing mc rel catalog lever wedge sep mech wave wavesim
-masssim strike`.
+sens masssim strike lowE charger palp sig`.
 
 ## Verificación
 
-34 de 34 casos ancla del brief §9 se reproducen dentro de tolerancia, incluidos los tres que el
-informe original no permitía verificar por falta de parámetros declarados.
+El informe está estructurado alrededor de cinco niveles de verificación, cada uno capaz de
+refutar al anterior:
+
+1. **Casos ancla** — 34 de 34 valores publicados del informe previo se reproducen dentro de
+   tolerancia, incluidos los tres que el original no permitía verificar por falta de parámetros
+   declarados. Corren como regresión en `tests/test_anclas.py`.
+2. **Convergencia numérica** — paso de integración, modos retenidos y número de elementos.
+3. **Cruce entre métodos** — fórmula cerrada de acoplamiento modal contra simulación no lineal
+   en el tiempo. Encontró que la fórmula recomienda como óptima una masa a la cual ella misma es
+   inválida.
+4. **Contraste contra dato empírico** — el modelo tiene que dar Leeb *menor* con la cuña floja.
+   **Este nivel refutó el modelo**: la cuña estaba apoyada sólo en sus dos extremos y el signo
+   salía al revés. Se corrigió a apoyo distribuido a lo largo de toda la cola de milano.
+5. **Sensibilidad** — 23 variantes de los cinco parámetros estimados, a dos energías de golpe.
+   Es el nivel que descartó la duración de contacto y encontró el techo de energía.
+
+Los errores que estos niveles encontraron están listados en el informe (§2), con su consecuencia.
+
+## Configuración evaluada
+
+Voice coil LAH04 accionando la palanca en L existente: maza de 2,105 g con calota de R = 12 mm,
+5 mJ, **sin acumulador ni amartillado**. Sensor inductivo sobre la maza (da v_i, v_r, energía y
+t_c) y MEMS de 0,05 g con 0,5 N de precarga como palpador sobre la cuña, a 10 mm del golpe.
 
 ## Resultados principales
 
-1. **El límite de energía lo pone el daño en el G11, no el actuador.** A la misma severidad de
-   contacto del ensayo de la bola de ⌀8 mm (900 MPa, que no deja marca), una punta de R = 12 mm
-   admite 39 mJ y una de R = 20 mm, 181 mJ: 27 y 125 veces más energía.
-2. **Un acumulador elástico llega a 190 mJ dentro de 10 × 10 × 60 mm.** La restricción de 10 mm de
-   altura no es la que limita la energía; lo que limita es la carrera lineal, y la barra de torsión
-   la esquiva porque su carrera es un ángulo.
-3. **Toda transmisión que convierta dirección paga cuadráticamente** en inercia reflejada
-   (1/i²). Es la misma ley que explica el 43 % de pérdida de la palanca en L.
-4. **El vuelo libre es alcanzable** (fuerzas parásitas del 0,56 % del peso) siempre que el blanco
-   del sensor no sea un imán permanente: un imán daría 23 veces el peso del proyectil.
-5. **Medir la velocidad convierte la repetibilidad en un requisito de sensado**: el lanzador
-   dispersa 3 % y la magnitud reportada queda con 0,30 % de error.
-6. **La masa de la maza decide si la medición significa algo.** Con 4 g la restitución es monótona
-   con el ajuste (0,474 ajustada → 0,642 floja, d′ = 6,1); con 8 g se invierte y una cuña ajustada
-   da casi el mismo número que una floja. Ocho gramos es la masa que pasa el acantilado de
-   transferencia de energía: el mismo fenómeno arruina las dos cosas.
-7. **Cuatro de los cinco parámetros estimados del modelo de la cuña no mueven el resultado**
-   (la rigidez del ripple puede variar 60 veces y la del hombro 100), pero el quinto —la disipación
-   por micro-deslizamiento en la junta— lo explica casi todo: anularla colapsa el rango de
-   restitución de 0,168 a 0,005. El orden de la escalera es seguro; su magnitud es una hipótesis.
-   Medirla es el ensayo de prioridad 1.
-8. **La curtosis es el discriminante más robusto**: d′ = 16,6 entre extremos, y sigue ordenando
-   los estados aun con la disipación de junta anulada, porque mide impulsividad y no disipación.
+1. **El voice coil directo alcanza.** Con 5 mJ el índice Leeb va de 986 (ajustada) a 782 (floja) y
+   la energía que la cuña se queda pasa de 2,7 % a 39 %. No hace falta acumulador — que además no
+   entra: dimensionado *con su cargador adentro*, la barra de torsión de 192 mJ queda en 7 mJ.
+2. **El sentido lo produce la impedancia, no la fricción.** Con la disipación de junta anulada la
+   restitución sigue bajando monótonamente con la soltura (0,986 → 0,680). Es el mecanismo que
+   explica el dato de campo del usuario (cuña floja → Leeb menor); la fricción de flancos empuja
+   al revés.
+3. **Hay un techo de energía, y no es el daño de la cuña.** A 5 mJ el índice Leeb ordena la
+   escalera en las 23 variantes del barrido de sensibilidad; a 60 mJ, en 3 de 23. Con el golpe
+   fuerte la cuña ajustada también despega, la disipación de junta pasa a dominar y la curva se
+   pliega. Subir la energía «para tener más señal» rompe el ensayo.
+4. **La duración de contacto hay que descartarla.** No ordena la escalera en ninguna de las 23
+   variantes: se mueve 2,1 µs en total y cambia de signo en el medio. El vector de decisión son
+   dos características, no tres: índice Leeb y curtosis.
+5. **La curtosis es el discriminante más robusto**, porque mide impulsividad y no disipación:
+   ×1,8 → ×79 a lo largo de la escalera, y sigue ordenando aun con la disipación de junta anulada.
+6. **Lo que fija la magnitud de la separación es la rigidez del asiento de la cola de milano.** La
+   rigidez del ripple puede variar 60 veces, el ancho del apoyo 6 y el amortiguamiento del material
+   12 sin mover el resultado un 2 %; pero un hombro diez veces más blando baja el rango de
+   restitución de 0,205 a 0,040. Medirlo es el ensayo de prioridad 1.
+7. **La escalera satura.** A partir del 5 % de precarga las características dejan de moverse: una
+   partición en tres clases (ajustada / intermedia / floja) es cómoda, una escala continua de
+   soltura no lo es. Es un límite estructural del principio de medición, no de esta implementación.
+8. **El daño no es limitante con la punta correcta.** Con R = 12 mm el golpe de 5 mJ da 596 MPa,
+   por debajo de los 640 MPa del límite elástico del G11; con la bola de ⌀8 mm daría 1153 MPa, por
+   encima del shakedown.
+9. **El retroceso es un problema estructural, no de adherencia.** El impulso transferido es
+   4,6 mN·s: 2,3 mm/s en un crawler de 2 kg, que un imán de 50 N frena en 92 µs recorriendo
+   0,1 µm. Lo que hay que dimensionar son los 371 N de pico sobre el montaje.
 
 ## Incógnitas y correcciones al informe previo
 
@@ -86,7 +118,12 @@ informe original no permitía verificar por falta de parámetros declarados.
   ella misma recomienda; verificado contra simulación no lineal.
 - **Corregida** — §4.7: los 9376 Hz son el caso ideal empotrado; con un apoyo de cola de milano
   realista de 5 mm la frecuencia es 6094 Hz.
-- **Abiertas** — módulo transversal del G11, rigidez y precarga del ripple, geometría del apoyo,
-  umbral de daño real, y la separación entre clases requerida (que es una decisión, no un dato).
+- **Corregida por dato de campo** — el apoyo de la cuña se modelaba en dos puntos, y el índice
+  Leeb salía creciente con la soltura. Con apoyo distribuido el signo se invierte y coincide con
+  lo medido. Los dos modelos dan idéntico resultado en los estados flojos: difieren sólo en la
+  impedancia de la cuña ajustada, que es justo lo que el dato resuelve.
+- **Abiertas** — **rigidez del asiento de la cola de milano** (la que fija la magnitud de la
+  separación), módulo transversal del G11, rigidez y precarga del ripple, umbral de daño real, y
+  la separación entre clases requerida (que es una decisión, no un dato).
 
 La lista completa, con impacto y forma de resolverla, está en la §17 del informe.

@@ -1,0 +1,179 @@
+<section id="p3">
+<div class="eyebrow">03 · El objeto medido</div>
+<h2>Cómo está modelada la cuña</h2>
+
+<div class="prose">
+<p>El desempeño de la medición depende enteramente de qué le pasa a la cuña cuando la golpeás, así
+que el modelo de la cuña es el que hay que poder defender. Éste está construido sobre la física
+del asiento, no sobre una condición de borde supuesta.</p>
+</div>
+
+<figure>
+<div class="figframe">
+<svg class="dg" viewBox="0 0 950 340" role="img" aria-label="Corte de la ranura mostrando el bobinado, el resorte ripple, la cuña de G11 agarrada por la cola de milano a lo largo de toda su longitud, y el crawler golpeando radialmente hacia el fondo; al lado, la curva bilineal de reacción del apoyo.">
+  <text x="16" y="18" font-weight="700" font-size="13">Corte de la ranura · el golpe despega la cuña del hombro</text>
+
+  <path d="M60 254 V90 h60 v104 h30 v-16 h-14 V90" class="hatch" stroke="currentColor" stroke-width="1.3"/>
+  <path d="M400 254 V90 h-60 v104 h-30 v-16 h14 V90" class="hatch" stroke="currentColor" stroke-width="1.3"/>
+  <text x="88" y="276" text-anchor="middle" class="sm">diente</text>
+  <text x="372" y="276" text-anchor="middle" class="sm">diente</text>
+
+  <rect x="120" y="216" width="220" height="38" fill="var(--surface-3)" stroke="currentColor" stroke-width="1.2"/>
+  <text x="230" y="240" text-anchor="middle" class="mono" font-size="10">barras / bobinado</text>
+  <path d="M124 210 q11 -12 22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0" class="acc" fill="none"/>
+  <text x="352" y="210" class="mono" font-size="10" fill="var(--accent)">ripple</text>
+
+  <rect x="120" y="170" width="220" height="34" class="mat"/>
+  <text x="230" y="192" text-anchor="middle" class="mono" font-size="11" fill="var(--material)">CUÑA G11 · 8 mm</text>
+  <rect x="120" y="170" width="30" height="8" fill="var(--crit)" opacity=".35"/>
+  <rect x="310" y="170" width="30" height="8" fill="var(--crit)" opacity=".35"/>
+  <text x="135" y="162" text-anchor="middle" class="sm" fill="var(--crit)">hombro</text>
+  <text x="325" y="162" text-anchor="middle" class="sm" fill="var(--crit)">hombro</text>
+
+  <rect x="170" y="60" width="120" height="46" class="body"/>
+  <text x="230" y="88" text-anchor="middle" class="mono" font-size="10">módulo</text>
+  <circle cx="230" cy="118" r="10" class="accf" opacity=".25"/>
+  <circle cx="230" cy="118" r="10" class="acc"/>
+  <line x1="230" y1="132" x2="230" y2="164" class="acc" stroke-width="2.6" marker-end="url(#qa)"/>
+  <text x="246" y="150" class="mono" font-size="11" fill="var(--accent)">golpe radial</text>
+  <text x="230" y="46" text-anchor="middle" class="sm">entrehierro / bore</text>
+  <text x="230" y="300" text-anchor="middle" class="sm">el ripple empuja la cuña HACIA ADENTRO; el golpe la empuja HACIA AFUERA y la despega</text>
+
+  <g transform="translate(520,0)">
+    <text x="0" y="18" font-weight="700" font-size="13">Reacción del apoyo · bilineal y unilateral</text>
+    <line x1="30" y1="244" x2="380" y2="244" class="thin"/>
+    <line x1="180" y1="60" x2="180" y2="258" class="thin"/>
+    <text x="386" y="248" class="sm">w</text>
+    <text x="176" y="54" class="sm" text-anchor="middle">F</text>
+    <text x="330" y="262" class="sm">hacia el fondo →</text>
+    <text x="40" y="262" class="sm">← hacia el bore</text>
+    <line x1="70" y1="84" x2="180" y2="200" class="crit"/>
+    <text x="66" y="78" class="sm" fill="var(--crit)">hombro · k ≈ 10⁹ N/m</text>
+    <line x1="180" y1="200" x2="180" y2="244" class="dim"/>
+    <circle cx="180" cy="200" r="3.5" class="critf"/>
+    <text x="188" y="196" class="mono" font-size="10">p₀ (precarga)</text>
+    <line x1="180" y1="200" x2="370" y2="226" class="acc"/>
+    <text x="266" y="220" class="mono" font-size="10" fill="var(--accent)">ripple · k ≈ 10⁶ N/m</text>
+    <circle cx="182" cy="202" r="9" fill="none" stroke="var(--ink-3)" stroke-dasharray="3 2"/>
+    <text x="196" y="240" class="sm">despegue a i₀ = p₀/k_hombro ≈ 1,5 µm</text>
+  </g>
+  <defs><marker id="qa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <polygon points="0,1 9,5 0,9" fill="var(--accent)"/></marker></defs>
+</svg>
+</div>
+<figcaption><b>La no linealidad esencial.</b> En reposo el ripple empuja la cuña contra los hombros
+de la cola de milano con la precarga p₀. El golpe empuja en sentido contrario. La rigidez del
+hombro es tres órdenes mayor que la del ripple, así que el despegue ocurre con apenas 1,5 µm de
+movimiento — pero sólo si el golpe supera la precarga localmente. Lo que cambia con el ajuste es
+cuánta energía hace falta para despegarla, cuánto tarda en reasentarse y con qué fuerza vuelve.</figcaption>
+</figure>
+
+<div class="prose">
+<h4>Las ecuaciones</h4>
+</div>
+<div class="eq">hombro     R(x) = k_sh · máx(0,  i₀ − w − juego)          ≥ 0     con  i₀ = p₀ / k_sh
+ripple     S(x) = −máx(0,  p₀ + k_rp · w)                  ≤ 0
+fricción   C(x) = −c · ẇ
+
+viga       q̈ᵣ + 2ζωᵣ q̇ᵣ + ωᵣ² qᵣ = Φᵣᵀ · f_nodal        (Timoshenko libre-libre, modos en masa)
+martillo   m ẍ_h = −F_c ,   F_c = k_H · (x_h − w(x_golpe))^1,5     (Hertz, sólo en compresión)</div>
+
+<div class="prose">
+<p>La viga se resuelve <b>libre-libre</b>, con los dos modos de cuerpo rígido incluidos, y todo el
+apoyo lo dan los contactos unilaterales. Así el modelo pasa de forma continua de «prácticamente
+empotrada» a «cuerpo libre sobre el ripple» según la precarga, sin cambiar de formulación. Se
+arranca del equilibrio estático bajo la precarga, resuelto por Newton: ignorar la flecha inicial
+metería un transitorio del tamaño del impacto.</p>
+<p>El apoyo del hombro se aplica <b>distribuido a lo largo de toda la cuña</b>, que es la
+corrección que impuso el dato empírico (§2, nivel 4).</p>
+</div>
+
+<h3>Los estados de ajuste</h3>
+<div class="prose">
+<p>La escalera va de la cuña con precarga nominal a la cuña suelta con juego. La precarga es la
+variable primaria; el amortiguamiento por micro-deslizamiento la acompaña porque una cuña suelta
+desliza.</p>
+</div>
+<div class="tw" id="states-table"></div>
+</section>
+
+
+<section id="p4">
+<div class="eyebrow">04 · Las firmas</div>
+<h2>Qué se ve en cada estado</h2>
+
+<div class="prose">
+<p>Todo el desempeño se juega acá: si las firmas no se distinguen a ojo, ningún clasificador las
+va a distinguir después. Las tres señales son la fuerza de contacto (que ve el sensor inductivo
+por doble derivada), la aceleración en el palpador y su espectro.</p>
+</div>
+
+<div class="tool" id="tool-waves">
+<div class="tool-head"><h4>Firmas simuladas · vano 50 mm, golpe de 5 mJ, maza 2,1 g, palpador a 10 mm</h4>
+<div class="seg" id="wave-sig">
+  <button data-v="a_palp_g" aria-pressed="true">Aceleración en el palpador</button>
+  <button data-v="F_N" aria-pressed="false">Fuerza de contacto</button>
+  <button data-v="w_palp_um" aria-pressed="false">Desplazamiento de la cuña</button>
+  <button data-v="spec" aria-pressed="false">Espectro</button>
+</div></div>
+<div class="tool-body">
+  <div id="wave-states" class="seg" style="margin-bottom:4px"></div>
+  <div id="wave-chart"></div>
+</div>
+</div>
+
+<h3>Las siete firmas, una al lado de la otra</h3>
+<div class="prose">
+<p>La misma señal de aceleración para los siete estados, a la misma escala. Lo que hay que mirar
+no es la amplitud del primer pico —que cambia poco— sino <b>qué pasa después</b>.</p>
+</div>
+<div class="sigs" id="sig-grid"></div>
+
+<div class="finding">
+<span class="tag">Cómo se leen</span>
+<p><b>Cuña ajustada.</b> Un pulso y una sinusoide amortiguada limpia. La cuña está agarrada al
+núcleo, así que devuelve casi toda la energía al martillo y lo que queda decae ordenado. Curtosis
+cerca de 3, que es lo que corresponde a una señal casi gaussiana.</p>
+<p><b>Cuña floja.</b> El primer pico es <i>menor</i> en valor absoluto, pero el fondo se apaga
+mucho más: la energía se fue en el movimiento de cuerpo rígido y en el re-asentamiento. Lo que
+queda es una sucesión de eventos impulsivos aislados, y eso dispara la curtosis.</p>
+<p><b>Estados intermedios.</b> Es donde vive la información útil y donde la escalera todavía no
+saturó. Del 100 % al 25 % de precarga el índice Leeb y la curtosis se mueven de forma monótona;
+de ahí para abajo el índice satura y sólo la curtosis sigue separando.</p>
+</div>
+
+<h3>Las características, estado por estado</h3>
+<div class="tool" id="tool-feat3">
+<div class="tool-head"><h4>Evolución a lo largo de la escalera</h4>
+<div class="seg" id="f3-metric">
+  <button data-v="leeb" aria-pressed="true">Índice Leeb</button>
+  <button data-v="kurtosis" aria-pressed="false">Curtosis</button>
+  <button data-v="t_c1_us" aria-pressed="false">Duración de contacto</button>
+  <button data-v="eta_absorbed" aria-pressed="false">Energía absorbida</button>
+</div></div>
+<div class="tool-body"><div id="f3-chart"></div>
+<p class="srcnote">El índice Leeb, la energía absorbida y la curtosis son monótonos con la soltura;
+los dos primeros saturan a partir del 5 % de precarga y la curtosis sigue separando un poco más.
+La duración de contacto <b>no</b>: se mueve 2,1 µs en total y cambia de signo en el medio de la
+escalera, en las 23 variantes del barrido de sensibilidad. Está en el selector para que se vea
+por qué se descarta, no porque sirva.</p></div>
+</div>
+
+<h3>Dependencia con la energía del golpe</h3>
+<div class="prose">
+<p>Una cuña ajustada es casi lineal: su firma cambia poco con la energía. Una floja no, porque su
+comportamiento depende de cuánto despega. Golpear el mismo punto con dos energías y mirar
+<i>cuánto cambia</i> la firma da un indicador que no depende de la calibración absoluta ni de la
+posición del sensor — y es gratis, porque la energía del voice coil se programa con la corriente.</p>
+</div>
+<div class="tool" id="tool-nonlin">
+<div class="tool-head"><h4>La firma contra la energía</h4>
+<div class="seg" id="nl-metric">
+  <button data-v="restitution" aria-pressed="true">Restitución</button>
+  <button data-v="kurtosis" aria-pressed="false">Curtosis</button>
+  <button data-v="t_c1_us" aria-pressed="false">t_c</button>
+  <button data-v="centroid_Hz" aria-pressed="false">Centroide espectral</button>
+</div></div>
+<div class="tool-body"><div id="nl-chart"></div><div class="chart-legend" id="nl-legend"></div></div>
+</div>
+</section>

@@ -30,7 +30,7 @@ STUDIES = ["anchors", "damage", "mass_optimum", "accumulators", "freeflight",
            "sensing", "montecarlo", "reliability", "catalog", "lever_baseline",
            "wedge_states", "waveforms", "separability", "mechanisms",
            "wave_return", "wave_return_sim", "mass_sim", "strike_position",
-           "sensitivity"]
+           "sensitivity", "charger", "low_energy", "palpator", "signatures"]
 
 
 def main() -> int:
@@ -52,9 +52,10 @@ def main() -> int:
 
     tpl = open(os.path.join(DOCS, "_template.html"), encoding="utf-8").read()
     secs = "\n\n".join(
-        open(os.path.join(DOCS, f"_s{i}.html"), encoding="utf-8").read()
-        for i in (1, 2, 3, 4))
-    app = open(os.path.join(DOCS, "_app.js"), encoding="utf-8").read()
+        open(os.path.join(DOCS, f"_p{i}.html"), encoding="utf-8").read()
+        for i in (1, 2, 3))
+    app = (open(os.path.join(DOCS, "_lib.js"), encoding="utf-8").read()
+           + open(os.path.join(DOCS, "_psections.js"), encoding="utf-8").read())
 
     payload = json.dumps(sanitize(data), ensure_ascii=False,
                          separators=(",", ":"), allow_nan=False)

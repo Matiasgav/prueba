@@ -31,6 +31,12 @@ OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 os.makedirs(OUT, exist_ok=True)
 SEC = BeamSection(0.030, 0.008, 24e9, 1900.0, 5.7e9, 5.0 / 6.0)
 
+# Modo de apoyo de la cuña. 'distributed' es el que reproduce el dato empírico
+# (la cuña floja disipa más y el índice Leeb baja); ver wtd.wedge.standard_states.
+# Varios estudios reconstruyen SupportSpec con parámetros sorteados, así que no
+# alcanza con cambiar el default de standard_states: tienen que leer de acá.
+SUPPORT_MODE = "distributed"
+
 
 def dump(name: str, obj) -> None:
     path = os.path.join(OUT, name + ".json")
@@ -364,7 +370,9 @@ def study_wedge_states(quick: bool = False):
     for span_mm in (50, 100):
         wedge = WedgeSpec(span=span_mm * 1e-3)
         rows = []
-        for m_g in (4.0, 8.0):
+        # 2,105 g es la bola del punto evaluado; 4 y 8 g son para ver si las
+        # conclusiones dependen de la maza o no
+        for m_g in (2.105, 4.0, 8.0):
           hammer = HammerSpec(mass=m_g * 1e-3, R_tip=12e-3)
           for st in standard_states():
             for E_mJ in energies:
@@ -374,7 +382,7 @@ def study_wedge_states(quick: bool = False):
                 rows.append({"estado": st.label, "E_mJ": E_mJ, "m_g": m_g,
                              "precarga_N": st.preload,
                              "gap_um": st.gap * 1e6, **fe})
-                if E_mJ == 60 and span_mm == 50 and m_g == 4.0:
+                if E_mJ == 5 and span_mm == 50 and m_g == 2.105:
                     n = len(sim["t"])
                     step = max(1, n // 1500)
                     waveforms[st.label] = {
@@ -394,8 +402,13 @@ def study_wedge_states(quick: bool = False):
 def study_separability(n_rep: int = 24):
     t(f"separabilidad de clases ({n_rep} repeticiones por estado)")
     rng = np.random.default_rng(7)
-    # Maza del punto de diseño (4 g): es la que da restitución monótona.
-    hammer = HammerSpec(mass=4e-3, R_tip=12e-3)
+    # PUNTO EVALUADO, no un punto genérico: la maza es la bola de 2,105 g en la
+    # punta de la palanca en L y el golpe es de 5 mJ, que es lo que entrega el
+    # voice coil directo. Correr esto a 60 mJ (como en la rev. A) mide otra
+    # máquina: a esa energía la cuña ajustada también despega y la restitución
+    # se pliega. La comparación entre energías vive en study_low_energy().
+    hammer = HammerSpec(mass=2.105e-3, R_tip=12e-3)
+    E_golpe = 5e-3
     cfg = SimConfig(t_end=2.5e-3, dt=5e-8, n_modes=20, decimate=20)
     wedge = WedgeSpec(span=0.050)
     states = standard_states()
@@ -408,12 +421,12 @@ def study_separability(n_rep: int = 24):
                 k_ripple=3.0e7 * (1 + 0.20 * rng.standard_normal()),
                 k_shoulder=2.0e10 * (1 + 0.30 * rng.standard_normal()),
                 gap=max(0.0, st.gap * (1 + 0.15 * rng.standard_normal())),
-                support_mode="ends",
+                support_mode=SUPPORT_MODE,
                 land_width=5e-3 * (1 + 0.10 * rng.standard_normal()),
                 zeta=st.zeta * (1 + 0.20 * rng.standard_normal()),
                 c_slide=st.c_slide * (1 + 0.25 * rng.standard_normal()),
                 label=st.label)
-            E = 60e-3 * (1 + 0.03 * rng.standard_normal())
+            E = E_golpe * (1 + 0.03 * rng.standard_normal())
             v = math.sqrt(2 * E / hammer.mass)
             xs = 0.050 * (0.5 + 0.06 * rng.standard_normal())
             c2 = SimConfig(t_end=cfg.t_end, dt=cfg.dt, n_modes=cfg.n_modes,
@@ -498,12 +511,14 @@ def study_mechanisms():
         totalmente pegada (no desliza) y cero con la junta totalmente suelta
         (no hay fuerza normal): tiene un MÁXIMO a precarga intermedia.
 
-    Los dos empujan el índice de rebote en sentidos distintos, y por eso el
-    índice solo no es monótono con el ajuste. Se corre la escalera de estados
-    con c_slide = 0 para aislar (1).
+    Los dos empujan el índice de rebote en sentidos distintos. Cuál gana
+    decide el SIGNO del índice Leeb con la soltura, que es justamente el
+    dato que el usuario tiene medido: la cuña floja da Leeb MENOR. Con el
+    apoyo distribuido y a la energía evaluada gana (1), y el signo sale
+    bien. Se corre la escalera con c_slide = 0 para aislar (1).
     """
     t("mecanismos que compiten en el rebote")
-    hammer = HammerSpec(mass=4e-3, R_tip=12e-3)
+    hammer = HammerSpec(mass=2.105e-3, R_tip=12e-3)
     cfg = SimConfig(t_end=3.0e-3, dt=5e-8, n_modes=24, decimate=20)
     out = {}
     for span_mm in (50, 100):
@@ -517,9 +532,9 @@ def study_mechanisms():
                 s2 = SupportSpec(preload=st.preload, k_ripple=3.0e7,
                                  k_shoulder=(2.0e12 if tag.startswith("solo")
                                              else 2.0e10),
-                                 gap=st.gap, support_mode="ends",
+                                 gap=st.gap, support_mode=SUPPORT_MODE,
                                  zeta=zt, c_slide=cs, label=st.label)
-                v = math.sqrt(2 * 60e-3 / hammer.mass)
+                v = math.sqrt(2 * 5e-3 / hammer.mass)
                 sim = simulate(wedge, s2, hammer, v, cfg)
                 fe = extract_features(sim)
                 rows.append({"estado": st.label, "variante": tag,
@@ -655,9 +670,11 @@ def study_strike_position():
         for x_rel in (0.5, 0.4, 0.3, 0.2, 0.12):
             for st_i in (0, 3, 6):
                 st = standard_states()[st_i]
-                for m_g in (4.0, 8.0):
+                # punto evaluado (2,105 g / 5 mJ) y una maza doble, para ver
+                # si la conclusión sobre la posición del golpe depende de ella
+                for m_g in (2.105, 4.0):
                     h = HammerSpec(mass=m_g * 1e-3, R_tip=12e-3)
-                    v = math.sqrt(2 * 60e-3 / h.mass)
+                    v = math.sqrt(2 * 5e-3 / h.mass)
                     c2 = SimConfig(t_end=cfg.t_end, dt=cfg.dt,
                                    n_modes=cfg.n_modes,
                                    decimate=cfg.decimate,
@@ -708,7 +725,7 @@ def study_wave_return_sim():
             st = standard_states()[st_i]
             s2 = SupportSpec(preload=st.preload, k_ripple=3.0e7,
                              k_shoulder=2.0e10, gap=st.gap,
-                             support_mode="ends", zeta=0.012, c_slide=0.0,
+                             support_mode=SUPPORT_MODE, zeta=0.012, c_slide=0.0,
                              label=st.label)
             c2 = SimConfig(t_end=cfg.t_end, dt=cfg.dt, n_modes=cfg.n_modes,
                            decimate=cfg.decimate,
@@ -740,16 +757,23 @@ def study_sensitivity():
         c_slide     fricción de junta               (supuesta 0 a 3e4)
         land_width  ancho del apoyo                 (supuesto 5 mm)
     Se barre cada uno sobre un rango amplio y se comprueba si:
-      (a) t_c1 sigue siendo monótona creciente con la soltura,
+      (a) t_c1 sigue siendo monótona con la soltura,
       (b) la curtosis sigue siendo monótona creciente,
-      (c) la restitución sigue siendo NO monótona.
+      (c) la restitución sigue siendo monótona decreciente (dato empírico).
     Una conclusión que no sobrevive al barrido no es una conclusión.
+
+    El barrido se corre a DOS energías: la del punto evaluado (5 mJ con la
+    maza de 2,105 g de la palanca en L) y 60 mJ, que es 12 veces más. No es
+    decorativo: a 60 mJ la cuña ajustada también despega y la restitución
+    deja de ser monótona (se hunde en S3 y vuelve a subir). Saber a qué
+    energía se rompe la monotonía ES el resultado.
     """
     t("sensibilidad de las conclusiones a los parámetros estimados")
-    hammer = HammerSpec(mass=4e-3, R_tip=12e-3)
     cfg = SimConfig(t_end=3.0e-3, dt=5e-8, n_modes=24, decimate=20)
     wedge = WedgeSpec(span=0.050)
     base = standard_states()
+    energias = [("evaluado · 5 mJ", 2.105e-3, 5e-3),
+                ("12x · 60 mJ", 4.0e-3, 60e-3)]
 
     variantes = []
     for v in (0.5e7, 1e7, 3e7, 1e8, 3e8):
@@ -763,52 +787,57 @@ def study_sensitivity():
     for v in (0.005, 0.012, 0.03, 0.06):
         variantes.append(("zeta", v, {"_z": v}))
 
+    def mono(serie, key, sign=+1):
+        v = [r[key] for r in serie]
+        d = [sign * (v[i + 1] - v[i]) for i in range(len(v) - 1)]
+        # se admite una violación chica (menos del 3 % del rango total)
+        rango = max(v) - min(v)
+        tol = 0.03 * rango
+        return all(x >= -tol for x in d)
+
     out = []
-    for nombre, val, kw in variantes:
-        serie = []
-        for st in base:
-            kwargs = dict(preload=st.preload, k_ripple=3.0e7,
-                          k_shoulder=2.0e10, gap=st.gap,
-                          support_mode="ends", land_width=5e-3,
-                          zeta=st.zeta, c_slide=st.c_slide, label=st.label)
-            for k, v2 in kw.items():
-                if k == "_cs":
-                    kwargs["c_slide"] = st.c_slide * v2
-                elif k == "_z":
-                    kwargs["zeta"] = v2
-                else:
-                    kwargs[k] = v2
-            s2 = SupportSpec(**kwargs)
-            v_imp = math.sqrt(2 * 60e-3 / hammer.mass)
-            sim = simulate(wedge, s2, hammer, v_imp, cfg)
-            fe = extract_features(sim)
-            serie.append({"estado": st.label, "e": sim["restitution"],
-                          "t_c1": fe["t_c1_us"], "kurt": fe["kurtosis"],
-                          "eta": sim["eta_absorbed"],
-                          "f_peak": fe["f_peak_Hz"]})
+    for etiqueta_E, m_h, E_golpe in energias:
+        print(f"    --- {etiqueta_E} · maza {m_h*1e3:.3g} g ---")
+        hammer = HammerSpec(mass=m_h, R_tip=12e-3)
+        v_imp = math.sqrt(2 * E_golpe / m_h)
+        for nombre, val, kw in variantes:
+            serie = []
+            for st in base:
+                kwargs = dict(preload=st.preload, k_ripple=3.0e7,
+                              k_shoulder=2.0e10, gap=st.gap,
+                              support_mode=SUPPORT_MODE, land_width=5e-3,
+                              zeta=st.zeta, c_slide=st.c_slide, label=st.label)
+                for k, v2 in kw.items():
+                    if k == "_cs":
+                        kwargs["c_slide"] = st.c_slide * v2
+                    elif k == "_z":
+                        kwargs["zeta"] = v2
+                    else:
+                        kwargs[k] = v2
+                s2 = SupportSpec(**kwargs)
+                sim = simulate(wedge, s2, hammer, v_imp, cfg)
+                fe = extract_features(sim)
+                serie.append({"estado": st.label, "e": sim["restitution"],
+                              "t_c1": fe["t_c1_us"], "kurt": fe["kurtosis"],
+                              "eta": sim["eta_absorbed"],
+                              "f_peak": fe["f_peak_Hz"]})
 
-        def mono(key, sign=+1):
-            v = [r[key] for r in serie]
-            d = [sign * (v[i + 1] - v[i]) for i in range(len(v) - 1)]
-            # se admite una violación chica (menos del 3 % del rango total)
-            rango = max(v) - min(v)
-            tol = 0.03 * rango
-            return all(x >= -tol for x in d)
-
-        out.append({
-            "parametro": nombre, "valor": val,
-            "serie": serie,
-            "tc1_monotona": mono("t_c1"),
-            "kurt_monotona": mono("kurt"),
-            "e_monotona": mono("e") or mono("e", -1),
-            "tc1_rango_us": max(r["t_c1"] for r in serie) - min(r["t_c1"] for r in serie),
-            "kurt_rango": max(r["kurt"] for r in serie) - min(r["kurt"] for r in serie),
-            "e_rango": max(r["e"] for r in serie) - min(r["e"] for r in serie),
-        })
-        print(f"    {nombre}={val:<10.4g} tc1_mon={out[-1]['tc1_monotona']} "
-              f"kurt_mon={out[-1]['kurt_monotona']} e_mon={out[-1]['e_monotona']} "
-              f"(rangos: tc1 {out[-1]['tc1_rango_us']:.1f} us, kurt {out[-1]['kurt_rango']:.0f}, "
-              f"e {out[-1]['e_rango']:.3f})")
+            out.append({
+                "energia": etiqueta_E, "E_mJ": E_golpe * 1e3,
+                "parametro": nombre, "valor": val,
+                "serie": serie,
+                "tc1_monotona": mono(serie, "t_c1"),
+                "kurt_monotona": mono(serie, "kurt"),
+                # el dato empírico fija el signo: la cuña floja rebota MENOS
+                "e_monotona": mono(serie, "e", -1),
+                "tc1_rango_us": max(r["t_c1"] for r in serie) - min(r["t_c1"] for r in serie),
+                "kurt_rango": max(r["kurt"] for r in serie) - min(r["kurt"] for r in serie),
+                "e_rango": max(r["e"] for r in serie) - min(r["e"] for r in serie),
+            })
+            print(f"    {nombre}={val:<10.4g} tc1_mon={out[-1]['tc1_monotona']} "
+                  f"kurt_mon={out[-1]['kurt_monotona']} e_mon={out[-1]['e_monotona']} "
+                  f"(rangos: tc1 {out[-1]['tc1_rango_us']:.1f} us, kurt {out[-1]['kurt_rango']:.0f}, "
+                  f"e {out[-1]['e_rango']:.3f})")
     dump("sensitivity", out)
 
 
@@ -846,7 +875,7 @@ def study_low_energy():
                     k_ripple=3.0e7 * (1 + 0.20 * rng.standard_normal()),
                     k_shoulder=2.0e10 * (1 + 0.30 * rng.standard_normal()),
                     gap=max(0.0, st.gap * (1 + 0.15 * rng.standard_normal())),
-                    support_mode="ends",
+                    support_mode=SUPPORT_MODE,
                     land_width=5e-3 * (1 + 0.10 * rng.standard_normal()),
                     zeta=st.zeta * (1 + 0.20 * rng.standard_normal()),
                     c_slide=st.c_slide * (1 + 0.25 * rng.standard_normal()),
@@ -1038,6 +1067,15 @@ def study_palpator():
         "0.4 g @ 10 N": Palpator(0.4e-3, 4e-3, 10.0),
         "0.2 g @ 25 N (MEMS desnudo)": Palpator(0.2e-3, 4e-3, 25.0),
         "0.1 g @ 10 N": Palpator(0.1e-3, 4e-3, 10.0),
+        # el que el usuario dijo que va a poner: MEMS casi desnudo, 0,5 N.
+        # Se barre la precarga a masa constante porque lo que decide el
+        # despegue es F/m, no m sola: con 0,05 g y 0,5 N el umbral queda en
+        # 1020 g y la señal a 10 mm llega a 3100 g.
+        "0.05 g @ 0.5 N (propuesta del usuario)": Palpator(0.05e-3, 4e-3, 0.5),
+        "0.05 g @ 1 N": Palpator(0.05e-3, 4e-3, 1.0),
+        "0.05 g @ 2 N": Palpator(0.05e-3, 4e-3, 2.0),
+        "0.05 g @ 3 N": Palpator(0.05e-3, 4e-3, 3.0),
+        "0.05 g @ 5 N": Palpator(0.05e-3, 4e-3, 5.0),
     }
 
     def kurt_of(sig, dt):
@@ -1083,7 +1121,7 @@ def study_palpator():
                     k_ripple=3e7 * (1 + 0.2 * rng.standard_normal()),
                     k_shoulder=2e10 * (1 + 0.3 * rng.standard_normal()),
                     gap=max(0.0, s.gap * (1 + 0.15 * rng.standard_normal())),
-                    support_mode="ends",
+                    support_mode=SUPPORT_MODE,
                     land_width=5e-3 * (1 + 0.1 * rng.standard_normal()),
                     zeta=s.zeta * (1 + 0.2 * rng.standard_normal()),
                     c_slide=s.c_slide * (1 + 0.25 * rng.standard_normal()),
@@ -1118,6 +1156,61 @@ def study_palpator():
                       "barrido_energia": barrido})
 
 
+# ==========================================================================
+def study_signatures():
+    """Firmas en la configuración que se evalúa: VCM directo, 5 mJ, maza de
+    2.105 g con calota de R = 12 mm, palpador de MEMS a 10 mm del golpe.
+
+    Emite la señal del nodo de la cuña (sensor ideal) y la que realmente lee
+    el palpador, para que el informe muestre las dos.
+    """
+    t("firmas de la configuración evaluada")
+    from wtd.palpator import Palpator, apply_palpator
+
+    wedge = WedgeSpec(span=0.050)
+    ham = HammerSpec(mass=2.105e-3, R_tip=12e-3)
+    palp = Palpator(mass=0.05e-3, tip_radius=2e-3, preload=0.5)
+    E = 5e-3
+    v = math.sqrt(2 * E / ham.mass)
+    cfg = SimConfig(t_end=2.5e-3, dt=5e-8, n_modes=24, decimate=4,
+                    x_strike=0.025, x_palpator=0.035)
+
+    firmas, tabla = {}, []
+    for st in standard_states():
+        sim = simulate(wedge, st, ham, v, cfg)
+        fe = extract_features(sim)
+        o = apply_palpator(sim["w_palp"], sim["dt_rec"], palp)
+        n = len(sim["t"])
+        step = max(1, n // 1400)
+        firmas[st.label] = {
+            "t_us": (sim["t"][::step] * 1e6).tolist(),
+            "a_palp_g": (sim["a_palp"][::step] / 9.80665).tolist(),
+            "a_medida_g": (o["a_palpador"][::step] / 9.80665).tolist(),
+            "F_N": (sim["F"][::step]).tolist(),
+            "w_palp_um": (sim["w_palp"][::step] * 1e6).tolist(),
+        }
+        tabla.append({
+            "estado": st.label, "precarga_N": st.preload,
+            "gap_um": st.gap * 1e6,
+            "restitution": sim["restitution"], "leeb": sim["leeb"],
+            "eta_absorbed": sim["eta_absorbed"],
+            "t_c1_us": fe["t_c1_us"], "kurtosis": fe["kurtosis"],
+            "a_pk_g": fe["a_pk_g"], "f_peak_Hz": fe["f_peak_Hz"],
+            "F_peak_N": sim["F_peak_N"],
+            "palp_despega": o["despega"],
+            "a_pk_medida_g": o["a_pico_palpador_g"],
+        })
+        print(f"    {st.label:30s} e={sim['restitution']:.3f} "
+              f"Leeb={sim['leeb']:.0f} kurt={fe['kurtosis']:.1f}")
+
+    dump("signatures", {"firmas": firmas, "tabla": tabla,
+                        "config": {"E_mJ": E * 1e3, "m_maza_g": ham.mass * 1e3,
+                                   "R_punta_mm": ham.R_tip * 1e3,
+                                   "v_ms": v, "vano_mm": 50,
+                                   "x_palpador_mm": 10,
+                                   "palpador": palp.summary()}})
+
+
 
 # ==========================================================================
 if __name__ == "__main__":
@@ -1130,7 +1223,7 @@ if __name__ == "__main__":
         "catalog": study_catalog, "wedge": study_wedge_states,
         "sep": study_separability, "lever": study_lever_baseline,
         "mech": study_mechanisms, "wave": study_wave_return, "wavesim": study_wave_return_sim,
-        "sens": study_sensitivity, "lowE": study_low_energy, "charger": study_charger, "palp": study_palpator, "masssim": study_mass_sim, "strike": study_strike_position,
+        "sens": study_sensitivity, "lowE": study_low_energy, "charger": study_charger, "palp": study_palpator, "sig": study_signatures, "masssim": study_mass_sim, "strike": study_strike_position,
     }
     t0 = time.time()
     for name, fn in all_studies.items():
