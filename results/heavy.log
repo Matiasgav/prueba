@@ -1,0 +1,15 @@
+[03:06:38] estados de ajuste de la cuña (simulación no lineal)
+    vano 50 mm: 28 simulaciones
+    vano 100 mm: 28 simulaciones
+  -> wedge_states.json (49 kB)
+  -> waveforms.json (907 kB)
+[03:08:20] separabilidad de clases (24 repeticiones por estado)
+    S0 · ajustada (100 %): 24 ok
+    S1 · 75 % precarga: 24 ok
+    S2 · 50 % precarga: 24 ok
+    S3 · 25 % precarga: 24 ok
+    S4 · precarga residual (5 %): 24 ok
+    S5 · floja, juego 50 µm: 24 ok
+    S6 · floja, juego 200 µm: 24 ok
+  -> separability.json (87 kB)
+[03:12:39] total 360.8 s

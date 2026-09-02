@@ -124,6 +124,8 @@ def simulate(wedge: WedgeSpec, support: SupportSpec, hammer: HammerSpec,
     v_first_sep = None
     F_peak = 0.0
     t_contact_total = 0.0
+    t_c1 = None
+    t_contact_start = 0.0
     dt = cfg.dt
 
     for step in range(n_steps):
@@ -146,12 +148,14 @@ def simulate(wedge: WedgeSpec, support: SupportSpec, hammer: HammerSpec,
             if not in_contact:
                 in_contact = True
                 contacts += 1
+                t_contact_start = t
         elif in_contact:
             in_contact = False
             t_last_sep = t
             if t_first_sep is None:
                 t_first_sep = t
                 v_first_sep = v_h
+                t_c1 = t - t_contact_start
 
         # velocity-Verlet
         q = q + dt * qd + 0.5 * dt * dt * a_q
@@ -191,6 +195,10 @@ def simulate(wedge: WedgeSpec, support: SupportSpec, hammer: HammerSpec,
         "E_modal_end_mJ": E_modal * 1e3,
         "F_peak_N": F_peak,
         "t_contact_us": t_contact_total * 1e6,
+        # Duración del PRIMER contacto. Es la magnitud física comparable con
+        # la fórmula de Hertz y con el ancho de banda de excitación; el total
+        # suma los re-impactos y mezcla dos cosas distintas.
+        "t_c1_us": (t_c1 if t_c1 is not None else t_contact_total) * 1e6,
         "t_first_sep_us": (t_first_sep or 0.0) * 1e6,
         "t_last_sep_us": (t_last_sep or 0.0) * 1e6,
         "v_first_sep_ms": float(v_first_sep) if v_first_sep is not None else 0.0,
@@ -263,14 +271,19 @@ def extract_features(sim: dict, bands=((0, 1e3), (1e3, 3e3), (3e3, 8e3),
     f, S = spectrum(a, dt)
     P = S ** 2
     tot = P.sum() + 1e-30
+    # El pico se busca por encima de 500 Hz: por debajo sólo queda el residuo
+    # del pasa-altos y el arrastre de cuerpo rígido de la cuña suelta, que
+    # ningún acelerómetro real mediría y que si no se saca gana siempre.
+    band = f >= 500.0
     feats = {
-        "f_peak_Hz": float(f[np.argmax(S)]),
+        "f_peak_Hz": float(f[band][np.argmax(S[band])]) if band.any() else 0.0,
         "centroid_Hz": float((f * P).sum() / tot),
         "restitution": sim["restitution"],
         "leeb": sim["leeb"],
         "eta_absorbed": sim["eta_absorbed"],
         "F_peak_N": sim["F_peak_N"],
         "t_contact_us": sim["t_contact_us"],
+        "t_c1_us": sim["t_c1_us"],
         "n_contacts": sim["n_contacts"],
         "a_rms": float(np.sqrt(np.mean(a ** 2))),
         "a_pk_g": float(np.abs(a).max() / 9.80665),

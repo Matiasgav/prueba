@@ -1,0 +1,166 @@
+{
+ "duty": {
+  "posiciones_por_maquina": 960,
+  "golpes_por_maquina": 19200,
+  "golpes_vida_util": 1920000,
+  "ciclos_de_diseño": 10000000.0,
+  "factor": 5.208333333333333
+ },
+ "desgaste_guia": [
+  {
+   "V_mm3": 0.0005826949788445304,
+   "F_N": 0.08,
+   "s_km": 500.0,
+   "K": 1e-07,
+   "ciclos": 10000000.0,
+   "profundidad_um": 0.02913474894222652,
+   "aceptable": true
+  },
+  {
+   "V_mm3": 0.002185106170666989,
+   "F_N": 0.3,
+   "s_km": 500.0,
+   "K": 1e-07,
+   "ciclos": 10000000.0,
+   "profundidad_um": 0.10925530853334944,
+   "aceptable": true
+  },
+  {
+   "V_mm3": 0.00728368723555663,
+   "F_N": 1.0,
+   "s_km": 500.0,
+   "K": 1e-07,
+   "ciclos": 10000000.0,
+   "profundidad_um": 0.36418436177783153,
+   "aceptable": true
+  }
+ ],
+ "punta": {
+  "delta_E_star_acero_a_WC_pct": 5.6,
+  "criterio_correcto": "resistencia a la abrasión, no rigidez",
+  "recomendado": "WC-Co 6 % o Si3N4, radio >= 8 mm, rugosidad Ra <= 0.1 um",
+  "riesgo": "una punta que se desgasta CAMBIA el radio y por lo tanto t_c y p_max: es una deriva sistemática del instrumento, no un ruido. Hay que verificar el radio con un patrón cada cierto número de golpes"
+ },
+ "retroceso": {
+  "impulso_mNs": 32.0,
+  "F_pico_impacto_N": 853.2940958001631,
+  "F_pico_sobre_crawler_vuelo_libre_N": 0.0,
+  "dv_crawler_si_rigido_mm_s": 16.0,
+  "desplazamiento_durante_contacto_um": 0.9425211345975815,
+  "fuerza_de_retencion_N": 50.0,
+  "margen_si_rigido": 0.058596444351479184,
+  "conclusion": "con vuelo libre la reacción del impacto NO pasa por el crawler; con martillo rígido haría falta una retención de 853 N"
+ },
+ "reaccion_lanzamiento_A": {
+  "F_media_N": 2.909090909090909,
+  "t_lanzamiento_ms": 11.405042744330245,
+  "impulso_mNs": 33.17830616532435
+ },
+ "reaccion_lanzamiento_B": {
+  "F_media_N": 14.222222222222223,
+  "t_lanzamiento_ms": 2.2514058108213186,
+  "impulso_mNs": 32.0199937539032
+ },
+ "fmea": [
+  {
+   "item": "Punta",
+   "mode": "Redondeo por abrasión contra fibra de vidrio",
+   "effect": "Cambia R -> cambia t_c y p_max -> deriva del espectro",
+   "severity": 6,
+   "likelihood": 6,
+   "detection": 7,
+   "mitigation": "Punta de WC o Si3N4; patrón de verificación de radio; seguimiento del t_c medido, que es un testigo directo de R",
+   "rpn": 252
+  },
+  {
+   "item": "Traba de disparo",
+   "mode": "Desgaste del diente de la traba mecánica",
+   "effect": "Deriva del punto de disparo -> deriva de energía",
+   "severity": 5,
+   "likelihood": 8,
+   "detection": 4,
+   "mitigation": "Traba MAGNÉTICA sin contacto deslizante bajo carga; si se usa traba mecánica, superficies de WC y verificación periódica",
+   "rpn": 160
+  },
+  {
+   "item": "Cuña (objeto)",
+   "mode": "Indentación acumulada por golpes repetidos",
+   "effect": "Daño al activo del cliente; inaceptable",
+   "severity": 10,
+   "likelihood": 3,
+   "detection": 5,
+   "mitigation": "Radio de punta >= 12 mm para mantener p_max por debajo del límite de shakedown (1024 MPa); ver estudio de daño",
+   "rpn": 150
+  },
+  {
+   "item": "Sensor inductivo",
+   "mode": "Deriva térmica del demodulador",
+   "effect": "Error de velocidad -> error de energía",
+   "severity": 5,
+   "likelihood": 5,
+   "detection": 5,
+   "mitigation": "Referencia diferencial (dos bobinas), calibración por el tramo de vuelo libre con aceleración conocida (g)",
+   "rpn": 125
+  },
+  {
+   "item": "Proyectil",
+   "mode": "Agarrotamiento en la guía por contaminación",
+   "effect": "No hay golpe, o golpe de energía desconocida",
+   "severity": 8,
+   "likelihood": 5,
+   "detection": 3,
+   "mitigation": "Guía con huelgo diametral >= 40 um, venteo con laberinto, recubrimiento DLC, y detección por el propio sensor inductivo (si no ve el vuelo, el tiro es inválido)",
+   "rpn": 120
+  },
+  {
+   "item": "Cadena de medida",
+   "mode": "Saturación del acelerómetro",
+   "effect": "Se pierde el pico y el índice queda mal",
+   "severity": 6,
+   "likelihood": 5,
+   "detection": 4,
+   "mitigation": "Rango >= 2x el pico esperado con margen de 6 dB, y detección de recorte por software",
+   "rpn": 120
+  },
+  {
+   "item": "Acumulador",
+   "mode": "Fatiga del resorte / barra de torsión",
+   "effect": "Deriva de energía y eventual rotura",
+   "severity": 9,
+   "likelihood": 2,
+   "detection": 6,
+   "mitigation": "Diseño a vida infinita por Goodman con n >= 1.5, granallado, presetting; verificación de energía por el sensor en cada tiro",
+   "rpn": 108
+  },
+  {
+   "item": "Proyectil",
+   "mode": "Doble impacto por rebote no capturado",
+   "effect": "Corrompe el ring-down y el índice de rebote",
+   "severity": 6,
+   "likelihood": 7,
+   "detection": 2,
+   "mitigation": "Tope elastomérico en la culata dimensionado para dejar el segundo impacto por debajo del 5 % de energía; la ventana de análisis se cierra antes, y el sensor VE el segundo impacto",
+   "rpn": 84
+  },
+  {
+   "item": "Módulo",
+   "mode": "Choque contra la cuña por error de posicionamiento",
+   "effect": "Daño al módulo y a la cuña",
+   "severity": 7,
+   "likelihood": 3,
+   "detection": 3,
+   "mitigation": "Palpador de contacto que define la separación mecánicamente y actúa de tope; el palpador ya está en la arquitectura para el acelerómetro",
+   "rpn": 63
+  },
+  {
+   "item": "Amartillado",
+   "mode": "Motor/husillo trabado por par excesivo en frío",
+   "effect": "Se pierde el ciclo",
+   "severity": 4,
+   "likelihood": 4,
+   "detection": 2,
+   "mitigation": "Límite de corriente y detección de calado; el amartillado es cuasiestático, sobra par",
+   "rpn": 32
+  }
+ ]
+}

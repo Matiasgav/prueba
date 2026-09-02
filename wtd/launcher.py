@@ -75,24 +75,41 @@ class LaunchSpec:
 def air_back_force(spec: LaunchSpec, v: float) -> float:
     """Fuerza de contrapresión del aire barrido por el proyectil [N].
 
-    Suma de dos mecanismos, se toma el mayor:
-      * inercial: descarga por orificio,  dp = rho (A_p v/(Cd A_v))^2 / 2
-      * viscoso : flujo anular de Poiseuille, dp ∝ 1/h^3  (el que explota
-        cuando el huelgo es chico; es el que arruina el ensayo de caída
-        libre con tubo guía ajustado del brief §7.1)
+    El aire desplazado escapa por DOS caminos en PARALELO:
+      * los agujeros de venteo, con descarga inercial:
+            Q_v = Cd A_v sqrt(2 dp / rho)
+      * el huelgo anular del cañón, con flujo viscoso de Poiseuille:
+            Q_a = w h^3 dp / (12 mu L)      (dp ∝ 1/h^3, el término que
+            explota cuando el huelgo es chico y el que arruina el ensayo de
+            caída libre con tubo guía ajustado del brief §7.1)
+
+    Se resuelve la presión que hace que la suma de los dos caudales iguale al
+    barrido A_p v. Tomar el mayor de los dos por separado sobreestima: con
+    los dos caminos abiertos la presión es MENOR que con cualquiera solo.
     """
     if spec.bore_area <= 0.0 or v <= 0.0:
         return 0.0
     Q = spec.bore_area * v
-    dp_inertial = (RHO_AIR / 2.0) * (Q / (spec.vent_Cd * spec.vent_area)) ** 2
-    dp_visc = 0.0
-    if spec.barrel_clearance > 0.0:
-        # Flujo entre placas paralelas de ancho = perímetro, huelgo h.
-        r = math.sqrt(spec.bore_area / math.pi)
-        w = 2.0 * math.pi * r
-        h = spec.barrel_clearance
-        dp_visc = 12.0 * MU_AIR * spec.barrel_engaged_len * Q / (w * h ** 3)
-    return max(dp_inertial, dp_visc) * spec.bore_area
+    r = math.sqrt(spec.bore_area / math.pi)
+    w = 2.0 * math.pi * r
+    h = spec.barrel_clearance
+    G_annulus = (w * h ** 3 / (12.0 * MU_AIR * spec.barrel_engaged_len)
+                 if h > 0.0 else 0.0)
+    Cv = spec.vent_Cd * spec.vent_area * math.sqrt(2.0 / RHO_AIR)
+
+    def flow(dp: float) -> float:
+        return Cv * math.sqrt(max(dp, 0.0)) + G_annulus * dp
+
+    lo, hi = 0.0, 1.0
+    while flow(hi) < Q and hi < 1e9:
+        hi *= 4.0
+    for _ in range(80):
+        mid = 0.5 * (lo + hi)
+        if flow(mid) < Q:
+            lo = mid
+        else:
+            hi = mid
+    return 0.5 * (lo + hi) * spec.bore_area
 
 
 def simulate_launch(spec: LaunchSpec, t_max: float = 0.05,
@@ -324,6 +341,15 @@ def piston_effect_check(bore_d: float, clearance: float, v: float,
     """Reproduce y generaliza la advertencia del brief §7.1.
 
     Con tubo guía ajustado el bombeo viscoso escala con 1/h^3.
+
+    OJO con la longitud de engrane: una ESFERA en un tubo sólo tiene un
+    anillo corto donde el huelgo es del orden del nominal (el huelgo crece
+    rápido al alejarse del ecuador), del orden de 2 a 3 mm para una bola de
+    8 mm. Con engaged_len = 2.5 mm este modelo da 20 % del peso para la bola
+    de 8 mm en tubo de 8.5 mm a 1.17 m/s, que es el 22 % que reporta el
+    brief. Un PROYECTIL CILÍNDRICO, en cambio, engrana su longitud completa
+    (10 a 20 mm) y el mismo huelgo da una fuerza 5 a 8 veces mayor: por eso
+    el cañón tiene que estar venteado sí o sí.
     """
     A_p = math.pi * bore_d ** 2 / 4.0
     Q = A_p * v

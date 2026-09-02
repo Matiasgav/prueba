@@ -1,0 +1,332 @@
+{
+ "escenarios": {
+  "traba mecánica (sear)": {
+   "n": 200000,
+   "E_almacenada_mJ": {
+    "nombre": "energía almacenada",
+    "media": 149.32121960197713,
+    "sigma": 4.370481023956939,
+    "cv_pct": 2.92689882630658,
+    "p05": 142.1999273630994,
+    "p95": 156.56351789094214
+   },
+   "E_proyectil_mJ": {
+    "nombre": "energía del proyectil",
+    "media": 138.59524765043105,
+    "sigma": 4.264439157582874,
+    "cv_pct": 3.0769014305156883,
+    "p05": 131.63044773427364,
+    "p95": 145.64995371400244
+   },
+   "E_normal_mJ": {
+    "nombre": "energía normal al impacto",
+    "media": 138.50104722171136,
+    "sigma": 4.263048097329956,
+    "cv_pct": 3.077989793467556,
+    "p05": 131.53933755598413,
+    "p95": 145.54902907116931
+   },
+   "E_medida_mJ": {
+    "nombre": "energía medida por el sensor",
+    "media": 138.5965195644402,
+    "sigma": 4.284673538728923,
+    "cv_pct": 3.091472680695111,
+    "p05": 131.6062013244327,
+    "p95": 145.68808941997375
+   },
+   "v_ms": {
+    "nombre": "velocidad de impacto",
+    "media": 5.885627331356651,
+    "sigma": 0.0905694705480472,
+    "cv_pct": 1.5388244183508426,
+    "p05": 5.736515661406152,
+    "p95": 6.034276131277097
+   },
+   "error_residual_medicion_pct": 0.29957360083668944,
+   "cv_lanzador_pct": 3.076901430515688,
+   "sensibilidad": [
+    {
+     "variable": "disparo (traba)",
+     "corr": 0.6517025146351855,
+     "contrib_var_pct": 42.471616758182414
+    },
+    {
+     "variable": "precarga",
+     "corr": 0.502062291691196,
+     "contrib_var_pct": 25.206654473821555
+    },
+    {
+     "variable": "rigidez k",
+     "corr": 0.476695205732823,
+     "contrib_var_pct": 22.72383191686584
+    },
+    {
+     "variable": "posición horaria",
+     "corr": -0.2999202798385633,
+     "contrib_var_pct": 8.995217425844212
+    },
+    {
+     "variable": "temperatura",
+     "corr": -0.057614492448766,
+     "contrib_var_pct": 0.3319429740128914
+    },
+    {
+     "variable": "carrera (amartillado)",
+     "corr": 0.04156113544279099,
+     "contrib_var_pct": 0.17273279792940174
+    },
+    {
+     "variable": "fricción µ",
+     "corr": -0.031928145473825366,
+     "contrib_var_pct": 0.10194064733977552
+    },
+    {
+     "variable": "inclinación",
+     "corr": -0.025221283268359863,
+     "contrib_var_pct": 0.06361131297028491
+    },
+    {
+     "variable": "separación (gap)",
+     "corr": 0.001718096347293439,
+     "contrib_var_pct": 0.0002951855058583057
+    }
+   ]
+  },
+  "traba magnética": {
+   "n": 200000,
+   "E_almacenada_mJ": {
+    "nombre": "energía almacenada",
+    "media": 149.32396431071322,
+    "sigma": 3.274585267092726,
+    "cv_pct": 2.192940217069894,
+    "p05": 143.95430781062038,
+    "p95": 154.7336155295777
+   },
+   "E_proyectil_mJ": {
+    "nombre": "energía del proyectil",
+    "media": 138.59780086785997,
+    "sigma": 3.306488745953953,
+    "cv_pct": 2.385671868709072,
+    "p05": 133.18330522028833,
+    "p95": 144.04914045534383
+   },
+   "E_normal_mJ": {
+    "nombre": "energía normal al impacto",
+    "media": 138.50360864140197,
+    "sigma": 3.306580865703896,
+    "cv_pct": 2.3873608046306756,
+    "p05": 133.0909395327278,
+    "p95": 143.95836341337667
+   },
+   "E_medida_mJ": {
+    "nombre": "energía medida por el sensor",
+    "media": 138.59907617257204,
+    "sigma": 3.3326164132851703,
+    "cv_pct": 2.404501173684357,
+    "p05": 133.149373582583,
+    "p95": 144.09781084039147
+   },
+   "v_ms": {
+    "nombre": "velocidad de impacto",
+    "media": 5.885959416838845,
+    "sigma": 0.07022791675060729,
+    "cv_pct": 1.1931430677162975,
+    "p05": 5.770253573723772,
+    "p95": 6.001023672160867
+   },
+   "error_residual_medicion_pct": 0.2995736008366894,
+   "cv_lanzador_pct": 2.385671868709071,
+   "sensibilidad": [
+    {
+     "variable": "precarga",
+     "corr": 0.6479823488904866,
+     "contrib_var_pct": 41.98811244736322
+    },
+    {
+     "variable": "rigidez k",
+     "corr": 0.6141547003873404,
+     "contrib_var_pct": 37.71859960078639
+    },
+    {
+     "variable": "posición horaria",
+     "corr": -0.3863646704595037,
+     "contrib_var_pct": 14.927765857928089
+    },
+    {
+     "variable": "disparo (traba)",
+     "corr": 0.2097644347363978,
+     "contrib_var_pct": 4.40011180802805
+    },
+    {
+     "variable": "temperatura",
+     "corr": -0.07543128671302166,
+     "contrib_var_pct": 0.5689879015182077
+    },
+    {
+     "variable": "carrera (amartillado)",
+     "corr": 0.055168124618442664,
+     "contrib_var_pct": 0.30435219739160196
+    },
+    {
+     "variable": "fricción µ",
+     "corr": -0.041073689184540865,
+     "contrib_var_pct": 0.16870479432282692
+    },
+    {
+     "variable": "inclinación",
+     "corr": -0.035888031337226574,
+     "contrib_var_pct": 0.12879507932617565
+    },
+    {
+     "variable": "separación (gap)",
+     "corr": 0.00037412777786172954,
+     "contrib_var_pct": 1.3997159416775565e-05
+    }
+   ]
+  },
+  "traba magnética + resorte clase 1": {
+   "n": 200000,
+   "E_almacenada_mJ": {
+    "nombre": "energía almacenada",
+    "media": 149.32645300200096,
+    "sigma": 1.3369189912348427,
+    "cv_pct": 0.8952995027725784,
+    "p05": 147.13897162153097,
+    "p95": 151.52876867872826
+   },
+   "E_proyectil_mJ": {
+    "nombre": "energía del proyectil",
+    "media": 138.60011592952299,
+    "sigma": 1.794665384159397,
+    "cv_pct": 1.2948512864678767,
+    "p05": 135.67895298834858,
+    "p95": 141.5234736060963
+   },
+   "E_normal_mJ": {
+    "nombre": "energía normal al impacto",
+    "media": 138.50592284869143,
+    "sigma": 1.7978018962814823,
+    "cv_pct": 1.297996402829258,
+    "p05": 135.57808194886917,
+    "p95": 141.43497791490668
+   },
+   "E_medida_mJ": {
+    "nombre": "energía medida por el sensor",
+    "media": 138.6013867056402,
+    "sigma": 1.8419304792093503,
+    "cv_pct": 1.3289408735290777,
+    "p05": 135.60369186209527,
+    "p95": 141.6097090320242
+   },
+   "v_ms": {
+    "nombre": "velocidad de impacto",
+    "media": 5.886304141399111,
+    "sigma": 0.03811216772154638,
+    "cv_pct": 0.647471941748622,
+    "p05": 5.824065439801212,
+    "p95": 5.948181940855883
+   },
+   "error_residual_medicion_pct": 0.2995736008366893,
+   "cv_lanzador_pct": 1.2948512864678765,
+   "sensibilidad": [
+    {
+     "variable": "posición horaria",
+     "corr": -0.7155247404313785,
+     "contrib_var_pct": 51.19756541693915
+    },
+    {
+     "variable": "rigidez k",
+     "corr": 0.3982000027626689,
+     "contrib_var_pct": 15.856324220018955
+    },
+    {
+     "variable": "precarga",
+     "corr": 0.39540050583189795,
+     "contrib_var_pct": 15.634156001212077
+    },
+    {
+     "variable": "disparo (traba)",
+     "corr": 0.3859652538457702,
+     "contrib_var_pct": 14.896917717622982
+    },
+    {
+     "variable": "temperatura",
+     "corr": -0.14036244902517828,
+     "contrib_var_pct": 1.970161709634577
+    },
+    {
+     "variable": "carrera (amartillado)",
+     "corr": 0.10221260426305717,
+     "contrib_var_pct": 1.0447416470236333
+    },
+    {
+     "variable": "fricción µ",
+     "corr": -0.06994004989018866,
+     "contrib_var_pct": 0.4891610578642079
+    },
+    {
+     "variable": "inclinación",
+     "corr": -0.06521211012217136,
+     "contrib_var_pct": 0.42526193065862045
+    },
+    {
+     "variable": "separación (gap)",
+     "corr": 0.0011359834577281441,
+     "contrib_var_pct": 0.00012904584162319903
+    }
+   ]
+  }
+ },
+ "objetivos": [
+  {
+   "variable": "TODAS (base)",
+   "cv_pct": 3.0747525252417147,
+   "delta_pct": 0.0
+  },
+  {
+   "variable": "sin disparo (traba)",
+   "cv_pct": 2.326195686654155,
+   "delta_pct": 0.7485568385875596
+  },
+  {
+   "variable": "sin precarga",
+   "cv_pct": 2.669787519649222,
+   "delta_pct": 0.40496500559249293
+  },
+  {
+   "variable": "sin rigidez k",
+   "cv_pct": 2.7079566864608324,
+   "delta_pct": 0.3667958387808823
+  },
+  {
+   "variable": "sin temperatura",
+   "cv_pct": 3.0693114220004443,
+   "delta_pct": 0.005441103241270451
+  },
+  {
+   "variable": "sin carrera (amartillado)",
+   "cv_pct": 3.0715307474419737,
+   "delta_pct": 0.003221777799740977
+  },
+  {
+   "variable": "sin fricción µ",
+   "cv_pct": 3.073134040597059,
+   "delta_pct": 0.0016184846446556378
+  },
+  {
+   "variable": "sin inclinación",
+   "cv_pct": 3.073262363714247,
+   "delta_pct": 0.001490161527467837
+  },
+  {
+   "variable": "sin separación (gap)",
+   "cv_pct": 3.074732310924002,
+   "delta_pct": 2.0214317712596852e-05
+  },
+  {
+   "variable": "sin posición horaria",
+   "cv_pct": 3.0747525252417147,
+   "delta_pct": 0.0
+  }
+ ]
+}

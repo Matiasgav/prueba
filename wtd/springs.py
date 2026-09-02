@@ -138,12 +138,15 @@ class HelicalSpring:
         return 0.5 * self.k * (x_max ** 2 - x_min ** 2)
 
     def surge_frequency(self) -> float:
-        """Primer modo de surge (un extremo fijo, cuarto de onda) [Hz].
+        """Primer modo de surge [Hz] (Shigley ec. 10-25, ambos extremos
+        apoyados en placas planas):  f = (1/2) sqrt(k/m).
 
-        Si el tiempo de lanzamiento no es >> 1/f_surge, parte de la energía
-        queda atrapada en ondas dentro del resorte y no llega al proyectil.
+        Si el tiempo de lanzamiento no es bastante mayor que 1/f_surge, parte
+        de la energía queda atrapada en ondas dentro del resorte y no llega
+        al proyectil. Ver `wtd.surge`, que lo cuantifica con un modelo
+        distribuido: para el resorte de referencia la pérdida es del 3 %.
         """
-        return 0.25 * math.sqrt(self.k / self.mass) / (2.0 * math.pi) * 4.0
+        return 0.5 * math.sqrt(self.k / self.mass)
 
     def fatigue(self, F_max: float, F_min: float = 0.0) -> FatigueCheck:
         F_a = (F_max - F_min) / 2.0

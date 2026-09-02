@@ -1,0 +1,439 @@
+<style>
+/* utilidades para los diagramas SVG */
+.dg{--dg-line:currentColor}
+.dg text{fill:currentColor; font-family:"IBM Plex Sans Condensed",sans-serif; font-size:12px}
+.dg .mono{font-family:"IBM Plex Mono",monospace; font-size:11px}
+.dg .sm{font-size:10.5px; fill:var(--ink-3)}
+.dg .ln{stroke:currentColor; stroke-width:1.4; fill:none}
+.dg .thin{stroke:var(--rule-2); stroke-width:1; fill:none}
+.dg .dim{stroke:var(--ink-3); stroke-width:.8; fill:none}
+.dg .body{fill:var(--surface-2); stroke:currentColor; stroke-width:1.4}
+.dg .body2{fill:var(--surface-3); stroke:currentColor; stroke-width:1.2}
+.dg .acc{fill:none; stroke:var(--accent); stroke-width:2.2}
+.dg .accf{fill:var(--accent); stroke:none}
+.dg .mat{fill:var(--material-soft); stroke:var(--material); stroke-width:1.4}
+.dg .matf{fill:var(--material); stroke:none}
+.dg .ghost{fill:none; stroke:currentColor; stroke-width:1.1; stroke-dasharray:4 3; opacity:.55}
+.dg .crit{stroke:var(--crit); stroke-width:2; fill:none}
+.dg .critf{fill:var(--crit)}
+.dg .hatch{fill:var(--surface-3)}
+</style>
+
+<section id="s1">
+<div class="eyebrow">01 · Decisión</div>
+<h2>Lo que hay que decidir, y con qué números</h2>
+
+<div class="prose">
+<p>Este estudio dimensiona el módulo que pediste: <b>10 × 10 × 50–60 mm</b>, que acelera una masa
+mientras su punta está dentro del volumen, la suelta, y la deja recorrer entre 2 y 4 mm en vuelo
+libre hasta golpear la cuña. Se modeló la cadena completa —acumulador, lanzamiento, separación,
+vuelo, contacto de Hertz, respuesta de la cuña— y se verificó contra los 34 casos ancla del brief.</p>
+
+<p>La conclusión corta: <b>el problema no es la energía</b>. Con un acumulador elástico se llega
+cómodamente a 100–190 mJ en ese envolvente, veinte veces más de lo que da cualquier accionamiento
+directo. Lo que limita el golpe es el <b>umbral de daño del G11</b>, y ese límite se corre casi a
+voluntad abriendo el radio de la punta. Lo que sí es una decisión tuya, y la única que bloquea el
+diseño de detalle, es <b>cómo se orienta el eje largo del módulo</b>.</p>
+</div>
+
+<div class="finding">
+<span class="tag">Recomendación</span>
+<p><b>Si hay espacio radial (~55 mm):</b> cañón de resorte con traba magnética (arquitectura A1).
+Es la arquitectura de una sonda Leeb, con 40 años de uso industrial y vida infinita a fatiga
+(factor de Goodman <b data-n="accumulators.resorte_referencia.n_goodman|2"></b>).</p>
+<p><b>Si el chasis de 10 mm es firme:</b> barra de torsión plegada con cigüeñal corto
+(arquitectura B1). Es la única topología que escapa a la limitación de carrera, porque su
+«carrera» es un ángulo. Llega a <b data-n="catalog.4.E_max_mJ|0"></b> mJ en 10 × 10 × 60 mm con
+una inercia reflejada al proyectil de <b data-n="catalog.4.m_drive_eff_g|4"></b> g,
+o sea cero a efectos prácticos.</p>
+<p><b>En los dos casos:</b> punta esférica de <b>R = 12 mm</b> en carburo de tungsteno, proyectil
+de 4 g para vano de 50 mm, y sensor inductivo de corrientes de Foucault con blanco <b>no
+magnético</b>.</p>
+</div>
+
+<h3>Las cinco conclusiones que cambian el diseño</h3>
+<div class="prose">
+<ol>
+<li><b>El límite es el daño, no el actuador.</b> A igualdad de severidad de contacto con tu ensayo
+de la bola —los 900 MPa que ya sabés que no dejan marca— pasar de R = 4 mm a R = 12 mm multiplica
+la energía admisible por <b data-n="damage.severidad_constante.4.factor_vs_ancla|0"></b>, y a
+R = 20 mm por <b data-n="damage.severidad_constante.6.factor_vs_ancla|0"></b>. El radio de la
+punta es la variable de diseño más poderosa del sistema y no estaba especificada en ninguna parte.</li>
+
+<li><b>El material de la punta es casi irrelevante para la mecánica.</b> De acero a carburo de
+tungsteno, E* sube apenas <b data-n="damage.puntas.1.delta_E_star_pct|1"></b> %, porque el G11 es
+diez veces más blando y domina el contacto. Se elige la punta por <b>abrasión</b> —el G11 tiene
+fibra de vidrio— no por rigidez.</li>
+
+<li><b>Cualquier conversión de dirección cuesta cuadráticamente.</b> Con una transmisión de
+relación <i>i</i>, la inercia del accionamiento se refleja multiplicada por 1/<i>i</i>². Eso
+explica de una el 43 % de energía perdida de la palanca en L y descarta las levas de conversión
+axial→radial. La barra de torsión es la excepción y por eso es la respuesta correcta en 10 mm.</li>
+
+<li><b>El vuelo libre se puede conseguir de verdad, pero un imán lo arruina.</b> Con lanzamiento
+por resorte y sensor de corrientes de Foucault, las fuerzas parásitas en el tramo libre suman
+<b data-n="freeflight.fuerzas.parasitas_%peso|2"></b> % del peso del proyectil. Si en cambio se usa
+un imán permanente como blanco del sensor, la atracción contra cualquier pieza de acero cercana
+vale <b data-n="freeflight.iman_veces_peso|0"></b> veces el peso: no hay vuelo libre.</li>
+
+<li><b>Medir la velocidad cambia la naturaleza del requisito.</b> El lanzador dispersa un
+<b data-n="montecarlo.escenarios.traba mecánica (sear).cv_lanzador_pct|2"></b> % tiro a tiro, pero
+el sensor sabe cuánto disparó: el error que sobrevive en la magnitud reportada es
+<b data-n="montecarlo.escenarios.traba mecánica (sear).error_residual_medicion_pct|2"></b> %. La
+repetibilidad deja de ser un requisito de fabricación y pasa a ser uno de resolución del sensor.
+Es la diferencia de fondo con la patente de Westinghouse, que compensa la gravedad ajustando la
+tensión del resorte según la hora del carro porque no tiene forma de medir la velocidad.</li>
+</ol>
+</div>
+
+<div class="finding warn">
+<span class="tag">Y una advertencia sobre la medición</span>
+<p>La simulación no lineal dice que <b>el índice de rebote solo no discrimina de forma
+monótona</b>: hay dos mecanismos que empujan en sentidos opuestos (transferencia elástica y
+disipación en la junta), y para el vano de 50 mm el índice tiene un mínimo en el estado
+intermedio, así que una cuña ajustada y una muy floja pueden dar el mismo número. Los dos
+discriminantes que sí salieron monótonos son la <b>duración del primer contacto</b>
+(55 → 64 µs de ajustada a floja) y la <b>curtosis de la señal del acelerómetro</b> (3 → 78).
+Ver §10 y §11.</p>
+</div>
+</section>
+
+
+<section id="s2">
+<div class="eyebrow">02 · Verificación</div>
+<h2>Qué se comprobó antes de calcular nada nuevo</h2>
+
+<div class="prose">
+<p>Nada de lo que sigue vale si el modelo no reproduce los casos ancla del brief §9. Se
+implementaron desde cero —viga de Timoshenko por elementos finitos, contacto de Hertz, curva
+del actuador, cinemática de la palanca— y se contrastaron contra los valores publicados.</p>
+</div>
+
+<div class="tw" id="anchors-table"></div>
+<p class="srcnote">Fuente: <code>results/anchors.json</code> · regresión en <code>tests/test_anclas.py</code></p>
+
+<h3>Tres incógnitas abiertas del brief quedaron cerradas</h3>
+
+<div class="finding">
+<span class="tag">Incógnita #5 · κ, factor de corrección por corte</span>
+<p>El informe original declara f₁ = 9376 Hz para el vano de 50 mm con G = 5,7 GPa pero no declara
+κ. Resolviendo κ para que el modelo reproduzca esa frecuencia se obtiene
+<b data-n="anchors.kappa_implicito_50mm|4"></b> en el vano de 50 mm y
+<b data-n="anchors.kappa_implicito_100mm|4"></b> en el de 100 mm. Los dos vanos, resueltos de forma
+independiente, dan el valor estándar 5/6 = 0,8333. <b>La incógnita se cierra: κ = 5/6</b>, y la
+corrección de Timoshenko del informe está bien hecha.</p>
+</div>
+
+<div class="finding">
+<span class="tag">Incógnita #2 · J_L, inercia de la palanca</span>
+<p>El informe no declara la inercia de la palanca, y sin ella la tabla §5 no se puede reproducir.
+Haciendo ingeniería inversa sobre las tres filas, los valores son compatibles con una barra de
+acero de sección 3 × 8 mm (J = m·r²/3), que reproduce las tres dentro del ±1,1 %. Queda
+reconstruida, no confirmada: <b>hay que sacarla del CAD</b>, que es gratis.</p>
+</div>
+
+<div class="finding warn">
+<span class="tag">Corrección al modelo modal · el 9376 Hz es un límite superior</span>
+<p>El empotramiento perfecto exige que el apoyo tome momento. Un apoyo real de cola de milano
+tiene un ancho finito, y con él la frecuencia baja bastante: con apoyo de 5 mm y rigidez de
+contacto 2 × 10¹⁰ N/m² el primer modo de la cuña asentada da <b>6094 Hz</b>, no 9376. El barrido
+completo va de 4736 Hz (apoyo de 2 mm) a 11 017 Hz (apoyo de 12 mm). <b>La frecuencia de la cuña
+ajustada la fija la geometría del asiento tanto como el vano</b>, y eso mueve la especificación de
+ancho de banda de la adquisición.</p>
+</div>
+
+<div class="tw" id="land-table"></div>
+
+<h4>Un error numérico que vale la pena registrar</h4>
+<div class="prose">
+<p>El primer intento modeló el empotramiento con un resorte de penalidad de 10¹⁴ N/m. Con una
+rigidez de elemento de 1,5 × 10¹² N/m, esa penalidad arruina el número de condición de K y el
+problema de autovalores generalizado devolvió <b>+13,7 % en f₁</b> sin ningún síntoma visible:
+la rigidez estática seguía dando exacta y las vigas libre-libre y apoyada-apoyada también. Se
+detectó sólo porque el caso empotrado no cerraba contra el ancla. La solución es eliminar los
+grados de libertad restringidos, no penalizarlos.</p>
+</div>
+</section>
+
+
+<section id="s3">
+<div class="eyebrow">03 · La bifurcación</div>
+<h2>Cómo se orienta el eje de 50 mm</h2>
+
+<div class="prose">
+<p>Pediste un módulo de 10 × 10 × 50 mm y no dijiste cómo se orienta. De eso depende todo lo
+demás, así que no se adivinó: se dimensionaron las dos familias y se midió el costo de elegir la
+que entra en 10 mm.</p>
+<p>El brief §2 fija un chasis de 10 mm de altura y deja abierta (incógnita #1) la pregunta de si
+esos 10 mm son una decisión de diseño o el entrehierro con el rotor puesto. Si el rotor sale
+durante la inspección, la restricción desaparece y la familia A queda disponible.</p>
+</div>
+
+<figure>
+<div class="figframe">
+<svg class="dg" viewBox="0 0 1020 340" role="img" aria-label="Comparación de las dos orientaciones posibles del módulo dentro del entrehierro del estator: el eje de 50 mm radial, que necesita 55 mm de altura, o el eje de 50 mm axial, que entra en 10 mm pero reduce la carrera de aceleración a 4,5 mm.">
+  <!-- FAMILIA A -->
+  <text x="20" y="22" font-weight="700" font-size="13">FAMILIA A · eje de 50 mm RADIAL</text>
+  <text x="20" y="40" class="sm">cañón: la carrera de aceleración es la longitud del módulo</text>
+
+  <!-- cuña + diente -->
+  <rect x="30" y="272" width="400" height="34" class="mat"/>
+  <text x="230" y="294" text-anchor="middle" class="mono" font-size="10">CUÑA G11 · 8 mm</text>
+  <rect x="30" y="306" width="400" height="18" class="hatch" stroke="currentColor" stroke-width="1"/>
+  <text x="230" y="319" text-anchor="middle" class="sm">resorte ripple / ranura</text>
+
+  <!-- modulo vertical -->
+  <rect x="180" y="60" width="100" height="190" class="body"/>
+  <rect x="196" y="72" width="68" height="120" class="body2"/>
+  <text x="230" y="118" text-anchor="middle" class="mono" font-size="10">acumulador</text>
+  <text x="230" y="134" text-anchor="middle" class="mono" font-size="10">+ amartillado</text>
+  <rect x="208" y="196" width="44" height="46" class="accf" opacity=".22"/>
+  <rect x="208" y="196" width="44" height="46" class="acc"/>
+  <text x="230" y="222" text-anchor="middle" class="mono" font-size="10">proyectil</text>
+  <!-- vuelo libre -->
+  <line x1="230" y1="250" x2="230" y2="270" class="acc" marker-end="url(#ar)"/>
+  <text x="243" y="264" class="mono" font-size="10">vuelo libre 2–4 mm</text>
+
+  <!-- cota altura -->
+  <line x1="150" y1="60" x2="150" y2="272" class="dim" marker-start="url(#ars)" marker-end="url(#ars)"/>
+  <text x="144" y="170" text-anchor="end" class="mono" font-size="11">≈55 mm</text>
+  <!-- carrera -->
+  <line x1="300" y1="72" x2="300" y2="242" class="dim" marker-start="url(#ars)" marker-end="url(#ars)"/>
+  <text x="308" y="160" class="mono" font-size="11">carrera 22 mm</text>
+
+  <!-- separador -->
+  <line x1="500" y1="30" x2="500" y2="330" class="thin"/>
+
+  <!-- FAMILIA B -->
+  <text x="530" y="22" font-weight="700" font-size="13">FAMILIA B · eje de 50 mm AXIAL</text>
+  <text x="530" y="40" class="sm">módulo acostado: entra en 10 mm, carrera reducida a 4,5 mm</text>
+
+  <rect x="540" y="272" width="410" height="34" class="mat"/>
+  <text x="745" y="294" text-anchor="middle" class="mono" font-size="10">CUÑA G11 · 8 mm</text>
+  <rect x="540" y="306" width="410" height="18" class="hatch" stroke="currentColor" stroke-width="1"/>
+
+  <rect x="560" y="196" width="370" height="52" class="body"/>
+  <!-- barra de torsion plegada -->
+  <path d="M582 210 H900 M582 234 H900 M900 210 A12 12 0 0 1 900 234" class="acc"/>
+  <circle cx="582" cy="210" r="4" class="accf"/><circle cx="582" cy="234" r="4" class="accf"/>
+  <text x="745" y="204" text-anchor="middle" class="mono" font-size="9.5" fill="var(--accent)">barra de torsión plegada · ⌀1,4 mm</text>
+  <!-- cigueñal -->
+  <line x1="600" y1="222" x2="626" y2="238" class="ln" stroke-width="2.4"/>
+  <circle cx="600" cy="222" r="3.5" fill="currentColor"/>
+  <rect x="608" y="240" width="90" height="14" class="accf" opacity=".22"/>
+  <rect x="608" y="240" width="90" height="14" class="acc"/>
+  <text x="653" y="251" text-anchor="middle" class="mono" font-size="9">proyectil</text>
+  <line x1="653" y1="256" x2="653" y2="270" class="acc" marker-end="url(#ar)"/>
+
+  <line x1="950" y1="196" x2="950" y2="272" class="dim" marker-start="url(#ars)" marker-end="url(#ars)"/>
+  <text x="960" y="238" class="mono" font-size="11">10 mm</text>
+  <line x1="560" y1="186" x2="930" y2="186" class="dim" marker-start="url(#ars)" marker-end="url(#ars)"/>
+  <text x="745" y="180" text-anchor="middle" class="mono" font-size="11">50–60 mm</text>
+
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <polygon points="0,1 9,5 0,9" fill="var(--accent)"/>
+    </marker>
+    <marker id="ars" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <polygon points="1,1 9,5 1,9" fill="var(--ink-3)"/>
+    </marker>
+  </defs>
+</svg>
+</div>
+<figcaption><b>La decisión que bloquea el diseño de detalle.</b> A la izquierda, el eje largo es
+radial: el proyectil acelera sobre 22 mm y sale por la boca, como una sonda Leeb. A la derecha, el
+módulo está acostado a lo largo del eje del generador y entra en el chasis de 10 mm, pero la
+carrera de aceleración cae a 4,5 mm y hace falta un acumulador que trabaje con ángulo en vez de
+con carrera lineal. Las dos llegan a energías comparables; lo que cambia es la complejidad
+mecánica y el antecedente industrial.</figcaption>
+</figure>
+
+<div class="tw" id="family-table"></div>
+
+<div class="prose">
+<p>El resultado importante es que <b>la restricción de 10 mm no es la que mata la energía</b>. El
+brief plantea el problema de empaque como si lo fuera, pero con un acumulador que almacene en
+torsión se llega a <b data-n="catalog.4.E_max_mJ|0"></b> mJ dentro de los 10 mm. Lo que la
+familia B cuesta es complejidad y madurez, no julios.</p>
+</div>
+</section>
+
+
+<section id="s4">
+<div class="eyebrow">04 · Energía</div>
+<h2>Qué limita el golpe (no es el actuador)</h2>
+
+<div class="prose">
+<p>El brief §6.3 muestra que la energía necesaria abarca tres órdenes de magnitud según el
+principio de medición: 1356 mJ para el método fuerza-desplazamiento de Westinghouse, 90 mJ para
+Leeb G, 11,5 mJ para Leeb D, 1,45 mJ para tu ensayo de la bola. Cualquier optimización tiene que
+declarar para qué principio está optimizando. Pero antes de eso conviene ver qué es lo que
+realmente pone el techo.</p>
+</div>
+
+<h3>El techo lo pone el G11, y se corre con el radio de la punta</h3>
+
+<div class="eq">p_max ∝ E*^0,8 · R^(−0,6) · E_cin^0,2        t_c ∝ m^0,4 · k^(−0,4) · v^(−0,2)</div>
+
+<div class="prose">
+<p>La presión hertziana crece con la energía elevada a 0,2 y baja con el radio elevado a 0,6. El
+exponente del radio es tres veces el de la energía, y eso es toda la historia: <b>para triplicar
+el radio se puede multiplicar la energía por 27 sin tocar la severidad del contacto</b>.</p>
+<p>El anclaje empírico es tuyo: bola de acero de ⌀8 mm (R = 4 mm) desde 70 mm, 1,45 mJ,
+900 MPa de presión hertziana pico, y no deja marca visible. Tomando esos 900 MPa como severidad
+admisible, la energía que tolera cada radio es:</p>
+</div>
+
+<div class="tw" id="severity-table"></div>
+
+<div class="finding">
+<span class="tag">Hallazgo · el radio de punta es la variable más poderosa</span>
+<p>Con <b>R = 12 mm</b> se pueden entregar <b data-n="damage.severidad_constante.4.E_mJ|1"></b> mJ
+con exactamente la misma severidad de contacto que tu ensayo de la bola, que ya sabés que no
+marca. Eso es <b data-n="damage.severidad_constante.4.factor_vs_ancla|0"></b> veces más energía,
+gratis. Una calota esférica de R = 12 mm sobre un proyectil de 7 mm de diámetro es una superficie
+casi plana: es trivial de mecanizar y de verificar con un patrón.</p>
+</div>
+
+<div class="tw" id="damage-table"></div>
+<div class="prose">
+<p>El criterio de <i>shakedown</i> (p_max ≤ 1,6·p_y ≈ 1024 MPa) es el que importa para golpes
+repetidos: por debajo de él, las tensiones residuales del primer impacto hacen elásticos a todos
+los siguientes y no hay acumulación. Es una estimación <b>[E]</b> tomada de la teoría clásica de
+contacto (Johnson §9.3) porque no hay curva S-N de indentación esférica sobre G11 publicada; hay
+que verificarla en el mock-up.</p>
+</div>
+
+<h3>El material de la punta casi no cambia nada</h3>
+<div class="tw" id="tip-table"></div>
+<div class="prose">
+<p>El G11 transversal (E ≈ 20 GPa) es diez a treinta veces más blando que cualquier candidato a
+punta, así que domina el módulo de contacto equivalente. Pasar de acero a carburo de tungsteno
+sube E* un <b data-n="damage.puntas.1.delta_E_star_pct|1"></b> % y acorta el contacto un 2 %.
+<b>Elegir la punta por rigidez no tiene sentido.</b> Se elige por abrasión: el G11 lleva fibra de
+vidrio, que tiene dureza comparable a un acero templado, y un millón de impactos redondean una
+punta de acero. Y una punta que se redondea cambia R, y con R cambian t_c y p_max: es una deriva
+sistemática del instrumento, no un ruido.</p>
+</div>
+
+<div class="tool" id="tool-hertz">
+<div class="tool-head"><h4>Calculadora de contacto</h4>
+<span class="hint">movés los deslizadores y se recalcula el impacto completo</span></div>
+<div class="tool-body split">
+<div class="ctrls">
+  <div class="ctrl"><label>Energía de impacto <b id="hz-E-v">60 mJ</b></label>
+    <input type="range" id="hz-E" min="0.5" max="250" step="0.5" value="60"></div>
+  <div class="ctrl"><label>Masa del proyectil <b id="hz-m-v">4,0 g</b></label>
+    <input type="range" id="hz-m" min="0.5" max="24" step="0.1" value="4"></div>
+  <div class="ctrl"><label>Radio de la punta <b id="hz-R-v">12,0 mm</b></label>
+    <input type="range" id="hz-R" min="1" max="25" step="0.5" value="12"></div>
+  <div class="ctrl"><label>Material de la punta</label>
+    <div class="seg" id="hz-tip">
+      <button data-v="steel" aria-pressed="false">Acero</button>
+      <button data-v="wc" aria-pressed="true">WC</button>
+      <button data-v="si3n4" aria-pressed="false">Si₃N₄</button>
+    </div></div>
+</div>
+<div>
+  <div class="readout" id="hz-out"></div>
+  <div id="hz-bar" style="margin-top:18px"></div>
+</div>
+</div>
+</div>
+</section>
+
+
+<section id="s5">
+<div class="eyebrow">05 · Transmisión</div>
+<h2>Por qué no conviene convertir dirección</h2>
+
+<div class="prose">
+<p>El brief tiene tres observaciones sueltas que en realidad son la misma: la palanca en L deja el
+43 % de la energía en el actuador; la relación de palanca no cambia el trabajo disponible; y la
+ventaja de los 48° de giro es en parte ficticia. Las tres salen de un solo resultado.</p>
+</div>
+
+<div class="eq">E_proyectil / E_total = m_p / (m_p + m_acc / i²)        con  i = v_proyectil / v_accionamiento</div>
+
+<div class="prose">
+<p>Bajar <i>i</i> —reducir velocidad en el proyectil para ganar fuerza— amplifica la inercia
+reflejada del accionamiento por 1/<i>i</i>². Cualquier arquitectura que cambie carrera por fuerza
+paga <b>cuadráticamente</b> en inercia reflejada. Las únicas salidas son <i>i</i> = 1
+(accionamiento directo) o masa de accionamiento despreciable.</p>
+</div>
+
+<figure>
+<div class="figframe">
+<svg class="dg" viewBox="0 0 940 260" role="img" aria-label="Tres trenes de transmisión comparados: leva con relación 0,36 que pierde el 65 por ciento de la energía, palanca en L que pierde el 43 por ciento, y barra de torsión cuya inercia reflejada es despreciable.">
+  <text x="14" y="18" class="sm">accionamiento</text>
+  <text x="300" y="18" class="sm">transmisión</text>
+  <text x="560" y="18" class="sm">proyectil</text>
+  <text x="770" y="18" class="sm">energía al proyectil</text>
+
+  <!-- fila 1: leva -->
+  <g>
+    <rect x="14" y="34" width="120" height="40" class="body2"/>
+    <text x="74" y="58" text-anchor="middle" class="mono" font-size="10">patín 2,0 g</text>
+    <line x1="140" y1="54" x2="290" y2="54" class="ln" marker-end="url(#ar2)"/>
+    <path d="M300 74 L360 34 L360 74 Z" class="body"/>
+    <text x="378" y="50" class="mono" font-size="10">leva 20° · i = 0,36</text>
+    <text x="378" y="64" class="sm">inercia reflejada ×7,6 → 15 g</text>
+    <line x1="500" y1="54" x2="550" y2="54" class="ln" marker-end="url(#ar2)"/>
+    <rect x="558" y="38" width="70" height="32" class="accf" opacity=".2"/>
+    <rect x="558" y="38" width="70" height="32" class="acc"/>
+    <text x="593" y="58" text-anchor="middle" class="mono" font-size="10">8 g</text>
+    <rect x="700" y="42" width="200" height="24" fill="var(--surface-3)"/>
+    <rect x="700" y="42" width="70" height="24" class="critf"/>
+    <text x="908" y="59" text-anchor="end" class="mono" font-size="11" fill="var(--crit)">35 %</text>
+  </g>
+  <!-- fila 2: palanca L -->
+  <g transform="translate(0,72)">
+    <rect x="14" y="34" width="120" height="40" class="body2"/>
+    <text x="74" y="58" text-anchor="middle" class="mono" font-size="10">VCA 3,49 g</text>
+    <line x1="140" y1="54" x2="290" y2="54" class="ln" marker-end="url(#ar2)"/>
+    <path d="M300 74 L300 40 M300 74 L358 74" class="ln" stroke-width="2.4"/>
+    <circle cx="300" cy="74" r="4" fill="currentColor"/>
+    <text x="378" y="50" class="mono" font-size="10">palanca en L · i = 0,60</text>
+    <text x="378" y="64" class="sm">reflejada 2,41 g contra 2,11 g de maza</text>
+    <line x1="500" y1="54" x2="550" y2="54" class="ln" marker-end="url(#ar2)"/>
+    <circle cx="590" cy="54" r="16" class="accf" opacity=".2"/>
+    <circle cx="590" cy="54" r="16" class="acc"/>
+    <text x="590" y="58" text-anchor="middle" class="mono" font-size="10">2,1 g</text>
+    <rect x="700" y="42" width="200" height="24" fill="var(--surface-3)"/>
+    <rect x="700" y="42" width="114" height="24" fill="var(--warn)"/>
+    <text x="908" y="59" text-anchor="end" class="mono" font-size="11" fill="var(--warn)">57 %</text>
+  </g>
+  <!-- fila 3: torsion -->
+  <g transform="translate(0,144)">
+    <rect x="14" y="34" width="120" height="40" class="body2"/>
+    <text x="74" y="58" text-anchor="middle" class="mono" font-size="10">barra torsión</text>
+    <line x1="140" y1="54" x2="290" y2="54" class="ln" marker-end="url(#ar2)"/>
+    <path d="M300 54 h56" class="acc" stroke-width="2.6"/>
+    <circle cx="300" cy="54" r="4" class="accf"/>
+    <text x="378" y="50" class="mono" font-size="10">cigüeñal r = 4 mm · i = 1</text>
+    <text x="378" y="64" class="sm">reflejada 0,007 g: el ángulo no está limitado por los 10 mm</text>
+    <line x1="500" y1="54" x2="550" y2="54" class="ln" marker-end="url(#ar2)"/>
+    <rect x="558" y="38" width="70" height="32" class="accf" opacity=".2"/>
+    <rect x="558" y="38" width="70" height="32" class="acc"/>
+    <text x="593" y="58" text-anchor="middle" class="mono" font-size="10">8 g</text>
+    <rect x="700" y="42" width="200" height="24" fill="var(--surface-3)"/>
+    <rect x="700" y="42" width="199" height="24" fill="var(--ok)"/>
+    <text x="908" y="59" text-anchor="end" class="mono" font-size="11" fill="var(--ok)">99,9 %</text>
+  </g>
+  <defs>
+    <marker id="ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <polygon points="0,1 9,5 0,9" fill="currentColor"/>
+    </marker>
+  </defs>
+</svg>
+</div>
+<figcaption><b>La misma ley explica los tres casos.</b> La barra que sale a la derecha es la
+fracción de la energía cinética que termina en el proyectil. La leva de conversión axial→radial
+parece atractiva porque deja usar toda la longitud del módulo para el resorte, pero su relación
+de 0,36 refleja el patín de 2 g como si fueran 15 g. La barra de torsión escapa porque su
+elemento móvil gira en vez de trasladarse, y su inercia referida a la punta del cigüeñal es
+0,007 g.</figcaption>
+</figure>
+
+<div class="tw" id="transmission-table"></div>
+</section>

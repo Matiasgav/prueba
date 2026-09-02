@@ -1,0 +1,412 @@
+<section id="s10">
+<div class="eyebrow">10 · La cuña</div>
+<h2>Qué vuelve del golpe, y qué cambia con el ajuste</h2>
+
+<div class="prose">
+<p>El brief §4.7 ya advierte que el modelo empotrado-empotrado describe la cuña <b>ajustada</b>,
+que es justamente el caso que no hay que detectar. Acá el empotramiento aparece como caso límite
+en vez de como hipótesis: se modela el asiento completo y el modelo pasa de forma continua de
+«empotrada» a «cuerpo libre sobre el ripple» según la precarga.</p>
+</div>
+
+<figure>
+<div class="figframe">
+<svg class="dg" viewBox="0 0 940 330" role="img" aria-label="Corte de la ranura del estator mostrando el bobinado, el resorte ripple, la cuña de G11 apoyada contra los hombros de la cola de milano, y el crawler en el entrehierro golpeando radialmente hacia el fondo de la ranura; al lado, la curva bilineal de reacción del apoyo.">
+  <text x="16" y="18" font-weight="700" font-size="13">Corte de la ranura · el golpe despega la cuña del hombro</text>
+
+  <!-- dientes -->
+  <path d="M60 250 V90 h60 v100 h30 v-16 h-14 V90" class="hatch" stroke="currentColor" stroke-width="1.3"/>
+  <path d="M400 250 V90 h-60 v100 h-30 v-16 h14 V90" class="hatch" stroke="currentColor" stroke-width="1.3"/>
+  <text x="88" y="272" text-anchor="middle" class="sm">diente</text>
+  <text x="372" y="272" text-anchor="middle" class="sm">diente</text>
+
+  <!-- fondo: bobinado -->
+  <rect x="120" y="212" width="220" height="38" fill="var(--surface-3)" stroke="currentColor" stroke-width="1.2"/>
+  <text x="230" y="236" text-anchor="middle" class="mono" font-size="10">barras / bobinado</text>
+  <!-- ripple -->
+  <path d="M124 206 q11 -12 22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0" class="acc" fill="none"/>
+  <text x="352" y="206" class="mono" font-size="10" fill="var(--accent)">ripple</text>
+  <!-- cuña -->
+  <rect x="120" y="166" width="220" height="34" class="mat"/>
+  <text x="230" y="188" text-anchor="middle" class="mono" font-size="11" fill="var(--material)">CUÑA G11 · 8 mm</text>
+  <!-- hombros -->
+  <rect x="120" y="166" width="30" height="8" fill="var(--crit)" opacity=".35"/>
+  <rect x="310" y="166" width="30" height="8" fill="var(--crit)" opacity=".35"/>
+  <text x="135" y="158" text-anchor="middle" class="sm" fill="var(--crit)">hombro</text>
+  <text x="325" y="158" text-anchor="middle" class="sm" fill="var(--crit)">hombro</text>
+
+  <!-- crawler -->
+  <rect x="170" y="60" width="120" height="46" class="body"/>
+  <text x="230" y="88" text-anchor="middle" class="mono" font-size="10">módulo</text>
+  <rect x="212" y="106" width="36" height="14" class="accf" opacity=".25"/>
+  <rect x="212" y="106" width="36" height="14" class="acc"/>
+  <line x1="230" y1="124" x2="230" y2="160" class="acc" stroke-width="2.6" marker-end="url(#a4)"/>
+  <text x="244" y="146" class="mono" font-size="11" fill="var(--accent)">golpe radial</text>
+  <text x="244" y="160" class="sm">hacia el fondo de la ranura</text>
+  <text x="230" y="46" text-anchor="middle" class="sm">entrehierro / bore</text>
+
+  <!-- flechas de reaccion -->
+  <line x1="135" y1="196" x2="135" y2="176" class="ln" marker-end="url(#a5)"/>
+  <line x1="325" y1="196" x2="325" y2="176" class="ln" marker-end="url(#a5)"/>
+  <text x="230" y="290" text-anchor="middle" class="sm">el ripple empuja la cuña HACIA ADENTRO; el golpe la empuja HACIA AFUERA y la despega</text>
+
+  <!-- ============ curva bilineal ============ -->
+  <g transform="translate(520,0)">
+    <text x="0" y="18" font-weight="700" font-size="13">Reacción del apoyo · bilineal y unilateral</text>
+    <!-- ejes -->
+    <line x1="30" y1="240" x2="380" y2="240" class="thin"/>
+    <line x1="180" y1="60" x2="180" y2="255" class="thin"/>
+    <text x="386" y="244" class="sm">w</text>
+    <text x="176" y="54" class="sm" text-anchor="middle">F</text>
+    <text x="330" y="258" class="sm">hacia el fondo →</text>
+    <text x="40" y="258" class="sm">← hacia el bore</text>
+
+    <!-- rama hombro (muy rigida) -->
+    <line x1="70" y1="80" x2="180" y2="196" class="crit"/>
+    <text x="66" y="74" class="sm" fill="var(--crit)">hombro · k ≈ 10⁹ N/m</text>
+    <!-- precarga -->
+    <line x1="180" y1="196" x2="180" y2="240" class="dim"/>
+    <circle cx="180" cy="196" r="3.5" class="critf"/>
+    <text x="188" y="192" class="mono" font-size="10">p₀ (precarga)</text>
+    <!-- rama ripple -->
+    <line x1="180" y1="196" x2="370" y2="222" class="acc"/>
+    <text x="270" y="216" class="mono" font-size="10" fill="var(--accent)">ripple · k ≈ 10⁶ N/m</text>
+    <!-- despegue -->
+    <circle cx="182" cy="198" r="9" fill="none" stroke="var(--ink-3)" stroke-dasharray="3 2"/>
+    <text x="196" y="234" class="sm">despegue a i₀ = p₀/k_hombro ≈ 1,5 µm</text>
+  </g>
+
+  <defs>
+    <marker id="a4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <polygon points="0,1 9,5 0,9" fill="var(--accent)"/></marker>
+    <marker id="a5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <polygon points="0,1 9,5 0,9" fill="currentColor"/></marker>
+  </defs>
+</svg>
+</div>
+<figcaption><b>La no linealidad esencial.</b> En reposo el ripple empuja la cuña contra los
+hombros de la cola de milano con la precarga p₀. El golpe empuja en sentido contrario, así que
+despega la cuña. La rigidez de contacto del hombro es tres órdenes mayor que la del ripple, y por
+eso el despegue ocurre con apenas 1,5 µm de movimiento: <b>toda cuña despega bajo un golpe útil de
+30 µm</b>. Lo que cambia con el ajuste es cuánta energía hace falta, cuánto tarda en reasentarse y
+con qué fuerza vuelve.</figcaption>
+</figure>
+
+<div class="prose">
+<p>El modelo se resuelve con la viga <b>libre-libre</b> de Timoshenko (incluidos los dos modos de
+cuerpo rígido) y todo el apoyo lo dan contactos unilaterales. Sobre esa base se integra en el
+tiempo el impacto de Hertz real, con re-impactos, y se recorre la escalera de estados.</p>
+</div>
+
+<div class="callout">
+<h4>Convergencia del integrador</h4>
+<p style="font-size:.9rem;margin:0">Velocity-Verlet con predictor de velocidad. Restitución
+convergida a seis cifras entre dt = 10⁻⁷ y 10⁻⁸ s; se usa 5 × 10⁻⁸ s. Con 20 modos el error
+frente a 60 modos es 0,14 %; se usan 24. La simulación arranca del equilibrio estático bajo la
+precarga, resuelto por Newton amortiguado: ignorar la flecha inicial metería un transitorio
+espurio del tamaño del impacto.</p>
+</div>
+
+<h3>Las firmas</h3>
+<div class="tool" id="tool-waves">
+<div class="tool-head"><h4>Respuesta simulada · vano 50 mm, golpe de 60 mJ, maza 8 g</h4>
+<div class="seg" id="wave-sig">
+  <button data-v="a_palp_g" aria-pressed="true">Acelerómetro</button>
+  <button data-v="F_N" aria-pressed="false">Fuerza de contacto</button>
+  <button data-v="w_palp_um" aria-pressed="false">Desplazamiento</button>
+  <button data-v="spec" aria-pressed="false">Espectro</button>
+</div></div>
+<div class="tool-body">
+  <div id="wave-states" class="seg" style="margin-bottom:4px"></div>
+  <div id="wave-chart"></div>
+</div>
+</div>
+
+<h3>La escalera de estados</h3>
+<div class="tw" id="states-table"></div>
+
+<div class="finding warn">
+<span class="tag">Hallazgo · el índice de rebote solo no alcanza</span>
+<p>La restitución <b>no es monótona</b> con el ajuste en el vano de 50 mm: baja de 0,73 (ajustada)
+a 0,30 (50 % de precarga) y vuelve a subir a 0,52 (floja). Una cuña ajustada y una muy floja
+pueden dar prácticamente el mismo índice. Eso pasa porque compiten dos mecanismos con signos
+opuestos, y hay que separarlos para saber en qué se puede confiar.</p>
+</div>
+
+<h3>Los dos mecanismos que compiten</h3>
+<div class="prose">
+<ol>
+<li><b>Transferencia elástica a los modos de la cuña.</b> Crece cuando la cuña está bien acoplada,
+o sea cuando está ajustada. Empuja el índice de rebote <i>hacia abajo</i> con el ajuste.</li>
+<li><b>Disipación en la junta por micro-deslizamiento.</b> Es cero con la junta totalmente pegada
+(no desliza) y cero con la junta totalmente suelta (no hay fuerza normal): tiene un <b>máximo a
+precarga intermedia</b>. Empuja el índice hacia abajo en el medio de la escalera.</li>
+</ol>
+<p>Para separarlos se corrió la misma escalera con la fricción de junta anulada, de modo que la
+única diferencia posible fuese elástica:</p>
+</div>
+<div class="tw" id="mech-table"></div>
+
+<div class="finding crit">
+<span class="tag">Resultado incómodo · en el vano de 100 mm el rebote no ve nada</span>
+<p>Con la fricción de junta anulada, la restitución del vano de 100 mm da <b>0,288 para los siete
+estados</b>, de la cuña perfectamente ajustada a la totalmente suelta con 200 µm de juego. O sea
+que en ese vano, todo el poder discriminante del índice de rebote viene de la disipación en la
+junta — que es justamente el parámetro <b>[E]</b> que peor se conoce y que acá está supuesto.</p>
+<p>El vano de 50 mm sí discrimina elásticamente (0,78 contra 0,22). La diferencia entre los dos
+tiene explicación mecánica —el tiempo que tarda la onda en ir al apoyo y volver— pero no da un
+criterio de diseño simple, como se ve en §11.</p>
+</div>
+
+<h3>Los discriminantes que sí son robustos</h3>
+<div class="prose">
+<p>Se corrieron 24 repeticiones por estado con las tolerancias que realmente varían de cuña a
+cuña —precarga ±10 %, rigidez del ripple ±20 %, rigidez de contacto del hombro ±30 %, ancho del
+apoyo ±10 %, posición del golpe ±6 % del vano, energía ±3 %— y se midió la separación entre
+clases con d′ (diferencia de medias sobre desviación combinada).</p>
+</div>
+<div class="tw" id="sep-table"></div>
+
+<div class="finding">
+<span class="tag">Hallazgo · duración del contacto y curtosis</span>
+<p><b>La duración del primer contacto es monótona y limpia:</b> 55,9 → 64,0 µs de ajustada a
+floja, con desviaciones de 0,3 a 1,4 µs. Físicamente es directo: la rigidez del apoyo debajo del
+punto de golpe entra en serie con el contacto de Hertz, así que una cuña bien asentada acorta el
+contacto y una suelta lo alarga. Y se mide sin ningún sensor nuevo — sale del propio perfil de
+velocidad del proyectil.</p>
+<p><b>La curtosis de la señal del acelerómetro va de 2,8 a 64,7</b>, también monótona. Una cuña
+ajustada devuelve una sinusoide amortiguada limpia (curtosis ≈ 3, como corresponde a una señal
+casi gaussiana); una floja devuelve una sucesión de eventos impulsivos del re-asentamiento. Es la
+misma familia de indicadores que se usa en diagnóstico de rodamientos.</p>
+<p>Combinando los tres (curtosis, restitución y t_c) la separación entre estados adyacentes queda
+en d′ = 2,5 a 6,4. Con d′ = 3 se clasifica bien el 93 % de las veces en una decisión de dos
+clases.</p>
+</div>
+
+<div class="tool" id="tool-feature">
+<div class="tool-head"><h4>Espacio de características</h4>
+<span class="hint">cada punto es una simulación con tolerancias sorteadas</span></div>
+<div class="tool-body split">
+  <div class="ctrls">
+    <div class="ctrl"><label>Eje horizontal</label><div class="seg" id="fx"></div></div>
+    <div class="ctrl"><label>Eje vertical</label><div class="seg" id="fy"></div></div>
+  </div>
+  <div><div id="feat-chart"></div><div class="chart-legend" id="feat-legend"></div></div>
+</div>
+</div>
+
+<h3>El discriminante que sólo esta arquitectura habilita</h3>
+<div class="prose">
+<p>La cuña ajustada es prácticamente lineal: su firma casi no cambia con la energía del golpe. La
+floja no, porque su comportamiento depende de cuánto despega y de si llega a golpear el hombro al
+volver. Golpeando el mismo punto con dos energías distintas y mirando <i>cuánto cambia</i> la
+firma se obtiene un indicador que no depende de la calibración absoluta ni de la posición del
+sensor.</p>
+<p>Un martillo de energía fija no puede hacer esto. Un lanzador con amartillado variable y medición
+de velocidad, sí.</p>
+</div>
+<div class="tool" id="tool-nonlin">
+<div class="tool-head"><h4>Dependencia con la energía del golpe</h4>
+<span class="hint">vano de 50 mm · cada línea es un estado de ajuste</span></div>
+<div class="tool-body">
+  <div class="seg" id="nl-metric">
+    <button data-v="restitution" aria-pressed="true">Restitución</button>
+    <button data-v="t_c1_us" aria-pressed="false">t_c primer contacto</button>
+    <button data-v="kurtosis" aria-pressed="false">Curtosis</button>
+    <button data-v="centroid_Hz" aria-pressed="false">Centroide espectral</button>
+  </div>
+  <div id="nl-chart"></div><div class="chart-legend" id="nl-legend"></div>
+</div>
+</div>
+</section>
+
+
+<section id="s11">
+<div class="eyebrow">11 · Criterio</div>
+<h2>¿Puede el rebote ver cómo está apoyada la cuña?</h2>
+
+<div class="prose">
+<p>El resultado del vano de 100 mm no es un defecto del modelo. El martillo sólo puede enterarse
+de cómo está apoyada la cuña si la perturbación llega hasta el apoyo y vuelve <b>mientras el
+contacto todavía dura</b>. Si vuelve después, el impacto es indistinguible del de una cuña
+infinita y el índice de rebote no lleva información del apoyo, por más limpia que sea la
+medición.</p>
+<p>La velocidad de las ondas de flexión depende de la frecuencia, así que el tiempo de retorno es
+calculable:</p>
+</div>
+
+<div class="eq">c_flexión(f) = √(2πf) · (EI / ρA)^(1/4)        t_retorno = 2 · L_apoyo / c_flexión        f ≈ 1/(2·t_c)</div>
+
+<figure>
+<div class="figframe">
+<svg class="dg" viewBox="0 0 940 250" role="img" aria-label="Dos casos comparados: con vano de 50 milímetros la onda de flexión vuelve del apoyo mientras el contacto todavía dura; con vano de 100 milímetros vuelve mucho después de que el martillo ya se fue.">
+  <text x="16" y="18" font-weight="700" font-size="12">Vano 50 mm · maza 8 g · la reflexión vuelve dentro del contacto</text>
+  <line x1="60" y1="66" x2="440" y2="66" class="ln" stroke-width="2"/>
+  <rect x="60" y="58" width="34" height="16" fill="var(--crit)" opacity=".35"/>
+  <rect x="406" y="58" width="34" height="16" fill="var(--crit)" opacity=".35"/>
+  <circle cx="250" cy="66" r="6" class="accf"/>
+  <path d="M250 66 q-60 -26 -156 0" class="acc" stroke-dasharray="5 3"/>
+  <path d="M250 66 q60 -26 156 0" class="acc" stroke-dasharray="5 3"/>
+  <path d="M94 66 q78 26 156 0" class="ln"/>
+  <text x="250" y="106" text-anchor="middle" class="mono" font-size="10">t_retorno = 73 µs · t_c = 55 µs</text>
+  <text x="250" y="122" text-anchor="middle" class="mono" font-size="10" fill="var(--accent)">Δe entre ajustada y floja = 0,565</text>
+
+  <text x="500" y="18" font-weight="700" font-size="12">Vano 100 mm · maza 8 g · vuelve tarde</text>
+  <line x1="510" y1="66" x2="920" y2="66" class="ln" stroke-width="2"/>
+  <rect x="510" y="58" width="34" height="16" fill="var(--crit)" opacity=".35"/>
+  <rect x="886" y="58" width="34" height="16" fill="var(--crit)" opacity=".35"/>
+  <circle cx="715" cy="66" r="6" class="accf"/>
+  <path d="M715 66 q-84 -26 -171 0" class="ghost"/>
+  <path d="M715 66 q84 -26 171 0" class="ghost"/>
+  <text x="715" y="106" text-anchor="middle" class="mono" font-size="10">t_retorno = 149 µs · t_c = 57 µs</text>
+  <text x="715" y="122" text-anchor="middle" class="mono" font-size="10" fill="var(--crit)">Δe = 0,000 · el rebote no ve nada</text>
+
+  <g transform="translate(0,150)">
+    <text x="16" y="0" class="sm">línea de tiempo del contacto</text>
+    <rect x="60" y="10" width="380" height="16" fill="var(--surface-3)"/>
+    <rect x="60" y="10" width="286" height="16" class="accf" opacity=".45"/>
+    <text x="203" y="22" text-anchor="middle" class="mono" font-size="10">contacto 55 µs</text>
+    <line x1="346" y1="6" x2="346" y2="34" class="crit"/>
+    <text x="350" y="44" class="mono" font-size="10">reflexión</text>
+    <rect x="510" y="10" width="410" height="16" fill="var(--surface-3)"/>
+    <rect x="510" y="10" width="158" height="16" class="accf" opacity=".45"/>
+    <text x="589" y="22" text-anchor="middle" class="mono" font-size="10">contacto 57 µs</text>
+    <line x1="920" y1="6" x2="920" y2="34" class="crit"/>
+    <text x="916" y="44" text-anchor="end" class="mono" font-size="10">reflexión</text>
+  </g>
+</svg>
+</div>
+<figcaption><b>El caso claro.</b> Con maza de 8 g y golpe a medio vano, la cuña de 50 mm separa
+ajustada de floja en 0,565 de restitución por mecánica pura, sin ninguna disipación supuesta; la
+de 100 mm da exactamente cero. Para el contenido dominante del impacto (≈9 kHz) la velocidad de
+flexión en esta cuña vale unos 660 m/s.</figcaption>
+</figure>
+
+<h3>Pero el criterio simple no organiza los datos</h3>
+<div class="prose">
+<p>La tentación es convertir eso en una regla: «hace falta t_c ≳ t_retorno». Se barrieron 31
+configuraciones —vanos de 30 a 140 mm, mazas de 2 a 24 g, radios de 12 y 20 mm, golpes del 12 %
+al 50 % del vano— corriendo cada una dos veces, ajustada y floja, con la fricción de junta
+anulada. <b>La regla no se sostiene.</b></p>
+</div>
+
+<div class="tool" id="tool-wave">
+<div class="tool-head"><h4>Discriminación elástica contra la relación t_c / t_retorno</h4>
+<span class="hint">cada punto es un par de simulaciones sin disipación de junta; el tamaño indica la masa de la maza</span></div>
+<div class="tool-body"><div id="wave-scatter"></div><div class="chart-legend" id="wave-legend"></div></div>
+</div>
+
+<div class="prose">
+<p>La nube no es monótona. Hay configuraciones con relación 0,31 que separan 0,308 y otras con
+relación 1,73 que separan 0,002. Tiene sentido: no es un problema de umbral sino de
+<b>interferencia</b>. La reflexión vuelve con una fase que puede ayudar o estorbar al rebote
+según cuánto haya avanzado el contacto, y el resultado oscila en vez de crecer.</p>
+</div>
+
+<div class="finding crit">
+<span class="tag">Lo que los datos sí sostienen</span>
+<p><b>Hay un régimen ciego, y es limpio.</b> Con maza liviana (2 a 4 g) golpeando a medio vano
+sobre vanos de 50 mm o más, Δe da <b>0,000 a 0,001 en todos los casos</b> —siete configuraciones
+seguidas— pese a que la cuña pasa de perfectamente ajustada a suelta con 200 µm de juego. En ese
+régimen el índice de rebote no contiene información del apoyo, y cualquier discriminación que se
+observe en un ensayo real viene de la disipación en la junta, no de la mecánica del impacto.</p>
+<p><b>Fuera de ese régimen la separación existe pero es errática.</b> Depende de la fase de la
+reflexión, o sea del vano y de la rigidez del asiento — que son justamente las cosas que varían
+de cuña a cuña y que no se conocen de antemano. Un instrumento cuya sensibilidad depende de eso
+no es un instrumento.</p>
+<p><b>Conclusión de diseño: no construir el ensayo alrededor del índice de rebote.</b> Sirve como
+canal secundario, pero el discriminante primario tienen que ser magnitudes locales —duración del
+contacto y forma de la señal— que no dependen de que una onda vuelva a tiempo.</p>
+</div>
+
+<h3>Dónde golpear</h3>
+<div class="prose">
+<p>El barrido de posición del golpe confirma lo mismo desde otro ángulo: la restitución cambia de
+orden según dónde se golpee (a medio vano da 0,78 / 0,35 / 0,52 para ajustada / 25 % / floja; al
+30 % del vano da 0,39 / 0,43 / 0,54), mientras que la <b>curtosis mantiene el orden en todas las
+posiciones</b> y hasta mejora al acercarse al apoyo: 2,5 → 30 → 58 a medio vano, y 4,3 → 38 → 84
+al 20 % del vano.</p>
+</div>
+<div class="tw" id="strike-table"></div>
+<div class="prose">
+<p>Recomendación operativa: golpear entre el 20 % y el 30 % del vano libre, no en el centro. Es
+gratis, mejora el discriminante robusto y evita el punto donde el índice de rebote es más
+ambiguo.</p>
+</div>
+</section>
+
+
+<section id="s12">
+<div class="eyebrow">12 · Optimización</div>
+<h2>Masa de la maza, ancho de banda y el frente de Pareto</h2>
+
+<div class="prose">
+<p>El brief §4.6 da una fórmula cerrada para el acoplamiento modal, η = η₀·[S(f₁)/S(0)]², cuyo
+óptimo por relación de masas está en m = m_eff. Vale la pena verificar esa fórmula contra la
+simulación no lineal, porque el óptimo que predice cae justo donde la fórmula deja de valer.</p>
+</div>
+
+<div class="tw" id="cross-table"></div>
+
+<div class="finding crit">
+<span class="tag">Corrección al brief §4.6 · la fórmula se rompe donde recomienda trabajar</span>
+<p>La fórmula cerrada coincide con la simulación dentro del 10 % mientras la maza sea liviana
+frente a la masa modal (m ≤ 4 g contra m_eff = 9,8 g). A partir de m ≈ 8 g se derrumba: predice
+η = 0,77 donde la simulación da 0,39, y predice t_c = 59 µs donde la simulación da 103 µs.</p>
+<p>La razón es que la fórmula supone que la cuña recibe el impulso y se va; con maza pesada el
+contacto dura más que la respuesta de la cuña, la cuña vuelve <b>durante</b> el contacto y le
+devuelve energía al martillo. Con 16 g la restitución simulada da 0,99: el martillo rebota casi
+elásticamente y no entrega nada. <b>La fórmula recomienda una masa a la cual ella misma es
+inválida.</b></p>
+</div>
+
+<div class="tool" id="tool-mass">
+<div class="tool-head"><h4>Masa óptima, medida con la simulación</h4>
+<div class="seg" id="ms-span">
+  <button data-v="vano_50mm" aria-pressed="true">Vano 50 mm</button>
+  <button data-v="vano_100mm" aria-pressed="false">Vano 100 mm</button>
+</div>
+<div class="seg" id="ms-metric">
+  <button data-v="E_abs_mJ" aria-pressed="true">Energía entregada</button>
+  <button data-v="eta" aria-pressed="false">Fracción transferida</button>
+  <button data-v="t_c1_us" aria-pressed="false">Duración del contacto</button>
+  <button data-v="a_pk_g" aria-pressed="false">Pico de aceleración</button>
+</div></div>
+<div class="tool-body"><div id="mass-chart"></div><div class="chart-legend" id="mass-legend"></div></div>
+</div>
+
+<div class="finding crit">
+<span class="tag">Hallazgo · hay un acantilado, y el óptimo está justo al borde</span>
+<p>Barriendo la masa con la simulación sobre la cuña ajustada de 50 mm, la fracción transferida
+sube hasta η = 0,861 con 6 g y se <b>derrumba a 0,386 con 8 g y a 0,050 con 12 g</b>. No es
+ruido: la duración del contacto salta de 48 µs (6 g) a 142 µs (12 g), y ahí el contacto dura casi
+un período completo del primer modo de la cuña —164 µs— así que la cuña vuelve durante el
+contacto y le devuelve la energía al martillo. Con 12 g la restitución da 0,975: el martillo
+rebota casi elásticamente y no entrega nada.</p>
+<p>La posición del acantilado depende de la frecuencia de la cuña asentada, que a su vez depende
+del ancho del apoyo de la cola de milano y de su rigidez de contacto — o sea, de lo que se está
+tratando de medir y que cambia de cuña a cuña. <b>Diseñar en el pico es diseñar sobre una
+frecuencia que no se conoce.</b></p>
+</div>
+
+<div class="finding">
+<span class="tag">Punto de diseño · maza de 4 g</span>
+<p>Con 4 g la transferencia da 0,775 en el vano de 50 mm y 0,752 en el de 100 mm: prácticamente
+la misma, en la rama ascendente, lejos del acantilado en los dos casos. Entrega 45 a 47 mJ de un
+golpe de 60 mJ. Se pierde un 10 % contra el óptimo teórico de 6 g y se gana que el
+comportamiento no dependa de un parámetro desconocido.</p>
+<p>Para maza de 4 g de acero hacen falta 510 mm³: un cilindro de ⌀7 × 13 mm entra en el ánima de
+la familia A, y una placa de 6 × 3 × 28 mm en la familia B. Si se quisiera ir a la masa óptima de
+6 g conviene hacerlo con volumen, no con tungsteno, para poder ajustarla en el mock-up.</p>
+</div>
+
+<div class="prose">
+<p>Como la energía máxima admisible la fija el radio de la punta y no la masa, la energía se sube
+a voluntad abriendo R. El criterio para la masa queda entonces: maximizar η <b>sobre la rama
+ascendente</b>, con margen contra el acantilado, y en paralelo mantener el pico de aceleración
+dentro del rango del acelerómetro. Los objetivos no coinciden y por eso se reporta el frente y no
+un óptimo único.</p>
+</div>
+
+<div class="tw" id="pareto-table"></div>
+</section>
