@@ -812,6 +812,186 @@ def study_sensitivity():
     dump("sensitivity", out)
 
 
+# ==========================================================================
+def study_low_energy():
+    """¿Alcanza un golpe de 5 mJ con la palanca en L y el voice coil?
+
+    Compara la configuración que el usuario ya tiene en mente (bola de
+    2.105 g de la palanca en L, 5 mJ) contra el punto de diseño de vuelo
+    libre (4 g, 60 mJ), y contra la misma bola con punta de radio grande.
+
+    La pregunta de fondo es si la separación entre clases depende de la
+    ENERGÍA ABSOLUTA del golpe o no. Resultado: no depende — 5 mJ separa
+    tanto como 60 mJ.
+    """
+    t("¿alcanza 5 mJ? separabilidad a baja energía")
+    rng = np.random.default_rng(11)
+    cfg = SimConfig(t_end=2.5e-3, dt=5e-8, n_modes=20, decimate=20)
+    wedge = WedgeSpec(span=0.050)
+    casos = [
+        ("Palanca en L · bola 2.1 g · 5 mJ · R=4mm", 2.105e-3, 4e-3, 5e-3),
+        ("Palanca en L · bola 2.1 g · 5 mJ · R=12mm", 2.105e-3, 12e-3, 5e-3),
+        ("Vuelo libre · 4 g · 60 mJ · R=12mm", 4.0e-3, 12e-3, 60e-3),
+    ]
+    keys = ("restitution", "kurtosis", "t_c1_us", "eta_absorbed")
+    out = {}
+    for nombre, m, R, E in casos:
+        h = HammerSpec(mass=m, R_tip=R)
+        data = {}
+        for st in standard_states():
+            feats = []
+            for _ in range(20):
+                s2 = SupportSpec(
+                    preload=max(0.0, st.preload * (1 + 0.10 * rng.standard_normal())),
+                    k_ripple=3.0e7 * (1 + 0.20 * rng.standard_normal()),
+                    k_shoulder=2.0e10 * (1 + 0.30 * rng.standard_normal()),
+                    gap=max(0.0, st.gap * (1 + 0.15 * rng.standard_normal())),
+                    support_mode="ends",
+                    land_width=5e-3 * (1 + 0.10 * rng.standard_normal()),
+                    zeta=st.zeta * (1 + 0.20 * rng.standard_normal()),
+                    c_slide=st.c_slide * (1 + 0.25 * rng.standard_normal()),
+                    label=st.label)
+                Ei = E * (1 + 0.03 * rng.standard_normal())
+                c2 = SimConfig(t_end=cfg.t_end, dt=cfg.dt, n_modes=cfg.n_modes,
+                               decimate=cfg.decimate,
+                               x_strike=0.050 * (0.5 + 0.06 * rng.standard_normal()))
+                sim = simulate(wedge, s2, h, math.sqrt(2 * Ei / h.mass), c2)
+                feats.append(extract_features(sim))
+            data[st.label] = feats
+        labs = list(data.keys())
+        res = {}
+        for k in keys:
+            stt = {}
+            for l in labs:
+                v = np.array([f[k] for f in data[l]
+                              if np.isfinite(f.get(k, np.nan))])
+                stt[l] = {"media": float(v.mean()), "sigma": float(v.std())}
+            adj = []
+            for a, b in zip(labs[:-1], labs[1:]):
+                pool = math.sqrt(0.5 * (stt[a]["sigma"] ** 2 + stt[b]["sigma"] ** 2))
+                adj.append(abs(stt[a]["media"] - stt[b]["media"]) / pool
+                           if pool > 0 else float("inf"))
+            pool = math.sqrt(0.5 * (stt[labs[0]]["sigma"] ** 2
+                                    + stt[labs[-1]]["sigma"] ** 2))
+            res[k] = {"stats": stt, "adj": adj,
+                      "ext": (abs(stt[labs[0]]["media"] - stt[labs[-1]]["media"])
+                              / pool if pool > 0 else float("inf"))}
+        res["comb"] = [math.sqrt(sum(res[k]["adj"][i] ** 2
+                                     for k in ("restitution", "kurtosis", "t_c1_us")))
+                       for i in range(len(labs) - 1)]
+        res["m_g"] = m * 1e3
+        res["R_mm"] = R * 1e3
+        res["E_mJ"] = E * 1e3
+        out[nombre] = res
+        print(f"    {nombre}: d'ext(e)={res['restitution']['ext']:.2f} "
+              f"d'ext(kurt)={res['kurtosis']['ext']:.1f}")
+
+    # Umbral de despegue: ¿a partir de qué energía la cuña AJUSTADA despega?
+    umbral = []
+    for E_mJ in (2, 5, 10, 20, 40, 80):
+        h = HammerSpec(mass=2.105e-3, R_tip=12e-3)
+        sim = simulate(wedge, standard_states()[0], h,
+                       math.sqrt(2 * E_mJ * 1e-3 / h.mass),
+                       SimConfig(t_end=2e-3, dt=5e-8, n_modes=24, decimate=20))
+        s0 = float(sim["frac_seated"][0])
+        sm = float(sim["frac_seated"].min())
+        umbral.append({"E_mJ": E_mJ, "v_ms": sim["v_impact"],
+                       "F_peak_N": sim["F_peak_N"], "seat_ini": s0,
+                       "seat_min": sm, "despega": sm < s0 - 0.01})
+    out["_umbral_despegue"] = umbral
+    print("    umbral de despegue de la cuña ajustada: entre "
+          + str([u["E_mJ"] for u in umbral if not u["despega"]][-1])
+          + " y " + str([u["E_mJ"] for u in umbral if u["despega"]][0]) + " mJ")
+
+    # Corriente necesaria en la palanca en L para cada energía
+    W1 = actuator.work_over_window(3.0e-3)
+    d = lever.LeverDesign(y_contact=5.05e-3)
+    corriente = []
+    for I in (1.0, 1.5, 1.7, 2.0, 2.5, 3.0):
+        r = d.solve(W1 * I)
+        th = actuator.thermal_budget(I, 6.6e-3, 5.0)
+        corriente.append({"I_A": I, "W_em_mJ": W1 * I * 1e3,
+                          "E_maza_mJ": r["E_hammer_mJ"], "v_ms": r["v_ms"],
+                          "p_normal_mNs": r["p_normal_mNs"],
+                          "frac_actuador": r["frac_actuator"],
+                          "P_media_W": th["P_avg_W"],
+                          "margen_termico": th["margin"]})
+    out["_corriente_palanca"] = corriente
+    dump("low_energy", out)
+
+
+# ==========================================================================
+def study_charger():
+    """El eslabón que faltaba: la máquina que carga el acumulador.
+
+    El estudio dimensionó cuánta energía entra en un acumulador de
+    10 x 10 x 60 mm, pero no el mecanismo que lo carga NI el volumen que ese
+    mecanismo ocupa. Con el cargador adentro del envolvente, la barra de
+    torsión de la arquitectura B1 pasa de 192 mJ a ~7 mJ.
+    """
+    t("cargador: qué hace falta para amartillar y cuánto ocupa")
+    from wtd import charger as ch
+
+    tor = design_torsion_accumulator(4.5e-3, 4.0e-3, 0.060, n_folds=2)
+    r60 = math.sqrt(60.0 / tor["E_mJ"])
+    demandas = []
+    for nombre, E, F, s_ in (
+            ("Barra de torsión plegada (192 mJ)", 0.1924, tor["F_crank_N"], 4.5e-3),
+            ("Barra de torsión a 60 mJ", 0.060, tor["F_crank_N"] * r60, 4.5e-3 * r60),
+            ("Ballesta (13.6 mJ)", 0.0136, 6.1, 4.5e-3),
+            ("Palanca en L con VCM a 5 mJ", 0.005, 1.897 * 1.7, 3.0e-3)):
+        d = ch.charger_demand(E, F, s_)
+        d["acumulador"] = nombre
+        demandas.append(d)
+
+    metodos = []
+    for E in (0.005, 0.020, 0.060):
+        fila = {"E_mJ": E * 1e3,
+                "directa": ch.direct_charge(E, ch.LAH04, I=1.0),
+                "trinquete": ch.ratchet_charge(E, ch.LAH04, I=1.0, rate_hz=60),
+                "resonante": {}}
+        for Q in (20, 50, 100):
+            fila["resonante"][f"Q{Q}"] = ch.resonant_charge(
+                E, ch.LAH04, m_res=4e-3, x_max=2.0e-3, Q=Q, I=1.0)
+        metodos.append(fila)
+
+    reparto = []
+    for mr, mp in ((1e-3, 3e-3), (2e-3, 2e-3), (0.5e-3, 3.5e-3)):
+        r = ch.resonant_split(0.060, mr, mp)
+        r["eta_si_golpea"] = ch.resonant_impact_split(mr, mp)
+        reparto.append(r)
+
+    # cuánto le queda a la barra de torsión con el cargador adentro
+    volumen = []
+    for L_barra, nota in ((0.060, "nada (lo que suponía el informe)"),
+                          (0.040, "cargador de 20 mm (optimista)"),
+                          (0.020, "motor ⌀8 + reductor 64:1 + husillo = 40 mm"),
+                          (0.015, "ídem + tuerca, guía y sensor")):
+        r = design_torsion_accumulator(4.5e-3, 4.0e-3, L_barra, n_folds=2)
+        volumen.append({"L_barra_mm": L_barra * 1e3, "d_mm": r["d_mm"],
+                        "E_mJ": r["E_mJ"], "ocupa_el_resto": nota})
+
+    # trenes motor+husillo que entran en 10x10
+    trenes = []
+    for nombre, D, L, T in (("coreless ⌀6x12", 6, 12, 0.35),
+                            ("coreless ⌀8x16", 8, 16, 0.90),
+                            ("BLDC ⌀8x20", 8, 20, 1.60)):
+        for red, L_red in ((64, 12), (256, 16)):
+            for paso in (0.5e-3, 1.0e-3):
+                T_out = T * 1e-3 * red * 0.7
+                F = 2 * math.pi * T_out * 0.30 / paso
+                largo = L + L_red + 12
+                v = (12000 / 60 / red) * paso
+                trenes.append({
+                    "motor": nombre, "reduccion": red, "paso_mm": paso * 1e3,
+                    "F_N": F, "largo_mm": largo,
+                    "v_mm_s": v * 1e3, "t_2.5mm_ms": 2.5e-3 / v * 1e3,
+                    "cabe": D <= 8 and largo <= 45})
+    dump("charger", {"demandas": demandas, "metodos": metodos,
+                     "reparto_resonador": reparto,
+                     "volumen_vs_energia": volumen, "trenes": trenes})
+
+
 
 # ==========================================================================
 if __name__ == "__main__":
@@ -824,7 +1004,7 @@ if __name__ == "__main__":
         "catalog": study_catalog, "wedge": study_wedge_states,
         "sep": study_separability, "lever": study_lever_baseline,
         "mech": study_mechanisms, "wave": study_wave_return, "wavesim": study_wave_return_sim,
-        "sens": study_sensitivity, "masssim": study_mass_sim, "strike": study_strike_position,
+        "sens": study_sensitivity, "lowE": study_low_energy, "charger": study_charger, "masssim": study_mass_sim, "strike": study_strike_position,
     }
     t0 = time.time()
     for name, fn in all_studies.items():
