@@ -992,6 +992,132 @@ def study_charger():
                      "volumen_vs_energia": volumen, "trenes": trenes})
 
 
+# ==========================================================================
+def study_palpator():
+    """¿Alcanza el VCM directo? ¿Y un acelerómetro tocando la cuña a 10 mm?
+
+    Dos preguntas del usuario. La primera se contesta con un barrido de
+    energía en el rango que el VCM da sin acumulador (1.5 a 8 mJ). La
+    segunda obliga a dejar de tratar al acelerómetro como un sensor ideal
+    sin masa: un palpador real tiene masa, se apoya con precarga y por lo
+    tanto (a) forma un sistema de segundo orden con la rigidez de contacto
+    de su punta, y (b) se DESPEGA cuando la aceleración supera
+    precarga/masa.
+    """
+    t("palpador real y suficiencia del VCM directo")
+    from wtd.palpator import (ACELEROMETROS, Palpator, apply_palpator,
+                              sensor_table)
+    from wtd.impact_sim import highpass, spectrum
+
+    wedge = WedgeSpec(span=0.050)
+    ham = HammerSpec(mass=2.105e-3, R_tip=12e-3)
+    X_S, X_P = 0.025, 0.035          # golpe a medio vano, palpador a 10 mm
+
+    # --- nivel de señal a 10 mm ------------------------------------------
+    niveles = []
+    for E in (1, 2, 3, 5, 8, 12):
+        v = math.sqrt(2 * E * 1e-3 / ham.mass)
+        fila = {"E_mJ": E, "v_ms": v}
+        for st in standard_states():
+            sim = simulate(wedge, st, ham, v,
+                           SimConfig(t_end=2e-3, dt=5e-8, n_modes=24,
+                                     decimate=20, x_strike=X_S,
+                                     x_palpator=X_P))
+            fila[st.label.split("·")[0].strip()] = extract_features(sim)["a_pk_g"]
+        niveles.append(fila)
+
+    # --- el palpador real -------------------------------------------------
+    v5 = math.sqrt(2 * 5e-3 / ham.mass)
+    cfg = SimConfig(t_end=2.5e-3, dt=5e-8, n_modes=24, decimate=4,
+                    x_strike=X_S, x_palpator=X_P)
+    sims = [simulate(wedge, st, ham, v5, cfg) for st in standard_states()]
+
+    configs = {
+        "2.0 g @ 5 N (palpador típico)": Palpator(2.0e-3, 2e-3, 5.0),
+        "0.8 g @ 15 N": Palpator(0.8e-3, 2e-3, 15.0),
+        "0.4 g @ 10 N": Palpator(0.4e-3, 4e-3, 10.0),
+        "0.2 g @ 25 N (MEMS desnudo)": Palpator(0.2e-3, 4e-3, 25.0),
+        "0.1 g @ 10 N": Palpator(0.1e-3, 4e-3, 10.0),
+    }
+
+    def kurt_of(sig, dt):
+        a = highpass(sig, dt, 300.0)
+        m = a.mean()
+        return float(((a - m) ** 4).mean()
+                     / max(((a - m) ** 2).mean() ** 2, 1e-30))
+
+    palp_rows = []
+    ideal = [kurt_of(r["a_palp"], r["dt_rec"]) for r in sims]
+    palp_rows.append({"config": "ideal (sin masa)", "f0_kHz": float("inf"),
+                      "a_despegue_g": float("inf"), "despega": False,
+                      "curtosis": ideal,
+                      "rango": max(ideal) / max(min(ideal), 1e-9),
+                      "monotona": all(ideal[i + 1] >= ideal[i] - 0.05 * max(ideal)
+                                      for i in range(len(ideal) - 1))})
+    for nombre, p in configs.items():
+        ks, lifts = [], []
+        for r in sims:
+            o = apply_palpator(r["w_palp"], r["dt_rec"], p)
+            ks.append(kurt_of(o["a_palpador"], r["dt_rec"]))
+            lifts.append(o["despega"])
+        palp_rows.append({
+            "config": nombre, **p.summary(), "despega": any(lifts),
+            "curtosis": ks, "rango": max(ks) / max(min(ks), 1e-9),
+            "monotona": all(ks[i + 1] >= ks[i] - 0.05 * max(ks)
+                            for i in range(len(ks) - 1))})
+        print(f"    {nombre:32s} f0={p.f0()/1e3:5.1f} kHz  "
+              f"a_desp={p.a_liftoff()/9.80665:6.0f} g  "
+              f"rango curtosis x{palp_rows[-1]['rango']:.1f}  "
+              f"{'monótona' if palp_rows[-1]['monotona'] else 'NO monótona'}")
+
+    # --- barrido de energía ----------------------------------------------
+    rng = np.random.default_rng(5)
+    barrido = []
+    for E in (1.5, 3.0, 5.0, 8.0):
+        st_data = {}
+        for s in standard_states():
+            fs = []
+            for _ in range(12):
+                s2 = SupportSpec(
+                    preload=max(0.0, s.preload * (1 + 0.10 * rng.standard_normal())),
+                    k_ripple=3e7 * (1 + 0.2 * rng.standard_normal()),
+                    k_shoulder=2e10 * (1 + 0.3 * rng.standard_normal()),
+                    gap=max(0.0, s.gap * (1 + 0.15 * rng.standard_normal())),
+                    support_mode="ends",
+                    land_width=5e-3 * (1 + 0.1 * rng.standard_normal()),
+                    zeta=s.zeta * (1 + 0.2 * rng.standard_normal()),
+                    c_slide=s.c_slide * (1 + 0.25 * rng.standard_normal()),
+                    label=s.label)
+                Ei = E * 1e-3 * (1 + 0.03 * rng.standard_normal())
+                c2 = SimConfig(t_end=2e-3, dt=5e-8, n_modes=20, decimate=20,
+                               x_strike=0.050 * (0.5 + 0.06 * rng.standard_normal()),
+                               x_palpator=X_P)
+                fs.append(extract_features(
+                    simulate(wedge, s2, ham, math.sqrt(2 * Ei / ham.mass), c2)))
+            st_data[s.label] = fs
+        labs = list(st_data.keys())
+
+        def dp(k, a, b):
+            va = np.array([f[k] for f in st_data[a]])
+            vb = np.array([f[k] for f in st_data[b]])
+            pool = math.sqrt(0.5 * (va.std() ** 2 + vb.std() ** 2))
+            return float(abs(va.mean() - vb.mean()) / pool) if pool > 0 else 1e9
+
+        adj = [dp("restitution", a, b) for a, b in zip(labs[:-1], labs[1:])][:-1]
+        barrido.append({
+            "E_mJ": E, "I_VCM_A": E / 2.89,
+            "e_ajustada": float(np.mean([f["restitution"] for f in st_data[labs[0]]])),
+            "e_floja": float(np.mean([f["restitution"] for f in st_data[labs[-1]]])),
+            "dprime_ext_e": dp("restitution", labs[0], labs[-1]),
+            "dprime_ext_kurt": dp("kurtosis", labs[0], labs[-1]),
+            "dprime_min_adyacente": float(min(adj))})
+        print(f"    E={E} mJ (I≈{E/2.89:.2f} A): d'ext(e)={barrido[-1]['dprime_ext_e']:.1f}")
+
+    dump("palpator", {"niveles_a_10mm": niveles, "palpadores": palp_rows,
+                      "sensores": sensor_table(3127.0, f_max=20e3),
+                      "barrido_energia": barrido})
+
+
 
 # ==========================================================================
 if __name__ == "__main__":
@@ -1004,7 +1130,7 @@ if __name__ == "__main__":
         "catalog": study_catalog, "wedge": study_wedge_states,
         "sep": study_separability, "lever": study_lever_baseline,
         "mech": study_mechanisms, "wave": study_wave_return, "wavesim": study_wave_return_sim,
-        "sens": study_sensitivity, "lowE": study_low_energy, "charger": study_charger, "masssim": study_mass_sim, "strike": study_strike_position,
+        "sens": study_sensitivity, "lowE": study_low_energy, "charger": study_charger, "palp": study_palpator, "masssim": study_mass_sim, "strike": study_strike_position,
     }
     t0 = time.time()
     for name, fn in all_studies.items():
