@@ -109,7 +109,7 @@ espurio del tamaño del impacto.</p>
 
 <h3>Las firmas</h3>
 <div class="tool" id="tool-waves">
-<div class="tool-head"><h4>Respuesta simulada · vano 50 mm, golpe de 60 mJ, maza 8 g</h4>
+<div class="tool-head"><h4>Respuesta simulada · vano 50 mm, golpe de 60 mJ, maza 4 g</h4>
 <div class="seg" id="wave-sig">
   <button data-v="a_palp_g" aria-pressed="true">Acelerómetro</button>
   <button data-v="F_N" aria-pressed="false">Fuerza de contacto</button>
@@ -123,14 +123,73 @@ espurio del tamaño del impacto.</p>
 </div>
 
 <h3>La escalera de estados</h3>
-<div class="tw" id="states-table"></div>
+<div class="tool" id="tool-states">
+<div class="tool-head"><h4>Escalera de ajuste · vano 50 mm, golpe de 60 mJ</h4>
+<div class="seg" id="st-mass">
+  <button data-v="4" aria-pressed="true">Maza 4 g (punto de diseño)</button>
+  <button data-v="8" aria-pressed="false">Maza 8 g</button>
+</div></div>
+<div class="tool-body"><div class="tw" id="states-table" style="margin:0;border:none"></div></div>
+</div>
 
-<div class="finding warn">
-<span class="tag">Hallazgo · el índice de rebote solo no alcanza</span>
-<p>La restitución <b>no es monótona</b> con el ajuste en el vano de 50 mm: baja de 0,73 (ajustada)
-a 0,30 (50 % de precarga) y vuelve a subir a 0,52 (floja). Una cuña ajustada y una muy floja
-pueden dar prácticamente el mismo índice. Eso pasa porque compiten dos mecanismos con signos
-opuestos, y hay que separarlos para saber en qué se puede confiar.</p>
+<div class="finding">
+<span class="tag">Hallazgo · la masa de la maza decide si la medición significa algo</span>
+<p>Con la maza de <b>4 g</b> del punto de diseño, la restitución es <b>monótona</b> y en el
+sentido intuitivo: 0,474 con la cuña ajustada, 0,642 con la floja. Un rango del 35 %, limpio,
+utilizable como índice.</p>
+<p>Con la maza de <b>8 g</b> se rompe: 0,784 → 0,595 → 0,292 → 0,352 → 0,453 → 0,522. Tiene un
+mínimo en el medio de la escalera y una cuña ajustada da casi el mismo número que una floja.</p>
+<p>Y no es una coincidencia: 8 g es justamente la masa que está pasando el acantilado de
+transferencia de energía de §12. El mismo fenómeno —el contacto dura tanto que la cuña vuelve
+mientras el martillo todavía está apoyado— arruina las dos cosas a la vez. <b>La masa que
+maximiza la energía entregada está del otro lado del punto donde la medición deja de tener
+sentido</b>, y las dos restricciones empujan hacia el mismo lado: maza liviana.</p>
+</div>
+
+<h3>Cuánto de esto depende de lo que está estimado</h3>
+<div class="prose">
+<p>Toda la sección anterior descansa sobre cinco parámetros que no están medidos: la rigidez del
+resorte ripple, la rigidez de contacto del hombro, el ancho del apoyo de la cola de milano, el
+amortiguamiento del material y la disipación por micro-deslizamiento en la junta. Antes de
+creerle a los números conviene barrerlos y ver qué sobrevive.</p>
+</div>
+
+<div class="tool" id="tool-sens">
+<div class="tool-head"><h4>Sensibilidad · maza 4 g, 60 mJ, vano 50 mm</h4>
+<div class="seg" id="sn-metric">
+  <button data-v="e_rango" aria-pressed="true">Rango de restitución</button>
+  <button data-v="kurt_rango" aria-pressed="false">Rango de curtosis</button>
+  <button data-v="tc1_rango_us" aria-pressed="false">Rango de t_c</button>
+</div></div>
+<div class="tool-body"><div id="sens-chart"></div>
+<p class="srcnote">Cada barra es el rango de la característica entre la cuña ajustada y la floja.
+Barra corta = el parámetro destruye la discriminación.</p></div>
+</div>
+
+<div class="tw" id="sens-table"></div>
+
+<div class="finding crit">
+<span class="tag">Hallazgo · cuatro parámetros no importan y el quinto lo explica todo</span>
+<p>La rigidez del ripple puede variar <b>60 veces</b>, la del hombro <b>100 veces</b>, el ancho
+del apoyo de 2 a 12 mm y el amortiguamiento del material 12 veces, y el rango de restitución entre
+ajustada y floja se queda en 0,160–0,172. Prácticamente no se mueve. Eso es una noticia excelente:
+las conclusiones no dependen de tres de las cuatro cosas que peor se conocen.</p>
+<p>Pero anular la <b>disipación por micro-deslizamiento en la junta</b> colapsa el rango de
+restitución de 0,168 a <b>0,005</b> y el de t_c de 2,8 µs a 0,30 µs. Con cuadruplicarla el rango
+sube a 0,347. O sea que, con maza liviana, <b>casi todo el poder discriminante del índice de
+rebote viene de la disipación en la junta</b> — el único de los cinco parámetros para el que no
+hay ningún dato.</p>
+<p>Consecuencia directa: el <i>orden</i> de la escalera es seguro (cualquier disipación no nula da
+el mismo orden), pero su <i>magnitud</i> es una hipótesis. Medir la disipación de la junta pasa a
+ser el objetivo número uno del mock-up, por encima de todo lo demás.</p>
+</div>
+
+<div class="finding">
+<span class="tag">La excepción · la curtosis aguanta sin disipación</span>
+<p>Con la fricción de junta anulada la curtosis todavía ordena los estados: 2 → 3 → 8 → 8 → 9 →
+15 → 18. El rango cae de 97 a 16, pero el orden se mantiene, porque la curtosis no mide
+disipación sino <b>impulsividad</b>: cuenta los eventos de re-asentamiento, que existen aunque no
+disipen nada. Es el discriminante menos dependiente de hipótesis de todo el conjunto.</p>
 </div>
 
 <h3>Los dos mecanismos que compiten</h3>
@@ -162,25 +221,28 @@ criterio de diseño simple, como se ve en §11.</p>
 <div class="prose">
 <p>Se corrieron 24 repeticiones por estado con las tolerancias que realmente varían de cuña a
 cuña —precarga ±10 %, rigidez del ripple ±20 %, rigidez de contacto del hombro ±30 %, ancho del
-apoyo ±10 %, posición del golpe ±6 % del vano, energía ±3 %— y se midió la separación entre
-clases con d′ (diferencia de medias sobre desviación combinada).</p>
+apoyo ±10 %, posición del golpe ±6 % del vano, energía ±3 %— con la maza de 4 g del punto de
+diseño, y se midió la separación entre clases con d′ (diferencia de medias sobre desviación
+combinada).</p>
 </div>
 <div class="tw" id="sep-table"></div>
 
 <div class="finding">
 <span class="tag">Hallazgo · duración del contacto y curtosis</span>
-<p><b>La duración del primer contacto es monótona y limpia:</b> 55,9 → 64,0 µs de ajustada a
-floja, con desviaciones de 0,3 a 1,4 µs. Físicamente es directo: la rigidez del apoyo debajo del
+<p><b>La duración del primer contacto es monótona y limpia:</b> 40,2 → 42,8 µs de ajustada a
+floja, con desviaciones de 0,2 a 0,6 µs. Físicamente es directo: la rigidez del apoyo debajo del
 punto de golpe entra en serie con el contacto de Hertz, así que una cuña bien asentada acorta el
 contacto y una suelta lo alarga. Y se mide sin ningún sensor nuevo — sale del propio perfil de
-velocidad del proyectil.</p>
-<p><b>La curtosis de la señal del acelerómetro va de 2,8 a 64,7</b>, también monótona. Una cuña
-ajustada devuelve una sinusoide amortiguada limpia (curtosis ≈ 3, como corresponde a una señal
-casi gaussiana); una floja devuelve una sucesión de eventos impulsivos del re-asentamiento. Es la
-misma familia de indicadores que se usa en diagnóstico de rodamientos.</p>
-<p>Combinando los tres (curtosis, restitución y t_c) la separación entre estados adyacentes queda
-en d′ = 2,5 a 6,4. Con d′ = 3 se clasifica bien el 93 % de las veces en una decisión de dos
-clases.</p>
+velocidad del proyectil, aunque exige 1 MSPS para resolver 2,6 µs con precisión útil.</p>
+<p><b>La curtosis de la señal del acelerómetro va de 2,6 a 77</b>, también monótona, y es la de
+mayor d′ de todas (16,6 entre extremos). Una cuña ajustada devuelve una sinusoide amortiguada
+limpia (curtosis ≈ 3, como corresponde a una señal casi gaussiana); una floja devuelve una
+sucesión de eventos impulsivos del re-asentamiento. Es la misma familia de indicadores que se usa
+en diagnóstico de rodamientos.</p>
+<p>Combinando los tres —curtosis, restitución y t_c, suponiéndolos independientes— la separación
+entre estados adyacentes va de d′ = 2,2 a 8,5, salvo el par S5–S6, que da 0,69: una vez que la
+cuña está suelta no se puede graduar cuán suelta está. Con d′ = 3 se clasifica bien el 93 % de
+las veces en una decisión de dos clases; con d′ = 2,2, el 86 %.</p>
 </div>
 
 <div class="tool" id="tool-feature">
@@ -314,9 +376,19 @@ observe en un ensayo real viene de la disipación en la junta, no de la mecánic
 reflexión, o sea del vano y de la rigidez del asiento — que son justamente las cosas que varían
 de cuña a cuña y que no se conocen de antemano. Un instrumento cuya sensibilidad depende de eso
 no es un instrumento.</p>
-<p><b>Conclusión de diseño: no construir el ensayo alrededor del índice de rebote.</b> Sirve como
-canal secundario, pero el discriminante primario tienen que ser magnitudes locales —duración del
-contacto y forma de la señal— que no dependen de que una onda vuelva a tiempo.</p>
+<p><b>Conclusión de diseño: no construir el ensayo alrededor de la mecánica elástica del
+rebote.</b> El discriminante primario tienen que ser magnitudes locales —forma de la señal y
+duración del contacto— que no dependen de que una onda vuelva a tiempo.</p>
+</div>
+
+<div class="callout">
+<h4>Cómo se concilia esto con §10</h4>
+<p style="font-size:.92rem;margin:0">En §10 la restitución sí discrimina con la maza de 4 g, y
+acá se muestra que con esa misma maza la discriminación <b>elástica</b> es cero. No hay
+contradicción: son las dos caras del mismo resultado. Con maza liviana el índice de rebote separa
+los estados, pero lo que está midiendo es <b>disipación en la junta</b>, no mecánica de la viga.
+Por eso el barrido de sensibilidad de §10 muestra que anular esa disipación colapsa el rango de
+0,168 a 0,005, y por eso medirla es el ensayo de prioridad 1.</p>
 </div>
 
 <h3>Dónde golpear</h3>
@@ -387,6 +459,11 @@ rebota casi elásticamente y no entrega nada.</p>
 del ancho del apoyo de la cola de milano y de su rigidez de contacto — o sea, de lo que se está
 tratando de medir y que cambia de cuña a cuña. <b>Diseñar en el pico es diseñar sobre una
 frecuencia que no se conoce.</b></p>
+<p>Y hay una segunda razón, independiente, para quedarse del lado liviano: <b>pasando el
+acantilado la restitución deja de ser monótona con el ajuste</b> (§10). El mismo mecanismo —el
+contacto dura lo suficiente para que la cuña vuelva mientras el martillo sigue apoyado— destruye
+la transferencia de energía y la interpretabilidad de la medición al mismo tiempo. No hay que
+elegir entre las dos: se pierden juntas.</p>
 </div>
 
 <div class="finding">

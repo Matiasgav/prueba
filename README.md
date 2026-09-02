@@ -66,10 +66,17 @@ informe original no permitía verificar por falta de parámetros declarados.
    del sensor no sea un imán permanente: un imán daría 23 veces el peso del proyectil.
 5. **Medir la velocidad convierte la repetibilidad en un requisito de sensado**: el lanzador
    dispersa 3 % y la magnitud reportada queda con 0,30 % de error.
-6. **El índice de rebote solo no discrimina de forma monótona.** Los dos discriminantes robustos
-   son la duración del primer contacto (55 → 64 µs) y la curtosis (3 → 65).
-7. **Hay un régimen ciego**: con maza liviana golpeando a medio vano sobre vanos de 50 mm o más,
-   la restitución no distingue una cuña ajustada de una suelta ni en el tercer decimal.
+6. **La masa de la maza decide si la medición significa algo.** Con 4 g la restitución es monótona
+   con el ajuste (0,474 ajustada → 0,642 floja, d′ = 6,1); con 8 g se invierte y una cuña ajustada
+   da casi el mismo número que una floja. Ocho gramos es la masa que pasa el acantilado de
+   transferencia de energía: el mismo fenómeno arruina las dos cosas.
+7. **Cuatro de los cinco parámetros estimados del modelo de la cuña no mueven el resultado**
+   (la rigidez del ripple puede variar 60 veces y la del hombro 100), pero el quinto —la disipación
+   por micro-deslizamiento en la junta— lo explica casi todo: anularla colapsa el rango de
+   restitución de 0,168 a 0,005. El orden de la escalera es seguro; su magnitud es una hipótesis.
+   Medirla es el ensayo de prioridad 1.
+8. **La curtosis es el discriminante más robusto**: d′ = 16,6 entre extremos, y sigue ordenando
+   los estados aun con la disipación de junta anulada, porque mide impulsividad y no disipación.
 
 ## Incógnitas y correcciones al informe previo
 

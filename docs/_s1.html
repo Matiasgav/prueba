@@ -87,14 +87,19 @@ tensión del resorte según la hora del carro porque no tiene forma de medir la 
 </div>
 
 <div class="finding warn">
-<span class="tag">Y una advertencia sobre la medición</span>
-<p>La simulación no lineal dice que <b>el índice de rebote solo no discrimina de forma
-monótona</b>: hay dos mecanismos que empujan en sentidos opuestos (transferencia elástica y
-disipación en la junta), y para el vano de 50 mm el índice tiene un mínimo en el estado
-intermedio, así que una cuña ajustada y una muy floja pueden dar el mismo número. Los dos
-discriminantes que sí salieron monótonos son la <b>duración del primer contacto</b>
-(55 → 64 µs de ajustada a floja) y la <b>curtosis de la señal del acelerómetro</b> (3 → 78).
-Ver §10 y §11.</p>
+<span class="tag">Y dos advertencias sobre la medición</span>
+<p><b>La masa de la maza decide si la medición significa algo.</b> Con 4 g la restitución es
+monótona con el ajuste (0,474 ajustada → 0,642 floja); con 8 g se rompe y una cuña ajustada da
+casi el mismo número que una floja. Ocho gramos es justamente la masa que pasa el acantilado de
+transferencia de energía de §12: el mismo fenómeno arruina las dos cosas. Las dos restricciones
+empujan hacia el mismo lado, que es maza liviana.</p>
+<p><b>Casi todo el poder discriminante viene del parámetro peor conocido.</b> Barriendo los cinco
+parámetros estimados del modelo de la cuña, cuatro no mueven la aguja: la rigidez del ripple puede
+variar 60 veces y la del hombro 100 veces sin cambiar el resultado. Pero anular la disipación por
+micro-deslizamiento en la junta colapsa el rango de restitución de 0,168 a 0,005. El
+<i>orden</i> de la escalera es seguro; su <i>magnitud</i> es una hipótesis, y medirla es el
+objetivo número uno del mock-up. La única característica que aguanta sin disipación es la
+curtosis. Ver §10.</p>
 </div>
 </section>
 

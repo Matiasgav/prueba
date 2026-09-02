@@ -258,7 +258,22 @@ acotado.</li>
 <h3>Qué medir, en este orden</h3>
 <div class="tw" id="plan-table"></div>
 
-<h3>Los tres ensayos que resuelven incógnitas</h3>
+<h3>El ensayo que hay que hacer primero</h3>
+<div class="finding crit">
+<span class="tag">Prioridad 1 · disipación de la junta</span>
+<p>El barrido de sensibilidad de §10 dice que cuatro de los cinco parámetros estimados no mueven
+el resultado, y que el quinto —la disipación por micro-deslizamiento en la junta— lo explica casi
+todo. Sin ese dato, el orden de la escalera de estados es confiable pero su magnitud no.</p>
+<p>Se mide con un ensayo modal barriendo <b>amplitud</b>: con la cuña montada y la precarga
+conocida, excitar con martillo instrumentado a energías crecientes y seguir el factor de pérdida
+del primer modo. En una junta con micro-deslizamiento el amortiguamiento <b>crece con la
+amplitud</b> hasta que la junta desliza en bloque; en una junta pegada es constante. La curva
+amortiguamiento-contra-amplitud, para tres o cuatro precargas, es todo lo que hace falta para
+calibrar c_slide y convertir la escalera de hipótesis en predicción.</p>
+<p>Es medio día de trabajo con el instrumental que ya tenés para el ELCID y el ensayo modal.</p>
+</div>
+
+<h3>Los otros tres ensayos que resuelven incógnitas</h3>
 <div class="prose">
 <ul>
 <li><b>Módulo transversal del G11 (incógnita #6).</b> Indentación instrumentada con esfera de
@@ -281,9 +296,11 @@ distribuciones reales de cada característica, y con ellas el d′ real entre cl
 puede responder si el sistema cumple, porque «cumplir» significa separar las clases que el
 cliente necesita distinguir — y ese número todavía no existe.</p>
 <p>Mientras tanto, la simulación dice que con curtosis, restitución y duración de contacto
-combinadas la separación entre estados adyacentes queda en d′ = 2,5 a 6,4, y que S5 contra S6
-(50 µm contra 200 µm de juego) es indistinguible: <b>una vez que la cuña está suelta, no se puede
-graduar cuán suelta está</b>. Si el cliente necesita eso, hace falta otro principio de medición.</p>
+combinadas la separación entre estados adyacentes va de d′ = 2,2 a 8,5, y que S5 contra S6
+(50 µm contra 200 µm de juego) da 0,69, o sea indistinguible: <b>una vez que la cuña está suelta,
+no se puede graduar cuán suelta está</b>. Si el cliente necesita eso, hace falta otro principio
+de medición. Y todo eso vale con la magnitud de la disipación de junta supuesta: por eso es el
+ensayo de prioridad 1.</p>
 </div>
 </section>
 

@@ -29,7 +29,8 @@ def sanitize(o):
 STUDIES = ["anchors", "damage", "mass_optimum", "accumulators", "freeflight",
            "sensing", "montecarlo", "reliability", "catalog", "lever_baseline",
            "wedge_states", "waveforms", "separability", "mechanisms",
-           "wave_return", "wave_return_sim", "mass_sim", "strike_position"]
+           "wave_return", "wave_return_sim", "mass_sim", "strike_position",
+           "sensitivity"]
 
 
 def main() -> int:

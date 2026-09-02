@@ -157,7 +157,12 @@ def hertz_plastic_correction(res: HertzResult, target: Material,
     #     e ≈ 3.8 (p_y/E*)^(1/2) * (E* / (rho v^2))^(1/8) ... (forma reducida)
     # Se usa la forma práctica e = (v_y/v)^(1/4) válida para v >> v_y,
     # con v_y la velocidad a la que se inicia la fluencia.
-    E_y = max_energy_for_pressure(p_y, res.m, res.R, _dummy_tip(res), target)
+    #
+    # La energía de fluencia sale del escalado exacto p_max ∝ E_cin^0.2, sin
+    # reconstruir materiales: hacerlo con un material equivalente de E = E*
+    # volvía a sumar la flexibilidad del blanco y daba una E_y ~2.5 veces
+    # menor de la correcta.
+    E_y = res.E_kin * (p_y / res.p_max) ** 5.0
     v_y = math.sqrt(2.0 * E_y / res.m)
     e_pl = min(1.0, (v_y / res.v) ** 0.25)
     # Fuerza saturada: F ~ p_y * pi * a^2 con a creciendo por conservación
@@ -175,18 +180,6 @@ def hertz_plastic_correction(res: HertzResult, target: Material,
         "e_plastic": e_pl,
         "energy_lost_frac": 1.0 - e_pl ** 2,
     }
-
-
-def _dummy_tip(res: HertzResult) -> Material:
-    """Reconstruye un material de punta equivalente a partir de E* guardado.
-
-    Sólo se usa internamente para reescalar energías: lo único que importa
-    es que reproduzca el mismo E*, y para eso alcanza con un material de
-    nu = 0 y E = E*.
-    """
-    from .materials import Material as _M
-    # E* combinado con un target de rigidez infinita reproduce E*.
-    return _M(name="equiv", E=res.E_star, nu=0.0, rho=1.0)
 
 
 def indentation_fatigue_cycles(p_max: float, target: Material) -> dict:

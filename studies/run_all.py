@@ -357,7 +357,6 @@ def study_catalog():
 # ==========================================================================
 def study_wedge_states(quick: bool = False):
     t("estados de ajuste de la cuña (simulación no lineal)")
-    hammer = HammerSpec(mass=8e-3, R_tip=12e-3)
     cfg = SimConfig(t_end=3.0e-3, dt=5e-8, n_modes=24, decimate=20)
     energies = (5, 20, 60, 120) if not quick else (60,)
     out = {}
@@ -365,15 +364,17 @@ def study_wedge_states(quick: bool = False):
     for span_mm in (50, 100):
         wedge = WedgeSpec(span=span_mm * 1e-3)
         rows = []
-        for st in standard_states():
+        for m_g in (4.0, 8.0):
+          hammer = HammerSpec(mass=m_g * 1e-3, R_tip=12e-3)
+          for st in standard_states():
             for E_mJ in energies:
                 v = math.sqrt(2 * E_mJ * 1e-3 / hammer.mass)
                 sim = simulate(wedge, st, hammer, v, cfg)
                 fe = extract_features(sim)
-                rows.append({"estado": st.label, "E_mJ": E_mJ,
+                rows.append({"estado": st.label, "E_mJ": E_mJ, "m_g": m_g,
                              "precarga_N": st.preload,
                              "gap_um": st.gap * 1e6, **fe})
-                if E_mJ == 60 and span_mm == 50:
+                if E_mJ == 60 and span_mm == 50 and m_g == 4.0:
                     n = len(sim["t"])
                     step = max(1, n // 1500)
                     waveforms[st.label] = {
@@ -393,7 +394,8 @@ def study_wedge_states(quick: bool = False):
 def study_separability(n_rep: int = 24):
     t(f"separabilidad de clases ({n_rep} repeticiones por estado)")
     rng = np.random.default_rng(7)
-    hammer = HammerSpec(mass=8e-3, R_tip=12e-3)
+    # Maza del punto de diseño (4 g): es la que da restitución monótona.
+    hammer = HammerSpec(mass=4e-3, R_tip=12e-3)
     cfg = SimConfig(t_end=2.5e-3, dt=5e-8, n_modes=20, decimate=20)
     wedge = WedgeSpec(span=0.050)
     states = standard_states()
@@ -501,7 +503,7 @@ def study_mechanisms():
     con c_slide = 0 para aislar (1).
     """
     t("mecanismos que compiten en el rebote")
-    hammer = HammerSpec(mass=8e-3, R_tip=12e-3)
+    hammer = HammerSpec(mass=4e-3, R_tip=12e-3)
     cfg = SimConfig(t_end=3.0e-3, dt=5e-8, n_modes=24, decimate=20)
     out = {}
     for span_mm in (50, 100):
@@ -728,6 +730,88 @@ def study_wave_return_sim():
     dump("wave_return_sim", rows)
 
 
+# ==========================================================================
+def study_sensitivity():
+    """¿Sobreviven las conclusiones a los parámetros que están estimados?
+
+    Las tres conclusiones del lado medición descansan sobre parámetros [E]:
+        k_ripple    rigidez del resorte ripple      (supuesta 3e7 N/m^2)
+        k_shoulder  rigidez de contacto del hombro  (supuesta 2e10 N/m^2)
+        c_slide     fricción de junta               (supuesta 0 a 3e4)
+        land_width  ancho del apoyo                 (supuesto 5 mm)
+    Se barre cada uno sobre un rango amplio y se comprueba si:
+      (a) t_c1 sigue siendo monótona creciente con la soltura,
+      (b) la curtosis sigue siendo monótona creciente,
+      (c) la restitución sigue siendo NO monótona.
+    Una conclusión que no sobrevive al barrido no es una conclusión.
+    """
+    t("sensibilidad de las conclusiones a los parámetros estimados")
+    hammer = HammerSpec(mass=4e-3, R_tip=12e-3)
+    cfg = SimConfig(t_end=3.0e-3, dt=5e-8, n_modes=24, decimate=20)
+    wedge = WedgeSpec(span=0.050)
+    base = standard_states()
+
+    variantes = []
+    for v in (0.5e7, 1e7, 3e7, 1e8, 3e8):
+        variantes.append(("k_ripple", v, {"k_ripple": v}))
+    for v in (2e9, 6e9, 2e10, 6e10, 2e11):
+        variantes.append(("k_shoulder", v, {"k_shoulder": v}))
+    for v in (0.0, 0.25, 1.0, 4.0):
+        variantes.append(("c_slide x", v, {"_cs": v}))
+    for v in (2e-3, 3.5e-3, 5e-3, 8e-3, 12e-3):
+        variantes.append(("land_width", v, {"land_width": v}))
+    for v in (0.005, 0.012, 0.03, 0.06):
+        variantes.append(("zeta", v, {"_z": v}))
+
+    out = []
+    for nombre, val, kw in variantes:
+        serie = []
+        for st in base:
+            kwargs = dict(preload=st.preload, k_ripple=3.0e7,
+                          k_shoulder=2.0e10, gap=st.gap,
+                          support_mode="ends", land_width=5e-3,
+                          zeta=st.zeta, c_slide=st.c_slide, label=st.label)
+            for k, v2 in kw.items():
+                if k == "_cs":
+                    kwargs["c_slide"] = st.c_slide * v2
+                elif k == "_z":
+                    kwargs["zeta"] = v2
+                else:
+                    kwargs[k] = v2
+            s2 = SupportSpec(**kwargs)
+            v_imp = math.sqrt(2 * 60e-3 / hammer.mass)
+            sim = simulate(wedge, s2, hammer, v_imp, cfg)
+            fe = extract_features(sim)
+            serie.append({"estado": st.label, "e": sim["restitution"],
+                          "t_c1": fe["t_c1_us"], "kurt": fe["kurtosis"],
+                          "eta": sim["eta_absorbed"],
+                          "f_peak": fe["f_peak_Hz"]})
+
+        def mono(key, sign=+1):
+            v = [r[key] for r in serie]
+            d = [sign * (v[i + 1] - v[i]) for i in range(len(v) - 1)]
+            # se admite una violación chica (menos del 3 % del rango total)
+            rango = max(v) - min(v)
+            tol = 0.03 * rango
+            return all(x >= -tol for x in d)
+
+        out.append({
+            "parametro": nombre, "valor": val,
+            "serie": serie,
+            "tc1_monotona": mono("t_c1"),
+            "kurt_monotona": mono("kurt"),
+            "e_monotona": mono("e") or mono("e", -1),
+            "tc1_rango_us": max(r["t_c1"] for r in serie) - min(r["t_c1"] for r in serie),
+            "kurt_rango": max(r["kurt"] for r in serie) - min(r["kurt"] for r in serie),
+            "e_rango": max(r["e"] for r in serie) - min(r["e"] for r in serie),
+        })
+        print(f"    {nombre}={val:<10.4g} tc1_mon={out[-1]['tc1_monotona']} "
+              f"kurt_mon={out[-1]['kurt_monotona']} e_mon={out[-1]['e_monotona']} "
+              f"(rangos: tc1 {out[-1]['tc1_rango_us']:.1f} us, kurt {out[-1]['kurt_rango']:.0f}, "
+              f"e {out[-1]['e_rango']:.3f})")
+    dump("sensitivity", out)
+
+
 
 # ==========================================================================
 if __name__ == "__main__":
@@ -740,7 +824,7 @@ if __name__ == "__main__":
         "catalog": study_catalog, "wedge": study_wedge_states,
         "sep": study_separability, "lever": study_lever_baseline,
         "mech": study_mechanisms, "wave": study_wave_return, "wavesim": study_wave_return_sim,
-        "masssim": study_mass_sim, "strike": study_strike_position,
+        "sens": study_sensitivity, "masssim": study_mass_sim, "strike": study_strike_position,
     }
     t0 = time.time()
     for name, fn in all_studies.items():

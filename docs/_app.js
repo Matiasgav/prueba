@@ -643,7 +643,11 @@ function secFreeFlight() {
 function secWedge() {
   var ws = D.wedge_states, wf = D.waveforms, mech = D.mechanisms, sep = D.separability;
   if (!ws) return;
-  var rows50 = ws.vano_50mm.filter(function (r) { return r.E_mJ === 60; });
+  function drawStates() {
+  var mg = parseFloat(segValue("st-mass") || "4");
+  var rows50 = ws.vano_50mm.filter(function (r) {
+    return r.E_mJ === 60 && (r.m_g === undefined || r.m_g === mg);
+  });
   table(document.getElementById("states-table"), [
     { h: "Estado de asiento", k: "estado" },
     { h: "Precarga", f: function (r) { return num(r.precarga_N, 0) + " N"; } },
@@ -656,6 +660,9 @@ function secWedge() {
     { h: "Curtosis", f: function (r) { return num(r.kurtosis, 1); } },
     { h: "Pico", f: function (r) { return num(r.a_pk_g, 0) + " g"; } }
   ], rows50, { compact: true });
+  }
+  seg("st-mass", drawStates);
+  drawStates();
 
   if (mech) {
     var m50 = mech.vano_50mm, m100 = mech.vano_100mm;
@@ -762,6 +769,62 @@ function secWedge() {
     redrawFns.push(drawWaves);
   }
 
+  /* ── sensibilidad a los parámetros estimados ── */
+  var sens = D.sensitivity;
+  if (sens) {
+    var LBL = { "k_ripple": "rigidez del ripple", "k_shoulder": "rigidez del hombro",
+                "c_slide x": "disipación de junta ×", "land_width": "ancho del apoyo",
+                "zeta": "amort. del material" };
+    var fmtVal = function (r) {
+      if (r.parametro === "land_width") return num(r.valor * 1e3, 1) + " mm";
+      if (r.parametro === "zeta") return num(r.valor, 3);
+      if (r.parametro === "c_slide x") return "×" + num(r.valor, 2);
+      return r.valor.toExponential(0).replace("e+", "e");
+    };
+    redrawFns.push(function () {
+      var host = document.getElementById("sens-chart"); if (!host) return;
+      var metric = segValue("sn-metric") || "e_rango";
+      var groups = [];
+      sens.forEach(function (r) { if (groups.indexOf(r.parametro) < 0) groups.push(r.parametro); });
+      var maxv = Math.max.apply(null, sens.map(function (r) { return r[metric]; }));
+      var base = sens.filter(function (r) { return r.parametro === "c_slide x" && r.valor === 1; })[0];
+      host.innerHTML = '<div style="display:grid;gap:14px">' + groups.map(function (g, gi) {
+        var rows = sens.filter(function (r) { return r.parametro === g; });
+        return '<div><div style="font-family:var(--sans);font-weight:600;font-size:.8rem;' +
+          'color:var(--ink-2);margin-bottom:5px">' + (LBL[g] || g) + "</div>" +
+          rows.map(function (r) {
+            var w = Math.max(0.6, 100 * r[metric] / maxv);
+            var crit = r[metric] < 0.25 * (base ? base[metric] : maxv);
+            return '<div style="display:grid;grid-template-columns:82px 1fr 62px;gap:9px;' +
+              'align-items:center;margin-bottom:3px">' +
+              '<span class="num" style="font-size:.72rem;color:var(--ink-3);text-align:right">' +
+              fmtVal(r) + "</span>" +
+              '<div style="height:13px;background:var(--surface-3);border-radius:2px;overflow:hidden">' +
+              '<div style="height:100%;width:' + w + '%;background:' +
+              (crit ? "var(--crit)" : cvar(gi)) + '"></div></div>' +
+              '<span class="num" style="font-size:.72rem">' +
+              num(r[metric], metric === "e_rango" ? 3 : metric === "kurt_rango" ? 0 : 2) +
+              "</span></div>";
+          }).join("") + "</div>";
+      }).join("") + "</div>";
+    });
+    seg("sn-metric", redraw);
+
+    table(document.getElementById("sens-table"), [
+      { h: "Parámetro barrido", f: function (r) { return LBL[r.parametro] || r.parametro; } },
+      { h: "Valor", f: fmtVal },
+      { h: "e · ajustada", f: function (r) { return num(r.serie[0].e, 3); } },
+      { h: "e · floja", f: function (r) { return num(r.serie[r.serie.length - 1].e, 3); } },
+      { h: "Rango de e", f: function (r) { return num(r.e_rango, 3); } },
+      { h: "Rango de t_c", f: function (r) { return num(r.tc1_rango_us, 2) + " µs"; } },
+      { h: "Rango de curtosis", f: function (r) { return num(r.kurt_rango, 0); } },
+      { h: "Orden preservado", f: function (r) {
+          var n = (r.e_monotona ? 1 : 0) + (r.tc1_monotona ? 1 : 0) + (r.kurt_monotona ? 1 : 0);
+          return pill(n + "/3", n === 3 ? "ok" : n === 2 ? "warn" : "crit");
+        } }
+    ], sens, { compact: true });
+  }
+
   /* ── espacio de características ── */
   if (sep) {
     var fkeys = [["kurtosis", "curtosis"], ["t_c1_us", "t_c [µs]"], ["restitution", "restitución"],
@@ -797,7 +860,10 @@ function secWedge() {
   redrawFns.push(function () {
     var host = document.getElementById("nl-chart"); if (!host) return;
     var metric = segValue("nl-metric") || "restitution";
-    var rows = ws.vano_50mm, ests = [];
+    var rows = ws.vano_50mm.filter(function (r) {
+      return r.m_g === undefined || r.m_g === 4;
+    });
+    var ests = [];
     rows.forEach(function (r) { if (ests.indexOf(r.estado) < 0) ests.push(r.estado); });
     chart(host, {
       height: 300, xlabel: "energía del golpe [mJ]", ylabel: metric, xlog: true,
@@ -1093,11 +1159,13 @@ function secPending() {
     { h: "Cómo se consigue", f: function (r) { return '<span style="font-family:var(--serif);font-size:.85rem">' + r[3] + "</span>"; } },
     { h: "Estado", f: function (r) { return pill(r[4], r[5]); } }
   ], [
+    ["★", "Disipación por micro-deslizamiento en la junta", "DOMINANTE: anularla colapsa el rango de restitución de 0,168 a 0,005. Es el único de los cinco parámetros del modelo de la cuña que mueve el resultado", "ensayo modal barriendo amplitud a tres precargas: el amortiguamiento crece con la amplitud si hay micro-deslizamiento. Medio día de trabajo", "abierta · prioridad 1", "crit"],
     ["5", "κ, factor de corrección por corte", "±10 % en f₁ de la cuña corta", "resuelto: los dos vanos dan 5/6 de forma independiente", "cerrada", "ok"],
     ["2", "J_L, inercia de la palanca", "±20 % en la energía a la maza del diseño anterior", "reconstruida como barra de acero 3 × 8 mm; sale del CAD en cinco minutos", "reconstruida", "warn"],
     ["6", "E y ν transversales del G11", "entra en Hertz y en el modal; hoy es [E]", "indentación instrumentada con esfera de R = 4 mm sobre probeta", "abierta", "crit"],
-    ["—", "Rigidez y precarga del resorte ripple", "define toda la escalera de estados", "ficha del proveedor + ensayo de compresión en el mock-up", "abierta", "crit"],
-    ["—", "Ancho y rigidez del apoyo de cola de milano", "mueve f₁ de la cuña asentada de 4,7 a 11 kHz", "medición sobre estator real o plano de fabricación", "abierta", "crit"],
+    ["—", "Rigidez del resorte ripple", "mucho menor de lo esperado: variarla 60 veces mueve el rango de restitución de 0,168 a 0,163", "ficha del proveedor; ya no es crítica", "abierta · segundo orden", "warn"],
+    ["—", "Ancho y rigidez del apoyo de cola de milano", "mueve f₁ de la cuña asentada de 4,7 a 11 kHz, pero casi no mueve la discriminación", "medición sobre estator real o plano de fabricación", "abierta · afecta la banda de adquisición", "warn"],
+    ["—", "Precarga real del ripple instalado", "fija dónde cae cada cuña en la escalera", "celda de carga en el mock-up", "abierta", "crit"],
     ["—", "Umbral de daño real del G11", "fija la energía máxima admisible", "escalera de energías con inspección de huella", "abierta", "warn"],
     ["—", "Geometría de la cuña: qué dirección es el vano", "el brief dice 30 mm axiales y a la vez vano de 50–100 mm; son incompatibles", "aclaración de una línea", "abierta", "warn"],
     ["3", "Corriente de pulso máxima del LAH04", "sólo afecta a la línea base con palanca", "consulta a Sensata", "no aplica al módulo nuevo", "neutral"],
