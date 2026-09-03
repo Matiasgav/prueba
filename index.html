@@ -64,10 +64,10 @@
 <body>
 <div class="wrap">
   <h1>Paralelogramo articulado con resorte</h1>
-  <p class="sub">La barra de abajo está empotrada. El resorte sale del punto medio de la barra móvil y su largo natural es la mitad del lado corto. Arriba y abajo hay un techo y un piso paralelos a las barras largas, contra los que los eslabones pueden chocar. Arrastrá el círculo azul y el mecanismo se mueve hasta encontrar su equilibrio.</p>
+  <p class="sub">La barra de abajo está fija: el vínculo izquierdo está empotrado y el derecho corre por una guía vertical que movés con un slider. El resorte sale de la articulación móvil derecha y su largo natural es la mitad del lado corto. Arriba y abajo hay un techo y un piso contra los que los eslabones pueden chocar. Arrastrá el círculo azul y el mecanismo se mueve hasta encontrar su equilibrio.</p>
 
   <div class="stage">
-    <svg id="scene" viewBox="0 0 400 410" aria-label="Simulación del mecanismo">
+    <svg id="scene" viewBox="0 0 440 410" aria-label="Simulación del mecanismo">
       <defs>
         <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
           <line x1="0" y1="0" x2="0" y2="7" stroke="#7C8B88" stroke-width="1.1"/>
@@ -80,9 +80,9 @@
         </marker>
       </defs>
 
-      <!-- trayectoria del punto medio -->
+      <!-- trayectoria del anclaje del resorte -->
       <circle id="path" fill="none" stroke="var(--guide)" stroke-width="1" stroke-dasharray="2 5" opacity="0.75"/>
-      <!-- guía centro-mango -->
+      <!-- guía vínculo derecho - mango -->
       <line id="guide" stroke="var(--guide)" stroke-width="1" stroke-dasharray="4 5" opacity="0.7"/>
 
       <!-- piso y techo -->
@@ -93,8 +93,11 @@
         <line id="ceilLine" stroke="var(--ink)" stroke-width="2"/>
       </g>
 
-      <!-- apoyos del empotramiento -->
+      <!-- apoyo fijo izquierdo -->
       <g id="ground"></g>
+      <!-- corredera vertical del vínculo derecho -->
+      <line id="slide" stroke="var(--ink)" stroke-width="1.2" stroke-dasharray="3 4" opacity="0.65"/>
+      <rect id="slideBlock" width="22" height="16" rx="2" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.8"/>
 
       <!-- barras -->
       <line id="base" stroke="var(--steel)" stroke-width="7" stroke-linecap="round"/>
@@ -114,7 +117,7 @@
       <circle id="jB" r="5" fill="var(--panel)" stroke="var(--ink)" stroke-width="2.2"/>
       <circle id="jC" r="5" fill="var(--panel)" stroke="var(--ink)" stroke-width="2.2"/>
       <circle id="jD" r="5" fill="var(--panel)" stroke="var(--ink)" stroke-width="2.2"/>
-      <circle id="jM" r="3.6" fill="var(--spring)"/>
+      <circle id="jM" r="3.6" fill="var(--ink)" opacity="0"/>
 
       <!-- mango -->
       <circle id="grab" r="26" fill="transparent"/>
@@ -134,35 +137,38 @@
     <div class="row"><span>Rigidez k</span><input id="sK" type="range" min="1" max="25" step="0.5" value="9"><span id="vK">9.0</span></div>
     <div class="row"><span>Amortiguación</span><input id="sZ" type="range" min="0.05" max="1.5" step="0.05" value="0.55"><span id="vZ">0.55</span></div>
     <div class="row"><span>Piso</span><input id="sF" type="range" min="35" max="140" step="1" value="65"><span id="vF">65</span></div>
-    <div class="row"><span>Techo</span><input id="sC" type="range" min="35" max="140" step="1" value="105"><span id="vC">105</span></div>
+    <div class="row"><span>Techo</span><input id="sC" type="range" min="10" max="140" step="1" value="130"><span id="vC">130</span></div>
+    <div class="row"><span>Vínculo der.</span><input id="sB" type="range" min="-60" max="60" step="1" value="0"><span id="vB">0</span></div>
     <div class="foot">
       <label class="chk"><input id="cG" type="checkbox"> Peso de la barra móvil</label>
       <button id="btnReset">Reiniciar</button>
     </div>
   </div>
 
-  <p class="note">Con el resorte suelto (largo natural = medio lado corto), el mecanismo se queda quieto cuando el resorte vuelve a su largo natural: eso ocurre mientras el mango esté a una distancia del centro de entre medio y un lado corto y medio, y hay dos posiciones simétricas posibles. Si lo alejás más, el resorte queda estirado y el equilibrio pasa a ser aquel en que el resorte se alinea con las barras cortas apuntando al mango; si lo acercás demasiado al centro, el resorte queda comprimido y el equilibrio es el opuesto, con el punto medio lo más lejos posible del mango.</p>
-  <p class="note" style="border:0;padding-top:0">La barra móvil se mantiene paralela al piso y al techo, así que apoya de plano: el choque es un tope rígido sin rebote. La flecha verde es la reacción de la pared que está tocando (resultante del apoyo: hacia arriba si es el piso, hacia abajo si es el techo, y sólo mientras hay contacto); la roja es la fuerza que el resorte hace sobre la barra móvil. Cualquiera de las dos paredes puesta a más de un lado corto del empotramiento queda fuera del alcance de los eslabones.</p>
+  <p class="note">La articulación de la que sale el resorte gira sobre el círculo punteado, centrado en el vínculo derecho. Con el resorte suelto (largo natural = medio lado corto), el mecanismo se queda quieto cuando el resorte vuelve a su largo natural: eso ocurre mientras el mango esté a una distancia de ese centro de entre medio y un lado corto y medio, y hay dos posiciones simétricas posibles. Si lo alejás más, el resorte queda estirado y el equilibrio pasa a ser aquel en que el resorte se alinea con las barras cortas apuntando al mango; si lo acercás demasiado al centro, queda comprimido y el equilibrio es el opuesto, con la articulación lo más lejos posible del mango.</p>
+  <p class="note" style="border:0;padding-top:0">El acoplador se mantiene paralelo a la barra fija, así que si movés el vínculo derecho queda inclinado y contra cada pared apoya por una sola esquina: la más baja contra el piso, la más alta contra el techo (la flecha verde arranca ahí). Con el vínculo en cero apoya de plano. El choque es un tope rígido sin rebote. La flecha roja es la fuerza que el resorte hace sobre la articulación derecha. Ninguno de los dos vínculos fijos puede cruzar una pared, así que al acercar una pared el slider del vínculo se recorta solo.</p>
 </div>
 
 <script>
 (function(){
-  const OX = 200, OY = 240;      // centro de la barra empotrada, en pantalla
-  const VW = 400, VH = 410;      // viewBox
+  const OX = 220, OY = 240;      // origen (vínculo izquierdo) en pantalla
+  const VW = 440, VH = 410;      // viewBox
   const L = 220;                 // lado largo
   const r = 90;                  // lado corto
   const L0 = r/2;                // largo natural del resorte = mitad del lado corto
-  const BAR = 3.5;               // media espesor de las barras
-  const A = {x:-L/2, y:0}, B = {x:L/2, y:0};
-  const I = r*r, m = 1;          // inercia equivalente (masa unitaria en el punto medio)
+  const BAR = 3.5;               // medio espesor de las barras
+  const YB_MAX = 60;             // recorrido vertical del vínculo derecho
+  const A = {x:-L/2, y:0}, B = {x:L/2, y:0};   // B.y lo mueve el slider
+  const I = r*r, m = 1;          // inercia equivalente (masa unitaria en el acoplador)
   const G = 320;                 // gravedad cuando está activada
 
   const sx = x => OX + x, sy = y => OY - y;
+  const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
 
   let theta = Math.PI/2, omega = 0;
-  let P = {x:0, y:r + L0};
-  let hFloor = 65;               // distancia del piso al empotramiento
-  let hCeil = 105;               // distancia del techo al empotramiento
+  let P = {x:L/2 + L0, y:r};     // mango a la derecha del anclaje, resorte suelto
+  let hFloor = 65;               // distancia del piso al vínculo izquierdo
+  let hCeil = 130;               // distancia del techo al vínculo izquierdo
   let contact = 0;               // 0 libre, +1 apoyado en el piso, -1 contra el techo
   let dragging = false;
 
@@ -171,28 +177,35 @@
 
   $('rL0').textContent = L0.toFixed(0);
 
-  // apoyos del empotramiento
+  // apoyo fijo del vínculo izquierdo
   (function ground(){
     const g = $('ground');
-    [A,B].forEach(p => {
-      const tri = document.createElementNS('http://www.w3.org/2000/svg','path');
-      const x = sx(p.x), y = sy(p.y);
-      tri.setAttribute('d', `M ${x} ${y} L ${x-15} ${y+22} L ${x+15} ${y+22} Z`);
-      tri.setAttribute('fill','var(--panel)');
-      tri.setAttribute('stroke','var(--ink)');
-      tri.setAttribute('stroke-width','2');
-      g.appendChild(tri);
-      const bar = document.createElementNS('http://www.w3.org/2000/svg','rect');
-      bar.setAttribute('x', x-22); bar.setAttribute('y', y+22);
-      bar.setAttribute('width', 44); bar.setAttribute('height', 9);
-      bar.setAttribute('fill','url(#hatch)');
-      bar.setAttribute('stroke','var(--ink)');
-      bar.setAttribute('stroke-width','1.4');
-      g.appendChild(bar);
-    });
-    const path = $('path');
-    path.setAttribute('cx', sx(0)); path.setAttribute('cy', sy(0)); path.setAttribute('r', r);
+    const x = sx(A.x), y = sy(A.y);
+    const tri = document.createElementNS('http://www.w3.org/2000/svg','path');
+    tri.setAttribute('d', `M ${x} ${y} L ${x-15} ${y+22} L ${x+15} ${y+22} Z`);
+    tri.setAttribute('fill','var(--panel)');
+    tri.setAttribute('stroke','var(--ink)');
+    tri.setAttribute('stroke-width','2');
+    g.appendChild(tri);
+    const bar = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    bar.setAttribute('x', x-22); bar.setAttribute('y', y+22);
+    bar.setAttribute('width', 44); bar.setAttribute('height', 9);
+    bar.setAttribute('fill','url(#hatch)');
+    bar.setAttribute('stroke','var(--ink)');
+    bar.setAttribute('stroke-width','1.4');
+    g.appendChild(bar);
+    $('path').setAttribute('r', r);
   })();
+
+  // corredera vertical del vínculo derecho
+  function drawSlide(){
+    const lo = Math.max(-YB_MAX, -hFloor + 10), hi = Math.min(YB_MAX, hCeil - 10);
+    const g = $('slide');
+    g.setAttribute('x1', sx(B.x)); g.setAttribute('y1', sy(lo));
+    g.setAttribute('x2', sx(B.x)); g.setAttribute('y2', sy(hi));
+    const b = $('slideBlock');
+    b.setAttribute('x', sx(B.x)-11); b.setAttribute('y', sy(B.y)-8);
+  }
 
   function springPath(M, Q){
     const dx = Q.x-M.x, dy = Q.y-M.y;
@@ -213,26 +226,30 @@
     return pts.map(p => sx(p[0]).toFixed(1)+','+sy(p[1]).toFixed(1)).join(' ');
   }
 
-  function midpoint(){ return {x: r*Math.cos(theta), y: r*Math.sin(theta)}; }
+  // articulación móvil derecha: de acá sale el resorte
+  function anchor(){ return {x: B.x + r*Math.cos(theta), y: B.y + r*Math.sin(theta)}; }
+  // centro del acoplador (donde actúa el peso)
+  function couplerMid(){ return {x: B.x/2 + r*Math.cos(theta), y: B.y/2 + r*Math.sin(theta)}; }
 
-  // alturas extremas que puede alcanzar el eje de la barra móvil
-  function yLow(){ return -hFloor + BAR; }
-  function yHigh(){ return hCeil - BAR; }
+  // Las dos articulaciones móviles están a la misma altura salvo el desnivel B.y,
+  // así que la esquina que toca cada pared es la más baja / la más alta de las dos.
+  const lowJoint  = () => Math.min(0, B.y);
+  const highJoint = () => Math.max(0, B.y);
   // senos límite; fuera de [-1,1] => esa pared queda fuera del alcance
-  const sinLow  = () => yLow()/r;
-  const sinHigh = () => yHigh()/r;
+  const sinLow  = () => (-hFloor + BAR - lowJoint())/r;
+  const sinHigh = () => (hCeil - BAR - highJoint())/r;
 
-  // fuerza del resorte sobre la barra móvil y torque generalizado
+  // fuerza del resorte sobre la articulación derecha y torque generalizado
   function loads(k, grav){
-    const M = midpoint();
-    const vx = P.x-M.x, vy = P.y-M.y;
+    const D = anchor();
+    const vx = P.x-D.x, vy = P.y-D.y;
     const d = Math.hypot(vx,vy);
     let f = 0, Fx = 0, Fy = 0;
     if(d > 1e-6){
-      f = k*(d - L0);            // >0 estirado (tira de M hacia P)
+      f = k*(d - L0);            // >0 estirado (tira de D hacia P)
       Fx = f*vx/d; Fy = f*vy/d;
     }
-    // dM/dtheta = r(-sin, cos)
+    // dD/dtheta = r(-sin, cos), igual que para cualquier punto del acoplador
     let Q = Fx*(-r*Math.sin(theta)) + Fy*(r*Math.cos(theta));
     if(grav) Q -= m*G*r*Math.cos(theta);
     return {Q, f, d, Fx, Fy};
@@ -309,40 +326,48 @@
   const arrowLen = F => (Math.abs(F) < 5 ? 0 : Math.min(72, 12 + Math.abs(F)*0.055));
 
   function draw(k, grav){
-    const M = midpoint();
     const c = Math.cos(theta), s = Math.sin(theta);
     const C = {x:A.x + r*c, y:A.y + r*s};
-    const D = {x:B.x + r*c, y:B.y + r*s};
+    const D = anchor();
 
-    drawWalls();
+    drawWalls(); drawSlide();
 
     const seg = (id,p,q) => { const e=$(id);
       e.setAttribute('x1',sx(p.x)); e.setAttribute('y1',sy(p.y));
       e.setAttribute('x2',sx(q.x)); e.setAttribute('y2',sy(q.y)); };
     seg('base',A,B); seg('crankA',A,C); seg('crankB',B,D); seg('coupler',C,D);
-    seg('guide',{x:0,y:0},P);
+    seg('guide',B,P);
 
     const dot = (id,p) => { const e=$(id); e.setAttribute('cx',sx(p.x)); e.setAttribute('cy',sy(p.y)); };
-    dot('jA',A); dot('jB',B); dot('jC',C); dot('jD',D); dot('jM',M);
+    dot('jA',A); dot('jB',B); dot('jC',C); dot('jD',D);
     dot('handle',P); dot('grab',P);
+    // el peso actúa en el centro del acoplador
+    $('jM').setAttribute('opacity', grav ? 1 : 0);
+    if(grav) dot('jM', couplerMid());
 
-    $('spring').setAttribute('points', springPath(M,P));
+    // la trayectoria del anclaje del resorte es un círculo alrededor del vínculo derecho
+    $('path').setAttribute('cx', sx(B.x)); $('path').setAttribute('cy', sy(B.y));
+
+    $('spring').setAttribute('points', springPath(D,P));
 
     const {f, d} = loads(k, grav);
     const N = reaction(k, grav);
 
-    // flecha de la fuerza del resorte: aplicada en el punto medio, corrida en
-    // perpendicular para que no se confunda con el dibujo del resorte
+    // flecha de la fuerza del resorte: aplicada en la articulación derecha, corrida
+    // en perpendicular para que no se confunda con el dibujo del resorte
     if(d > 1e-6 && Math.abs(f) >= 5){
       const sgn = f >= 0 ? 1 : -1;
-      const ux = sgn*(P.x-M.x)/d, uy = sgn*(P.y-M.y)/d;
+      const ux = sgn*(P.x-D.x)/d, uy = sgn*(P.y-D.y)/d;
       const off = 9;
-      arrow('fSpring', {x: M.x - uy*off, y: M.y + ux*off}, ux, uy, arrowLen(f));
+      arrow('fSpring', {x: D.x - uy*off, y: D.y + ux*off}, ux, uy, arrowLen(f));
     } else $('fSpring').setAttribute('opacity', 0);
 
-    // flecha de la reacción, desde la pared en contacto hacia el mecanismo
-    if(contact) arrow('fReact', {x:-55, y: contact > 0 ? -hFloor : hCeil}, 0, contact, arrowLen(N));
-    else $('fReact').setAttribute('opacity', 0);
+    // flecha de la reacción, en la esquina que está tocando la pared
+    if(contact){
+      const touchC = contact > 0 ? (B.y > 0) : (B.y < 0);   // ¿toca la esquina izquierda?
+      const xt = touchC ? C.x : D.x;
+      arrow('fReact', {x: xt, y: contact > 0 ? -hFloor : hCeil}, 0, contact, arrowLen(N));
+    } else $('fReact').setAttribute('opacity', 0);
 
     const def = d - L0;
     let deg = (theta*180/Math.PI) % 360; if(deg < 0) deg += 360;
@@ -357,8 +382,15 @@
 
   // ---- interacción ----
   function clampHandle(){
-    P.x = Math.max(-OX+14, Math.min(VW-OX-14, P.x));
-    P.y = Math.max(-hFloor+13, Math.min(hCeil-13, P.y));
+    P.x = clamp(P.x, -OX+14, VW-OX-14);
+    P.y = clamp(P.y, -hFloor+13, hCeil-13);
+  }
+  // el vínculo derecho tampoco puede atravesar las paredes
+  function clampSlide(){
+    const v = clamp(+$('sB').value, -hFloor+10, hCeil-10);
+    B.y = clamp(v, -YB_MAX, YB_MAX);
+    if(+$('sB').value !== B.y) $('sB').value = B.y;
+    $('vB').textContent = B.y.toFixed(0);
   }
   function toLocal(evt){
     const pt = svg.createSVGPoint();
@@ -386,7 +418,7 @@
   svg.addEventListener('pointercancel', stop);
 
   $('btnReset').addEventListener('click', () => {
-    theta = Math.PI/2; omega = 0; P = {x:0, y:r + L0};
+    theta = Math.PI/2; omega = 0; P = {x:B.x + L0, y:B.y + r};
     clampHandle(); resolveWalls();
   });
   const bind = (sl,out,fmt) => { const f = () => $(out).textContent = fmt(+$(sl).value); $(sl).addEventListener('input',f); f(); };
@@ -394,15 +426,15 @@
   bind('sZ','vZ', v => v.toFixed(2));
   bind('sF','vF', v => v.toFixed(0));
   bind('sC','vC', v => v.toFixed(0));
-  const readWalls = () => { hFloor = +$('sF').value; hCeil = +$('sC').value; };
-  ['sF','sC'].forEach(id => $(id).addEventListener('input', () => { readWalls(); clampHandle(); }));
+  const readInputs = () => { hFloor = +$('sF').value; hCeil = +$('sC').value; clampSlide(); };
+  ['sF','sC','sB'].forEach(id => $(id).addEventListener('input', () => { readInputs(); clampHandle(); }));
 
   // ---- bucle ----
   let last = performance.now();
   function loop(now){
     let dt = Math.min((now-last)/1000, 0.05); last = now;
     const k = +$('sK').value, zeta = +$('sZ').value, grav = $('cG').checked;
-    readWalls();
+    readInputs();
     contact = 0;
     const n = 10, h = dt/n;
     for(let i=0;i<n;i++) step(h, k, zeta, grav);
@@ -410,6 +442,7 @@
     draw(k, grav);
     requestAnimationFrame(loop);
   }
+  readInputs(); clampHandle();
   draw(+$('sK').value, false);
   requestAnimationFrame(loop);
 })();
