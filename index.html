@@ -64,7 +64,7 @@
 <body>
 <div class="wrap">
   <h1>Paralelogramo articulado con resorte</h1>
-  <p class="sub">La barra de abajo está empotrada. El resorte sale del punto medio de la barra móvil y su largo natural es la mitad del lado corto. Abajo hay un piso paralelo a las barras largas contra el que los eslabones pueden chocar. Arrastrá el círculo azul y el mecanismo se mueve hasta encontrar su equilibrio.</p>
+  <p class="sub">La barra de abajo está empotrada. El resorte sale del punto medio de la barra móvil y su largo natural es la mitad del lado corto. Arriba y abajo hay un techo y un piso paralelos a las barras largas, contra los que los eslabones pueden chocar. Arrastrá el círculo azul y el mecanismo se mueve hasta encontrar su equilibrio.</p>
 
   <div class="stage">
     <svg id="scene" viewBox="0 0 400 410" aria-label="Simulación del mecanismo">
@@ -85,10 +85,12 @@
       <!-- guía centro-mango -->
       <line id="guide" stroke="var(--guide)" stroke-width="1" stroke-dasharray="4 5" opacity="0.7"/>
 
-      <!-- piso -->
-      <g id="floor">
+      <!-- piso y techo -->
+      <g id="walls">
         <rect id="floorHatch" fill="url(#hatch)" stroke="none"/>
         <line id="floorLine" stroke="var(--ink)" stroke-width="2"/>
+        <rect id="ceilHatch" fill="url(#hatch)" stroke="none"/>
+        <line id="ceilLine" stroke="var(--ink)" stroke-width="2"/>
       </g>
 
       <!-- apoyos del empotramiento -->
@@ -132,6 +134,7 @@
     <div class="row"><span>Rigidez k</span><input id="sK" type="range" min="1" max="25" step="0.5" value="9"><span id="vK">9.0</span></div>
     <div class="row"><span>Amortiguación</span><input id="sZ" type="range" min="0.05" max="1.5" step="0.05" value="0.55"><span id="vZ">0.55</span></div>
     <div class="row"><span>Piso</span><input id="sF" type="range" min="35" max="140" step="1" value="65"><span id="vF">65</span></div>
+    <div class="row"><span>Techo</span><input id="sC" type="range" min="35" max="140" step="1" value="105"><span id="vC">105</span></div>
     <div class="foot">
       <label class="chk"><input id="cG" type="checkbox"> Peso de la barra móvil</label>
       <button id="btnReset">Reiniciar</button>
@@ -139,7 +142,7 @@
   </div>
 
   <p class="note">Con el resorte suelto (largo natural = medio lado corto), el mecanismo se queda quieto cuando el resorte vuelve a su largo natural: eso ocurre mientras el mango esté a una distancia del centro de entre medio y un lado corto y medio, y hay dos posiciones simétricas posibles. Si lo alejás más, el resorte queda estirado y el equilibrio pasa a ser aquel en que el resorte se alinea con las barras cortas apuntando al mango; si lo acercás demasiado al centro, el resorte queda comprimido y el equilibrio es el opuesto, con el punto medio lo más lejos posible del mango.</p>
-  <p class="note" style="border:0;padding-top:0">La barra móvil se mantiene paralela al piso, así que apoya de plano: el choque es un tope rígido sin rebote. La flecha verde es la reacción del piso (resultante del apoyo, siempre hacia arriba y sólo mientras hay contacto) y la roja es la fuerza que el resorte hace sobre la barra móvil. Si el piso está a más de un lado corto del empotramiento, los eslabones ya no lo alcanzan.</p>
+  <p class="note" style="border:0;padding-top:0">La barra móvil se mantiene paralela al piso y al techo, así que apoya de plano: el choque es un tope rígido sin rebote. La flecha verde es la reacción de la pared que está tocando (resultante del apoyo: hacia arriba si es el piso, hacia abajo si es el techo, y sólo mientras hay contacto); la roja es la fuerza que el resorte hace sobre la barra móvil. Cualquiera de las dos paredes puesta a más de un lado corto del empotramiento queda fuera del alcance de los eslabones.</p>
 </div>
 
 <script>
@@ -159,7 +162,8 @@
   let theta = Math.PI/2, omega = 0;
   let P = {x:0, y:r + L0};
   let hFloor = 65;               // distancia del piso al empotramiento
-  let contact = false;           // hubo choque/apoyo en el paso actual
+  let hCeil = 105;               // distancia del techo al empotramiento
+  let contact = 0;               // 0 libre, +1 apoyado en el piso, -1 contra el techo
   let dragging = false;
 
   const $ = id => document.getElementById(id);
@@ -211,10 +215,12 @@
 
   function midpoint(){ return {x: r*Math.cos(theta), y: r*Math.sin(theta)}; }
 
-  // altura mínima que puede alcanzar el eje de la barra móvil
-  function yLimit(){ return -hFloor + BAR; }
-  // seno límite; > 1 en módulo => el piso está fuera del alcance
-  function sinLimit(){ return yLimit()/r; }
+  // alturas extremas que puede alcanzar el eje de la barra móvil
+  function yLow(){ return -hFloor + BAR; }
+  function yHigh(){ return hCeil - BAR; }
+  // senos límite; fuera de [-1,1] => esa pared queda fuera del alcance
+  const sinLow  = () => yLow()/r;
+  const sinHigh = () => yHigh()/r;
 
   // fuerza del resorte sobre la barra móvil y torque generalizado
   function loads(k, grav){
@@ -232,18 +238,29 @@
     return {Q, f, d, Fx, Fy};
   }
 
-  // tope rígido contra el piso: devuelve true si hubo contacto
-  function resolveFloor(){
-    const s0 = sinLimit();
-    if(s0 <= -1) return false;                 // piso fuera de alcance
-    if(Math.sin(theta) >= s0) return false;    // sin penetración
-    const phi = Math.asin(Math.min(1, -s0));   // s0 < 0 en la práctica
-    const lo = Math.PI + phi, hi = 2*Math.PI - phi;   // borde de la zona prohibida
-    const t = ((theta % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+  // proyecta theta al borde más cercano de una zona prohibida [lo,hi] (en 0..2pi)
+  function snapOut(lo, hi){
+    const T = 2*Math.PI;
+    const t = ((theta % T) + T) % T;
     const edge = (t - lo) < (hi - t) ? lo : hi;
     theta += edge - t;
     omega = 0;                                 // choque sin rebote
-    return true;
+  }
+
+  // topes rígidos: devuelve +1 si tocó el piso, -1 el techo, 0 si está libre
+  function resolveWalls(){
+    const s = Math.sin(theta), sL = sinLow(), sH = sinHigh();
+    if(sL > -1 && s < sL){                     // penetró el piso
+      const phi = Math.asin(Math.min(1, -sL));
+      snapOut(Math.PI + phi, 2*Math.PI - phi);
+      return 1;
+    }
+    if(sH < 1 && s > sH){                      // penetró el techo
+      const psi = Math.asin(Math.max(-1, sH));
+      snapOut(psi, Math.PI - psi);
+      return -1;
+    }
+    return 0;
   }
 
   function step(h, k, zeta, grav){
@@ -252,26 +269,34 @@
     const alpha = (Q - c*omega)/I;
     omega += alpha*h;
     theta += omega*h;
-    if(resolveFloor()) contact = true;
+    const hit = resolveWalls();
+    if(hit) contact = hit;
   }
 
-  // reacción normal del piso necesaria para mantener el apoyo
+  // reacción normal de la pared necesaria para mantener el contacto
   function reaction(k, grav){
     if(!contact) return 0;
     const ct = Math.cos(theta);
     if(Math.abs(ct) < 1e-3) return 0;          // contacto tangente: indeterminado
     const {Q} = loads(k, grav);
-    return Math.max(0, -Q/(r*ct));
+    return Math.max(0, -contact*Q/(r*ct));
   }
 
-  function drawFloor(){
-    const y = sy(-hFloor);
-    const ln = $('floorLine');
-    ln.setAttribute('x1', 0); ln.setAttribute('y1', y);
-    ln.setAttribute('x2', VW); ln.setAttribute('y2', y);
-    const h = $('floorHatch');
-    h.setAttribute('x', 0); h.setAttribute('y', y);
-    h.setAttribute('width', VW); h.setAttribute('height', Math.max(0, Math.min(11, VH - y)));
+  function drawWalls(){
+    const yF = sy(-hFloor);
+    $('floorLine').setAttribute('x1', 0);  $('floorLine').setAttribute('y1', yF);
+    $('floorLine').setAttribute('x2', VW); $('floorLine').setAttribute('y2', yF);
+    const hf = $('floorHatch');
+    hf.setAttribute('x', 0); hf.setAttribute('y', yF);
+    hf.setAttribute('width', VW); hf.setAttribute('height', Math.max(0, Math.min(11, VH - yF)));
+
+    const yC = sy(hCeil);
+    $('ceilLine').setAttribute('x1', 0);  $('ceilLine').setAttribute('y1', yC);
+    $('ceilLine').setAttribute('x2', VW); $('ceilLine').setAttribute('y2', yC);
+    const hc = $('ceilHatch');
+    const th = Math.max(0, Math.min(11, yC));
+    hc.setAttribute('x', 0); hc.setAttribute('y', yC - th);
+    hc.setAttribute('width', VW); hc.setAttribute('height', th);
   }
 
   function arrow(id, from, ux, uy, len){
@@ -289,7 +314,7 @@
     const C = {x:A.x + r*c, y:A.y + r*s};
     const D = {x:B.x + r*c, y:B.y + r*s};
 
-    drawFloor();
+    drawWalls();
 
     const seg = (id,p,q) => { const e=$(id);
       e.setAttribute('x1',sx(p.x)); e.setAttribute('y1',sy(p.y));
@@ -306,14 +331,18 @@
     const {f, d} = loads(k, grav);
     const N = reaction(k, grav);
 
-    // flecha de la fuerza del resorte, aplicada en el punto medio
+    // flecha de la fuerza del resorte: aplicada en el punto medio, corrida en
+    // perpendicular para que no se confunda con el dibujo del resorte
     if(d > 1e-6 && Math.abs(f) >= 5){
       const sgn = f >= 0 ? 1 : -1;
-      arrow('fSpring', M, sgn*(P.x-M.x)/d, sgn*(P.y-M.y)/d, arrowLen(f));
+      const ux = sgn*(P.x-M.x)/d, uy = sgn*(P.y-M.y)/d;
+      const off = 9;
+      arrow('fSpring', {x: M.x - uy*off, y: M.y + ux*off}, ux, uy, arrowLen(f));
     } else $('fSpring').setAttribute('opacity', 0);
 
-    // flecha de la reacción, desde el piso hacia arriba
-    arrow('fReact', {x:-55, y:-hFloor}, 0, 1, arrowLen(N));
+    // flecha de la reacción, desde la pared en contacto hacia el mecanismo
+    if(contact) arrow('fReact', {x:-55, y: contact > 0 ? -hFloor : hCeil}, 0, contact, arrowLen(N));
+    else $('fReact').setAttribute('opacity', 0);
 
     const def = d - L0;
     let deg = (theta*180/Math.PI) % 360; if(deg < 0) deg += 360;
@@ -322,14 +351,14 @@
     $('rDef').textContent = (def>=0?'+':'−') + Math.abs(def).toFixed(1) + ' mm';
     $('rDef').style.color = Math.abs(def) < 0.5 ? 'var(--ink)' : 'var(--spring)';
     $('rF').textContent = Math.abs(f).toFixed(0) + ' N ' + (Math.abs(f) < 5 ? '' : (f > 0 ? '(tracción)' : '(compresión)'));
-    $('rN').textContent = N.toFixed(0) + ' N';
+    $('rN').textContent = N.toFixed(0) + ' N' + (N > 0.5 ? (contact > 0 ? ' (piso)' : ' (techo)') : '');
     $('rN').style.color = N > 0.5 ? 'var(--react)' : 'var(--ink)';
   }
 
   // ---- interacción ----
   function clampHandle(){
     P.x = Math.max(-OX+14, Math.min(VW-OX-14, P.x));
-    P.y = Math.max(-hFloor+13, Math.min(OY-14, P.y));
+    P.y = Math.max(-hFloor+13, Math.min(hCeil-13, P.y));
   }
   function toLocal(evt){
     const pt = svg.createSVGPoint();
@@ -357,21 +386,24 @@
   svg.addEventListener('pointercancel', stop);
 
   $('btnReset').addEventListener('click', () => {
-    theta = Math.PI/2; omega = 0; P = {x:0, y:r + L0}; clampHandle();
+    theta = Math.PI/2; omega = 0; P = {x:0, y:r + L0};
+    clampHandle(); resolveWalls();
   });
   const bind = (sl,out,fmt) => { const f = () => $(out).textContent = fmt(+$(sl).value); $(sl).addEventListener('input',f); f(); };
   bind('sK','vK', v => v.toFixed(1));
   bind('sZ','vZ', v => v.toFixed(2));
   bind('sF','vF', v => v.toFixed(0));
-  $('sF').addEventListener('input', () => { hFloor = +$('sF').value; clampHandle(); });
+  bind('sC','vC', v => v.toFixed(0));
+  const readWalls = () => { hFloor = +$('sF').value; hCeil = +$('sC').value; };
+  ['sF','sC'].forEach(id => $(id).addEventListener('input', () => { readWalls(); clampHandle(); }));
 
   // ---- bucle ----
   let last = performance.now();
   function loop(now){
     let dt = Math.min((now-last)/1000, 0.05); last = now;
     const k = +$('sK').value, zeta = +$('sZ').value, grav = $('cG').checked;
-    hFloor = +$('sF').value;
-    contact = false;
+    readWalls();
+    contact = 0;
     const n = 10, h = dt/n;
     for(let i=0;i<n;i++) step(h, k, zeta, grav);
     if(Math.abs(omega) < 1e-4) omega = 0;
