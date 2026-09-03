@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paralelogramo articulado con resorte</title>
+<style>
+  :root{
+    --paper:#E7EBE9;
+    --panel:#F3F6F4;
+    --ink:#16211F;
+    --steel:#2E4A55;
+    --spring:#A8432B;
+    --handle:#0F6E8C;
+    --guide:#98A5A2;
+    --hair:#C3CCC9;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:14px 14px 28px;
+  }
+  .wrap{max-width:560px;margin:0 auto}
+  h1{font-size:19px;font-weight:600;letter-spacing:-0.01em;margin:0 0 4px}
+  .sub{margin:0 0 10px;font-size:13.5px;line-height:1.45;color:#4A5B58;max-width:46em}
+  .stage{
+    background:var(--panel);
+    border:1px solid var(--hair);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  svg{display:block;width:100%;height:auto;touch-action:none;user-select:none}
+  .readout{
+    display:flex;flex-wrap:wrap;gap:2px 18px;
+    margin:10px 0 14px;
+    font:500 12.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    color:#3C4C49;
+  }
+  .readout b{font-weight:600;color:var(--ink)}
+  .controls{display:grid;gap:11px}
+  .row{display:grid;grid-template-columns:104px 1fr 46px;align-items:center;gap:10px;font-size:13px}
+  .row span:last-child{font:500 12px/1 ui-monospace,Menlo,monospace;text-align:right;color:#3C4C49}
+  input[type=range]{width:100%;accent-color:var(--handle);height:22px}
+  .foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:2px}
+  label.chk{display:flex;align-items:center;gap:7px;font-size:13px}
+  input[type=checkbox]{width:17px;height:17px;accent-color:var(--handle)}
+  button{
+    font:500 13px/1 inherit;color:#F3F6F4;background:var(--steel);
+    border:0;border-radius:3px;padding:9px 15px;cursor:pointer;
+  }
+  button:active{background:#16211F}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--handle);outline-offset:2px}
+  .note{margin:16px 0 0;font-size:12.5px;line-height:1.55;color:#4A5B58;border-top:1px solid var(--hair);padding-top:11px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Paralelogramo articulado con resorte</h1>
+  <p class="sub">La barra de abajo está empotrada. El resorte sale del punto medio de la barra móvil y su largo natural es la mitad del lado corto. Arrastrá el círculo azul y el mecanismo se mueve hasta encontrar su equilibrio.</p>
+
+  <div class="stage">
+    <svg id="scene" viewBox="0 0 400 440" aria-label="Simulación del mecanismo">
+      <defs>
+        <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="7" stroke="#7C8B88" stroke-width="1.1"/>
+        </pattern>
+      </defs>
+
+      <!-- trayectoria del punto medio -->
+      <circle id="path" fill="none" stroke="var(--guide)" stroke-width="1" stroke-dasharray="2 5" opacity="0.75"/>
+      <!-- guía centro-mango -->
+      <line id="guide" stroke="var(--guide)" stroke-width="1" stroke-dasharray="4 5" opacity="0.7"/>
+
+      <!-- suelo -->
+      <g id="ground"></g>
+
+      <!-- barras -->
+      <line id="base" stroke="var(--steel)" stroke-width="7" stroke-linecap="round"/>
+      <line id="crankA" stroke="var(--steel)" stroke-width="7" stroke-linecap="round"/>
+      <line id="crankB" stroke="var(--steel)" stroke-width="7" stroke-linecap="round"/>
+      <line id="coupler" stroke="var(--steel)" stroke-width="7" stroke-linecap="round"/>
+
+      <!-- resorte -->
+      <polyline id="spring" fill="none" stroke="var(--spring)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+
+      <!-- articulaciones -->
+      <circle id="jA" r="5" fill="var(--panel)" stroke="var(--ink)" stroke-width="2.2"/>
+      <circle id="jB" r="5" fill="var(--panel)" stroke="var(--ink)" stroke-width="2.2"/>
+      <circle id="jC" r="5" fill="var(--panel)" stroke="var(--ink)" stroke-width="2.2"/>
+      <circle id="jD" r="5" fill="var(--panel)" stroke="var(--ink)" stroke-width="2.2"/>
+      <circle id="jM" r="3.6" fill="var(--spring)"/>
+
+      <!-- mango -->
+      <circle id="grab" r="26" fill="transparent"/>
+      <circle id="handle" r="11" fill="var(--handle)" fill-opacity="0.16" stroke="var(--handle)" stroke-width="2.6"/>
+    </svg>
+  </div>
+
+  <div class="readout">
+    <div>ángulo <b id="rTheta">90.0°</b></div>
+    <div>resorte <b id="rLen">45.0</b> / <span id="rL0">45</span> mm</div>
+    <div>deformación <b id="rDef">0.0 mm</b></div>
+  </div>
+
+  <div class="controls">
+    <div class="row"><span>Rigidez k</span><input id="sK" type="range" min="1" max="25" step="0.5" value="9"><span id="vK">9.0</span></div>
+    <div class="row"><span>Amortiguación</span><input id="sZ" type="range" min="0.05" max="1.5" step="0.05" value="0.55"><span id="vZ">0.55</span></div>
+    <div class="foot">
+      <label class="chk"><input id="cG" type="checkbox"> Peso de la barra móvil</label>
+      <button id="btnReset">Reiniciar</button>
+    </div>
+  </div>
+
+  <p class="note">Con el resorte suelto (largo natural = medio lado corto), el mecanismo se queda quieto cuando el resorte vuelve a su largo natural: eso ocurre mientras el mango esté a una distancia del centro de entre medio y un lado corto y medio, y hay dos posiciones simétricas posibles. Si lo alejás más, el resorte queda estirado y el equilibrio pasa a ser aquel en que el resorte se alinea con las barras cortas apuntando al mango; si lo acercás demasiado al centro, el resorte queda comprimido y el equilibrio es el opuesto, con el punto medio lo más lejos posible del mango.</p>
+</div>
+
+<script>
+(function(){
+  const OX = 200, OY = 240;      // centro de la barra empotrada, en pantalla
+  const L = 220;                 // lado largo
+  const r = 90;                  // lado corto
+  const L0 = r/2;                // largo natural del resorte = mitad del lado corto
+  const A = {x:-L/2, y:0}, B = {x:L/2, y:0};
+  const I = r*r, m = 1;          // inercia equivalente (masa unitaria en el punto medio)
+  const G = 320;                 // gravedad cuando está activada
+
+  const sx = x => OX + x, sy = y => OY - y;
+
+  let theta = Math.PI/2, omega = 0;
+  let P = {x:0, y:r + L0};
+  let dragging = false;
+
+  const $ = id => document.getElementById(id);
+  const svg = $('scene');
+
+  $('rL0').textContent = L0.toFixed(0);
+
+  // suelo: dos apoyos con rayado
+  (function ground(){
+    const g = $('ground');
+    [A,B].forEach(p => {
+      const tri = document.createElementNS('http://www.w3.org/2000/svg','path');
+      const x = sx(p.x), y = sy(p.y);
+      tri.setAttribute('d', `M ${x} ${y} L ${x-15} ${y+22} L ${x+15} ${y+22} Z`);
+      tri.setAttribute('fill','none');
+      tri.setAttribute('stroke','var(--ink)');
+      tri.setAttribute('stroke-width','2');
+      g.appendChild(tri);
+      const bar = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      bar.setAttribute('x', x-22); bar.setAttribute('y', y+22);
+      bar.setAttribute('width', 44); bar.setAttribute('height', 9);
+      bar.setAttribute('fill','url(#hatch)');
+      bar.setAttribute('stroke','var(--ink)');
+      bar.setAttribute('stroke-width','1.4');
+      g.appendChild(bar);
+    });
+    const path = $('path');
+    path.setAttribute('cx', sx(0)); path.setAttribute('cy', sy(0)); path.setAttribute('r', r);
+  })();
+
+  function springPath(M, Q){
+    const dx = Q.x-M.x, dy = Q.y-M.y;
+    const d = Math.hypot(dx,dy) || 1e-6;
+    const ux = dx/d, uy = dy/d, nx = -uy, ny = ux;
+    const lead = Math.min(15, d*0.22);
+    const zig = Math.max(0, d - 2*lead);
+    const N = 9;
+    let amp = 11*Math.sqrt(L0/Math.max(d,1));
+    amp = Math.max(4, Math.min(15, amp));
+    const pts = [[M.x,M.y],[M.x+ux*lead, M.y+uy*lead]];
+    for(let i=1;i<N;i++){
+      const s = lead + (i/N)*zig, off = (i%2 ? 1 : -1)*amp;
+      pts.push([M.x+ux*s+nx*off, M.y+uy*s+ny*off]);
+    }
+    pts.push([M.x+ux*(lead+zig), M.y+uy*(lead+zig)]);
+    pts.push([Q.x,Q.y]);
+    return pts.map(p => sx(p[0]).toFixed(1)+','+sy(p[1]).toFixed(1)).join(' ');
+  }
+
+  function midpoint(){ return {x: r*Math.cos(theta), y: r*Math.sin(theta)}; }
+
+  function step(h, k, zeta, grav){
+    const M = midpoint();
+    const vx = P.x-M.x, vy = P.y-M.y;
+    const d = Math.hypot(vx,vy);
+    let Fx = 0, Fy = 0;
+    if(d > 1e-6){
+      const f = k*(d - L0);
+      Fx = f*vx/d; Fy = f*vy/d;
+    }
+    // dM/dtheta = r(-sin, cos)
+    let Q = Fx*(-r*Math.sin(theta)) + Fy*(r*Math.cos(theta));
+    if(grav) Q -= m*G*r*Math.cos(theta);
+    const c = 2*zeta*r*r*Math.sqrt(k);
+    const alpha = (Q - c*omega)/I;
+    omega += alpha*h;
+    theta += omega*h;
+  }
+
+  function draw(){
+    const M = midpoint();
+    const c = Math.cos(theta), s = Math.sin(theta);
+    const C = {x:A.x + r*c, y:A.y + r*s};
+    const D = {x:B.x + r*c, y:B.y + r*s};
+
+    const seg = (id,p,q) => { const e=$(id);
+      e.setAttribute('x1',sx(p.x)); e.setAttribute('y1',sy(p.y));
+      e.setAttribute('x2',sx(q.x)); e.setAttribute('y2',sy(q.y)); };
+    seg('base',A,B); seg('crankA',A,C); seg('crankB',B,D); seg('coupler',C,D);
+    seg('guide',{x:0,y:0},P);
+
+    const dot = (id,p) => { const e=$(id); e.setAttribute('cx',sx(p.x)); e.setAttribute('cy',sy(p.y)); };
+    dot('jA',A); dot('jB',B); dot('jC',C); dot('jD',D); dot('jM',M);
+    dot('handle',P); dot('grab',P);
+
+    $('spring').setAttribute('points', springPath(M,P));
+
+    const d = Math.hypot(P.x-M.x, P.y-M.y);
+    const def = d - L0;
+    let deg = (theta*180/Math.PI) % 360; if(deg < 0) deg += 360;
+    $('rTheta').textContent = deg.toFixed(1)+'°';
+    $('rLen').textContent = d.toFixed(1);
+    $('rDef').textContent = (def>=0?'+':'−') + Math.abs(def).toFixed(1) + ' mm';
+    $('rDef').style.color = Math.abs(def) < 0.5 ? 'var(--ink)' : 'var(--spring)';
+  }
+
+  // ---- interacción ----
+  function toLocal(evt){
+    const pt = svg.createSVGPoint();
+    pt.x = evt.clientX; pt.y = evt.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    return {x: p.x - OX, y: OY - p.y};
+  }
+  svg.addEventListener('pointerdown', e => {
+    const p = toLocal(e);
+    if(Math.hypot(p.x-P.x, p.y-P.y) < 34){
+      dragging = true;
+      svg.setPointerCapture(e.pointerId);
+      $('handle').setAttribute('fill-opacity','0.34');
+      e.preventDefault();
+    }
+  });
+  svg.addEventListener('pointermove', e => {
+    if(!dragging) return;
+    const p = toLocal(e);
+    P.x = Math.max(-OX+14, Math.min(400-OX-14, p.x));
+    P.y = Math.max(OY-440+14, Math.min(OY-14, p.y));
+    e.preventDefault();
+  });
+  const stop = () => { dragging = false; $('handle').setAttribute('fill-opacity','0.16'); };
+  svg.addEventListener('pointerup', stop);
+  svg.addEventListener('pointercancel', stop);
+
+  $('btnReset').addEventListener('click', () => {
+    theta = Math.PI/2; omega = 0; P = {x:0, y:r + L0};
+  });
+  const bind = (sl,out,fmt) => { const f = () => $(out).textContent = fmt(+$(sl).value); $(sl).addEventListener('input',f); f(); };
+  bind('sK','vK', v => v.toFixed(1));
+  bind('sZ','vZ', v => v.toFixed(2));
+
+  // ---- bucle ----
+  let last = performance.now();
+  function loop(now){
+    let dt = Math.min((now-last)/1000, 0.05); last = now;
+    const k = +$('sK').value, zeta = +$('sZ').value, grav = $('cG').checked;
+    const n = 10, h = dt/n;
+    for(let i=0;i<n;i++) step(h, k, zeta, grav);
+    if(Math.abs(omega) < 1e-4) omega = 0;
+    draw();
+    requestAnimationFrame(loop);
+  }
+  draw();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
