@@ -317,16 +317,17 @@ def datum(xa, ya, letter, dx, dy, lead=7.0, size=3.2):
     txt(bx + bw / 2, by + 1.4, letter, 3.0, "c", FONT_B)
 
 
-def surf_finish(x, y, value, h=5.0, rot=0):
+def surf_finish(x, y, value, h=5.0, rot=0, flip=False):
+    k = -1.0 if flip else 1.0
     c.saveState()
     c.translate(x, y)
     if rot:
         c.rotate(rot)
     pen(W_THIN)
-    c.line(0, 0, -h * 0.50, h * 0.87)
-    c.line(0, 0, h * 0.60, h * 1.04)
-    c.line(h * 0.60, h * 1.04, h * 1.90, h * 1.04)
-    txt(h * 0.66, h * 1.22, value, 2.3, "l")
+    c.line(0, 0, -k * h * 0.50, h * 0.87)
+    c.line(0, 0, k * h * 0.60, h * 1.04)
+    c.line(k * h * 0.60, h * 1.04, k * h * 1.90, h * 1.04)
+    txt(k * h * 0.66, h * 1.22, value, 2.3, "r" if flip else "l")
     c.restoreState()
 
 
@@ -516,9 +517,11 @@ def detail_b():
 
 # ============================================================================
 # DETALLE C - PREPARACION DE BISEL 5:1
+# (misma orientacion que el CORTE A-A: material a la derecha, abertura a la
+#  izquierda, cara exterior arriba)
 # ============================================================================
 DC_S = 5.0
-DC_XR = 380.0        # arista de raiz sobre la cara interior
+DC_XL = 322.0        # arista de raiz sobre la cara interior
 DC_YIN = 125.0
 
 
@@ -526,32 +529,32 @@ def detail_c():
     t = WT * DC_S
     off = OFF * DC_S
     yin, yout = DC_YIN, DC_YIN + t
-    xl = DC_XR - 40.0
+    xr = DC_XL + 42.0
 
-    mat = [(xl, yin), (DC_XR, yin), (DC_XR - off, yout), (xl, yout)]
+    mat = [(DC_XL, yin), (xr, yin), (xr, yout), (DC_XL + off, yout)]
     poly(mat, W_THICK, fill=white)
     hatch(mat, spacing=2.2, ang=45)
     poly(mat, W_THICK)
-    break_line(xl, yin, yout, 1.1, 6)
+    break_line(xr, yin, yout, 1.1, 6)
 
-    ln(xl - 10.0, yout, DC_XR - off, yout, W_HAIR, D_PHANTOM)
-    ln(xl - 10.0, yin, DC_XR, yin, W_HAIR, D_PHANTOM)
-    txt(xl - 11.0, yout - 0.9, "CARA EXT.", 2.3, "r")
-    txt(xl - 11.0, yin - 0.9, "CARA INT.", 2.3, "r")
+    ln(DC_XL + off, yout, xr + 10.0, yout, W_HAIR, D_PHANTOM)
+    ln(DC_XL, yin, xr + 10.0, yin, W_HAIR, D_PHANTOM)
+    txt(xr + 11.0, yout + 1.6, "CARA EXT.", 2.3, "l")
+    txt(xr + 11.0, yin - 4.2, "CARA INT.", 2.3, "l")
 
     # angulo del bisel respecto de la normal a la superficie
-    ex, ey = DC_XR - off * 2.8, yin + t * 2.8
-    ln(DC_XR - off, yout, ex, ey, W_HAIR, D_PHANTOM)
-    ln(DC_XR, yin, DC_XR, yin + t * 3.1, W_HAIR, D_PHANTOM)
-    dim_ang(DC_XR, yin, t * 2.0, math.degrees(math.atan2(ey - yin, ex - DC_XR)), 90.0,
-            "30°±1°", 2.5, 3.2)
+    ex, ey = DC_XL + off * 2.8, yin + t * 2.8
+    ln(DC_XL + off, yout, ex, ey, W_HAIR, D_PHANTOM)
+    ln(DC_XL, yin, DC_XL, yin + t * 3.1, W_HAIR, D_PHANTOM)
+    dim_ang(DC_XL, yin, t * 2.0, 90.0, math.degrees(math.atan2(ey - yin, ex - DC_XL)),
+            "30°±1°", 2.5, 3.4)
 
-    dim_v(yin, yout, xl - 34.0, "2", from_x=xl - 10.0)
-    leader(DC_XR, yin, DC_XR - 8.0, yin - 12.0, DC_XR - 13.0,
+    dim_v(yin, yout, xr + 36.0, "2", from_x=xr + 10.0)
+    leader(DC_XL, yin, DC_XL + 9.0, yin - 12.0, DC_XL + 14.0,
            "CARA DE RAÍZ 0", 2.4, dot=True, arw=False)
-    surf_finish(DC_XR - off / 2 - 1.0, yin + t * 0.5, "Ra 3.2")
+    surf_finish(DC_XL + off / 2 - 0.6, yin + t * 0.5, "Ra 3.2", flip=True)
 
-    view_label(DC_XR - 22.0, 74.0, "DETALLE C", "ESCALA 5:1")
+    view_label(DC_XL + 22.0, 74.0, "DETALLE C", "ESCALA 5:1")
 
 
 # ============================================================================
