@@ -282,41 +282,6 @@ def dim_ang(cx, cy, r, a0, a1, label, th=2.4, off=2.2):
     txt(cx + (r + off) * math.cos(am), cy + (r + off) * math.sin(am), label, th, "c")
 
 
-def gdt_frame(x, y, cells, h=4.6, th=2.5):
-    cx = x
-    for cell in cells:
-        if cell == "POS":
-            w = h
-            rect(cx, y, w, h, W_THIN)
-            s = h * 0.82
-            pen(W_THIN)
-            c.circle(cx + w / 2, y + h / 2, s * 0.28, stroke=1, fill=0)
-            c.line(cx + w / 2 - s * 0.46, y + h / 2, cx + w / 2 + s * 0.46, y + h / 2)
-            c.line(cx + w / 2, y + h / 2 - s * 0.46, cx + w / 2, y + h / 2 + s * 0.46)
-        else:
-            w = tw(cell, th) + 2.8
-            rect(cx, y, w, h, W_THIN)
-            txt(cx + w / 2, y + h / 2 - th * 0.36, cell, th, "c")
-        cx += w
-    return cx - x
-
-
-def datum(xa, ya, letter, dx, dy, lead=7.0, size=3.2):
-    n = math.hypot(dx, dy)
-    ux, uy = dx / n, dy / n
-    px, py = -uy, ux
-    poly([(xa, ya),
-          (xa + ux * size * 0.9 + px * size * 0.45, ya + uy * size * 0.9 + py * size * 0.45),
-          (xa + ux * size * 0.9 - px * size * 0.45, ya + uy * size * 0.9 - py * size * 0.45)],
-         W_THIN, fill=black)
-    ex, ey = xa + ux * lead, ya + uy * lead
-    ln(xa + ux * size * 0.9, ya + uy * size * 0.9, ex, ey, W_THIN)
-    bw, bh = 5.0, 4.8
-    bx, by = ex - bw / 2 + ux * bw / 2, ey - bh / 2 + uy * bh / 2
-    rect(bx, by, bw, bh, W_THIN, fill=white)
-    txt(bx + bw / 2, by + 1.4, letter, 3.0, "c", FONT_B)
-
-
 def surf_finish(x, y, value, h=5.0, rot=0, flip=False):
     k = -1.0 if flip else 1.0
     c.saveState()
@@ -427,7 +392,6 @@ def front_view():
 
     dim_h(x0, xa, 214.0, "250", from_y=yb)
     dim_h(x0, x1, 205.0, "500", from_y=yb)
-    datum(x0, FV_CY - 8.0, "B", -1, 0, lead=8.0)
 
     txt(FV_X, 195.0, "VISTA PRINCIPAL", 3.5, "l", FONT_B)
     txt(FV_X + 52.0, 195.0, "ESCALA 1:2", 2.5, "l")
@@ -472,7 +436,6 @@ def section_aa():
     ca, sa = math.cos(math.radians(ad)), math.sin(math.radians(ad))
     txt(SA_CX - sa * 1.4 - ca * tw(lab, TH) / 2,
         SA_CY + ca * 1.4 - sa * tw(lab, TH) / 2, lab, TH, "l", rot=ad)
-    datum(p2[0], p2[1], "A", ca, sa, lead=10.0, size=2.8)
 
     # circulo de detalle C sobre el bisel
     dcx, dcy = P(ro, 90 - ao)
@@ -508,9 +471,6 @@ def detail_b():
     leader(x + R * 0.29, y + H - R * 0.29, x - 4.0, y + H + 8.0, x + 2.0, "4x R3", 2.5)
     leader(x + W - OFF * DB_S - 0.8, y + H * 0.72, x + W + 6.0, y + H + 8.0,
            x + W + 11.0, "ARISTA DE RAÍZ", 2.4)
-
-    gw = gdt_frame(DB_CX - 12.0, y - 21.5, ["POS", "0.5", "A", "B"])
-    ln(DB_CX - 12.0 + gw / 2, y - 16.9, DB_CX - 12.0 + gw / 2, y - 11.0, W_THIN)
 
     view_label(DB_CX, 74.0, "DETALLE B", "ESCALA 2:1")
 
@@ -855,12 +815,10 @@ def title_block():
     for xv in xs[1:-1]:
         ln(xv, y0, xv, yB, W_THIN)
 
-    proj_symbol(xs[0] + 16.0, y0 + 11.4)
-    txt(xs[0] + 16.0, y0 + 2.4, "PROYECCIÓN ISO-E", 2.0, "c")
+    proj_symbol(xs[0] + 16.0, y0 + 9.0)
 
     txt(xs[1] + 2.5, y0 + 13.0, "TOL. GENERALES", 2.0, "l", FONT_B)
-    txt(xs[1] + 2.5, y0 + 8.0, "ISO 2768-mK", 2.8, "l")
-    txt(xs[1] + 2.5, y0 + 3.4, "ISO 8015", 2.0, "l")
+    txt(xs[1] + 2.5, y0 + 6.5, "ISO 2768-mK", 3.0, "l")
 
     txt(xs[2] + 2.5, y0 + 13.0, "ESCALA", 2.0, "l", FONT_B)
     txt(xs[2] + 2.5, y0 + 5.6, "1:2", 5.0, "l", FONT_B)
