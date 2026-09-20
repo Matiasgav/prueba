@@ -146,19 +146,47 @@ def test_frecuencia_sube_con_el_apriete():
 
 
 def test_design_space_ordena_el_compromiso():
-    """f0 decide la calidad; la masa decide si sobrevivis. Son independientes."""
+    """f0 decide la calidad; la masa decide si sobrevivis. Son independientes.
+
+    Con el amortiguamiento real de una flexura (zeta = 0.005) el optimo esta
+    en ~1.3 kHz, justo donde ya cae el diseño. Con el zeta pesimista de la
+    rev. C (0.08) parecia estar en 2 kHz.
+    """
     from wtd.softprobe import design_space
     sp = design_space(preload=1.0, margin=1.4)
     by = {r["f0_Hz"]: r for r in sp}
-    # la separacion crece hasta ~2 kHz y despues cae
-    assert by[600]["separacion"] < by[1273]["separacion"] < by[2000]["separacion"]
-    assert by[5000]["separacion"] < by[2000]["separacion"]
+    # el optimo con flexura esta en 1273 Hz
+    assert max(sp, key=lambda r: r["separacion"])["f0_Hz"] == 1273
+    assert by[600]["separacion"] < by[1273]["separacion"] > by[2000]["separacion"]
     # subir f0 obliga a bajar la masa
     for a, b in zip(sp, sp[1:]):
         assert b["m_max_g"] < a["m_max_g"]
     # el punto elegido: 0,68 g cae dentro de lo admisible a 1273 Hz
     assert by[1273]["m_max_g"] > 0.68
     assert by[1600]["m_max_g"] < 0.68
+    # con el zeta conservador el optimo se corria a 2 kHz
+    sp8 = design_space(preload=1.0, margin=1.4, zeta=0.08)
+    assert max(sp8, key=lambda r: r["separacion"])["f0_Hz"] == 2000
     # duplicar la precarga duplica el techo de despegue
     sp2 = design_space(preload=2.0, margin=1.4)
     assert sp2[0]["m_max_g"] == pytest.approx(2 * sp[0]["m_max_g"], rel=1e-9)
+
+
+def test_el_amortiguamiento_es_el_parametro_dominante():
+    """Flexura metálica o el ensayo no sirve. Es LA decisión de construcción.
+
+    Entre zeta = 0.005 (acero) y zeta = 0.15 (elastómero blando) la separación
+    cae de x150 a x3 sin que cambie ningún otro número del diseño.
+    """
+    from wtd.softprobe import ZETA_SWEEP
+    by = {z: (a, s) for z, a, s in ZETA_SWEEP}
+    assert by[0.005][1] > 100.0          # flexura: excelente
+    assert by[0.080][1] < 20.0           # lo que suponía la rev. C
+    assert by[0.150][1] < 5.0            # elastómero: inservible
+    assert by[0.005][1] / by[0.150][1] > 40.0
+    # y es monótono: más amortiguamiento, peor separación
+    seps = [s for _, _, s in ZETA_SWEEP]
+    for a, b in zip(seps, seps[1:]):
+        assert b < a
+    # el pico leído casi no se mueve mientras zeta se mantenga bajo
+    assert by[0.002][0] == pytest.approx(by[0.020][0], rel=0.01)

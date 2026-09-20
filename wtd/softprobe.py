@@ -16,17 +16,17 @@ el vástago y el cable.
 
 LA SALIDA: BAJAR LA FRECUENCIA DE ACOPLE, NO LA MASA
 
-Si entre la punta y la masa móvil se pone un resorte BLANDO, el conjunto
-deja de seguir a la cuña por encima de su resonancia y la masa se queda
-quieta en el espacio. El resorte se comprime lo que se mueve la cuña, y el
-acelerómetro montado sobre la masa lee
+Si entre la punta y la masa movil se pone un resorte BLANDO, el conjunto se
+vuelve un PASA-BAJOS de segundo orden con corte en su resonancia f0. Como la
+cuña asentada responde a ~33 kHz y la suelta a ~125 Hz (ver mas abajo), un
+corte plantado en el medio rechaza a una y deja pasar a la otra. Eso, y no
+otra cosa, es lo que separa los estados.
 
-    a_leida = (k/m) * x_cuña = omega_n^2 * x_cuña          (regimen sismico)
-
-O sea que el palpador deja de ser un ACELEROMETRO de la cuña y pasa a ser un
-MEDIDOR DE DESPLAZAMIENTO de la cuña, con ganancia omega_n^2 elegible por
-diseño. No es un filtro que recorta el pico: es un cambio de escala, y el
-pico recortado es una consecuencia.
+(Una version anterior de este modulo explicaba el mecanismo como un cambio
+de regimen -- el palpador pasando de acelerometro a sismometro para medir
+desplazamiento. Esa lectura es correcta como descripcion de la respuesta
+forzada, pero NO es lo que produce la discriminacion, y llevaba a creer que
+la eleccion de f0 era critica. Lo que discrimina es el filtrado.)
 
 EL INVARIANTE QUE ORDENA TODO EL DISEÑO
 
@@ -57,7 +57,7 @@ escala. Con acople rigido, el fondo de escala F/m se gasta en los picos de
 aceleracion de alta frecuencia, que no llevan la informacion. Con acople
 blando se gasta en el desplazamiento, que si la lleva.
 
-POR QUE EL DESPLAZAMIENTO Y NO LA ACELERACION
+POR QUE NO SIRVE LA ACELERACION DE LA CUÑA
 
 Barrido de los siete estados de ajuste a 5 mJ, palpador a 12.5 mm del golpe:
 
@@ -70,9 +70,9 @@ Barrido de los siete estados de ajuste a 5 mJ, palpador a 12.5 mm del golpe:
 
 El pico de aceleracion NO ES MONOTONO: sube hasta S3 y despues baja, de modo
 que un mismo valor (~1500 g) corresponde a la cuña al 50 % y a la cuña
-practicamente suelta. El pico de desplazamiento si es monotono y satura, con
-un recorrido de 20 a 40x entre ajustada y floja. Medir desplazamiento no es
-una concesion a la falta de precarga: es el mejor discriminante.
+practicamente suelta. El pico esta dominado por el transitorio rapido del
+impacto, que no sigue al estado. El de desplazamiento si es monotono, porque
+sigue a la excursion lenta, que es la que cambia con el ajuste.
 
 BONUS: EL RESORTE BLANDO LINEALIZA EL CONTACTO
 
@@ -115,8 +115,9 @@ metodo, y es mucho mas robusta de lo que suponia el argumento viejo:
 
 El palpador es entonces un PASA-BAJOS DISCRIMINANTE, que es exactamente la
 intuicion original del usuario. Su f0 se planta en el hueco enorme que hay
-entre los dos estados, y por eso la eleccion de f0 no es critica: cualquier
-valor entre ~1 y ~2.5 kHz sirve (ver la tabla de `design_space` mas abajo).
+entre los dos estados. Con el amortiguamiento real de una flexura el optimo
+queda en ~1.3 kHz y vale x150; la banda util (>x100) va de ~700 Hz a
+~1.7 kHz (ver `design_space`).
 
 LIMITES DEL METODO
 
@@ -127,9 +128,12 @@ LIMITES DEL METODO
     0.00-0.01 um contra picos de 0.3-6.9 um, o sea <0.2 %). El ripple la
     reasienta. Queda como caveat para un efecto real que este modelo no
     reproduce: una cuña que migre axialmente tiro a tiro.
-  * El amortiguamiento del acople decide el rechazo de alta frecuencia:
-    sin amortiguar cae como 1/r^2, muy amortiguado como 1/r. Conviene un
-    resorte metalico (flexura) y NO un elastomero.
+  * EL AMORTIGUAMIENTO DEL ACOPLE ES EL PARAMETRO MAS SENSIBLE DEL DISEÑO,
+    y por lejos. Entre zeta = 0.005 (flexura de acero) y zeta = 0.15
+    (elastomero blando) la separacion pasa de x150 a x3, sin que cambie
+    ningun otro numero; en zeta = 0.30 el palpador ademas despega. Ver
+    ZETA_SWEEP. FLEXURA METALICA, NUNCA ELASTOMERO, y hay que MEDIR el zeta
+    del palpador construido: es el primer numero a verificar en banco.
 """
 
 from __future__ import annotations
@@ -152,7 +156,9 @@ class SoftProbe:
     mass: float = 0.68e-3        # masa movil: vastago + acelerometro [kg]
     k_soft: float = 9.5e4        # rigidez del acople blando [N/m]
     preload: float = 1.0         # precarga de apoyo [N]
-    zeta: float = 0.08           # amortiguamiento del acople [-]
+    zeta: float = 0.005          # amortiguamiento del acople [-]
+    #  0.005 = flexura de acero, que es lo que hay que construir.
+    #  La rev. C usaba 0.08 y por eso reportaba separaciones 10x peores.
     tip_radius: float = 2.0e-3   # radio de la punta [m]
     tip_material: Material = STEEL
 
@@ -219,59 +225,87 @@ class SoftProbe:
 # Sintesis: de la especificacion al resorte
 # --------------------------------------------------------------------------
 
-# Barrido de f0 con la cuña simulada a 12.5 mm y 2/5/12 mJ (studies/soft_probe.py).
-# a_max y la separacion NO dependen de la masa: son funcion de f0 sola. La masa
-# solo fija el techo de despegue F/m. Por eso el diseño se hace en dos pasos
-# independientes: f0 elige la CALIDAD, m elige si SOBREVIVIS.
-#   f0 [Hz], a_max leida [g], separacion asentada|suelta, masa maxima con 1 N
-#   y margen 1.4 [g]
-F0_SWEEP = [
-    (400, 20.3, 1.5, 3.59), (600, 34.0, 3.2, 2.14), (800, 50.3, 6.0, 1.45),
-    (1000, 69.2, 9.9, 1.05), (1273, 99.6, 14.1, 0.73), (1600, 142.7, 16.0, 0.51),
-    (2000, 204.7, 16.9, 0.36), (2500, 295.2, 16.8, 0.25), (3200, 460.0, 15.6, 0.16),
-    (4000, 694.7, 13.9, 0.10), (5000, 1039.1, 12.7, 0.07), (6500, 1633.9, 10.8, 0.04),
+# EL AMORTIGUAMIENTO DEL ACOPLE ES EL PARAMETRO MAS SENSIBLE DE TODO EL DISEÑO.
+# Barrido con m = 0.68 g, f0 = 1273 Hz, 1 N (studies/soft_probe.py):
+#
+#     zeta     a_max [g]   separacion   ring-down al 1 %
+#     0.002       78.5        x155          288 ms
+#     0.005       78.4        x150          115 ms   <- flexura metalica
+#     0.010       78.4        x140           58 ms
+#     0.020       78.8        x112           29 ms
+#     0.050       86.6         x40           12 ms
+#     0.080       99.6         x14            7 ms   <- lo que suponia la rev. C
+#     0.150      135.6          x3            4 ms   <- elastomero blando
+#     0.300      215.7        x0.7            2 ms   y ADEMAS DESPEGA
+#
+# O sea que "flexura metalica y NO elastomero" no es una recomendacion de
+# segundo orden: es LA decision de construccion. Entre zeta = 0.005 y 0.15 el
+# ensayo pasa de excelente a inservible, sin que cambie ningun otro numero.
+#
+# La rev. C reporto todo con zeta = 0.08, que era una suposicion pesimista:
+# los numeros reales de una flexura de acero son ~10x mejores.
+ZETA_SWEEP = [
+    (0.002, 78.5, 154.9), (0.005, 78.4, 150.2), (0.010, 78.4, 139.9),
+    (0.020, 78.8, 112.2), (0.050, 86.6, 39.5), (0.080, 99.6, 14.1),
+    (0.150, 135.6, 2.9), (0.300, 215.7, 0.7),
+]
+
+# Barrido de f0 con la cuña simulada a 12.5 mm y 2/5/12 mJ. a_max y la
+# separacion NO dependen de la masa: son funcion de f0 (y de zeta) sola. La
+# masa solo fija el techo de despegue F/m. Por eso el diseño se hace en dos
+# pasos independientes: f0 elige la CALIDAD, m elige si SOBREVIVIS.
+#   f0 [Hz], a_max leida [g], separacion asentada|suelta
+F0_SWEEP_FLEXURA = [          # zeta = 0.005, flexura metalica: el caso real
+    (600, 17.9, 91.3), (800, 31.7, 119.1), (1000, 49.0, 139.1),
+    (1273, 78.4, 150.2), (1600, 137.5, 113.6), (2000, 235.4, 80.3),
+    (2500, 368.2, 48.9), (3200, 581.2, 26.0), (4000, 869.3, 13.7),
+]
+F0_SWEEP = [                  # zeta = 0.08, conservador (el de la rev. C)
+    (400, 20.3, 1.5), (600, 34.0, 3.2), (800, 50.3, 6.0),
+    (1000, 69.2, 9.9), (1273, 99.6, 14.1), (1600, 142.7, 16.0),
+    (2000, 204.7, 16.9), (2500, 295.2, 16.8), (3200, 460.0, 15.6),
+    (4000, 694.7, 13.9), (5000, 1039.1, 12.7), (6500, 1633.9, 10.8),
 ]
 
 
-def design_space(preload: float = 1.0, margin: float = 1.4) -> list[dict]:
+def design_space(preload: float = 1.0, margin: float = 1.4,
+                 zeta: float = 0.005) -> list[dict]:
     """De que depende realmente el numero de despegue.
 
     LOS 150 g NO SON UNA ELECCION LIBRE, SON UNA CONSECUENCIA.
 
-    La separacion mejora monotonamente con f0 hasta ~2 kHz (x1.5 en 400 Hz,
-    x14 en 1273, x17 en 2000) y despues se aplana. Pero subir f0 sube la
-    lectura mas rapido todavia (a_max ~ f0^1.7), y una lectura mas alta pide
-    una masa mas chica para no despegar. La cadena es:
+    Subir f0 sube la lectura rapido (a_max ~ f0^1.7), y una lectura mas alta
+    pide una masa mas chica para no despegar. La cadena es:
 
         f0 deseado -> a_max(f0) -> m <= F / (margen * a_max) -> a_despegue = F/m
 
     o sea que el numero de despegue sale de que tan liviano se puede CONSTRUIR
-    el palpador, no de una preferencia:
+    el palpador, no de una preferencia. Con flexura metalica (zeta = 0.005):
 
         a_despegue   masa     f0      separacion    (margen 1,4)
-            48 g     2,14 g    600 Hz      x3,2
-            70 g     1,45 g    800 Hz      x6,0
-            97 g     1,05 g   1000 Hz      x9,9
-           139 g     0,73 g   1273 Hz     x14,1
-           200 g     0,51 g   1600 Hz     x16,0
-           287 g     0,36 g   2000 Hz     x16,9     <- optimo teorico
+            25 g     4,06 g    600 Hz      x91
+            44 g     2,30 g    800 Hz     x119
+            69 g     1,49 g   1000 Hz     x139
+           110 g     0,93 g   1273 Hz     x150     <- OPTIMO
+           192 g     0,53 g   1600 Hz     x114
+           330 g     0,31 g   2000 Hz      x80
 
-    El diseño propuesto toma la fila de 1273 Hz y redondea la masa para
-    abajo, a 0,68 g, lo que sube el margen a 1,51 y el despegue a 150 g.
-    Los 150 g del enunciado caen solos: son F/m de la masa mas chica que se
-    puede construir, no un numero elegido.
+    CON EL AMORTIGUAMIENTO REAL EL OPTIMO SE CORRE A ~1.3 kHz, justo donde ya
+    estaba el diseño. Con el zeta pesimista de la rev. C (0.08) el optimo
+    parecia estar en 2 kHz y valer solo x17; con flexura vale x150 y esta en
+    1273 Hz. El diseño no cambia de numeros: mejora 10x y queda confirmado.
 
-    Con 0,68 g (acelerometro 0,03 g + vastago + flexura, construible) se
-    llega a 14,1 de 16,9 alcanzables: el 83 % del maximo. Ir mas liviano
-    rinde poco y cuesta mucho; ir mas pesado cuesta caro (a 1,45 g la
-    separacion se desploma a x6).
+    El diseño propuesto toma esa fila y redondea la masa a 0,68 g, lo que
+    sube el margen a 1,91 y el despegue a 150 g. Los 150 g del enunciado caen
+    solos: son F/m de la masa mas chica que se puede construir.
 
-    Y el otro camino: SUBIR LA PRECARGA. a_despegue = F/m, asi que 2 N con la
-    misma masa de 0,68 g dan 300 g y habilitan f0 = 2000-2500 Hz. Compra
-    x14,1 -> x16,9, un 20 %. No vale la pena pelear por el segundo newton.
+    Y el otro camino, SUBIR LA PRECARGA, ahora rinde todavia menos: a 1273 Hz
+    ya estamos en el optimo, asi que el segundo newton no compra separacion,
+    solo margen contra el despegue. No hace falta.
     """
+    table = F0_SWEEP_FLEXURA if zeta <= 0.02 else F0_SWEEP
     out = []
-    for f0, a_max, sep, _ in F0_SWEEP:
+    for f0, a_max, sep in table:
         m = preload / (margin * a_max * G)
         out.append({"f0_Hz": f0, "a_max_leida_g": a_max, "separacion": sep,
                     "m_max_g": m * 1e3, "a_despegue_g": preload / m / G,

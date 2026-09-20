@@ -172,3 +172,55 @@ La separación crece con f₀ hasta ~2 kHz, pero la lectura crece más rápido (
 y obliga a bajar la masa. Con 0,68 g —lo más liviano construible— se llega a ×14,1 de
 ×16,9 alcanzables: 83 % del máximo. Subir la precarga a 2 N compraría ×16,9, un 20 %:
 no vale la pena pelear por el segundo newton.
+
+## Rev. E — 2026-09-20: el amortiguamiento manda, y el diseño queda confirmado
+
+Barrido de ζ del acople con m = 0,68 g, f₀ = 1273 Hz, 1 N. Es **el parámetro más
+sensible de todo el diseño**, por lejos:
+
+| ζ | a_max [g] | separación | ring-down al 1 % |
+|---|---|---|---|
+| 0,002 | 78,5 | ×155 | 288 ms |
+| **0,005** (flexura de acero) | **78,4** | **×150** | 115 ms |
+| 0,010 | 78,4 | ×140 | 58 ms |
+| 0,020 | 78,8 | ×112 | 29 ms |
+| 0,050 | 86,6 | ×40 | 12 ms |
+| 0,080 (lo que suponía la rev. C) | 99,6 | ×14 | 7 ms |
+| 0,150 (elastómero blando) | 135,6 | ×3 | 4 ms |
+| 0,300 | 215,7 | ×0,7 | 2 ms — y **despega** |
+
+«Flexura metálica y no elastómero» deja de ser una recomendación de segundo orden y
+pasa a ser **LA decisión de construcción**: entre ζ = 0,005 y ζ = 0,15 el ensayo va de
+excelente a inservible sin que cambie ningún otro número.
+
+### Consecuencias
+
+1. **Todo lo que reportó la rev. C está calculado con ζ = 0,08, una suposición
+   pesimista.** Los números reales de una flexura de acero son ~10× mejores: la
+   separación asentada|suelta no es ×14 sino **×150**.
+2. **El óptimo de f₀ se corre de 2 kHz a 1,3 kHz** — justo donde ya estaba el diseño.
+   Con ζ = 0,08 parecía que convenía subir f₀ y que 1273 Hz dejaba un 17 % sobre la
+   mesa; con ζ real, 1273 Hz *es* el óptimo.
+
+| f₀ | a_max | separación | masa máx. (1 N, margen 1,4) |
+|---|---|---|---|
+| 600 Hz | 17,9 g | ×91 | 4,06 g |
+| 1000 Hz | 49,0 g | ×139 | 1,49 g |
+| **1273 Hz** | **78,4 g** | **×150** | **0,93 g** |
+| 1600 Hz | 137,5 g | ×114 | 0,53 g |
+| 2000 Hz | 235,4 g | ×80 | 0,31 g |
+
+3. **El margen contra el despegue mejora**: el pico leído baja de 99,6 a 78,4 g, así que
+   con 0,68 g el margen sube de 1,51 a **1,91**.
+4. El segundo newton de precarga ya no compra nada de separación (estamos en el óptimo),
+   sólo margen. Confirma que el límite de 1 N no es el que manda.
+
+Agregado `ZETA_SWEEP` y `design_space(zeta=...)` en `wtd/softprobe.py`; el default de
+`SoftProbe.zeta` pasa de 0,08 a 0,005. Docstring del módulo unificado: tenía la
+explicación vieja (cambio de régimen para medir desplazamiento) conviviendo con la
+corregida (pasa-bajos discriminante).
+
+### Pendiente de banco
+
+`ζ` es ahora el primer número a medir sobre el palpador construido, antes que f₀ y que
+la ganancia. Se mide con un ping y la tasa de decaimiento.
