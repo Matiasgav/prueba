@@ -29,11 +29,12 @@ wtd/                 paquete de modelado (numpy + scipy, nada más)
   catalog.py         catálogo de 14 arquitecturas con números
   sensing.py         sensor inductivo, acelerómetro, micrófono, adquisición
   palpator.py        palpador con masa y precarga: f0 de contacto y despegue
+  softprobe.py       palpador de acople blando para 1 N de precarga
   charger.py         la máquina que carga un acumulador, y cuánto volumen come
   montecarlo.py      presupuesto de repetibilidad
   reliability.py     vida, desgaste, retroceso, AMFE
 
-tests/               19 casos ancla del brief §9
+tests/               19 casos ancla del brief §9 + 8 del palpador blando
 studies/             corredor de estudios y constructor del informe
 results/             salidas en JSON (las que consume el HTML)
 docs/                informe HTML interactivo
@@ -43,8 +44,9 @@ docs/                informe HTML interactivo
 
 ```bash
 pip install numpy scipy pytest
-python3 -m pytest                 # 19 casos ancla
+python3 -m pytest                 # 27 casos ancla
 python3 studies/run_all.py        # todos los estudios -> results/*.json
+python3 studies/soft_probe.py     # palpador blando -> results/softprobe.json
 python3 studies/build_report.py   # regenera docs/index.html
 ```
 
@@ -109,6 +111,14 @@ t_c) y MEMS de 0,05 g con 0,5 N de precarga como palpador sobre la cuña, a 10 m
 9. **El retroceso es un problema estructural, no de adherencia.** El impulso transferido es
    4,6 mN·s: 2,3 mm/s en un crawler de 2 kg, que un imán de 50 N frena en 92 µs recorriendo
    0,1 µm. Lo que hay que dimensionar son los 371 N de pico sobre el montaje.
+10. **Con 1 N de precarga hay que ablandar el acople, no achicar la masa** (rev. C,
+    `wtd/softprobe.py`). El fondo de escala de cualquier palpador apoyado vale F/m y no
+    depende del resorte; lo que decide el resorte es en qué se gasta. Con acople rígido se
+    gasta en los picos de aceleración de alta frecuencia, que además **no son monótonos con
+    la soltura** (S3 al 25 % da 4855 g y S6 floja 1069 g). Con un acople de 45 N/mm sobre
+    0,68 g (f0 = 1,27 kHz) el palpador pasa a medir desplazamiento, que sí es monótono:
+    126 casos simulados sin un solo despegue, lectura de 0,9 a 109 g, y ganancia insensible
+    a la precarga (0,7 % entre 0,5 y 1,5 N).
 
 ## Incógnitas y correcciones al informe previo
 
