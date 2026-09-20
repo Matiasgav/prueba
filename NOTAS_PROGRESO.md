@@ -401,3 +401,5 @@ banco le sirve a algún bloque.
   pendientes.
 - README: el resultado 10 seguía diciendo que el palpador «pasa a medir desplazamiento»
   (el mecanismo viejo). Ahora dice pasa-bajos discriminante.
+
+Publicado en https://claude.ai/artifact/XpcvS45VapBXWZUqwFvvpP
