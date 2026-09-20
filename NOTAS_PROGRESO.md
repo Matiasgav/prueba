@@ -224,3 +224,58 @@ corregida (pasa-bajos discriminante).
 
 `ζ` es ahora el primer número a medir sobre el palpador construido, antes que f₀ y que
 la ganancia. Se mide con un ping y la tasa de decaimiento.
+
+## Rev. F — 2026-09-20: el «125 Hz» era un artefacto, y el filtro separa entero
+
+Con resolución de 25 Hz (ventana de 40 ms) en vez de 125 Hz (8 ms), el espectro del
+**desplazamiento** de la cuña —que es lo que excita al palpador— queda así:
+
+| estado | pico | 90 % de la energía | por debajo de f₀ del palpador |
+|---|---|---|---|
+| S0 ajustada | 33 350 Hz | 33 325 – 33 375 Hz | **0,0 %** |
+| S3 · 25 % | 33 075 Hz | 13 375 – 34 625 Hz | 1,5 % |
+| S6 floja | 50 Hz | 50 – 225 Hz | **100,0 %** |
+
+Los «125 Hz» de la rev. D eran literalmente el primer bin de la ventana corta. La cifra
+correcta es 50–225 Hz, y el factor entre picos es ~670, no 270.
+
+**El resultado es más fuerte de lo que parecía:** la cuña asentada entrega el 0 % de su
+energía por debajo del corte y la suelta el 100 %. El filtro no las atenúa distinto — las
+separa enteras. Anclado en `test_el_filtro_separa_las_dos_bandas_enteras`.
+
+Ojo con la distinción: el espectro de la **aceleración** da otra cosa (pesa las altas por
+ω⁴ y el 90 % de S6 se extiende hasta 18 kHz). El que importa para el filtrado es el del
+desplazamiento.
+
+### Diseño de detalle del palpador (para banco)
+
+- **Flexura:** 2 láminas de acero de resorte de 5 × 0,30 mm, luz 27,1 mm, empotradas en
+  ambos extremos con la masa al centro. k = 43,5 N/mm, tensión máxima 23 MPa contra
+  ~1000 MPa de límite elástico → **vida infinita, sin cálculo de fatiga**.
+- **Presupuesto de masa:** 0,490 g de piezas (acelerómetro 0,100 + vástago 0,083 + punta
+  0,020 + masa efectiva de las láminas 0,237 + adhesivo 0,050). Quedan **0,19 g para el
+  cable** contra el objetivo de 0,68 g, y 0,44 g contra el máximo de 0,93 g.
+- **El diseño es indulgente con la masa:** a 0,93 g, f₀ baja a 1089 Hz y la separación
+  pasa de ×150 a ×139. No vale la pena perseguir el gramo.
+- **Cuerpo del palpador ≥ 7 g** (10× la masa móvil): con un cuerpo de sólo 3× la masa
+  móvil el efecto de masa reducida corre f₀ un 15 %.
+- **Resorte de precarga separado de la flexura**, 0,5 N/mm comprimido 2 mm. Da ±0,4 mm de
+  tolerancia de posicionamiento para ±20 % de precarga — que además casi no afecta la
+  ganancia. Es 85× más blando que la flexura, así que no ensucia la dinámica.
+- **Ritmo máximo de disparo ~8 tiros/s**: con ζ = 0,005 el palpador tarda 115 ms en
+  apagarse al 1 %.
+
+### Protocolo de banco
+
+Cuatro ensayos, ordenados por cuánto ahorran si fallan:
+
+- **A** — verificar el hueco espectral con un acelerómetro de choque pegado (≥50 kHz,
+  ±5000 g, 200 kS/s). No necesita palpador y puede invalidar todo el enfoque. Mide
+  además la rigidez del hombro, que sigue siendo la incógnita nº 1 del proyecto.
+- **B** — ping test sobre el palpador construido: da ζ y f₀ de una sola medición.
+  Criterio: ζ ≤ 0,02.
+- **C** — palpador contra referencia sobre la ranura de prueba, barriendo precarga.
+  Criterio: separación > ×100 con el salto entre 25 % y 5 %.
+- **D** — insensibilidad a la precarga, umbral de despegue, repetibilidad, orientación.
+
+Publicado en https://claude.ai/artifact/6M9VJaZK7TU8tyFQoRBuT5

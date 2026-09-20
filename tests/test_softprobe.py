@@ -190,3 +190,31 @@ def test_el_amortiguamiento_es_el_parametro_dominante():
         assert b < a
     # el pico leído casi no se mueve mientras zeta se mantenga bajo
     assert by[0.002][0] == pytest.approx(by[0.020][0], rel=0.01)
+
+
+def test_el_filtro_separa_las_dos_bandas_enteras():
+    """0 % de la cuña asentada por debajo del corte; 100 % de la suelta.
+
+    Medido sobre el espectro del DESPLAZAMIENTO (que es lo que excita al
+    palpador) con resolución de 25 Hz. Una versión anterior reportaba
+    "125 Hz" para la cuña floja: era el primer bin de una ventana de 8 ms.
+    """
+    import numpy as np
+    from wtd.wedge import WedgeSpec, standard_states
+    from wtd.impact_sim import HammerSpec, SimConfig, simulate
+
+    w, ham = WedgeSpec(), HammerSpec(mass=4e-3)
+    frac = {}
+    for idx, nm in ((0, "S0"), (6, "S6")):
+        r = simulate(w, standard_states()[idx], ham, 1.58,
+                     SimConfig(x_palpator=12.5e-3, t_end=40e-3))
+        dt, n = r["dt_rec"], len(r["w_palp"])
+        sig = (r["w_palp"] - r["w_palp"].mean()) * np.hanning(n)
+        P = np.abs(np.fft.rfft(sig))
+        f = np.fft.rfftfreq(n, dt)
+        m = f >= 40
+        E = np.cumsum(P[m] ** 2)
+        E /= E[-1]
+        frac[nm] = float(E[int(np.searchsorted(f[m], 1273.0))])
+    assert frac["S0"] < 0.001      # la asentada no le entrega nada al filtro
+    assert frac["S6"] > 0.999      # la suelta le entrega todo

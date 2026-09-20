@@ -18,7 +18,7 @@ LA SALIDA: BAJAR LA FRECUENCIA DE ACOPLE, NO LA MASA
 
 Si entre la punta y la masa movil se pone un resorte BLANDO, el conjunto se
 vuelve un PASA-BAJOS de segundo orden con corte en su resonancia f0. Como la
-cuña asentada responde a ~33 kHz y la suelta a ~125 Hz (ver mas abajo), un
+cuña asentada responde a ~33 kHz y la suelta a 50-225 Hz (ver mas abajo), un
 corte plantado en el medio rechaza a una y deja pasar a la otra. Eso, y no
 otra cosa, es lo que separa los estados.
 
@@ -92,10 +92,21 @@ reemplazo por apoyo DISTRIBUIDO tras el dato de campo del usuario. Con el
 modelo vigente, medido sobre el espectro de la simulacion no lineal a
 12.5 mm y 5 mJ:
 
-    estado              pico espectral   reparto de la energia
-    S0 ajustada             33 375 Hz     100 % en 28-45 kHz
-    S2 50 %                              88 % en 0.1-0.8 kHz, 12 % en 33 kHz
-    S3 25 % a S6 floja        125 Hz     ~100 % en 0.1-0.8 kHz
+    estado          pico   90 % de la energia   por debajo de f0
+                                                  del palpador
+    S0 ajustada   33 350 Hz   33 325 - 33 375 Hz        0.0 %
+    S3 25 %       33 075 Hz   13 375 - 34 625 Hz         1.5 %
+    S6 floja          50 Hz       50 -    225 Hz       100.0 %
+
+(Espectro del DESPLAZAMIENTO, que es lo que excita al palpador; el de la
+aceleracion pesa las altas por omega^4 y da otra cosa. Resolucion 25 Hz,
+ventana de 40 ms: una version anterior de esta tabla decia "125 Hz" para la
+cuña floja, que era literalmente el primer bin de una ventana de 8 ms.)
+
+El resultado es mas fuerte de lo que parecia: la cuña asentada pone el 0 % de
+su energia por debajo del corte del palpador y la suelta pone el 100 %. No es
+que el filtro "atenue bastante" a una y "deje pasar bastante" a la otra: las
+separa enteras.
 
 El modelo linealizado lo confirma: con el hombro CERRADO los cuatro primeros
 modos estan en 32.9 / 33.4 / 33.6 / 40.0 kHz (la cuña acoplada al nucleo en
@@ -103,13 +114,13 @@ toda su longitud es altisimamente impedante); con el hombro ABIERTO, solo
 sobre el ripple, quedan 1.28 / 1.29 kHz (los dos modos de cuerpo rigido
 montados en el resorte) y recien despues 10.6 y 24.9 kHz de flexion.
 
-O SEA QUE LA FRECUENCIA SUBE CON EL APRIETE, y muchisimo: entre asentada y
-suelta hay un factor ~270. Esa separacion es el verdadero fundamento del
+O SEA QUE LA FRECUENCIA SUBE CON EL APRIETE, y muchisimo: entre los picos de
+asentada y suelta hay un factor ~670 (33.4 kHz contra 50 Hz). Esa separacion es el verdadero fundamento del
 metodo, y es mucho mas robusta de lo que suponia el argumento viejo:
 
   * la cuña ASENTADA pone toda su energia a 33 kHz, muy por encima de la
     resonancia del palpador, que la rechaza como 1/r^2 (~1/400);
-  * la cuña SUELTA hace una excursion lenta y grande (125 Hz, ~7 um) que
+  * la cuña SUELTA hace una excursion lenta y grande (50-225 Hz, ~7 um) que
     para el palpador es practicamente un escalon: lo excita y lo deja
     sonando a SU propia frecuencia.
 
