@@ -297,17 +297,39 @@ def probe_features(a: np.ndarray, dt: float) -> dict:
     mejor lectura no es el pico sino la ENERGIA DE LA SEÑAL:
 
         estado        pico [g]   int a^2 [g^2 ms]     (E_golpe = 3 mJ)
-        S0 ajustada      4.95          13.8
-        S2 50 %          4.63           0.59
-        S3 25 %         19.1           17.5
-        S4 residual     63.6          670
-        S6 floja        63.5         1270
+        S0 ajustada      3.48          7.36
+        S2 50 %          3.16          0.263
+        S3 25 %         14.5           8.52
+        S4 residual     40.3         188
+        S6 floja        39.8         535
 
-        separacion ajustada|floja:   x13.7 con el pico,  x38 con la energia
+        separacion ajustada|floja:   x11.4 con el pico,  x25.5 con la energia
+
+    Sobre las seis energias de golpe ensayadas la separacion va de x14 a x36
+    con la energia de la señal y de x1.6 a x11.8 con el pico.
 
     Integrar en vez de picar tiene ademas la ventaja practica de siempre:
     promedia el ruido en lugar de perseguir una sola muestra, y no depende
     de acertarle al instante del pico.
+
+    LA ENERGIA DEL GOLPE TIENE OPTIMO, Y NO ES EL MINIMO
+
+    Las dos lecturas no piden lo mismo:
+
+      * el PICO se degrada monotonamente al subir la energia (x11.8 a 2 mJ,
+        x1.6 a 12 mJ): ahi conviene pegar lo mas flojo que permita el ruido;
+      * la ENERGIA DE LA SEÑAL tiene un maximo ancho en 3-5 mJ (x25 a x36) y
+        cae a x23 en 1 mJ y a x14 en 12 mJ.
+
+    El limite de arriba es el conocido (con el golpe fuerte hasta la cuña
+    ajustada despega del hombro y todos los estados se parecen). El de abajo
+    es distinto: a 1 mJ la cuña ajustada S0 devuelve mas señal que S1 y S2,
+    la escalera deja de ordenar en el extremo apretado y es S0 el que limita
+    la separacion del grupo.
+
+    Si en cambio lo que se quiere es resolver FINO la frontera S3|S4 (25 %
+    contra 5 % de precarga), ahi si conviene lo mas flojo posible: el salto
+    S3->S4 vale x459 a 1 mJ y x7.2 a 12 mJ.
     """
     a = np.asarray(a, dtype=float)
     return {

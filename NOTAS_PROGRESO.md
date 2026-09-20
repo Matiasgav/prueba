@@ -91,12 +91,17 @@ Módulo nuevo `wtd/softprobe.py`, estudio `studies/soft_probe.py`, resultados en
    así que la lectura es un valor de espectro de respuesta al choque a f0 y **hay que
    calibrarla**; no se invierte con fórmula cerrada.
 6. **La mejor lectura es la energía de la señal (∫a²dt), no el pico.** Separación entre
-   el grupo asentado (S0–S2) y el suelto (S4–S6): ×16 a ×69 con la energía, ×1,8 a
-   ×12,8 con el pico.
-7. **Conviene golpear flojo, no fuerte.** La separación se degrada al subir la energía
-   del golpe: a 1 mJ el salto S3→S4 es ×560, a 12 mJ es ×8,7. Con energía alta hasta la
-   cuña ajustada despega del hombro y todas se parecen. Invierte el instinto de pegar
-   más fuerte para tener más señal.
+   el grupo asentado (S0–S2) y el suelto (S4–S6), sobre las seis energías de golpe:
+   **×14 a ×36 con la energía de la señal, ×1,6 a ×11,8 con el pico**.
+7. **La energía del golpe tiene óptimo, y no es el mínimo.** Las dos lecturas no piden
+   lo mismo: el pico se degrada monótonamente al subir la energía (×11,8 a 2 mJ, ×1,6 a
+   12 mJ), mientras que la energía de la señal tiene un máximo ancho en **3–5 mJ**
+   (×25 a ×36) y cae a ×23 en 1 mJ y a ×14 en 12 mJ. El límite de arriba es el ya
+   conocido de la rev. A (con el golpe fuerte hasta la cuña ajustada despega del hombro).
+   El de abajo es nuevo: a 1 mJ la cuña ajustada S0 devuelve más señal que S1 y S2, la
+   escalera deja de ordenar en el extremo apretado y es S0 el que limita la separación.
+   Para resolver fino la frontera S3|S4 sí conviene lo más flojo posible: ese salto vale
+   ×459 a 1 mJ y ×7,2 a 12 mJ.
 
 ### Límites y pendientes de la rev. C
 
