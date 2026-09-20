@@ -240,6 +240,43 @@ class SoftProbe:
 # Sintesis: de la especificacion al resorte
 # --------------------------------------------------------------------------
 
+# LAS DOS FLEXURAS HACEN TRABAJOS DISTINTOS Y NO COMPITEN
+#
+# La de MEDICION va en SERIE, en el camino de carga cuña -> punta -> carro.
+# Es la que filtra, y su rigidez NO se elige: sale de k = m * omega_0^2, con m
+# fijada por el despegue (F/m) y omega_0 por donde tiene que caer el corte.
+# Cero grados de libertad.
+#
+# La de PRECARGA va en PARALELO, colgando del carro contra el cuerpo. No divide
+# el movimiento: solo SUMA rigidez. Por eso pueden diferir 85x sin estorbarse.
+#
+#   contacto de Hertz punta/cuña   1636 N/mm    2.6 % de la flexibilidad en serie
+#   flexura de MEDICION              43.5 N/mm  97.4 %
+#   flexura de PRECARGA               0.5 N/mm  en paralelo, +1.1 % sobre k
+#
+# CUANTO IMPORTA LA RIGIDEZ DE PRECARGA: MUCHO MENOS DE LO QUE PARECE.
+# Barrido con todo lo demas fijo (m = 0.68 g, 1 N, zeta = 0.005):
+#
+#     k_p [N/mm]   f0 [Hz]   separacion   recorrido   tolerancia +-20 %
+#        0.1        1274       x150        10.0 mm        +-2.00 mm
+#        0.5        1280       x148         2.0 mm        +-0.40 mm   <- elegida
+#        2.0        1302       x143         0.5 mm        +-0.10 mm
+#        5.0        1344       x140         0.2 mm        +-0.04 mm
+#       20.0        1538       x121        0.05 mm        +-0.01 mm
+#
+# Subir k_p 200 veces cuesta solo un 20 % de separacion. Lo que se desploma es
+# la TOLERANCIA DE POSICIONAMIENTO del crawler, que cae de +-2 mm a +-0.01 mm.
+#
+# O sea que el factor 85 NO sale de mantener limpia la medicion, como decia una
+# version anterior de esta nota: sale de cuanto puede errarle el brazo al
+# estacionar. La regla de diseño correcta es elegir k_p por la tolerancia que
+# hace falta y despues verificar que no sea una fraccion grande de 43.5 N/mm.
+PRELOAD_SWEEP = [   # k_p [N/mm], f0 [Hz], separacion, tolerancia +-20 % [mm]
+    (0.1, 1274, 149.8, 2.00), (0.2, 1276, 149.3, 1.00), (0.5, 1280, 148.1, 0.40),
+    (1.0, 1287, 146.1, 0.20), (2.0, 1302, 143.0, 0.10), (5.0, 1344, 140.3, 0.04),
+    (10.0, 1412, 135.9, 0.02), (20.0, 1538, 120.6, 0.01),
+]
+
 # EL AMORTIGUAMIENTO DEL ACOPLE ES EL PARAMETRO MAS SENSIBLE DE TODO EL DISEÑO.
 # Barrido con m = 0.68 g, f0 = 1273 Hz, 1 N (studies/soft_probe.py):
 #

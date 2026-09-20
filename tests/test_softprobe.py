@@ -257,3 +257,26 @@ def test_la_masa_de_punta_no_cambia_la_lectura_pero_adelanta_el_despegue():
     assert o["a_pico_palpador_g"] == pytest.approx(150.0, rel=0.01)
     # y la cota teórica cae donde debe
     assert 15.0 < base["m_punta_max_mg"] < 30.0
+
+
+def test_la_rigidez_de_precarga_la_fija_el_posicionamiento_no_la_medicion():
+    """Las dos flexuras no compiten: una va en serie y la otra en paralelo.
+
+    Subir la rigidez de precarga 200× cuesta sólo un 20 % de separación, pero
+    la tolerancia de posicionamiento cae de ±2 mm a ±0,01 mm. El factor 85
+    entre las dos no sale de mantener limpia la medición: sale de cuánto
+    puede errarle el brazo del crawler al estacionar.
+    """
+    from wtd.softprobe import PRELOAD_SWEEP
+    kp = {r[0]: r for r in PRELOAD_SWEEP}
+    # la medición casi no se entera
+    assert kp[20.0][2] / kp[0.1][2] > 0.75
+    # el posicionamiento sí
+    assert kp[0.1][3] / kp[20.0][3] == pytest.approx(200.0, rel=0.05)
+    # la elegida da una tolerancia que un brazo puede sostener
+    assert kp[0.5][3] >= 0.4
+    # y suma poco a la rigidez que fija f0
+    assert 0.5 / 43.5 < 0.02
+    # monotonía: más rígida, peor separación y menos tolerancia
+    for a, b in zip(PRELOAD_SWEEP, PRELOAD_SWEEP[1:]):
+        assert b[2] < a[2] and b[3] < a[3]
