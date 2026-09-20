@@ -116,3 +116,59 @@ Módulo nuevo `wtd/softprobe.py`, estudio `studies/soft_probe.py`, resultados en
 - Falta cerrar la cadena con el sensor inductivo del proyectil: la clasificación usa la
   energía del golpe como covariable y todavía no está hecho el clasificador conjunto.
 - No se modeló el montaje del palpador en el crawler ni su propia dinámica de brazo.
+
+## Rev. D — 2026-09-20: corrección del mecanismo y espacio de diseño
+
+### Error encontrado: el «primer modo de la cuña está en 6,1 kHz» es falso
+
+La rev. C construía el argumento del acople blando sobre esa frecuencia. Los 6094 Hz
+salen del modelo de apoyo en **extremos**, que la rev. B ya había reemplazado por apoyo
+**distribuido** tras el dato de campo del usuario. Medido sobre el espectro de la
+simulación vigente (12,5 mm, 5 mJ):
+
+| estado | pico espectral | reparto de energía |
+|---|---|---|
+| S0 ajustada | 33 375 Hz | 100 % en 28–45 kHz |
+| S2 · 50 % | — | 88 % en 0,1–0,8 kHz, 12 % en 33 kHz |
+| S3 a S6 | 125 Hz | ~100 % en 0,1–0,8 kHz |
+
+Modelo linealizado: hombro **cerrado** → 32,9 / 33,4 / 33,6 / 40,0 kHz; hombro
+**abierto** (sólo ripple) → 1,28 / 1,29 kHz (los dos modos de cuerpo rígido sobre el
+resorte) y recién después 10,6 y 24,9 kHz de flexión. Viga libre-libre pura: 0, 0,
+10,6, 24,9, 41,4 kHz.
+
+**La frecuencia sube con el apriete, factor ~270 entre asentada y suelta.** Eso es el
+verdadero fundamento del método, y es más robusto que el argumento viejo: el palpador
+planta su f₀ en el hueco entre los dos estados. Es un **pasa-bajos discriminante** —
+la intuición original del usuario — y no un cambio de régimen para medir desplazamiento.
+
+Corregido en `wtd/softprobe.py`. **Pendiente: el mismo 6094 Hz aparece en
+`wtd/palpator.py:13`, `wtd/sensing.py:172` y `studies/run_all.py:308,312`
+(ring_down y microphone_spec), y en `README.md:130`.** Son análisis de la rev. A que no
+revisé; hay que verificar si sus conclusiones sobreviven al cambio de modelo.
+
+### La deriva de cuerpo rígido resultó despreciable
+
+Se midió: la posición media al final del transitorio vale 0,00–0,01 µm contra picos de
+0,3 a 6,9 µm, o sea <0,2 % en los tres estados probados. El ripple reasienta la cuña.
+El caveat de la rev. C queda rebajado a un efecto real que este modelo no reproduce
+(una cuña que migre axialmente tiro a tiro), no a una limitación de la medición.
+
+### Los 150 g de despegue son una consecuencia, no una elección
+
+`design_space()` en `wtd/softprobe.py`. Los dos parámetros son independientes: **f₀
+decide la calidad de la medición, la masa decide si sobrevivís**. La lectura pico y la
+separación resultaron función de f₀ sola, no de la masa.
+
+| a_despegue | masa | f₀ | separación |
+|---|---|---|---|
+| 48 g | 2,14 g | 600 Hz | ×3,2 |
+| 97 g | 1,05 g | 1000 Hz | ×9,9 |
+| 139 g | 0,73 g | 1273 Hz | ×14,1 |
+| 200 g | 0,51 g | 1600 Hz | ×16,0 |
+| 287 g | 0,36 g | 2000 Hz | ×16,9 (óptimo) |
+
+La separación crece con f₀ hasta ~2 kHz, pero la lectura crece más rápido (a_max ~ f₀^1,7)
+y obliga a bajar la masa. Con 0,68 g —lo más liviano construible— se llega a ×14,1 de
+×16,9 alcanzables: 83 % del máximo. Subir la precarga a 2 N compraría ×16,9, un 20 %:
+no vale la pena pelear por el segundo newton.

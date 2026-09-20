@@ -127,3 +127,38 @@ def test_design_rechaza_lo_imposible():
     with pytest.raises(ValueError):
         design(preload=1.0, a_liftoff_g=150.0, x_wedge_max=1e-9,
                a_full_scale_g=100.0)
+
+
+def test_frecuencia_sube_con_el_apriete():
+    """La cuña asentada es MUCHO mas rapida que la suelta, no mas lenta.
+
+    Corrige el 6.1 kHz que arrastraba el modelo de apoyo en extremos: con
+    apoyo distribuido, el hombro cerrado pone el primer modo en ~33 kHz, y
+    con el hombro abierto quedan los dos modos de cuerpo rigido sobre el
+    ripple, en ~1.3 kHz. Factor ~26 entre los dos.
+    """
+    from wtd.wedge import WedgeModel, WedgeSpec, standard_states
+    m = WedgeModel(WedgeSpec(), standard_states()[0], n_modes=8)
+    b = m.bounding_frequencies(4)
+    assert b["seated_Hz"][0] == pytest.approx(32874, rel=0.02)
+    assert b["lifted_Hz"][0] == pytest.approx(1275, rel=0.02)
+    assert b["seated_Hz"][0] / b["lifted_Hz"][0] > 20
+
+
+def test_design_space_ordena_el_compromiso():
+    """f0 decide la calidad; la masa decide si sobrevivis. Son independientes."""
+    from wtd.softprobe import design_space
+    sp = design_space(preload=1.0, margin=1.4)
+    by = {r["f0_Hz"]: r for r in sp}
+    # la separacion crece hasta ~2 kHz y despues cae
+    assert by[600]["separacion"] < by[1273]["separacion"] < by[2000]["separacion"]
+    assert by[5000]["separacion"] < by[2000]["separacion"]
+    # subir f0 obliga a bajar la masa
+    for a, b in zip(sp, sp[1:]):
+        assert b["m_max_g"] < a["m_max_g"]
+    # el punto elegido: 0,68 g cae dentro de lo admisible a 1273 Hz
+    assert by[1273]["m_max_g"] > 0.68
+    assert by[1600]["m_max_g"] < 0.68
+    # duplicar la precarga duplica el techo de despegue
+    sp2 = design_space(preload=2.0, margin=1.4)
+    assert sp2[0]["m_max_g"] == pytest.approx(2 * sp[0]["m_max_g"], rel=1e-9)

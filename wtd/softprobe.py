@@ -83,13 +83,50 @@ y la no linealidad hertziana (F ~ d^1.5, y k_t ~ F^1/3) queda diluida a
 CALIBRABLE, que es lo que hace falta para que la lectura signifique una
 energia y no solo una alarma.
 
+DONDE ESTA REALMENTE LA SEÑAL  (corregido, sep 2026)
+
+Una version anterior de este modulo decia que el primer modo de la cuña
+asentada esta en 6.1 kHz y construia el argumento sobre eso. ESTA MAL: los
+6094 Hz salen del modelo de apoyo en EXTREMOS ('ends'), que la rev. B
+reemplazo por apoyo DISTRIBUIDO tras el dato de campo del usuario. Con el
+modelo vigente, medido sobre el espectro de la simulacion no lineal a
+12.5 mm y 5 mJ:
+
+    estado              pico espectral   reparto de la energia
+    S0 ajustada             33 375 Hz     100 % en 28-45 kHz
+    S2 50 %                              88 % en 0.1-0.8 kHz, 12 % en 33 kHz
+    S3 25 % a S6 floja        125 Hz     ~100 % en 0.1-0.8 kHz
+
+El modelo linealizado lo confirma: con el hombro CERRADO los cuatro primeros
+modos estan en 32.9 / 33.4 / 33.6 / 40.0 kHz (la cuña acoplada al nucleo en
+toda su longitud es altisimamente impedante); con el hombro ABIERTO, solo
+sobre el ripple, quedan 1.28 / 1.29 kHz (los dos modos de cuerpo rigido
+montados en el resorte) y recien despues 10.6 y 24.9 kHz de flexion.
+
+O SEA QUE LA FRECUENCIA SUBE CON EL APRIETE, y muchisimo: entre asentada y
+suelta hay un factor ~270. Esa separacion es el verdadero fundamento del
+metodo, y es mucho mas robusta de lo que suponia el argumento viejo:
+
+  * la cuña ASENTADA pone toda su energia a 33 kHz, muy por encima de la
+    resonancia del palpador, que la rechaza como 1/r^2 (~1/400);
+  * la cuña SUELTA hace una excursion lenta y grande (125 Hz, ~7 um) que
+    para el palpador es practicamente un escalon: lo excita y lo deja
+    sonando a SU propia frecuencia.
+
+El palpador es entonces un PASA-BAJOS DISCRIMINANTE, que es exactamente la
+intuicion original del usuario. Su f0 se planta en el hueco enorme que hay
+entre los dos estados, y por eso la eleccion de f0 no es critica: cualquier
+valor entre ~1 y ~2.5 kHz sirve (ver la tabla de `design_space` mas abajo).
+
 LIMITES DEL METODO
 
   * El palpador es ciego por debajo de su resonancia: ahi sigue a la cuña y
-    no comprime el resorte. Es un pasa-altos de 2do orden sobre el
-    desplazamiento. El primer modo de la cuña asentada esta en 6.1 kHz, muy
-    por encima de los ~2 kHz de acople, asi que la señal pasa; pero la
-    deriva de cuerpo rigido de la cuña suelta NO se mide.
+    no comprime el resorte. Importa menos de lo que parece, porque la
+    DERIVA de cuerpo rigido resulto despreciable en este modelo: tras el
+    golpe la cuña vuelve a su posicion (la posicion media al final vale
+    0.00-0.01 um contra picos de 0.3-6.9 um, o sea <0.2 %). El ripple la
+    reasienta. Queda como caveat para un efecto real que este modelo no
+    reproduce: una cuña que migre axialmente tiro a tiro.
   * El amortiguamiento del acople decide el rechazo de alta frecuencia:
     sin amortiguar cae como 1/r^2, muy amortiguado como 1/r. Conviene un
     resorte metalico (flexura) y NO un elastomero.
@@ -181,6 +218,66 @@ class SoftProbe:
 # --------------------------------------------------------------------------
 # Sintesis: de la especificacion al resorte
 # --------------------------------------------------------------------------
+
+# Barrido de f0 con la cuña simulada a 12.5 mm y 2/5/12 mJ (studies/soft_probe.py).
+# a_max y la separacion NO dependen de la masa: son funcion de f0 sola. La masa
+# solo fija el techo de despegue F/m. Por eso el diseño se hace en dos pasos
+# independientes: f0 elige la CALIDAD, m elige si SOBREVIVIS.
+#   f0 [Hz], a_max leida [g], separacion asentada|suelta, masa maxima con 1 N
+#   y margen 1.4 [g]
+F0_SWEEP = [
+    (400, 20.3, 1.5, 3.59), (600, 34.0, 3.2, 2.14), (800, 50.3, 6.0, 1.45),
+    (1000, 69.2, 9.9, 1.05), (1273, 99.6, 14.1, 0.73), (1600, 142.7, 16.0, 0.51),
+    (2000, 204.7, 16.9, 0.36), (2500, 295.2, 16.8, 0.25), (3200, 460.0, 15.6, 0.16),
+    (4000, 694.7, 13.9, 0.10), (5000, 1039.1, 12.7, 0.07), (6500, 1633.9, 10.8, 0.04),
+]
+
+
+def design_space(preload: float = 1.0, margin: float = 1.4) -> list[dict]:
+    """De que depende realmente el numero de despegue.
+
+    LOS 150 g NO SON UNA ELECCION LIBRE, SON UNA CONSECUENCIA.
+
+    La separacion mejora monotonamente con f0 hasta ~2 kHz (x1.5 en 400 Hz,
+    x14 en 1273, x17 en 2000) y despues se aplana. Pero subir f0 sube la
+    lectura mas rapido todavia (a_max ~ f0^1.7), y una lectura mas alta pide
+    una masa mas chica para no despegar. La cadena es:
+
+        f0 deseado -> a_max(f0) -> m <= F / (margen * a_max) -> a_despegue = F/m
+
+    o sea que el numero de despegue sale de que tan liviano se puede CONSTRUIR
+    el palpador, no de una preferencia:
+
+        a_despegue   masa     f0      separacion    (margen 1,4)
+            48 g     2,14 g    600 Hz      x3,2
+            70 g     1,45 g    800 Hz      x6,0
+            97 g     1,05 g   1000 Hz      x9,9
+           139 g     0,73 g   1273 Hz     x14,1
+           200 g     0,51 g   1600 Hz     x16,0
+           287 g     0,36 g   2000 Hz     x16,9     <- optimo teorico
+
+    El diseño propuesto toma la fila de 1273 Hz y redondea la masa para
+    abajo, a 0,68 g, lo que sube el margen a 1,51 y el despegue a 150 g.
+    Los 150 g del enunciado caen solos: son F/m de la masa mas chica que se
+    puede construir, no un numero elegido.
+
+    Con 0,68 g (acelerometro 0,03 g + vastago + flexura, construible) se
+    llega a 14,1 de 16,9 alcanzables: el 83 % del maximo. Ir mas liviano
+    rinde poco y cuesta mucho; ir mas pesado cuesta caro (a 1,45 g la
+    separacion se desploma a x6).
+
+    Y el otro camino: SUBIR LA PRECARGA. a_despegue = F/m, asi que 2 N con la
+    misma masa de 0,68 g dan 300 g y habilitan f0 = 2000-2500 Hz. Compra
+    x14,1 -> x16,9, un 20 %. No vale la pena pelear por el segundo newton.
+    """
+    out = []
+    for f0, a_max, sep, _ in F0_SWEEP:
+        m = preload / (margin * a_max * G)
+        out.append({"f0_Hz": f0, "a_max_leida_g": a_max, "separacion": sep,
+                    "m_max_g": m * 1e3, "a_despegue_g": preload / m / G,
+                    "k_N_mm": m * (2 * math.pi * f0) ** 2 * 1e-3})
+    return out
+
 
 def design(preload: float = 1.0, a_liftoff_g: float = 150.0,
            x_wedge_max: float = 7.5e-6, a_full_scale_g: float = 100.0,
@@ -287,10 +384,13 @@ def probe_features(a: np.ndarray, dt: float) -> dict:
     Se verifico por regresion contra 126 casos simulados: el pico leido NO
     es ni omega_n^2 x_cuña (regimen sismico puro, R2 = 0.92 pero 40 % de
     error mediano) ni omega_n v_cuña (regimen impulsivo, R2 = 0.84 y 26 %).
-    El palpador queda en la TRANSICION, porque la cuña no lo excita con un
-    impulso sino con una rafaga de ~2 ms a 6 kHz. La lectura es un valor de
-    espectro de respuesta al choque a f0, y por lo tanto hay que CALIBRARLA:
-    no se invierte a una magnitud fisica con una formula cerrada.
+    El palpador no queda en ninguno de los dos asintotas porque la cuña no
+    lo excita con un impulso limpio: la asentada le manda una portadora de
+    33 kHz (que el rechaza) y la suelta, una excursion lenta de 125 Hz que
+    para el es casi un escalon. En los dos casos el palpador termina
+    sonando a SU propia frecuencia, asi que la lectura es un valor de
+    espectro de respuesta al choque a f0, y por lo tanto hay que
+    CALIBRARLA: no se invierte a una magnitud fisica con formula cerrada.
 
     Eso no es un problema para el ensayo, porque lo que se pide no es el
     desplazamiento de la cuña sino separar asentada de suelta. Y para eso la
