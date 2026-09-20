@@ -6,6 +6,12 @@ con 5 mJ y mide, con dos canales independientes, si la cuña está ajustada o fl
 La pregunta que contesta es una sola: **¿esta cadena distingue una cuña floja de una ajustada, con
 cuánto margen, y de qué depende ese margen?**
 
+**Empezá por [`docs/MODELO.md`](docs/MODELO.md):** el modelo integrado en seis bloques, cada uno con
+su pregunta, sus entradas y salidas, su ecuación, sus hipótesis y cómo se verifica. Es la lectura
+estructural del trabajo; `NOTAS_PROGRESO.md` es la cronológica (cómo se llegó y qué se corrigió).
+La estructura está declarada en código en [`wtd/modelo.py`](wtd/modelo.py) — `python -m wtd.modelo`
+imprime la cadena entera y valida que cierre.
+
 **El informe completo, interactivo, está en [`docs/index.html`](docs/index.html).**
 
 ---
@@ -14,6 +20,7 @@ cuánto margen, y de qué depende ese margen?**
 
 ```
 wtd/                 paquete de modelado (numpy + scipy, nada más)
+  modelo.py          EL MODELO INTEGRADO: los seis bloques, su cadena y su validación
   materials.py       propiedades con trazabilidad V / E / ?
   hertz.py           contacto esfera-plano, umbrales de daño, shakedown
   beam.py            viga de Timoshenko FE con fundación y apoyos elásticos
@@ -30,21 +37,22 @@ wtd/                 paquete de modelado (numpy + scipy, nada más)
   sensing.py         sensor inductivo, acelerómetro, micrófono, adquisición
   palpator.py        palpador con masa y precarga: f0 de contacto y despegue
   softprobe.py       palpador de acople blando para 1 N de precarga
+  backemf.py         velocidad de la maza midiendo u e i del voice coil
   charger.py         la máquina que carga un acumulador, y cuánto volumen come
   montecarlo.py      presupuesto de repetibilidad
   reliability.py     vida, desgaste, retroceso, AMFE
 
-tests/               19 casos ancla del brief §9 + 8 del palpador blando
+tests/               54 anclas: brief §9, palpador blando, back-EMF, modelo integrado
 studies/             corredor de estudios y constructor del informe
 results/             salidas en JSON (las que consume el HTML)
-docs/                informe HTML interactivo
+docs/                MODELO.md (la puerta de entrada) + informe HTML interactivo
 ```
 
 ## Cómo correrlo
 
 ```bash
 pip install numpy scipy pytest
-python3 -m pytest                 # 27 casos ancla
+python3 -m pytest                 # 54 casos ancla
 python3 studies/run_all.py        # todos los estudios -> results/*.json
 python3 studies/soft_probe.py     # palpador blando -> results/softprobe.json
 python3 studies/build_report.py   # regenera docs/index.html
@@ -115,10 +123,12 @@ t_c) y MEMS de 0,05 g con 0,5 N de precarga como palpador sobre la cuña, a 10 m
     `wtd/softprobe.py`). El fondo de escala de cualquier palpador apoyado vale F/m y no
     depende del resorte; lo que decide el resorte es en qué se gasta. Con acople rígido se
     gasta en los picos de aceleración de alta frecuencia, que además **no son monótonos con
-    la soltura** (S3 al 25 % da 4855 g y S6 floja 1069 g). Con un acople de 45 N/mm sobre
-    0,68 g (f0 = 1,27 kHz) el palpador pasa a medir desplazamiento, que sí es monótono:
+    la soltura** (S3 al 25 % da 4855 g y S6 floja 1069 g). Con un acople de 43,5 N/mm sobre
+    0,68 g (f0 = 1,27 kHz) el palpador pasa a ser un **pasa-bajos discriminante**: planta su
+    corte en el hueco que hay entre los 33 kHz de la cuña asentada y los 50–225 Hz de la
+    suelta, y las separa enteras (0 % contra 100 % de la energía por debajo del corte).
     126 casos simulados sin un solo despegue, lectura de 0,9 a 109 g, y ganancia insensible
-    a la precarga (0,7 % entre 0,5 y 1,5 N).
+    a la precarga (0,7 % entre 0,5 y 1,5 N). Ver `docs/MODELO.md`, bloques B2 y B3.
 
 ## Incógnitas y correcciones al informe previo
 
@@ -126,8 +136,13 @@ t_c) y MEMS de 0,05 g con 0,5 N de precarga como palpador sobre la cuña, a 10 m
 - **Reconstruida** — incógnita #2: J_L compatible con barra de acero 3 × 8 mm (±1,1 %).
 - **Corregida** — §4.6: la fórmula cerrada de acoplamiento modal se rompe justo en la masa que
   ella misma recomienda; verificado contra simulación no lineal.
-- **Corregida** — §4.7: los 9376 Hz son el caso ideal empotrado; con un apoyo de cola de milano
-  realista de 5 mm la frecuencia es 6094 Hz.
+- **Corregida dos veces** — §4.7: los 9376 Hz son el caso ideal empotrado. La rev. A los corrigió
+  a 6094 Hz con un apoyo en **extremos** de 5 mm, y la rev. B reemplazó ese apoyo por el
+  **distribuido** que pide el dato de campo — con lo cual el 6094 Hz también quedó obsoleto. Con el
+  modelo vigente, el primer modo de la cuña asentada está en **32,9 kHz** y el de la suelta en
+  **1,28 kHz** (cuerpo rígido sobre el ripple): **la frecuencia sube con el apriete**. Los 6094 Hz
+  todavía aparecen en `wtd/palpator.py:13`, `wtd/sensing.py:172` y `studies/run_all.py:308,312`
+  (ring_down y microphone_spec): son análisis de la rev. A pendientes de revisar.
 - **Corregida por dato de campo** — el apoyo de la cuña se modelaba en dos puntos, y el índice
   Leeb salía creciente con la soltura. Con apoyo distribuido el signo se invierte y coincide con
   lo medido. Los dos modelos dan idéntico resultado en los estados flojos: difieren sólo en la

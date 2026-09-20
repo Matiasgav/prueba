@@ -343,3 +343,61 @@ del carro.
 La **resonancia parásita del lado punta** (20 mg sobre 43,5 N/mm ≈ 7,4 kHz) no está en el
 modelo, que trata la punta como masa pura sin grado de libertad propio. Cae entre las dos
 bandas de la cuña, así que en principio no molesta, pero hay que verificarlo.
+
+## Rev. H — 2026-09-20: el modelo integrado, por partes
+
+Pedido del usuario: «se está volviendo complejo; para entenderlo bien necesito que lo
+organicemos en un modelo integrado por partes bien definidas, bien explicado y cada parte
+bien explicada».
+
+El trabajo había crecido por capas y la única lectura posible era la cronológica (rev. A →
+G de este archivo), que cuenta **cómo se llegó** y por lo tanto arrastra todas las
+correcciones. Faltaba la lectura **estructural**.
+
+### Lo que se agregó
+
+- **`wtd/modelo.py`** — la cadena declarada como código: seis bloques, cada uno con su
+  pregunta, entradas, salidas (símbolo / valor / unidad / procedencia), ecuación,
+  explicación, hipótesis con su consecuencia si son falsas, anclas de pytest, ensayos de
+  banco y qué se cae si falla. Más `EXTERNAS` (lo que entra de afuera), `BANCO` (los cuatro
+  ensayos atados a la hipótesis que matan), `verificar_cadena()`, `resumen()` y `riesgos()`.
+- **`docs/MODELO.md`** — la versión narrativa, que es la puerta de entrada al repositorio.
+- **`tests/test_modelo.py`** — 8 anclas. Suite en **54 tests**.
+
+### La cadena
+
+```
+B1 la cuña se mueve → B2 se mueve en DOS BANDAS según el ajuste → B3 el palpador es un
+filtro que planta su corte en el medio → B4 la lectura integra esa energía → B5 el golpe
+que la excita se mide a sí mismo → B6 los dos números deciden
+```
+
+Seis bloques, 32 magnitudes. `verificar_cadena()` comprueba que **cierra**: ningún bloque
+consume un símbolo que nadie produce, ninguno queda sin verificación, y todo ensayo de
+banco le sirve a algún bloque.
+
+### Lo que la reorganización hizo visible
+
+1. **Hay exactamente un bloque abierto: B6**, el clasificador conjunto. Y no es un riesgo
+   — con ×112 de separación cualquier clasificador razonable alcanza; lo que falta son
+   datos de banco para ajustarlo.
+2. **Hay exactamente un bloque que puede tumbar todo: B2**, y por un solo parámetro,
+   `k_hombro`. El resto de las hipótesis estimadas degradan el diseño; ésta lo invalida.
+   `riesgos()` lo lista primero.
+3. **El orden de los ensayos de banco cae solo** de la estructura: A mata la hipótesis que
+   invalida el método y no necesita palpador; B mata la que arruina la medición y se hace
+   con un ping. No hay que argumentar la prioridad, se lee.
+4. **Los tests ahora atan el relato al código.** `test_los_valores_del_palpador_salen_del_
+   codigo_y_no_del_relato` recalcula B3 desde `softprobe.design()`, y
+   `test_el_corte_del_palpador_cae_dentro_del_hueco_de_la_cuña` verifica la desigualdad
+   `f_suelta < f0 < f_asentada` con más de un orden de magnitud de holgura a cada lado. Si
+   alguien cambia un número en un lado y no en el otro, falla.
+
+### Limpieza de arrastre
+
+- README: el «6094 Hz» quedaba como corrección vigente cuando la rev. B ya lo había
+  dejado obsoleto. Ahora dice las dos correcciones y nombra los tres archivos donde el
+  número sigue apareciendo (`palpator.py`, `sensing.py`, `run_all.py`), que siguen
+  pendientes.
+- README: el resultado 10 seguía diciendo que el palpador «pasa a medir desplazamiento»
+  (el mecanismo viejo). Ahora dice pasa-bajos discriminante.
