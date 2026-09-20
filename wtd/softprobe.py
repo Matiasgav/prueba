@@ -271,6 +271,52 @@ class SoftProbe:
 # version anterior de esta nota: sale de cuanto puede errarle el brazo al
 # estacionar. La regla de diseño correcta es elegir k_p por la tolerancia que
 # hace falta y despues verificar que no sea una fraccion grande de 43.5 N/mm.
+# EL AMORTIGUAMIENTO TIENE UN PISO, NO SOLO UN TECHO
+#
+# Bajarlo mejora la separacion, pero sube el Q = 1/(2 zeta), y en resonancia
+# el desplazamiento RELATIVO se amplifica por Q. El palpador despega cuando
+# ese relativo supera la flecha estatica F/k = 23 um, o sea cuando la cuña
+# vibra SOSTENIDAMENTE a f0 con amplitud
+#
+#     x_limite = (F/k) / Q = 2 * zeta * F / k
+#
+#     zeta      Q     x_limite   separacion   ring-down al 1 %
+#     0.005    100     0.23 um      x150          115 ms
+#     0.020     25     0.92 um      x112           29 ms   <- recomendado
+#     0.050     10     2.30 um       x40           12 ms
+#
+# (x_limite es la formula cerrada; el barrido en el tiempo la confirma
+#  bracketeandola: con zeta = 0.005, 0.1 um no despega y 0.25 um si.)
+#
+# Verificado en el tiempo: con zeta = 0.005 un seno sostenido de 0.25 um a
+# 1273 Hz ya lo despega. Parece fatal, pero NO lo es para el golpe, porque
+# llegar a Q pide ~Q ciclos y el transitorio del impacto dura ~1.3 ciclos de
+# f0. Con 1 um de amplitud: 5 ciclos no despega, 20 ciclos si.
+#
+# O sea que lo que protege es el TIEMPO DE CRECIMIENTO, y el margen es de
+# apenas ~16 ms. Por eso conviene zeta = 0.02 y no menos: cuesta x150 -> x112
+# de separacion y compra 4x de inmunidad, ademas de bajar el ring-down de
+# 115 a 29 ms (que es lo que fija el ritmo maximo de disparo).
+#
+# Fuentes de excitacion sostenida a vigilar: maquina girando, motores del
+# crawler, rebote del propio modulo de impacto, y el ring-down del tiro
+# anterior si el ritmo sube.
+RESONANCE_LIFTOFF = [   # zeta, Q, x_limite [um], separacion
+    (0.005, 100, 0.2299, 150.2), (0.020, 25, 0.9195, 112.2),
+    (0.050, 10, 2.2989, 39.5),
+]
+
+# EL LIMITE F/m ES DE UN SOLO LADO, Y HAY QUE COMPARAR CONTRA LA SEMIONDA
+# CORRECTA. Sobre los 126 casos con zeta = 0.02 y 1 N:
+#
+#     pico en COMPRESION   85.9 g   sin tope -> dimensiona el ACELEROMETRO
+#     pico en DESCARGA     73.5 g   tope F/m -> dimensiona el DESPEGUE
+#
+# El margen real es 150/73.5 = 2.04, no 150/85.9 = 1.75 como decia una nota
+# anterior: esa comparaba contra el pico de dos lados, que es conservador
+# pero no es la magnitud que manda.
+PEAK_SPLIT = {"compresion_g": 85.9, "descarga_g": 73.5, "margen": 2.04}
+
 PRELOAD_SWEEP = [   # k_p [N/mm], f0 [Hz], separacion, tolerancia +-20 % [mm]
     (0.1, 1274, 149.8, 2.00), (0.2, 1276, 149.3, 1.00), (0.5, 1280, 148.1, 0.40),
     (1.0, 1287, 146.1, 0.20), (2.0, 1302, 143.0, 0.10), (5.0, 1344, 140.3, 0.04),

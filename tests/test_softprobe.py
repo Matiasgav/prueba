@@ -280,3 +280,67 @@ def test_la_rigidez_de_precarga_la_fija_el_posicionamiento_no_la_medicion():
     # monotonía: más rígida, peor separación y menos tolerancia
     for a, b in zip(PRELOAD_SWEEP, PRELOAD_SWEEP[1:]):
         assert b[2] < a[2] and b[3] < a[3]
+
+
+def test_el_amortiguamiento_tiene_piso_no_solo_techo():
+    """Bajar ζ sube el Q, y en resonancia el relativo se amplifica por Q.
+
+    Con ζ = 0,005 una vibración SOSTENIDA de 0,25 µm a f0 ya despega el
+    palpador. Lo que salva al golpe es que llegar a Q pide ~Q ciclos y el
+    transitorio dura ~1,3. Por eso conviene ζ = 0,02 y no menos.
+    """
+    from wtd.softprobe import RESONANCE_LIFTOFF
+    by = {z: (Q, x, s) for z, Q, x, s in RESONANCE_LIFTOFF}
+    # el límite de amplitud crece linealmente con zeta
+    assert by[0.020][1] / by[0.005][1] == pytest.approx(4.0, rel=0.02)
+    # y la fórmula cerrada lo reproduce: x_lim = 2 zeta F / k
+    for z, Q, x_um, _ in RESONANCE_LIFTOFF:
+        assert 2 * z * 1.0 / 43.5e3 * 1e6 == pytest.approx(x_um, rel=0.02)
+    # el punto recomendado conserva la mayor parte de la separación
+    assert by[0.020][2] / by[0.005][2] > 0.70
+
+
+def test_transitorio_corto_no_llega_a_resonar():
+    """Un seno de 1 µm a f0 despega con 20 ciclos pero no con 5.
+
+    Es la razón por la que los 126 casos del golpe pasan con ζ = 0,005: el
+    transitorio del impacto dura ~1,3 ciclos de f0, muy lejos de los ~Q
+    ciclos que hace falta para construir la amplificación resonante.
+    """
+    p = SoftProbe(mass=0.68e-3, k_soft=4.47e4, preload=1.0, zeta=0.005)
+    p.k_soft = 1.0 / (1.0 / 4.351e4 - 1.0 / p.k_hertz())
+    f0 = p.f0()
+    dt = 1.0 / (60.0 * f0)
+
+    def rafaga(n_ciclos):
+        t = np.arange(0.0, n_ciclos / f0, dt)
+        return apply_soft_probe(1.0e-6 * np.sin(2 * math.pi * f0 * t), dt, p)
+
+    assert not rafaga(5)["despega"]
+    assert rafaga(20)["despega"]
+
+
+def test_el_despegue_se_detecta_por_el_riel_plano():
+    """En vuelo la única fuerza sobre el carro es la precarga, así que la
+    lectura se clava en -F/m exacto. Con contacto continuo el riel no se
+    toca nunca: es un detector binario sin falsos positivos."""
+    from wtd.wedge import WedgeSpec, standard_states
+    from wtd.impact_sim import HammerSpec, SimConfig, simulate
+
+    w, ham = WedgeSpec(), HammerSpec(mass=4e-3)
+    r = simulate(w, standard_states()[3], ham, 3.46,
+                 SimConfig(x_palpator=12.5e-3, t_end=3e-3))
+    ww, dt = r["w_palp"], r["dt_rec"]
+
+    def muestras_en_el_riel(F):
+        p = SoftProbe(mass=0.68e-3, k_soft=4.47e4, preload=F, zeta=0.02)
+        o = apply_soft_probe(ww, dt, p)
+        a = o["a_palpador"] / G
+        riel = F / p.mass / G
+        return o["despega"], int(np.sum(np.abs(a + riel) < 0.01 * riel))
+
+    for F in (1.0, 0.7, 0.5, 0.35):
+        despega, n = muestras_en_el_riel(F)
+        assert not despega and n == 0
+    despega, n = muestras_en_el_riel(0.25)
+    assert despega and n > 50
