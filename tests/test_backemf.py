@@ -68,3 +68,64 @@ def test_el_error_del_modo_B_escala_con_la_calibracion_de_KF():
     for d in (0.5, 1.0, 2.0, 5.0):
         b = error_budget(CoilSpec(), dKF_pct=d)
         assert b["modo_B_energia_pct"] == pytest.approx(2 * d, rel=0.02)
+
+
+def test_el_error_de_escala_cancela_exacto_en_el_cociente():
+    """Si v_i y v_r salen del mismo canal, cualquier K común se cancela.
+
+    Es la idea del usuario, y es exacta: e = (K v_r)/(K v_i) = v_r/v_i para
+    cualquier K. Así que la calibración de K_F —que era TODO el residual del
+    modo de circuito abierto— desaparece del índice de rebote y del Leeb.
+    """
+    from wtd.backemf import velocity_from_open_circuit
+    import numpy as np
+    c = CoilSpec()
+    v_i, v_r = 1.48, 1.169
+    u = np.array([c.emf(v_i), c.emf(v_r)])
+    # medir con un K_F equivocado en un 30 % no cambia el cociente
+    c_malo = CoilSpec(K_F0=c.K_F0 * 1.30)
+    e_bien = velocity_from_open_circuit(u, c)
+    e_mal = velocity_from_open_circuit(u, c_malo)
+    assert e_bien[1] / e_bien[0] == pytest.approx(e_mal[1] / e_mal[0], rel=1e-12)
+    assert e_bien[1] / e_bien[0] == pytest.approx(v_r / v_i, rel=1e-9)
+    # pero la velocidad absoluta sí se va un 30 %
+    assert e_mal[0] / e_bien[0] == pytest.approx(1 / 1.30, rel=1e-9)
+
+
+def test_conviene_que_el_impacto_caiga_en_el_centro_de_la_carrera():
+    """Lo que sobrevive no es el valor de K_F sino su VARIACIÓN entre las dos
+    medidas, o sea la pendiente local dK/dx.
+
+    La curva del LAH04 tiene un máximo en el centro, donde dK/dx = 0: ahí el
+    residual es de segundo orden. Es una condición de geometría gratis.
+    """
+    from wtd.backemf import ratio_error_budget
+    c = CoilSpec()
+    centro = ratio_error_budget(c, x_impact=0.0)
+    borde = ratio_error_budget(c, x_impact=1.5e-3)
+    assert centro["e_variacion_KF_pct"] < 0.1
+    assert borde["e_variacion_KF_pct"] > 5 * centro["e_variacion_KF_pct"]
+    # en el centro el término dominante pasa a ser el ruido, no K_F
+    assert centro["e_ruido_pct"] > 2 * centro["e_variacion_KF_pct"]
+
+
+def test_en_el_cociente_el_backemf_le_gana_al_inductivo():
+    """Comparación justa: al inductivo también se le cancela la escala, así
+    que quedan los dos ruidos. El back-EMF gana porque su señal es grande."""
+    from wtd.backemf import compare_ratio_with_inductive
+    r = compare_ratio_with_inductive(CoilSpec())
+    assert r["backemf_restitucion_pct"] < r["inductivo_restitucion_pct"]
+    assert r["ventaja_backemf"] > 1.5
+    # y los dos dan resolución de sobra contra el rango del Leeb (20 %)
+    assert 20.0 / r["backemf_restitucion_pct"] > 100
+
+
+def test_la_repetibilidad_es_lo_que_importa_para_clasificar():
+    """La exactitud absoluta de la energía queda con el 4 % de K_F, pero es
+    sistemática: corre el umbral y se absorbe calibrando. Lo que ensucia la
+    clasificación es la dispersión tiro a tiro, y ésa viene sólo del ruido."""
+    from wtd.backemf import repeatability_of_absolute_energy
+    r = repeatability_of_absolute_energy(CoilSpec())
+    assert r["sigma_E_pct"] < 0.5
+    b = error_budget(CoilSpec())
+    assert b["modo_B_energia_pct"] > 20 * r["sigma_E_pct"]

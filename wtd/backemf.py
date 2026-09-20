@@ -206,3 +206,126 @@ def compare_with_inductive(coil: CoilSpec, **kw) -> dict:
         "penalizacion_A": b["modo_A_energia_pct"] / e_ind,
         "penalizacion_B": b["modo_B_energia_pct"] / e_ind,
     }
+
+
+# --------------------------------------------------------------------------
+# Medir LAS DOS velocidades con el mismo instrumento
+# --------------------------------------------------------------------------
+
+def ratio_error_budget(coil: CoilSpec, v_i: float = 1.48, e: float = 0.79,
+                       x_impact: float = 0.0, t_win: float = 50e-6,
+                       sigma_u_mV: float = 2.0,
+                       offset_u_mV: float = 1.0) -> dict:
+    """Error de la RESTITUCION e = v_r/v_i medida con el mismo canal.
+
+    LA IDEA (del usuario): si v_i y v_r salen del mismo instrumento, todo
+    error de ESCALA comun se cancela al dividir. Y es cierto, exactamente:
+
+        e_medido = (K v_r) / (K v_i) = v_r / v_i      para cualquier K
+
+    Asi que la calibracion de K_F -- que era TODO el error residual del modo
+    de circuito abierto, 2 % sobre la velocidad y 4 % sobre la energia --
+    desaparece del indice de rebote, del Leeb y de la fraccion absorbida
+    eta = 1 - e^2. Todas son magnitudes adimensionales.
+
+    QUE SOBREVIVE, EN ORDEN
+
+    1. La VARIACION de K_F entre los dos instantes, no su valor. Las dos
+       medidas se toman a los dos lados del contacto, separadas por
+       ~(v_i + v_r) * t_ventana de carrera. Lo que importa es la PENDIENTE
+       local dK/dx, no el error absoluto de K_F.
+
+       Y aca hay una condicion de diseño que sale sola: la curva K_F(x) del
+       LAH04 tiene un MAXIMO en el centro de la carrera, donde dK/dx = 0. Si
+       el impacto ocurre ahi, el residual es de segundo orden y practicamente
+       se anula. Fuera del centro crece rapido:
+
+           impacto en x = 0.0 mm   ->  residual ~0.01 %
+           impacto en x = 1.0 mm   ->  residual  ~3.8 %
+           impacto en x = 1.5 mm   ->  residual  ~7.2 %
+
+       ARREGLAR LA GEOMETRIA PARA QUE PEGUE EN EL CENTRO DE LA CARRERA es
+       gratis y convierte el termino dominante en despreciable.
+
+    2. El RUIDO de tension, que es aleatorio y no cancela. Entra en las dos
+       medidas y se suma en cuadratura.
+
+    3. El OFFSET de continua del canal, que es aditivo y tampoco cancela.
+
+    LO QUE NO CANCELA NUNCA: la energia ABSOLUTA. E = 1/2 m v_i^2 se lleva
+    (1+eps)^2 entero. Pero eso es un error SISTEMATICO y estable, o sea una
+    constante de calibracion, no ruido tiro a tiro -- y para clasificar lo
+    que importa es la repetibilidad, no la exactitud absoluta.
+    """
+    K = float(coil.K_F(x_impact)) * coil.ratio
+    v_r = e * v_i
+
+    # 1. variacion de K_F entre los dos instantes
+    d1 = v_i * t_win      # cuanto recorre antes de pegar
+    d2 = v_r * t_win      # y despues de rebotar (mismo lado)
+    K1 = float(coil.K_F(x_impact - d1))
+    K2 = float(coil.K_F(x_impact - d2))
+    e_KF = abs(K2 / K1 - 1.0)
+
+    # 2. ruido de tension en cada medida
+    s_v = sigma_u_mV * 1e-3 / K
+    e_ruido = math.sqrt((s_v / v_i) ** 2 + (s_v / v_r) ** 2)
+
+    # 3. offset aditivo: e_medido = (K v_r + off)/(K v_i + off)
+    off = offset_u_mV * 1e-3
+    e_off = abs(((K * v_r + off) / (K * v_i + off)) / e - 1.0)
+
+    de_e = math.sqrt(e_KF ** 2 + e_ruido ** 2 + e_off ** 2)
+    # eta = 1 - e^2  ->  d(eta)/eta = 2 e^2/(1-e^2) * de/e
+    amp = 2 * e ** 2 / (1 - e ** 2)
+    return {
+        "K_V_s_m": K, "v_r_ms": v_r,
+        "e_variacion_KF_pct": 100 * e_KF,
+        "e_ruido_pct": 100 * e_ruido,
+        "e_offset_pct": 100 * e_off,
+        "restitucion_pct": 100 * de_e,
+        "leeb_pct": 100 * de_e,
+        "amplificacion_eta": amp,
+        "eta_pct": 100 * amp * de_e,
+    }
+
+
+def repeatability_of_absolute_energy(coil: CoilSpec, v_i: float = 1.48,
+                                     sigma_u_mV: float = 2.0,
+                                     x_impact: float = 0.0) -> dict:
+    """Repetibilidad tiro a tiro de la energia absoluta (no la exactitud).
+
+    Para clasificar, la energia del golpe entra como covariable. Un error
+    SISTEMATICO de K_F corre el umbral y se absorbe calibrando; lo que
+    ensucia la clasificacion es la dispersion tiro a tiro, que solo viene
+    del ruido.
+    """
+    K = float(coil.K_F(x_impact)) * coil.ratio
+    s_v = sigma_u_mV * 1e-3 / K
+    return {"sigma_v_ms": s_v, "sigma_v_pct": 100 * s_v / v_i,
+            "sigma_E_pct": 200 * s_v / v_i}
+
+
+def compare_ratio_with_inductive(coil: CoilSpec, v_i: float = 1.48,
+                                 e: float = 0.79, **kw) -> dict:
+    """Comparacion JUSTA: el inductivo tambien mide las dos velocidades.
+
+    Su error de escala tambien se cancela en el cociente, asi que lo que
+    queda en los dos casos es el ruido aleatorio de cada canal. Y ahi el
+    back-EMF gana, porque su señal es grande (2.33 V) y 2 mV de ruido son el
+    0.086 %, mientras que el inductivo esta limitado por la resolucion de
+    posicion (1 um sobre una ventana de 200 us).
+    """
+    from .sensing import velocity_estimator_error
+    ind = velocity_estimator_error(1e-6, 200e3, 200e-6)
+    s_ind = ind["sigma_v_ms"]
+    v_r = e * v_i
+    e_ind = math.sqrt((s_ind / v_i) ** 2 + (s_ind / v_r) ** 2)
+    b = ratio_error_budget(coil, v_i=v_i, e=e, **kw)
+    return {
+        "inductivo_sigma_v_ms": s_ind,
+        "inductivo_restitucion_pct": 100 * e_ind,
+        "backemf_sigma_v_ms": b["K_V_s_m"] and 2.0e-3 / b["K_V_s_m"],
+        "backemf_restitucion_pct": b["restitucion_pct"],
+        "ventaja_backemf": 100 * e_ind / b["restitucion_pct"],
+    }
