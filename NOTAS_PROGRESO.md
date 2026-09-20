@@ -279,3 +279,67 @@ Cuatro ensayos, ordenados por cuánto ahorran si fallan:
 - **D** — insensibilidad a la precarga, umbral de despegue, repetibilidad, orientación.
 
 Publicado en https://claude.ai/artifact/6M9VJaZK7TU8tyFQoRBuT5
+
+## Rev. G — 2026-09-20: dónde va el resorte (lo encontró una pregunta del usuario)
+
+El dibujo de la rev. F ponía un **vástago rígido** entre la punta y la masa, y la flexura
+entre la masa y el cuerpo. **Eso es el palpador rígido con pasos de más:** con el vástago
+rígido la masa sigue a la cuña sin filtrar nada y el acelerómetro lee los miles de g. La
+compliancia tiene que estar **en el camino de carga**, entre lo que toca y lo que mide:
+
+    cuña ── punta ──[ resorte k ]── carro ──[ precarga F ]── cuerpo
+
+### La restricción nueva: la punta tiene que pesar ≤ 20 mg
+
+Con esa topología la punta queda del lado de la cuña, que la arrastra **cinemáticamente**
+a miles de g. Seguirla cuesta `m_punta · a_cuña`, y esa fuerza sale del contacto, que no
+puede dar más que la precarga:
+
+    m_punta ≤ F_precarga / a_cuña_max = 1 N / 4800 g = 21 mg
+
+Modelado: `SoftProbe.tip_mass` y el tercer término de `F_contacto` en `apply_soft_probe`.
+Verificado: **la masa de punta no cambia la lectura** (mientras hay contacto la ecuación
+del carro es idéntica), sólo adelanta el despegue. Umbral simulado: 30–50 mg a 5 mJ,
+20–30 mg a 12 mJ, algo más permisivo que la cota porque el pico de aceleración y el de
+fuerza del resorte no coinciden en el tiempo.
+
+**Firma útil:** cuando despega, la lectura se recorta plana exactamente en F/m = 150 g,
+porque en vuelo la única fuerza sobre el carro es la precarga. Es reconocible en el banco.
+
+### La flexura de la rev. F no sirve
+
+Las láminas de 5 × 0,30 mm con luz 27,1 mm ponen **237 mg** del lado de la punta: 12 veces
+por encima del límite. Geometría corregida (todas dan 43,5 N/mm, punta al centro):
+
+| b × h | luz | tensión | masa lado punta | |
+|---|---|---|---|---|
+| 5 × 0,30 | 27,1 mm | 23 MPa | 237 mg | ✗ (la de la rev. F) |
+| 3 × 0,20 | 15,2 mm | 48 MPa | 53 mg | ✗ |
+| **2 × 0,15** | **10,0 mm** | **83 MPa** | **17,4 mg** | ✓ recomendada |
+| 1,5 × 0,12 | 7,3 mm | 126 MPa | 7,6 mg | ✓ |
+
+Sigue siendo vida infinita (83 MPa contra ~1000 de límite elástico). El costo es manipular
+chapa de 0,15 mm.
+
+### Los dos presupuestos de masa, con criterios opuestos
+
+- **Lado punta — techo 20 mg.** Lámina al centro 17,5 mg + bolilla ⌀1 mm 4,1 mg = 21,6 mg,
+  apenas por encima. Conviene **formar el resalto en la propia lámina** y ahorrarse la
+  bolilla: 17,5 mg.
+- **Lado carro — objetivo 0,68 g.** Sale naturalmente en 0,33 g (acelerómetro 0,100 +
+  estructura 0,150 + lámina 0,030 + adhesivo 0,050), o sea que **hay que lastrarlo con
+  0,35 g**. Sin lastre f₀ se va a 1829 Hz y la separación cae de ×150 a ~×105. Agregar
+  masa mejora la medición.
+
+### La flexura de precarga hace dos trabajos
+
+Además de dar la precarga de 1 N, **guía el carro** para que sólo se mueva en el eje de
+medición. Al ser 85× más blanda que la de medición sólo suma un 1 % a la rigidez que fija
+f₀. Falta dimensionarla en detalle: 0,5 N/mm con 2 mm de carrera, y su masa cae del lado
+del carro.
+
+### Pendiente nuevo
+
+La **resonancia parásita del lado punta** (20 mg sobre 43,5 N/mm ≈ 7,4 kHz) no está en el
+modelo, que trata la punta como masa pura sin grado de libertad propio. Cae entre las dos
+bandas de la cuña, así que en principio no molesta, pero hay que verificarlo.

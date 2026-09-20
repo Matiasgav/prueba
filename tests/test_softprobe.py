@@ -218,3 +218,42 @@ def test_el_filtro_separa_las_dos_bandas_enteras():
         frac[nm] = float(E[int(np.searchsorted(f[m], 1273.0))])
     assert frac["S0"] < 0.001      # la asentada no le entrega nada al filtro
     assert frac["S6"] > 0.999      # la suelta le entrega todo
+
+
+def test_la_masa_de_punta_no_cambia_la_lectura_pero_adelanta_el_despegue():
+    """El resorte va ENTRE la cuña y la masa, así que la punta queda del lado
+    de la cuña y ésta la arrastra a miles de g.
+
+    Mientras haya contacto la ecuación de la masa no cambia, así que la lectura
+    es idéntica; lo único que hace la masa de punta es adelantar el despegue.
+    Cota: m_punta <= F / a_cuña_max.
+    """
+    from wtd.wedge import WedgeSpec, standard_states
+    from wtd.impact_sim import HammerSpec, SimConfig, simulate
+
+    w, ham = WedgeSpec(), HammerSpec(mass=4e-3)
+    r = simulate(w, standard_states()[3], ham, 1.58,
+                 SimConfig(x_palpator=12.5e-3, t_end=3e-3))
+    ww, dt = r["w_palp"], r["dt_rec"]
+
+    def probe(mt):
+        return SoftProbe(mass=0.68e-3, k_soft=4.47e4, preload=1.0,
+                         zeta=0.005, tip_mass=mt)
+
+    base = apply_soft_probe(ww, dt, probe(0.0))
+    assert not base["despega"]
+    # mientras haya contacto, la lectura es idéntica: la masa de punta no
+    # entra en la ecuación de la masa, sólo en la fuerza de contacto
+    for mt_mg in (5, 20):
+        o = apply_soft_probe(ww, dt, probe(mt_mg * 1e-6))
+        assert not o["despega"]
+        assert o["a_pico_palpador_g"] == pytest.approx(
+            base["a_pico_palpador_g"], rel=1e-9)
+    # una punta pesada despega, y ahí la lectura se arruina: en vuelo la única
+    # fuerza es la precarga, así que satura exactamente en F/m = 150 g. Es una
+    # firma reconocible en el banco -- un recorte plano en el fondo de escala.
+    o = apply_soft_probe(ww, dt, probe(100e-6))
+    assert o["despega"]
+    assert o["a_pico_palpador_g"] == pytest.approx(150.0, rel=0.01)
+    # y la cota teórica cae donde debe
+    assert 15.0 < base["m_punta_max_mg"] < 30.0

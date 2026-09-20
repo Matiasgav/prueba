@@ -164,9 +164,13 @@ G = 9.80665
 class SoftProbe:
     """Palpador de masa `mass` acoplado por un resorte blando `k_soft`."""
 
-    mass: float = 0.68e-3        # masa movil: vastago + acelerometro [kg]
+    mass: float = 0.68e-3        # masa movil: carro + acelerometro [kg]
     k_soft: float = 9.5e4        # rigidez del acople blando [N/m]
     preload: float = 1.0         # precarga de apoyo [N]
+    tip_mass: float = 0.0        # masa del lado PUNTA del resorte [kg]
+    #  La punta va del lado de la cuña, o sea que la cuña la arrastra
+    #  cinematicamente a miles de g. Ver `apply_soft_probe`: no cambia la
+    #  lectura, pero fija un limite duro  m_punta <= F / a_cuña_max.
     zeta: float = 0.005          # amortiguamiento del acople [-]
     #  0.005 = flexura de acero, que es lo que hay que construir.
     #  La rev. C usaba 0.08 y por eso reportaba separaciones 10x peores.
@@ -366,10 +370,36 @@ def apply_soft_probe(w_wedge: np.ndarray, dt: float, probe: SoftProbe) -> dict:
     con la aceleracion: doble integrar mete deriva y falsea el despegue.
 
         m x'' = -k (x - w) - c (x' - w')
-        F_contacto = F_precarga - [ k (x - w) + c (x' - w') ]
+        F_contacto = F_precarga - [ k (x - w) + c (x' - w') ] + m_punta * w''
 
     En vuelo (F_contacto <= 0) la unica fuerza es la precarga, que empuja al
     palpador de vuelta contra la cuña.
+
+    DONDE VA EL RESORTE (y por que importa)
+
+    El resorte esta EN EL CAMINO DE CARGA, entre la cuña y la masa:
+
+        cuña ── punta ──[ resorte k ]── masa ──[ precarga F ]── cuerpo
+
+    NO entre la masa y el cuerpo con un vastago rigido hasta la punta. Con
+    vastago rigido la masa sigue a la cuña sin filtrar nada y el acelerometro
+    lee los miles de g de la cuña: es el palpador RIGIDO otra vez, con pasos
+    de mas. La compliancia tiene que estar entre lo que toca y lo que mide.
+
+    CONSECUENCIA: LA PUNTA TIENE QUE SER LIVIANA
+
+    Del lado de la cuña, la punta es arrastrada CINEMATICAMENTE por ella. Para
+    seguirla hace falta m_punta * a_cuña, y esa fuerza sale del contacto, que
+    no puede dar mas que la precarga. De ahi el tercer termino de F_contacto
+    y el limite:
+
+        m_punta <= F_precarga / a_cuña_max = 1 N / 4800 g = 21 mg
+
+    Verificado con este modelo: la masa de punta NO cambia la lectura (mientras
+    haya contacto la ecuacion de la masa es identica), solo adelanta el
+    despegue. A 5 mJ el umbral simulado cae entre 30 y 50 mg y a 12 mJ entre
+    20 y 30 mg, algo mas permisivo que la cota porque el pico de aceleracion
+    y el de fuerza del resorte no coinciden en el tiempo.
     """
     k = probe.k_series()
     w0 = 2.0 * math.pi * probe.f0()
@@ -378,6 +408,7 @@ def apply_soft_probe(w_wedge: np.ndarray, dt: float, probe: SoftProbe) -> dict:
     n = len(w_wedge)
     ww = np.asarray(w_wedge, dtype=float)
     vw = np.gradient(ww, dt)
+    aw = np.gradient(vw, dt)
 
     x = np.zeros(n)
     v = np.zeros(n)
@@ -388,7 +419,9 @@ def apply_soft_probe(w_wedge: np.ndarray, dt: float, probe: SoftProbe) -> dict:
     v[0] = vw[0]
     for i in range(n - 1):
         rel = k * (x[i] - ww[i]) + c * (v[i] - vw[i])
-        F = probe.preload - rel
+        # la punta va del lado de la cuña: seguirla cuesta m_punta * a_cuña,
+        # y esa fuerza la tiene que dar el contacto
+        F = probe.preload - rel + probe.tip_mass * aw[i]
         if F <= 0.0:
             lift[i] = True
             Fc[i] = 0.0
@@ -401,8 +434,8 @@ def apply_soft_probe(w_wedge: np.ndarray, dt: float, probe: SoftProbe) -> dict:
         x[i + 1] = x[i] + v[i + 1] * dt
     a_out[-1] = a_out[-2]
 
-    a_wedge = np.gradient(vw, dt)
     a_pk = float(np.abs(a_out).max())
+    a_wedge = aw
     return {
         "a_palpador": a_out,
         "F_contacto": Fc,
@@ -414,6 +447,8 @@ def apply_soft_probe(w_wedge: np.ndarray, dt: float, probe: SoftProbe) -> dict:
         # inversion: de la lectura al desplazamiento de la cuña
         "x_estimado_um": a_pk / probe.gain() * 1e6,
         "margen_despegue": probe.a_liftoff() / max(a_pk, 1e-12),
+        # masa maxima admisible del lado punta para este caso
+        "m_punta_max_mg": probe.preload / max(float(np.abs(aw).max()), 1e-12) * 1e6,
     }
 
 
