@@ -626,3 +626,124 @@ def noise_in_feature(density_g_rtHz: float, bandwidth: float,
     return {"sigma_g_rms": sigma,
             "energia_g2ms": sigma ** 2 * window_s * 1e3,
             "abs_int_g_ms": sigma * window_s * 1e3}
+
+
+# ---------------------------------------------------------------------------
+# Modelo de DOS grados de libertad: punta + carro, con contacto unilateral
+# ---------------------------------------------------------------------------
+#
+# POR QUE HIZO FALTA (revision externa, sep 2026)
+#
+# `apply_soft_probe` tiene la punta como un TERMINO, no como un grado de
+# libertad: `tip_mass` entra solo en el test de contacto, y cuando el contacto
+# se pierde el integrador IMPONE
+#
+#     a = -preload / mass
+#
+# o sea el famoso "riel plano en -F/m". Esa linea es la que dibujaba la firma
+# de despegue, y esta MAL: en vuelo el resorte de medicion sigue conectado
+# entre la punta y el carro y los dos siguen intercambiando fuerza. Sumando
+# los dos cuerpos,
+#
+#     m_carro * a_carro + m_punta * a_punta = F_precarga - N
+#
+# con N = 0 en vuelo queda  m_c a_c + m_t a_t = F_p, que NO obliga a que
+# a_c = F_p / m_c salvo que la punta no acelere. El valor -F/m es correcto
+# en el INSTANTE de separacion (ahi la fuerza del resorte vale exactamente la
+# precarga) pero no despues.
+#
+# Este integrador arregla eso: dos masas, contacto unilateral, y reenganche.
+#
+#     contacto:  p = w  (la cuña arrastra la punta), N = F_k - m_t * w''
+#     vuelo:     m_t p'' = F_k          y      m_c x'' = F_p - F_k
+#     reenganche: cuando la punta vuelve a alcanzar a la cuña
+#
+# El reenganche se modela PLASTICO (la punta adopta la velocidad de la cuña).
+# Es la hipotesis conservadora para la lectura: un rebote elastico meteria
+# todavia mas transitorio. Queda como parametro.
+
+def apply_soft_probe_2dof(w_wedge: np.ndarray, dt: float, probe: SoftProbe,
+                          restitucion: float = 0.0) -> dict:
+    """Palpador de dos masas con contacto unilateral. Ver nota de arriba.
+
+    Devuelve la aceleracion del CARRO (que es lo que mide el acelerometro),
+    la fuerza de contacto, y el detalle de los despegues: cuantos, cuanto
+    duran y cuanto se separa la punta de la cuña.
+    """
+    k = probe.k_series()
+    w0 = 2.0 * math.pi * probe.f0()
+    c = 2.0 * probe.zeta * probe.mass * w0
+    m_c = probe.mass
+    m_t = max(probe.tip_mass, 1e-9)          # una punta sin masa no tiene vuelo
+
+    n = len(w_wedge)
+    ww = np.asarray(w_wedge, dtype=float)
+    vw = np.gradient(ww, dt)
+    aw = np.gradient(vw, dt)
+
+    x = np.zeros(n); v = np.zeros(n)         # carro, medido desde su reposo
+    p = np.zeros(n); vp = np.zeros(n)        # punta
+    a_out = np.zeros(n); N = np.zeros(n)
+    contacto = np.ones(n, dtype=bool)
+    x[0] = ww[0]; v[0] = vw[0]
+    p[0] = ww[0]; vp[0] = vw[0]
+    en_contacto = True
+
+    for i in range(n - 1):
+        #  fuerza del resorte de medicion, referida al equilibrio estatico
+        #  (positiva = el resorte empuja al carro en contra de la precarga)
+        Fk = k * (x[i] - p[i]) + c * (v[i] - vp[i])
+
+        if en_contacto:
+            #  la punta sigue a la cuña; la fuerza de contacto es lo que hace
+            #  falta para arrastrarla, y no puede tirar
+            p[i] = ww[i]; vp[i] = vw[i]
+            Fk = k * (x[i] - ww[i]) + c * (v[i] - vw[i])
+            N[i] = probe.preload - Fk + m_t * aw[i]
+            if N[i] <= 0.0:
+                en_contacto = False
+                N[i] = 0.0
+            else:
+                a_c = -Fk / m_c
+                a_out[i] = a_c
+                contacto[i] = True
+                v[i + 1] = v[i] + a_c * dt
+                x[i + 1] = x[i] + v[i + 1] * dt
+                p[i + 1] = ww[i + 1]; vp[i + 1] = vw[i + 1]
+                continue
+
+        #  --- vuelo: los dos cuerpos libres, unidos por el resorte ---
+        contacto[i] = False
+        N[i] = 0.0
+        a_c = -Fk / m_c
+        a_t = (Fk + probe.preload) / m_t     # el resorte empuja la punta
+        a_out[i] = a_c
+        v[i + 1] = v[i] + a_c * dt
+        x[i + 1] = x[i] + v[i + 1] * dt
+        vp[i + 1] = vp[i] + a_t * dt
+        p[i + 1] = p[i] + vp[i + 1] * dt
+
+        #  reenganche: la punta alcanza a la cuña otra vez
+        if p[i + 1] >= ww[i + 1]:
+            p[i + 1] = ww[i + 1]
+            vp[i + 1] = vw[i + 1] - restitucion * (vp[i + 1] - vw[i + 1])
+            en_contacto = True
+
+    a_out[-1] = a_out[-2]; N[-1] = N[-2]; contacto[-1] = contacto[-2]
+    sep = np.where(contacto, 0.0, ww - p)
+
+    #  cuantos episodios y cuanto duran
+    cambios = np.diff(contacto.astype(int))
+    n_desp = int((cambios == -1).sum())
+    return {
+        "a_palpador": a_out,
+        "N": N,
+        "contacto": contacto,
+        "despega": bool((~contacto).any()),
+        "frac_despegado": float((~contacto).mean()),
+        "n_episodios": n_desp,
+        "N_min_en_contacto": float(N[contacto & (N > 0)].min()) if (contacto & (N > 0)).any() else 0.0,
+        "separacion_max_um": float(np.abs(sep).max() * 1e6),
+        "a_pico_palpador_g": float(np.abs(a_out).max()) / G,
+        "duracion_despegue_us": float((~contacto).sum() * dt * 1e6),
+    }

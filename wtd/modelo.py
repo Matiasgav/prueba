@@ -295,10 +295,15 @@ B3 = Bloque(
         Magnitud("a_despegue", "Fondo de escala util", _p.a_liftoff() / 9.80665, "g", "M",
                  "= F/m, y NO depende del resorte. Es el invariante del diseño."),
         Magnitud("m_punta", "Techo de masa del lado punta", 20.0, "mg", "M",
-                 "= F / a_cuña_max. Es una cota de SIMULTANEIDAD y por eso es "
-                 "conservadora: en la simulacion el despegue llega a 120 mg."),
-        Magnitud("k_precarga", "Rigidez del resorte de precarga", 0.30, "N/mm", "X",
-                 "La fija el POSICIONAMIENTO (rango de 3 mm), no la medicion."),
+                 "= F / a_cuña_max. Cota de SIMULTANEIDAD. El margen que hay "
+                 "que mirar no es F/m contra el pico (eso es SOLO el carro) "
+                 "sino el minimo de N(t): con 20 mg y 1.00 N vale 0.029 N a "
+                 "12 mJ, y con 0.70 N se pierde el contacto."),
+        Magnitud("k_precarga", "Rigidez del resorte de precarga", 0.10, "N/mm", "X",
+                 "Era 0.30, que sobre 3 mm barre 0.90 N y lleva la precarga a "
+                 "1.60 N: VIOLA el limite de 1 N del usuario. Para quedarse en "
+                 "0.70-1.00 N hace falta k <= 0.10 N/mm, y el contacto hay que "
+                 "verificarlo a 0.70 N, que es donde el margen es peor."),
     ),
     ecuacion="m x'' + c (x' - w') + k (x - w) = 0            (en contacto)\n"
              "F_contacto = F_precarga - k(x-w) - c(x'-w') + m_punta * w''\n"
@@ -386,12 +391,17 @@ B4 = Bloque(
                  "El rango 'x3 a x9' salia con zeta = 0.08. Con el diseño "
                  "vigente (zeta = 0.02) el rasgo separa x112 a x579 y el pico "
                  "x3.2 a x19.2."),
-        Magnitud("despegue_detect", "Deteccion de despegue", "riel plano en -F/m",
-                 "-", "S", "0 muestras en contacto limpio, 110 (3.67 %) al despegar."),
+        Magnitud("despegue_detect", "Deteccion de despegue", "RETIRADA", "-", "E",
+                 "El 'riel plano en -F/m' era un artefacto: apply_soft_probe "
+                 "IMPONE a = -preload/mass al perder contacto, y la punta no "
+                 "es un grado de libertad. Con apply_soft_probe_2dof el riel "
+                 "no existe (0 muestras) y la lectura no se entera del "
+                 "despegue. No hay firma que detectar."),
         Magnitud("a_leida", "Rango de lectura sobre 126 casos", "0.9 a 109", "g", "S",
                  "Cero despegues en los 126 casos."),
-        Magnitud("acelerometro", "Sensor", "ADXL1005 +-100 g", "-", "X",
-                 "0.1 g de masa, 44 dB de SNR en el peor caso."),
+        Magnitud("acelerometro", "Sensor", "+-200 g", "-", "X",
+                 "El ADXL1005 de +-100 g SATURA: la lectura llega a 109 g. El "
+                 "propio estudio lo marcaba y se recomendo igual."),
     ),
     ecuacion="rasgo = integral de a(t)^2 dt sobre 3 ms, SIN filtrar\n\n"
              "(los 5 kHz son una especificacion de la cadena de adquisicion y\n"
@@ -420,6 +430,9 @@ B4 = Bloque(
         "ensayo de dos clases, no un medidor de precarga."
     ),
     hipotesis=(
+        Hipotesis("El detector de despegue y el margen de contacto.", "E",
+                  "RETIRADOS. El riel de -F/m era una linea del integrador y "
+                  "el margen de 2.04 no incluia la punta. Ver B3 y B4."),
         Hipotesis("El ancho de banda de adquisicion es 5 kHz.", "X",
                   "Entra en el presupuesto de ruido, pero NO se aplico al "
                   "calculo del rasgo. Los numeros reportados son sin filtrar, "
@@ -520,8 +533,10 @@ B6 = Bloque(
     salidas=(
         Magnitud("veredicto", "Clase", "asentada | suelta", "-", "X",
                  "Dos clases, no un grado de apriete."),
-        Magnitud("descarte", "Tiros descartados", "los que despegan", "-", "X",
-                 "El detector de B4 es binario y se aplica antes de clasificar."),
+        Magnitud("descarte", "Tiros descartados", "-", "-", "E",
+                 "El detector de B4 se retiro. Tampoco hace falta descartar: "
+                 "en el modelo de 2 GDL perder el contacto brevemente no "
+                 "cambia la lectura."),
         Magnitud("clasificador", "Clasificador conjunto", "PENDIENTE", "-", "E",
                  "Falta: usar la energia del golpe como covariable del rasgo."),
     ),

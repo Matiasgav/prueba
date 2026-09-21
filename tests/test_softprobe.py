@@ -344,3 +344,58 @@ def test_el_despegue_se_detecta_por_el_riel_plano():
         assert not despega and n == 0
     despega, n = muestras_en_el_riel(0.25)
     assert despega and n > 50
+
+
+def test_el_riel_de_menos_F_sobre_m_es_un_artefacto_del_modelo_de_1_gdl():
+    """La revisión externa del 21/09, anclada para que no vuelva.
+
+    `apply_soft_probe` IMPONE `a = -preload/mass` al perder contacto. Con dos
+    masas y contacto unilateral eso no pasa: el resorte sigue conectado y la
+    punta ni se separa. El detector de despegue que se publicaba contando
+    muestras en ese riel no tenía fundamento.
+    """
+    import numpy as np
+
+    from wtd.softprobe import apply_soft_probe_2dof
+
+    p = design(); p.zeta = 0.02; p.tip_mass = 120e-6
+    dt = 1e-6
+    t = np.arange(0, 3e-3, dt)
+    #  un escalón grande, que es lo que hace la cuña suelta
+    w = 8e-6 * (1.0 - np.exp(-t / 5e-5)) * np.exp(-t / 1.5e-3)
+
+    o1 = apply_soft_probe(w, dt, p)
+    o2 = apply_soft_probe_2dof(w, dt, p)
+
+    riel = -p.a_liftoff()
+    n1 = int(np.sum(np.abs(o1["a_palpador"] - riel) < 0.01 * abs(riel)))
+    n2 = int(np.sum(np.abs(o2["a_palpador"] - riel) < 0.01 * abs(riel)))
+
+    if o1["despega"]:
+        assert n1 > 0, "el modelo de 1 GDL tiene que mostrar el riel"
+        assert n2 == 0, "el de 2 GDL NO tiene que mostrarlo"
+        #  y la punta practicamente no se separa
+        assert o2["separacion_max_um"] < 0.01
+
+    #  en CONTACTO los dos modelos tienen que dar exactamente lo mismo
+    p2 = design(); p2.zeta = 0.02; p2.tip_mass = 20e-6
+    ws = 1e-6 * np.sin(2 * np.pi * 300 * t)
+    a = apply_soft_probe(ws, dt, p2)["a_palpador"]
+    b = apply_soft_probe_2dof(ws, dt, p2)["a_palpador"]
+    assert not apply_soft_probe_2dof(ws, dt, p2)["despega"]
+    assert np.allclose(a, b, rtol=1e-9, atol=1e-9)
+
+
+def test_el_margen_de_contacto_tiene_que_incluir_la_punta():
+    """F/m contra el pico leído es SOLO el carro: la punta también pide fuerza.
+
+    F_precarga > m_carro*|a_carro| + m_punta*|a_cuña|.  Con los números del
+    diseño la suma conservadora da 1,43 N contra 1 N disponible, así que el
+    margen de 2,04 que se publicaba no garantizaba el contacto.
+    """
+    p = design()
+    demanda_carro = p.mass * 73.5 * G
+    demanda_punta = 20e-6 * 4808.0 * G
+    assert demanda_carro + demanda_punta > p.preload
+    #  y el termino de la punta es el que manda, por lejos
+    assert demanda_punta > 1.8 * demanda_carro

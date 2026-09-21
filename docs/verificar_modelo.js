@@ -69,7 +69,7 @@ const FILE = 'file://' + path.resolve(__dirname, 'modelo-cunas.html');
         tablas: document.querySelectorAll('table').length,
         // etiquetas que dibuja el JS: no estan en el fuente, solo en el DOM
         faltan: ['×579 a 5 mJ','1545 g las dos','rechazo 1/472','ζ = 0,02','1273 Hz · ×150 · 78 g',
-                 '13 muestras','dK/dx = 0','−F/m = −150 g','×112','pico 44.46 g']
+                 'dK/dx = 0','2 GDL','1 GDL','contacto perdido','×112','pico 44.46 g']
                 .filter(t => ![...document.querySelectorAll('svg text')]
                                .some(e => e.textContent.includes(t))),
         anclas: [...document.querySelectorAll('.bar a')].map(a=>a.getAttribute('href'))

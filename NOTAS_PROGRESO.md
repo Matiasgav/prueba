@@ -576,3 +576,98 @@ mover f₀, a 1000 Hz cuesta el 7 % de separación.
 
 `tests/test_modelo.py` gana `test_la_f0_cae_encima_del_modo_de_la_cuna_suelta_sobre_el_ripple`,
 que ancla la coincidencia para que no se pierda de vista. Suite en **55 tests**.
+
+## Rev. L — 2026-09-21: revisión externa. El detector de despegue era un artefacto
+
+Una revisión externa (ChatGPT, a pedido del usuario) encontró un defecto que invalida el
+detector de despegue y varias conclusiones asociadas. **Tenía razón, y el error es peor de
+lo que podía ver desde el HTML.**
+
+### El defecto central
+
+El documento afirmaba que al despegar «la única fuerza sobre el carro es la precarga», así
+que la lectura se clavaba en −F/m. El revisor planteó el diagrama de cuerpo libre correcto:
+
+    m_carro·a_carro + m_punta·a_punta = F_precarga − N
+
+Con N = 0 eso es *una* ecuación con dos aceleraciones: no obliga a a_carro = F/m, porque el
+resorte de medición sigue conectado entre la punta y el carro.
+
+En `apply_soft_probe` el riel **está escrito a mano**:
+
+```python
+if F <= 0.0:
+    a = -probe.preload / probe.mass      # ← el "riel" es esta línea
+```
+
+y la punta ni siquiera es un grado de libertad: `tip_mass` sólo entra en el test de contacto.
+Los 13 valores de −150,00 g de la Fig. 10 eran esa asignación.
+
+Se escribió `apply_soft_probe_2dof`: dos masas, contacto unilateral, reenganche. Coincide
+exactamente con el modelo viejo mientras hay contacto. Con él, sobre el mismo caso:
+
+| | 1 GDL (publicado) | 2 GDL (correcto) |
+|---|---|---|
+| ¿pierde contacto? | sí | sí, 13 µs |
+| separación de la punta | no modelada | **0,0000 µm** |
+| mínimo de la lectura | −150,00 g (impuesto) | −18,2 g |
+| muestras en el riel | 13 | **0** |
+| pico leído | 68,1 g | 68,1 g, igual que sin despegue |
+
+Barrido de punta (20–600 mg) y precarga (0,70 y 1,00 N): el contacto se pierde 13–32 µs, la
+punta nunca se separa y el pico leído no cambia. **El detector no queda debilitado: no
+existe.** Cae con él el paso 1 de B6 y la mitigación que la rev. K había ofrecido para el
+riesgo de resonancia a f₀.
+
+Lo bueno: perder el contacto brevemente **no ensucia la medición**, así que las separaciones
+publicadas no dependían de esto. El código del riel nunca se ejecutó en los 126 casos.
+
+### El margen de contacto era sólo del carro
+
+F/m contra el pico leído reparte toda la precarga al carro. La condición correcta suma las
+dos demandas: 0,68 g × 73,5 g = 0,490 N más 20 mg × 4808 g = 0,943 N, o sea **1,433 N contra
+1 N disponible**. Calculando el mínimo de N(t):
+
+| precarga | punta | 5 mJ | 12 mJ |
+|---|---|---|---|
+| 1,00 N | 0 mg (lo simulado) | 0,704 N | 0,527 N |
+| 1,00 N | 20 mg (real) | 0,583 N | **0,029 N** |
+| 0,70 N | 20 mg (real) | 0,283 N | **pierde contacto** |
+
+Y hay que decirlo fuerte: **los 126 casos se corrieron con `tip_mass = 0`**, porque es el
+default de `design()`. El «cero despegues» vale para una punta ideal.
+
+### Lo demás que aceptó la revisión
+
+1. **El rango de 3 mm violaba el límite de 1 N.** Con k_p = 0,30 N/mm la fuerza barre 0,90 N
+   y llega a 1,60 N. Para quedarse en 0,70–1,00 N hace falta **k_p ≤ 0,10 N/mm**, y el
+   contacto hay que verificarlo a 0,70 N. Los 3 mm siguen **sin demostrar** como rango de
+   medición.
+2. **La Fig. 6 no dibujaba su propia ecuación.** De m ẍ + c(ẋ−ẇ) + k(x−w) = 0 sale
+   X/W = (k+jωc)/(k−mω²+jωc); la curva omitía el término viscoso del numerador. A r = 26 daba
+   1,00 y el valor correcto es **1,45**. El rechazo de 1/472 del texto sí era el completo.
+   La «meseta» sólo vale mientras 2ζr ≪ 1.
+3. **El ADXL1005 (±100 g) no alcanza.** La lectura llega a 109 g y el nivel a detectar estaba
+   en −150 g. El propio estudio marcaba `satura: True`. Pasa a ±200 g.
+4. **El lastre estaba al revés.** Con 0,33 g y k = 21,1 N/mm se conserva f₀ = 1273 Hz, la
+   lectura en g es idéntica y el fondo de escala F/m **se duplica** (309 g). No lastrar y
+   ablandar es estrictamente mejor.
+5. **«Vida infinita»** comparaba contra el límite elástico, no contra el de fatiga (400–500
+   MPa). La conclusión probablemente aguanta; el cálculo hay que hacerlo.
+6. **B6 mezclaba magnitudes**: la covariable es la energía *absoluta* (4 % sistemático,
+   0,17 % repetible), no el cociente (0,145 %).
+7. **η = 1 − e²** es la energía que pierde el impactador, no la que se vuelve vibración útil.
+8. **«El modo de 10,5 kHz entra en la banda del palpador»** es falso: r = 8 sigue muy arriba
+   de f₀. El mecanismo de la inversión queda **sin explicar**.
+9. **La monotonía del desplazamiento no es estricta**: S1 baja a 0,30 y S5 a 6,89. El propio
+   estudio contaba 3–4 inversiones. Ninguna cruza la frontera S3|S4, que es lo que importa.
+
+### Lo que la revisión no toca
+
+Las separaciones de los 126 casos (el código del riel nunca corrió), el hueco espectral, la
+cancelación del error de escala en el cociente, el invariante F/m como umbral —que sigue
+siendo correcto *en el instante* de separación— y la limitación reconocida de que el ensayo
+clasifica dos clases y no mide grado de apriete.
+
+Anclas nuevas: `test_el_riel_de_menos_F_sobre_m_es_un_artefacto_del_modelo_de_1_gdl` y
+`test_el_margen_de_contacto_tiene_que_incluir_la_punta`. Suite en **57 tests**.
