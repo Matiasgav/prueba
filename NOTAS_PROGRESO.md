@@ -460,3 +460,45 @@ tablas publicadas: `ZETA_SWEEP` (78,5 g / ×154,8 … 215,8 g / ×0,7) y `F0_SWE
   ampliación, el óptimo de energía, K_F(x) y el flujo de decisión.
 
 Publicado en https://claude.ai/artifact/XpcvS45VapBXWZUqwFvvpP
+
+## Rev. J — 2026-09-21: el informe como archivo independiente, con verificación automática
+
+Pedido: el modelo integrado como HTML descargable, verificado.
+
+`docs/modelo-cunas.html` — 100 kB, un solo archivo, sin dependencias. Las trece figuras se
+dibujan en el navegador y los datos van embebidos. Sólo las tipografías salen a la red; sin
+conexión caen a las del sistema y se lee igual.
+
+### Los dos verificadores
+
+Se dejaron en el repositorio porque lo que comprueban se rompe callado:
+
+- **`docs/verificar_modelo.js`** — el **render**, en tres anchos (1100 / 900 / 390 px) y en
+  los dos temas: errores de consola, que los diez gráficos dibujen, NaN o `undefined` en
+  atributos SVG, texto que se salga de su `viewBox`, `var()` que no resuelva a un color,
+  `[object Object]`, scroll horizontal, enlaces rotos, fondo del `body`, y que las
+  etiquetas que dibuja el JS estén en el DOM.
+- **`docs/verificar_numeros.py`** — el **contenido**: que el bloque de datos embebido sea
+  el que emite `studies/figuras_modelo.py`, que el palpador sea el de `design()`, que
+  `ZETA_SWEEP` y `F0_SWEEP_FLEXURA` reproduzcan, que la cadena cierre, y que no hayan
+  quedado rastros de los números que las revisiones anteriores corrigieron (6094, 4855,
+  848 g, 1820 Hz, 88,9 N/mm, 3,67 %, «sismómetro»).
+
+### Lo que encontraron
+
+1. **Tres etiquetas se salían del gráfico a 390 px** — el eje derecho de f₀, el punto de
+   diseño de ζ y las dos líneas de leyenda del despegue. Corregidas con variantes cortas a
+   lo angosto.
+2. **Un pie de figura desalineado**: la Fig. 3 decía «~1550 g» y «0,3 a 7,1 µm» mientras el
+   gráfico anotaba 1545 g y la tabla 0,31 a 7,12 µm.
+
+Tres «fallas» más resultaron ser del verificador, no de la página, y quedaron documentadas
+en el código para que no vuelvan a confundir:
+
+- el error de consola por las tipografías de Google es del proxy del entorno;
+- `var(--lo)` en un **atributo de presentación** SVG sí resuelve en el navegador — hay que
+  mirar el color calculado, no el atributo;
+- comparar tablas con un decimal pide tolerancia: ×154,82 contra ×154,9 es el mismo número,
+  y ×0,747 contra ×0,700 también imprime ×0,7. La tolerancia quedó en 1 % o un dígito de la
+  precisión impresa, lo que sea mayor — un error real, como el default roto de `design()`,
+  daba 40 %.

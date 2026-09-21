@@ -1,0 +1,1171 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="El ensayo de ajuste de cunas de estator, organizado en seis bloques encadenados.">
+<style>
+:root{color-scheme:light dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0}
+body{font:14px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Cadena del ensayo de cuñas</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#F4F6F8;
+  --surface:#FFFFFF;
+  --surface2:#EAEEF2;
+  --ink:#131A20;
+  --ink2:#39454F;
+  --muted:#6A7783;
+  --line:#D6DDE4;
+  --line2:#C2CCD5;
+  --hi:#0C6F79;        /* banda asentada, 33 kHz */
+  --hi-soft:#0C6F7922;
+  --lo:#A05B00;        /* banda suelta, 50 Hz */
+  --lo-soft:#A05B0022;
+  --risk:#A82117;
+  --risk-soft:#A8211714;
+  --ok:#2E6B3E;
+  --shadow:0 1px 2px #131a2010, 0 8px 24px #131a200a;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0D1216;
+    --surface:#141B21;
+    --surface2:#1B242B;
+    --ink:#E6ECF1;
+    --ink2:#C0CBD4;
+    --muted:#8C9AA6;
+    --line:#26313A;
+    --line2:#33404A;
+    --hi:#45C4CC;
+    --hi-soft:#45C4CC1F;
+    --lo:#E3A445;
+    --lo-soft:#E3A4451F;
+    --risk:#FF7A6B;
+    --risk-soft:#FF7A6B16;
+    --ok:#6FC287;
+    --shadow:0 1px 2px #0006, 0 10px 28px #0004;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0D1216;
+  --surface:#141B21;
+  --surface2:#1B242B;
+  --ink:#E6ECF1;
+  --ink2:#C0CBD4;
+  --muted:#8C9AA6;
+  --line:#26313A;
+  --line2:#33404A;
+  --hi:#45C4CC;
+  --hi-soft:#45C4CC1F;
+  --lo:#E3A445;
+  --lo-soft:#E3A4451F;
+  --risk:#FF7A6B;
+  --risk-soft:#FF7A6B16;
+  --ok:#6FC287;
+  --shadow:0 1px 2px #0006, 0 10px 28px #0004;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Source Serif 4",Georgia,serif;
+  font-size:16.5px;line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:900px;margin:0 auto;padding-inline:20px;padding-block:0}
+h1,h2,h3,h4,.disp{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;text-wrap:balance}
+code,.mono,pre,.num{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+
+/* ---------- barra superior ---------- */
+.bar{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:20;
+  background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.bar .in{max-width:900px;margin:0 auto;padding:8px 20px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.bar .tag{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.bar a{
+  font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:12px;text-decoration:none;
+  color:var(--ink2);border:1px solid var(--line2);border-radius:3px;
+  padding:2px 7px;background:var(--surface);
+}
+.bar a:hover{border-color:var(--hi);color:var(--hi)}
+.bar a.open{border-style:dashed}
+:focus-visible{outline:2px solid var(--hi);outline-offset:2px}
+
+/* ---------- portada ---------- */
+header.top{padding-block:38px 10px}
+.eyebrow{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+h1{font-size:clamp(30px,6.4vw,46px);line-height:1.06;font-weight:700;letter-spacing:-.018em;margin:0 0 14px}
+.lede{font-size:19px;color:var(--ink2);margin:0 0 6px;max-width:62ch}
+.lede em{font-style:normal;color:var(--ink);box-shadow:inset 0 -.5em 0 var(--hi-soft)}
+
+/* ---------- cadena (hero) ---------- */
+.chain{
+  margin:26px 0 8px;display:grid;gap:10px;
+  grid-template-columns:repeat(auto-fit,minmax(128px,1fr));
+}
+.node{
+  background:var(--surface);border:1px solid var(--line);border-radius:4px;
+  padding:10px 11px 11px;position:relative;display:flex;flex-direction:column;gap:5px;
+  text-decoration:none;color:inherit;
+}
+.node:hover{border-color:var(--line2);box-shadow:var(--shadow)}
+.node .id{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.06em}
+.node .nm{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-weight:600;font-size:13.5px;line-height:1.25}
+.node .out{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:10.5px;color:var(--muted);line-height:1.5;word-break:break-word}
+.node.warn{border-color:var(--risk);background:var(--risk-soft)}
+.node.warn .id{color:var(--risk)}
+.node.opn{border-style:dashed}
+.node .flag{
+  position:absolute;top:-1px;right:-1px;font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:9.5px;
+  letter-spacing:.1em;text-transform:uppercase;padding:2px 5px;border-radius:0 3px 0 4px;
+}
+.node.warn .flag{background:var(--risk);color:var(--paper)}
+.node.opn .flag{background:var(--line2);color:var(--ink)}
+
+.status{
+  display:flex;gap:8px 18px;flex-wrap:wrap;align-items:baseline;
+  font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted);
+  border-top:1px solid var(--line);padding-top:10px;margin-top:6px;
+}
+.status b{color:var(--ok);font-weight:600}
+
+/* ---------- secciones ---------- */
+section{padding-block:40px;border-top:1px solid var(--line);scroll-margin-top:96px}
+section:first-of-type{border-top:none}
+.shead{display:flex;gap:12px;align-items:flex-start;margin-bottom:4px}
+.bid{
+  font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:13px;font-weight:600;
+  color:var(--paper);background:var(--ink);border-radius:3px;padding:3px 7px;flex:none;margin-top:4px;
+}
+section.risk .bid{background:var(--risk)}
+section.open .bid{background:var(--line2);color:var(--ink)}
+h2{font-size:clamp(23px,4.6vw,31px);line-height:1.14;margin:0;font-weight:700;letter-spacing:-.012em}
+.sub{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:2px 0 0}
+.q{
+  font-size:18.5px;color:var(--ink);margin:14px 0 18px;padding-left:14px;
+  border-left:3px solid var(--hi);
+}
+section.risk .q{border-left-color:var(--risk)}
+p{margin:0 0 15px;max-width:66ch}
+p:last-child{margin-bottom:0}
+.prose h4{font-size:15px;margin:24px 0 8px;letter-spacing:.005em}
+strong{font-weight:600}
+.prose em{font-style:italic}
+
+/* flujo entra/sale */
+.io{display:grid;grid-template-columns:1fr;gap:10px;margin:0 0 20px}
+@media(min-width:620px){.io{grid-template-columns:1fr 1fr}}
+.io > div{background:var(--surface2);border-radius:4px;padding:9px 11px}
+.io .lbl{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
+.chip{
+  display:inline-block;font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:11.5px;
+  border:1px solid var(--line2);border-radius:3px;padding:1px 6px;margin:0 4px 4px 0;
+  background:var(--surface);color:var(--ink2);white-space:nowrap;
+}
+.chip.ext{border-style:dashed;color:var(--muted)}
+.chip.new{border-color:var(--hi);color:var(--hi)}
+
+/* ecuación */
+pre.eq{
+  font-size:12.5px;line-height:1.72;margin:0 0 20px;padding:13px 15px;
+  background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--ink2);
+  border-radius:0 4px 4px 0;overflow-x:auto;color:var(--ink);
+}
+
+/* tablas */
+.tw{overflow-x:auto;margin:20px 0}
+table{border-collapse:collapse;width:100%;font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:12.5px}
+caption{
+  font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);text-align:left;padding-bottom:8px;
+}
+th{
+  text-align:left;font-weight:500;color:var(--muted);font-size:10.5px;
+  letter-spacing:.08em;text-transform:uppercase;padding:0 12px 6px 0;
+  border-bottom:1px solid var(--line2);white-space:nowrap;
+}
+td{padding:7px 12px 7px 0;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink2)}
+td:first-child{color:var(--ink)}
+td.n{text-align:right;padding-right:16px;white-space:nowrap}
+tr.key td{background:var(--hi-soft);color:var(--ink);font-weight:500}
+tr.bad td{color:var(--risk)}
+table.txt{font-family:"Source Serif 4",Georgia,serif;font-size:15px}
+table.txt td{line-height:1.5}
+
+/* insignia de procedencia */
+.pv{
+  font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:10px;font-weight:600;display:inline-block;
+  width:16px;height:16px;line-height:16px;text-align:center;border-radius:2px;
+  background:var(--surface2);color:var(--muted);border:1px solid var(--line2);
+}
+.pv.E{background:var(--risk);color:var(--paper);border-color:var(--risk)}
+.pv.X{background:var(--ink2);color:var(--paper);border-color:var(--ink2)}
+
+/* llamadas */
+.call{
+  border:1px solid var(--line);border-left:3px solid var(--hi);background:var(--surface);
+  border-radius:0 4px 4px 0;padding:13px 16px;margin:20px 0;
+}
+.call.r{border-left-color:var(--risk);background:var(--risk-soft)}
+.call.o{border-left-color:var(--line2);border-left-style:dashed}
+.call .t{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.call.r .t{color:var(--risk)}
+.call p{font-size:15.5px;margin-bottom:0}
+
+/* verificación */
+.ver{display:grid;gap:10px;margin:22px 0 0}
+@media(min-width:620px){.ver{grid-template-columns:1fr 1fr}}
+.ver > div{border:1px solid var(--line);border-radius:4px;padding:10px 12px;background:var(--surface)}
+.ver .lbl{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
+.ver ul{margin:0;padding-left:16px;font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:11.5px;line-height:1.7;color:var(--ink2)}
+.ver li{overflow-wrap:anywhere}
+
+/* figuras */
+figure{margin:26px 0}
+figure .cap{font-size:14px;color:var(--muted);margin-top:9px;max-width:68ch}
+figure .cap b{color:var(--ink);font-weight:600}
+.plot{width:100%;display:block}
+
+/* topología del palpador */
+.topo{
+  display:flex;align-items:center;gap:0;flex-wrap:wrap;
+  background:var(--surface);border:1px solid var(--line);border-radius:4px;
+  padding:16px 14px;margin:24px 0 10px;
+}
+.tbox{
+  font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:12.5px;font-weight:600;text-align:center;
+  border:1.5px solid var(--ink2);border-radius:3px;padding:8px 10px;min-width:74px;
+  background:var(--surface2);
+}
+.tbox small{display:block;font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-weight:400;font-size:10px;color:var(--muted);margin-top:2px}
+.tbox.w{border-color:var(--lo);background:var(--lo-soft)}
+.tbox.m{border-color:var(--hi);background:var(--hi-soft)}
+.tlink{flex:1;min-width:52px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:0 2px}
+.tlink span{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:10px;color:var(--muted);white-space:nowrap}
+.rigid{width:100%;height:1.5px;background:var(--ink2)}
+
+/* banco */
+.bench{display:grid;gap:12px;margin:22px 0 0}
+.bcard{border:1px solid var(--line);border-radius:4px;background:var(--surface);padding:14px 16px;display:grid;gap:8px}
+.bcard .h{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.bcard .k{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:15px;font-weight:600;color:var(--hi)}
+.bcard h3{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:16px;margin:0;font-weight:600}
+.bcard .blk{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:10.5px;color:var(--muted);margin-left:auto}
+.bcard dl{margin:0;display:grid;grid-template-columns:1fr;gap:6px;font-size:15px}
+@media(min-width:560px){.bcard dl{grid-template-columns:auto 1fr;gap:4px 14px}}
+.bcard dt{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding-top:4px}
+.bcard dd{margin:0;color:var(--ink2)}
+.bcard.first{border-left:3px solid var(--risk)}
+.bcard.first .k{color:var(--risk)}
+
+/* pie */
+footer{border-top:1px solid var(--line);padding-block:32px 46px;color:var(--muted);font-size:14.5px}
+footer h3{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.legend{display:grid;gap:6px 16px;grid-template-columns:1fr;font-size:14px;margin:0 0 22px}
+@media(min-width:560px){.legend{grid-template-columns:1fr 1fr}}
+.legend div{display:flex;gap:9px;align-items:baseline}
+footer code{font-size:12.5px;color:var(--ink2)}
+footer a{color:var(--hi)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="bar"><div class="in">
+  <span class="tag">cadena</span>
+  <a href="#b1">B1 cuña</a><a href="#b2">B2 hueco</a><a href="#b3">B3 palpador</a><a href="#b4">B4 lectura</a><a href="#b5">B5 golpe</a><a href="#b6" class="open">B6 decisión</a><a href="#banco">banco</a>
+</div></div>
+
+<div class="wrap">
+
+<header class="top">
+  <p class="eyebrow">Wedge Tightness Test · modelo integrado · rev. H</p>
+  <h1>Cadena del ensayo de cuñas</h1>
+  <p class="lede">El crawler recorre el entrehierro, golpea cada cuña y tiene que decir si está asentada o suelta. Esto es el modelo completo en <em>seis bloques</em>: cada uno con una sola pregunta, sus entradas, sus salidas con procedencia, su ecuación, sus hipótesis y cómo se verifica.</p>
+</header>
+
+<div class="chain" id="chain"></div>
+<div class="status">
+  <span>la cadena <b>cierra</b>: ningún bloque consume un símbolo que nadie produce</span>
+  <span>6 bloques · 32 magnitudes · 1 abierto</span>
+</div>
+
+<section id="tesis">
+  <div class="shead"><div><h2>La tesis, en una figura</h2><p class="sub">por qué esto puede funcionar</p></div></div>
+  <p>Una cuña asentada y una suelta no se mueven distinto en grado: se mueven en <strong>bandas de frecuencia distintas</strong>, separadas por dos órdenes y medio de magnitud. La asentada está pegada al núcleo y responde con sus modos de flexión contra un apoyo rigidísimo; la suelta queda colgada del ripple y responde con sus dos modos de <em>cuerpo rígido</em> sobre ese resorte. No es el mismo modo corrido — son familias de modos distintas.</p>
+  <p>Todo el resto del diseño es consecuencia: el palpador es un pasa-bajos que planta su corte en el hueco que queda en el medio.</p>
+  <figure>
+    <svg id="figGap" class="plot" role="img" aria-label="El hueco espectral entre la cuña asentada y la suelta"></svg>
+    <p class="cap"><b>Fig. 1 — El hueco espectral.</b> Espectro del desplazamiento de la cuña bajo el palpador, a 12,5 mm del golpe y 5 mJ, con resolución de 25 Hz. Contra un corte a 1273 Hz, la cuña asentada pone el <b>0,0 %</b> de su energía por debajo y la suelta el <b>100,0 %</b>. El filtro no las atenúa distinto: las separa enteras.</p>
+  </figure>
+</section>
+
+<main id="bloques"></main>
+
+<section id="banco">
+  <div class="shead"><div><h2>Los cuatro ensayos de banco</h2><p class="sub">ordenados por cuánto ahorran si fallan</p></div></div>
+  <p>El orden no hay que argumentarlo: cae solo de la estructura. Cada ensayo mata una hipótesis estimada, y las hipótesis están ordenadas por lo que se llevan puesto. El ensayo A puede invalidar el enfoque completo <strong>y no necesita palpador</strong>, así que va primero.</p>
+  <div class="bench" id="bench"></div>
+</section>
+
+<footer>
+  <div class="wrap" style="padding-inline:0;max-width:none">
+  <h3>Marcas de procedencia</h3>
+  <div class="legend">
+    <div><span class="pv">D</span><span>dato del usuario o de campo — no se discute</span></div>
+    <div><span class="pv">V</span><span>de catálogo u hoja de datos — verificable en papel</span></div>
+    <div><span class="pv">M</span><span>calculado por el modelo — reproducible corriendo el código</span></div>
+    <div><span class="pv">S</span><span>medido sobre la simulación — reproducible corriendo el estudio</span></div>
+    <div><span class="pv E">E</span><span><strong>estimado</strong> — el riesgo vive acá</span></div>
+    <div><span class="pv X">X</span><span>elegido por diseño — es una decisión, no un hallazgo</span></div>
+  </div>
+  <h3>Reproducibilidad</h3>
+  <p style="margin-bottom:10px">La estructura de esta página está declarada en código, no escrita a mano: los valores del palpador se recalculan desde el modelo, y un test falla si el relato y el código se separan.</p>
+  <p><code>python -m wtd.modelo</code> imprime la cadena y valida que cierre · <code>python -m pytest tests/ -q</code> corre las 54 anclas · <code>python studies/soft_probe.py</code> regenera los 126 casos · <code>docs/MODELO.md</code> es esta misma lectura en el repositorio · <code>NOTAS_PROGRESO.md</code> cuenta cómo se llegó, rev. A → H.</p>
+  </div>
+</footer>
+
+</div>
+
+<script>
+/* ===================== datos ===================== */
+const EXT = ["geom_cuña","apoyo","k_hombro","F_precarga","d_palpador","LAH04"];
+
+/* ---- dibujos de mecanismo (SVG a mano) ---- */
+const SVG_RANURA = `
+<figure>
+<svg viewBox="0 0 700 300" role="img" style="max-width:100%;height:auto" aria-label="Corte de la ranura del estator: núcleo, bobina, ripple precargado, cuña apoyada en los hombros de cola de milano, el golpe radial hacia adentro y el palpador a 12,5 mm">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker>
+    <pattern id="hatch" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="7" stroke="currentColor" stroke-width="1.1" opacity=".35"/></pattern>
+  </defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.6">
+    <!-- nucleo -->
+    <path d="M120 60 H250 V150 H300 V250 H120 Z"/>
+    <path d="M580 60 H450 V150 H400 V250 H580 Z"/>
+    <rect x="120" y="60" width="130" height="190" fill="url(#hatch)" stroke="none"/>
+    <rect x="450" y="60" width="130" height="190" fill="url(#hatch)" stroke="none"/>
+    <rect x="250" y="150" width="50" height="100" fill="url(#hatch)" stroke="none"/>
+    <rect x="400" y="150" width="50" height="100" fill="url(#hatch)" stroke="none"/>
+    <!-- bobina -->
+    <rect x="300" y="185" width="100" height="65" rx="3" stroke-width="1.3"/>
+    <!-- ripple -->
+    <path d="M300 178 q12.5 -12 25 0 q12.5 12 25 0 q12.5 -12 25 0 q12.5 12 25 0" stroke-width="1.5"/>
+    <!-- cuña -->
+    <path d="M292 150 H408 L398 172 H302 Z" stroke-width="2"/>
+  </g>
+  <!-- hombros -->
+  <circle cx="296" cy="152" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="404" cy="152" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <!-- golpe -->
+  <g stroke="var(--lo)" stroke-width="2.4" fill="var(--lo)">
+    <line x1="350" y1="58" x2="350" y2="147" marker-end="url(#ar)"/>
+  </g>
+  <!-- palpador, a 12,5 mm del golpe -->
+  <g stroke="var(--hi)" stroke-width="2" fill="none">
+    <line x1="379" y1="100" x2="379" y2="148"/>
+    <rect x="365" y="78" width="28" height="22" rx="2"/>
+    <line x1="393" y1="86" x2="596" y2="48" stroke-width="1"/>
+  </g>
+  <!-- cota -->
+  <g stroke="var(--muted)" stroke-width="1" fill="none">
+    <line x1="350" y1="128" x2="379" y2="128"/>
+    <line x1="350" y1="122" x2="350" y2="134"/><line x1="379" y1="122" x2="379" y2="134"/>
+  </g>
+  <g font-family="'IBM Plex Mono',monospace" font-size="12" fill="currentColor">
+    <text x="350" y="44" text-anchor="middle" fill="var(--lo)">golpe · 3–5 mJ</text>
+    <text x="690" y="40" text-anchor="end" fill="var(--hi)">palpador</text>
+    <text x="690" y="55" text-anchor="end" fill="var(--muted)">acelerómetro sobre el resorte blando</text>
+    <text x="385" y="132" text-anchor="start" font-size="11" fill="var(--muted)">12,5 mm</text>
+    <text x="246" y="124" text-anchor="start" fill="var(--muted)">hombros</text>
+    <line x1="266" y1="128" x2="292" y2="148" stroke="var(--muted)" stroke-width="1"/>
+    <text x="462" y="180" fill="var(--muted)">ripple precargado</text>
+    <line x1="458" y1="176" x2="408" y2="178" stroke="var(--muted)" stroke-width="1"/>
+    <text x="350" y="222" text-anchor="middle" fill="var(--muted)">bobina</text>
+    <text x="150" y="100" fill="var(--muted)">núcleo</text>
+    <text x="350" y="166" text-anchor="middle" font-size="11">cuña G11</text>
+    <text x="118" y="288" fill="var(--muted)">el golpe entra hacia adentro: DESASIENTA la cuña de los dos hombros</text>
+  </g>
+</svg>
+<p class="cap"><b>Fig. 2 — Dónde pasa todo.</b> La cuña apoya en dos hombros de cola de milano y el ripple la empuja contra ellos desde abajo. El golpe entra radialmente <em>hacia adentro</em>, o sea que trabaja contra el apoyo en vez de contra el ripple: por eso lo que cambia al aflojarse no es una rigidez sino si los hombros están tocando o no.</p>
+</figure>`;
+
+const SVG_BORDES = `
+<figure>
+<svg viewBox="0 0 700 250" role="img" style="max-width:100%;height:auto" aria-label="Los dos estados de borde: con el hombro cerrado la cuña flexiona contra un apoyo rígido a 33 kilohercios; con el hombro abierto se mueve como cuerpo rígido sobre el ripple a 1,3 kilohercios">
+  <defs>
+    <pattern id="hatch2" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="7" stroke="currentColor" stroke-width="1.1" opacity=".35"/></pattern>
+  </defs>
+  <!-- IZQUIERDA: hombro cerrado -->
+  <g fill="none" stroke="currentColor" stroke-width="1.5">
+    <rect x="30" y="96" width="40" height="26" fill="url(#hatch2)"/>
+    <rect x="250" y="96" width="40" height="26" fill="url(#hatch2)"/>
+    <path d="M70 108 H250" stroke-width="2.4" stroke="var(--hi)"/>
+    <path d="M70 108 q90 26 180 0" stroke="var(--hi)" stroke-width="1.4" stroke-dasharray="4 3"/>
+    <path d="M70 108 q90 -26 180 0" stroke="var(--hi)" stroke-width="1.4" stroke-dasharray="4 3"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.5" fill="none">
+    <line x1="70" y1="122" x2="70" y2="140"/><line x1="250" y1="122" x2="250" y2="140"/>
+    <line x1="58" y1="140" x2="82" y2="140" stroke-width="2.4"/><line x1="238" y1="140" x2="262" y2="140" stroke-width="2.4"/>
+  </g>
+  <!-- DERECHA: hombro abierto -->
+  <g fill="none" stroke="currentColor" stroke-width="1.5">
+    <rect x="410" y="96" width="40" height="26" fill="url(#hatch2)"/>
+    <rect x="630" y="96" width="40" height="26" fill="url(#hatch2)"/>
+    <path d="M450 116 H630" stroke-width="2.4" stroke="var(--lo)"/>
+    <path d="M450 132 H630" stroke="var(--lo)" stroke-width="1.4" stroke-dasharray="4 3"/>
+    <path d="M450 100 H630" stroke="var(--lo)" stroke-width="1.4" stroke-dasharray="4 3"/>
+    <path d="M470 150 q10 -10 20 0 q10 10 20 0 q10 -10 20 0 q10 10 20 0 q10 -10 20 0 q10 10 20 0" stroke="currentColor" stroke-width="1.4"/>
+    <line x1="462" y1="164" x2="618" y2="164" stroke-width="2"/>
+  </g>
+  <g stroke="var(--risk)" stroke-width="1.6" fill="none">
+    <line x1="450" y1="112" x2="450" y2="122"/><line x1="630" y1="112" x2="630" y2="122"/>
+  </g>
+  <g font-family="'IBM Plex Mono',monospace" font-size="12">
+    <text x="30" y="40" font-family="Archivo,sans-serif" font-size="14" font-weight="600" fill="var(--hi)">hombro CERRADO · asentada</text>
+    <text x="30" y="60" fill="var(--muted)">la cuña está pegada al núcleo:</text>
+    <text x="30" y="76" fill="var(--muted)">flexiona contra un apoyo rigidísimo</text>
+    <text x="30" y="196" fill="var(--hi)">32,9 / 33,4 / 33,6 / 40,0 kHz</text>
+    <text x="30" y="214" fill="var(--muted)">modos de FLEXIÓN</text>
+    <text x="410" y="40" font-family="Archivo,sans-serif" font-size="14" font-weight="600" fill="var(--lo)">hombro ABIERTO · suelta</text>
+    <text x="410" y="60" fill="var(--muted)">la cuña queda colgada del ripple:</text>
+    <text x="410" y="76" fill="var(--muted)">se mueve entera, como un bloque</text>
+    <text x="410" y="196" fill="var(--lo)">1,28 / 1,29 kHz</text>
+    <text x="410" y="214" fill="var(--muted)">modos de CUERPO RÍGIDO</text>
+    <text x="455" y="92" font-size="11" fill="var(--risk)">luz</text>
+  </g>
+</svg>
+<p class="cap"><b>Fig. 4 — No es el mismo modo corrido: son dos familias.</b> Con el hombro cerrado la cuña sólo puede <em>flexionar</em> contra un apoyo rigidísimo, y eso vive en decenas de kHz. Con el hombro abierto aparecen dos modos que antes no existían — la cuña entera rebotando sobre el ripple — y ésos viven en el kHz. Entre una familia y la otra no hay nada, y ese vacío es el hueco.</p>
+</figure>`;
+
+const SVG_DECISION = `
+<figure>
+<svg viewBox="0 0 700 150" role="img" style="max-width:100%;height:auto" aria-label="Orden de operaciones de la decisión: descartar el tiro si el palpador despegó, normalizar el rasgo por la energía entregada, comparar contra un umbral calibrado">
+  <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.5">
+    <rect x="10" y="46" width="130" height="52" rx="3"/>
+    <rect x="200" y="46" width="150" height="52" rx="3"/>
+    <rect x="410" y="46" width="140" height="52" rx="3"/>
+    <rect x="600" y="46" width="90" height="52" rx="3" stroke="var(--hi)" stroke-width="2"/>
+    <line x1="140" y1="72" x2="196" y2="72" marker-end="url(#ar2)"/>
+    <line x1="350" y1="72" x2="406" y2="72" marker-end="url(#ar2)"/>
+    <line x1="550" y1="72" x2="596" y2="72" marker-end="url(#ar2)"/>
+    <line x1="75" y1="46" x2="75" y2="24" stroke="var(--risk)"/>
+  </g>
+  <g font-family="'IBM Plex Mono',monospace" font-size="11.5" fill="currentColor">
+    <text x="75" y="68" text-anchor="middle" font-size="12.5">1 · ¿despegó?</text>
+    <text x="75" y="86" text-anchor="middle" fill="var(--muted)">riel plano en −F/m</text>
+    <text x="75" y="18" text-anchor="middle" fill="var(--risk)">sí → descartar el tiro</text>
+    <text x="275" y="68" text-anchor="middle" font-size="12.5">2 · normalizar</text>
+    <text x="275" y="86" text-anchor="middle" fill="var(--muted)">∫a²dt ÷ energía del golpe</text>
+    <text x="480" y="68" text-anchor="middle" font-size="12.5">3 · umbral</text>
+    <text x="480" y="86" text-anchor="middle" fill="var(--muted)">calibrado en banco</text>
+    <text x="645" y="76" text-anchor="middle" font-size="12.5" fill="var(--hi)">veredicto</text>
+    <text x="168" y="118" fill="var(--muted)">binario, sin calibración</text>
+    <text x="410" y="118" fill="var(--muted)">la energía la da B5, con 0,145 % de error</text>
+  </g>
+</svg>
+<p class="cap"><b>Fig. 13 — El orden de operaciones sí está definido.</b> Lo único que falta es la función del paso 3 — y se calibra contra cuñas de estado conocido, no se deriva del modelo, porque derivarla sería volver a confiar en <code>k_hombro</code>.</p>
+</figure>`;
+
+/* ---- datos medidos (studies/figuras_modelo.py, zeta = 0,02) ---- */
+const DAT = {"st":[["S0",0.31,830,2.4,1.7],["S1",0.3,756,2.3,0.3],["S2",0.4,1545,2.9,0.6],["S3",2.39,4808,16.2,23.4],["S4",7.12,1544,45.6,1001.9],["S5",6.89,1073,44.4,2126.9],["S6",6.9,1062,44.5,2129.1]],"tr":{"S0":{"a":[-0.0,-0.03,0.29,1.64,2.39,1.32,0.47,0.71,0.69,0.25,-0.41,-1.12,-0.64,1.17,0.88,-1.16,-1.36,0.11,0.64,0.42,-0.58,-1.48,-0.56,1.19,0.47,-1.22,-1.27,-0.13,0.51,0.5,-0.77,-1.64,-0.41,1.1,0.22,-1.14,-1.2,-0.34,0.56,0.59,-0.95,-1.65,-0.2,0.97,0.16,-0.95,-1.2,-0.41,0.77,0.61,-1.04,-1.46,-0.03,0.88,0.28,-0.78,-1.19,-0.31,1.0,0.61,-0.98,-1.21,0.1,0.9,0.48,-0.63,-1.14,-0.1,1.2,0.63,-0.83,-0.96,0.18,1.01,0.71,-0.53,-1.04,0.15,1.33,0.67,-0.63,-0.77,0.24,1.17,0.87,-0.48,-0.91,0.35,1.38,0.73,-0.46,-0.67,0.29,1.31,0.93,-0.47,-0.78,0.46,1.36,0.78,-0.37,-0.66,0.32,1.38,0.9,-0.48,-0.71,0.46,1.29,0.79,-0.38,-0.72,0.32,1.36,0.79,-0.53,-0.71,0.37,1.2,0.74,-0.48,-0.83,0.27,1.25,0.64,-0.61,-0.79,0.23,1.08,0.62,-0.64,-0.94,0.18,1.08,0.48,-0.72,-0.92,0.07,0.96,0.48,-0.8,-1.05,0.07,0.91,0.34,-0.83,-1.06,-0.05,0.85,0.33,-0.93,-1.13,-0.04,0.77,0.24,-0.92,-1.16,-0.13,0.77,0.22,-1.0,-1.17,-0.11,0.7,0.2,-0.96,-1.21,-0.14,0.74,0.18,-0.99,-1.16,-0.13,0.7,0.21,-0.95,-1.17,-0.1,0.76,0.21,-0.93,-1.1,-0.07,0.77,0.28,-0.89,-1.07,0.0,0.83,0.3,-0.82,-0.99,0.03,0.89,0.38,-0.78,-0.94,0.12,0.94,0.43,-0.69,-0.87,0.17,1.02,0.5,-0.64,-0.8,0.25,1.06,0.56,-0.56,-0.75,0.29,1.13,0.6,-0.52,-0.68,0.35,1.16,0.66,-0.47,-0.65,0.39,1.2,0.67,-0.45,-0.61,0.41,1.21,0.7,-0.43,-0.6,0.43,1.22,0.69,-0.42,-0.6,0.41,1.21,0.69,-0.45,-0.62,0.4,1.18,0.65,-0.47,-0.65,0.36,1.15,0.62,-0.52,-0.69,0.32,1.1,0.57,-0.56,-0.74,0.26,1.05,0.51,-0.62,-0.79,0.21,0.98,0.45,-0.68,-0.86,0.15,0.93,0.38,-0.74,-0.91,0.09,0.86,0.33,-0.8,-0.97,0.04,0.81,0.27,-0.85,-1.02,-0.01,0.77,0.23,-0.9,-1.06,-0.04,0.73,0.2,-0.92,-1.08,-0.07,0.71,0.18,-0.94,-1.09,-0.07,0.7,0.17,-0.94,-1.09,-0.07,0.72,0.18,-0.93,-1.07,-0.05,0.73,0.2,-0.91,-1.05,-0.02,0.77,0.23,-0.87,-1.01,0.03,0.81,0.28,-0.83,-0.96,0.08,0.87,0.33,-0.77,-0.91,0.13,0.92,0.39,-0.72,-0.85,0.2,0.98,0.44,-0.67,-0.79,0.25,1.04,0.49,-0.61,-0.74,0.31,1.09,0.54,-0.57,-0.69,0.35,1.14,0.58,-0.53,-0.65,0.39,1.17,0.61,-0.51,-0.63,0.42,1.19,0.63,-0.49,-0.61,0.43,1.2,0.63,-0.49,-0.62,0.43,1.2,0.62,-0.51,-0.63,0.42,1.18,0.6,-0.54,-0.65,0.4,1.15,0.56,-0.57,-0.69,0.36,1.12,0.52,-0.62,-0.73,0.32,1.07,0.47,-0.67,-0.78,0.27,1.02,0.41,-0.73,-0.84,0.22,0.97,0.35,-0.79,-0.89,0.17,0.92,0.3,-0.84,-0.94,0.13,0.87,0.25,-0.89,-0.98,0.09,0.83,0.21,-0.93,-1.02,0.06,0.8,0.17,-0.96,-1.04,0.04,0.78,0.15,-0.98,-1.05,0.03,0.78,0.14,-0.99,-1.05,0.04,0.78,0.15,-0.98,-1.04,0.06,0.8,0.16,-0.97,-1.02,0.09,0.83,0.19,-0.94,-0.98,0.13,0.87,0.22,-0.9,-0.94,0.17,0.91,0.26,-0.86,-0.89,0.23,0.96,0.31,-0.81,-0.84,0.28,1.01,0.36,-0.77,-0.79,0.34,1.06,0.4,-0.72,-0.74,0.39,1.11,0.44,-0.68,-0.69,0.43,1.15,0.47,-0.65,-0.66,0.47,1.18,0.5,-0.63,-0.63,0.5,1.2,0.51,-0.61,-0.62,0.51,1.21,0.52,-0.61,-0.61,0.52,1.21,0.51],"dt":0.006,"sig":1.73,"pk":2.39},"S3":{"a":[-0.0,-0.03,0.26,1.44,2.8,5.65,10.13,14.27,16.17,15.08,10.04,0.78,-10.55,-8.91,2.38,8.29,6.93,2.43,-4.54,-7.83,-4.52,2.1,3.22,-1.3,-5.75,-5.59,-3.51,0.03,-0.38,-4.61,-6.66,-3.77,-1.31,-1.79,-4.47,-5.79,-4.42,-2.05,-2.33,-4.56,-5.45,-4.03,-2.68,-2.85,-4.17,-4.86,-3.98,-2.72,-2.86,-3.88,-4.21,-3.48,-2.66,-2.63,-3.25,-3.52,-2.93,-2.21,-2.19,-2.59,-2.66,-2.2,-1.65,-1.53,-1.76,-1.79,-1.36,-0.9,-0.79,-0.88,-0.82,-0.48,-0.1,0.05,0.03,0.12,0.42,0.74,0.89,0.92,1.03,1.28,1.55,1.69,1.74,1.85,2.06,2.27,2.39,2.45,2.54,2.7,2.87,2.96,3.01,3.08,3.19,3.3,3.37,3.39,3.42,3.49,3.55,3.57,3.57,3.56,3.58,3.6,3.58,3.54,3.5,3.47,3.44,3.38,3.31,3.23,3.17,3.09,3.0,2.89,2.78,2.68,2.57,2.45,2.31,2.18,2.04,1.91,1.76,1.61,1.45,1.3,1.14,0.98,0.82,0.65,0.49,0.32,0.15,-0.01,-0.18,-0.35,-0.51,-0.67,-0.84,-1.0,-1.15,-1.3,-1.45,-1.6,-1.75,-1.88,-2.02,-2.15,-2.27,-2.39,-2.5,-2.61,-2.71,-2.8,-2.89,-2.97,-3.04,-3.11,-3.17,-3.22,-3.26,-3.3,-3.33,-3.35,-3.36,-3.37,-3.37,-3.36,-3.34,-3.31,-3.28,-3.24,-3.19,-3.14,-3.08,-3.01,-2.93,-2.85,-2.76,-2.67,-2.56,-2.46,-2.35,-2.23,-2.11,-1.98,-1.85,-1.71,-1.57,-1.43,-1.29,-1.14,-0.99,-0.84,-0.68,-0.53,-0.37,-0.22,-0.06,0.1,0.25,0.41,0.56,0.71,0.87,1.01,1.16,1.3,1.44,1.58,1.71,1.84,1.96,2.08,2.19,2.3,2.4,2.5,2.59,2.68,2.75,2.83,2.89,2.95,3.0,3.05,3.08,3.12,3.14,3.15,3.16,3.16,3.16,3.15,3.12,3.1,3.06,3.02,2.97,2.92,2.85,2.79,2.71,2.63,2.54,2.45,2.35,2.25,2.14,2.03,1.92,1.79,1.67,1.54,1.41,1.27,1.13,0.99,0.85,0.71,0.56,0.42,0.27,0.12,-0.02,-0.17,-0.32,-0.46,-0.61,-0.75,-0.89,-1.03,-1.16,-1.29,-1.42,-1.55,-1.67,-1.79,-1.9,-2.01,-2.11,-2.21,-2.31,-2.4,-2.48,-2.55,-2.62,-2.69,-2.75,-2.8,-2.84,-2.88,-2.91,-2.94,-2.96,-2.97,-2.97,-2.97,-2.96,-2.94,-2.92,-2.89,-2.86,-2.81,-2.76,-2.71,-2.65,-2.58,-2.51,-2.43,-2.34,-2.25,-2.16,-2.06,-1.96,-1.85,-1.74,-1.62,-1.5,-1.38,-1.25,-1.12,-0.99,-0.86,-0.73,-0.59,-0.45,-0.32,-0.18,-0.04,0.1,0.23,0.37,0.51,0.64,0.78,0.91,1.03,1.16,1.28,1.4,1.52,1.63,1.74,1.84,1.94,2.04,2.13,2.21,2.29,2.37,2.43,2.5,2.56,2.61,2.65,2.69,2.72,2.75,2.77,2.78,2.79,2.79,2.78,2.77,2.75,2.73,2.7,2.66,2.62,2.57,2.51,2.45,2.39,2.31,2.24,2.16,2.07,1.98,1.88,1.78,1.68,1.57,1.46,1.35,1.23,1.11,0.99,0.87,0.74,0.61,0.49,0.36,0.23,0.1,-0.03,-0.16,-0.29,-0.42,-0.55,-0.67,-0.79,-0.92,-1.03,-1.15,-1.26,-1.38,-1.48,-1.59,-1.69,-1.78,-1.87,-1.96,-2.04,-2.12,-2.19,-2.26,-2.32,-2.38,-2.43,-2.47,-2.51,-2.54,-2.57,-2.59,-2.61,-2.62,-2.62,-2.62,-2.61,-2.6,-2.57,-2.55,-2.52,-2.48,-2.43,-2.38,-2.33,-2.27,-2.21,-2.13,-2.06,-1.98,-1.9,-1.81,-1.72,-1.62,-1.52,-1.42,-1.31,-1.21,-1.09,-0.98,-0.87,-0.75,-0.63,-0.51,-0.39,-0.27,-0.15,-0.03,0.1,0.22,0.34,0.46,0.58,0.69,0.81,0.92,1.03,1.14,1.24,1.35,1.45,1.54,1.63,1.72,1.8,1.88,1.96,2.03,2.09,2.15,2.21,2.26,2.3,2.34,2.38,2.4,2.43,2.44,2.45,2.46,2.46],"dt":0.006,"sig":23.43,"pk":16.22},"S6":{"a":[-0.0,-0.03,0.31,2.69,7.71,14.69,22.39,29.85,36.17,40.57,42.8,43.23,42.59,41.83,40.95,39.84,38.55,37.31,36.09,34.77,33.32,31.81,30.22,28.52,26.71,24.82,22.86,20.83,18.74,16.61,14.45,12.26,10.05,7.82,5.59,3.36,1.13,-1.1,-3.32,-5.52,-7.71,-9.87,-12.01,-14.11,-16.18,-18.2,-20.18,-22.11,-23.98,-25.79,-27.53,-29.21,-30.82,-32.35,-33.8,-35.17,-36.45,-37.65,-38.75,-39.77,-40.69,-41.51,-42.23,-42.85,-43.38,-43.8,-44.12,-44.33,-44.44,-44.45,-44.35,-44.15,-43.85,-43.45,-42.94,-42.34,-41.64,-40.84,-39.95,-38.97,-37.9,-36.74,-35.5,-34.18,-32.78,-31.31,-29.77,-28.16,-26.49,-24.76,-22.97,-21.14,-19.25,-17.33,-15.37,-13.37,-11.35,-9.31,-7.24,-5.17,-3.08,-0.99,1.1,3.19,5.26,7.32,9.36,11.37,13.36,15.31,17.22,19.09,20.92,22.69,24.41,26.07,27.67,29.2,30.67,32.06,33.38,34.61,35.77,36.84,37.83,38.73,39.53,40.25,40.87,41.4,41.84,42.17,42.41,42.56,42.6,42.55,42.4,42.16,41.82,41.38,40.85,40.23,39.52,38.72,37.83,36.86,35.8,34.67,33.46,32.17,30.82,29.39,27.91,26.36,24.75,23.09,21.39,19.64,17.84,16.01,14.15,12.26,10.34,8.4,6.46,4.5,2.53,0.56,-1.4,-3.36,-5.3,-7.23,-9.14,-11.02,-12.87,-14.69,-16.47,-18.21,-19.9,-21.55,-23.14,-24.67,-26.14,-27.55,-28.89,-30.16,-31.36,-32.48,-33.53,-34.5,-35.38,-36.19,-36.9,-37.53,-38.07,-38.52,-38.89,-39.16,-39.34,-39.42,-39.42,-39.33,-39.14,-38.87,-38.5,-38.05,-37.51,-36.88,-36.17,-35.38,-34.5,-33.55,-32.52,-31.42,-30.25,-29.01,-27.7,-26.34,-24.91,-23.43,-21.9,-20.32,-18.7,-17.03,-15.33,-13.6,-11.84,-10.05,-8.24,-6.42,-4.59,-2.75,-0.9,0.94,2.78,4.61,6.42,8.22,10.0,11.75,13.47,15.15,16.8,18.41,19.97,21.48,22.94,24.35,25.7,26.98,28.21,29.36,30.45,31.46,32.4,33.27,34.05,34.76,35.39,35.93,36.39,36.77,37.06,37.26,37.38,37.42,37.37,37.23,37.01,36.7,36.31,35.84,35.28,34.65,33.94,33.15,32.28,31.35,30.34,29.27,28.13,26.93,25.67,24.36,22.99,21.57,20.11,18.6,17.05,15.46,13.85,12.2,10.53,8.84,7.14,5.42,3.69,1.96,0.22,-1.51,-3.23,-4.95,-6.65,-8.32,-9.98,-11.61,-13.21,-14.78,-16.31,-17.8,-19.24,-20.64,-21.98,-23.27,-24.51,-25.69,-26.8,-27.86,-28.84,-29.76,-30.6,-31.38,-32.08,-32.7,-33.25,-33.72,-34.11,-34.42,-34.65,-34.8,-34.87,-34.86,-34.77,-34.6,-34.35,-34.02,-33.62,-33.13,-32.57,-31.94,-31.23,-30.45,-29.61,-28.7,-27.72,-26.68,-25.58,-24.42,-23.21,-21.95,-20.64,-19.29,-17.89,-16.45,-14.98,-13.48,-11.95,-10.39,-8.81,-7.22,-5.61,-3.99,-2.37,-0.74,0.89,2.51,4.12,5.72,7.3,8.87,10.41,11.93,13.41,14.86,16.27,17.65,18.98,20.27,21.5,22.69,23.82,24.89,25.9,26.86,27.75,28.57,29.33,30.01,30.63,31.18,31.65,32.05,32.38,32.63,32.8,32.9,32.93,32.88,32.75,32.55,32.27,31.92,31.5,31.0,30.44,29.8,29.1,28.34,27.51,26.62,25.67,24.66,23.6,22.48,21.32,20.11,18.85,17.56,16.22,14.86,13.46,12.03,10.58,9.1,7.61,6.11,4.59,3.06,1.54,0.01,-1.52,-3.04,-4.55,-6.04,-7.52,-8.98,-10.42,-11.82,-13.2,-14.55,-15.86,-17.13,-18.35,-19.54,-20.67,-21.76,-22.79,-23.77,-24.69,-25.56,-26.36,-27.1,-27.78,-28.39,-28.93,-29.41,-29.82,-30.16,-30.42,-30.62,-30.75,-30.8,-30.79,-30.7,-30.55,-30.32,-30.02,-29.66,-29.22,-28.72,-28.16,-27.53,-26.84,-26.09,-25.28,-24.41,-23.49,-22.52,-21.49,-20.42,-19.3,-18.14,-16.95,-15.71,-14.44,-13.14,-11.81,-10.46,-9.09,-7.69,-6.29,-4.87,-3.44,-2.0,-0.57,0.87,2.3,3.72,5.13,6.52],"dt":0.006,"sig":2129.13,"pk":44.46}},"lift":{"a":[-0.0,-0.05,0.6,5.14,14.53,27.07,40.04,51.58,-150.0,-150.0,-150.0,68.84,68.88,68.77,68.21,67.2,66.3,65.5,64.51,63.28,61.94,60.49,58.82,56.93,54.86,52.66,50.3,47.8,45.18,42.47,39.67,36.78,33.83,30.82,27.75,24.62,21.45,18.25,15.01,11.74,8.46,5.16,1.86,-1.44,-4.73,-8.0,-11.24,-14.45,-17.61,-20.73,-23.79,-26.79,-29.72,-32.58,-35.34,-38.03,-40.61,-43.1,-45.48,-47.75,-49.9,-51.93,-53.84,-55.62,-57.26,-58.77,-60.13,-61.36,-62.44,-63.37,-64.15,-64.78,-65.25,-65.58,-65.75,-65.77,-65.63,-65.34,-64.91,-64.32,-63.58,-62.69,-61.66,-60.49,-59.18,-57.74,-56.16,-54.45,-52.62,-50.68,-48.61,-46.44,-44.16,-41.79,-39.32,-36.76,-34.13,-31.41,-28.63,-25.79,-22.89,-19.94,-16.95,-13.93,-10.88,-7.8,-4.72,-1.62,1.47,4.55,7.62,10.67,13.69,16.67,19.61,22.5,25.33,28.11,30.81,33.44,35.99,38.45,40.82,43.09,45.26,47.33,49.28,51.12,52.83,54.42,55.89,57.23,58.43,59.5,60.43,61.22,61.86,62.37,62.73,62.95,63.03,62.96,62.75,62.39,61.89,61.26,60.48,59.57,58.52,57.34,56.04,54.6,53.05,51.38,49.59,47.7,45.7,43.59,41.4,39.11,36.74,34.29,31.77,29.18,26.53,23.82,21.07,18.27,15.44,12.58,9.69,6.79,3.89,0.97,-1.93,-4.83,-7.71,-10.56,-13.38,-16.17,-18.91,-21.6,-24.24,-26.82,-29.32,-31.76,-34.11,-36.38,-38.57,-40.66,-42.65,-44.53,-46.31,-47.98,-49.54,-50.97,-52.29,-53.48,-54.55,-55.49,-56.29,-56.97,-57.51,-57.92,-58.19,-58.33,-58.33,-58.2,-57.93,-57.53,-56.99,-56.33,-55.54,-54.62,-53.57,-52.4,-51.12,-49.71,-48.2,-46.58,-44.85,-43.02,-41.09,-39.07,-36.97,-34.78,-32.52,-30.19,-27.79,-25.33,-22.81,-20.25,-17.65,-15.01,-12.34,-9.64,-6.93,-4.2,-1.47,1.25,3.98,6.68,9.37,12.03,14.66,17.25,19.8,22.29,24.73,27.11,29.43,31.67,33.84,35.92,37.92,39.83,41.64,43.36,44.97,46.47,47.87,49.16,50.32,51.38,52.31,53.12,53.81,54.37,54.81,55.12,55.3,55.36,55.29,55.09,54.77,54.32,53.75,53.05,52.24,51.31,50.26,49.1,47.83,46.45,44.97,43.39,41.71,39.94,38.08,36.14,34.12,32.02,29.86,27.63,25.34,23.0,20.61,18.18,15.71,13.21,10.69,8.14,5.59,3.02,0.46,-2.11,-4.66,-7.19,-9.71,-12.19,-14.65,-17.06,-19.43,-21.75,-24.01,-26.22,-28.36,-30.43,-32.42,-34.34,-36.17,-37.92,-39.58,-41.14,-42.6,-43.96,-45.22,-46.37,-47.41,-48.34,-49.16,-49.86,-50.44,-50.91,-51.26,-51.48,-51.59,-51.59,-51.46,-51.21,-50.85,-50.37,-49.77,-49.06,-48.23,-47.3,-46.26,-45.12,-43.87,-42.53,-41.09,-39.55,-37.93,-36.23,-34.44,-32.58,-30.64,-28.64,-26.57,-24.45,-22.28,-20.06,-17.79,-15.49,-13.16,-10.8,-8.42,-6.03,-3.63,-1.22,1.19,3.59,5.97,8.34,10.69,13.01,15.29,17.53,19.73,21.88,23.97,26.01,27.98,29.89,31.72,33.48,35.15,36.74,38.25,39.66,40.98,42.21,43.33,44.36,45.28,46.09,46.8,47.39,47.88,48.26,48.52,48.67,48.72,48.65,48.46,48.17,47.77,47.25,46.63,45.91,45.08,44.14,43.11,41.98,40.76,39.45,38.05,36.56,34.99,33.35,31.63,29.84,27.99,26.07,24.1,22.08,20.01,17.91,15.76,13.58,11.37,9.15,6.9,4.65,2.39,0.12,-2.13,-4.38,-6.62,-8.83,-11.02,-13.18,-15.3,-17.39,-19.43,-21.42,-23.36,-25.25,-27.07,-28.82,-30.5,-32.11,-33.65,-35.1,-36.47,-37.75,-38.94,-40.04,-41.05,-41.95,-42.77,-43.48,-44.09,-44.59,-44.99,-45.29,-45.48,-45.57,-45.55,-45.43,-45.2,-44.87,-44.44,-43.91,-43.27,-42.54,-41.7,-40.78,-39.76,-38.66,-37.46,-36.18,-34.82,-33.39,-31.88,-30.29,-28.64,-26.93,-25.16,-23.34,-21.46,-19.54,-17.58,-15.58,-13.55,-11.49,-9.4,-7.3,-5.19,-3.07],"ref":[-0.0,-0.05,0.6,5.14,14.53,27.07,40.04,51.58,60.25,65.22,66.62,65.82,64.8,63.65,62.06,60.04,58.15,56.37,54.43,52.27,50.03,47.71,45.2,42.5,39.67,36.73,33.67,30.51,27.28,23.99,20.66,17.29,13.9,10.49,7.07,3.65,0.23,-3.17,-6.56,-9.93,-13.26,-16.56,-19.81,-23.0,-26.14,-29.21,-32.21,-35.12,-37.95,-40.67,-43.3,-45.82,-48.23,-50.52,-52.69,-54.73,-56.64,-58.41,-60.05,-61.53,-62.88,-64.07,-65.11,-66.0,-66.73,-67.31,-67.73,-67.98,-68.08,-68.03,-67.81,-67.43,-66.9,-66.22,-65.38,-64.39,-63.25,-61.97,-60.54,-58.98,-57.28,-55.45,-53.5,-51.43,-49.23,-46.93,-44.53,-42.02,-39.42,-36.73,-33.96,-31.12,-28.21,-25.23,-22.21,-19.14,-16.02,-12.88,-9.71,-6.52,-3.32,-0.12,3.08,6.27,9.43,12.57,15.68,18.75,21.77,24.73,27.63,30.47,33.23,35.91,38.51,41.01,43.42,45.72,47.91,49.99,51.95,53.8,55.51,57.09,58.55,59.86,61.04,62.08,62.97,63.71,64.31,64.77,65.07,65.22,65.23,65.08,64.79,64.35,63.77,63.04,62.16,61.15,60.0,58.72,57.3,55.76,54.09,52.3,50.39,48.38,46.26,44.03,41.71,39.3,36.81,34.24,31.59,28.88,26.11,23.28,20.41,17.49,14.54,11.57,8.58,5.57,2.56,-0.46,-3.46,-6.45,-9.42,-12.36,-15.26,-18.12,-20.94,-23.7,-26.4,-29.03,-31.59,-34.07,-36.47,-38.77,-40.98,-43.1,-45.11,-47.01,-48.79,-50.47,-52.02,-53.44,-54.74,-55.91,-56.95,-57.86,-58.63,-59.26,-59.75,-60.1,-60.32,-60.39,-60.33,-60.12,-59.78,-59.3,-58.68,-57.92,-57.04,-56.02,-54.88,-53.61,-52.22,-50.71,-49.08,-47.35,-45.51,-43.57,-41.53,-39.39,-37.17,-34.87,-32.49,-30.04,-27.53,-24.95,-22.33,-19.65,-16.94,-14.19,-11.41,-8.61,-5.8,-2.97,-0.15,2.67,5.48,8.28,11.04,13.78,16.49,19.15,21.76,24.32,26.81,29.25,31.61,33.89,36.09,38.2,40.23,42.16,43.98,45.71,47.32,48.83,50.22,51.49,52.64,53.67,54.57,55.35,56.0,56.52,56.91,57.16,57.29,57.28,57.15,56.88,56.48,55.96,55.3,54.52,53.62,52.6,51.46,50.2,48.83,47.35,45.76,44.08,42.29,40.41,38.45,36.4,34.27,32.06,29.79,27.45,25.05,22.61,20.11,17.58,15.01,12.4,9.78,7.14,4.49,1.83,-0.82,-3.47,-6.1,-8.72,-11.3,-13.86,-16.38,-18.86,-21.29,-23.66,-25.98,-28.23,-30.41,-32.51,-34.54,-36.48,-38.34,-40.1,-41.77,-43.33,-44.8,-46.15,-47.4,-48.54,-49.56,-50.46,-51.25,-51.92,-52.46,-52.88,-53.19,-53.36,-53.42,-53.35,-53.16,-52.84,-52.4,-51.85,-51.17,-50.38,-49.47,-48.45,-47.32,-46.09,-44.75,-43.3,-41.77,-40.13,-38.41,-36.6,-34.72,-32.75,-30.71,-28.61,-26.44,-24.22,-21.95,-19.62,-17.26,-14.86,-12.44,-9.98,-7.51,-5.03,-2.54,-0.04,2.44,4.92,7.38,9.82,12.24,14.62,16.96,19.26,21.51,23.71,25.85,27.93,29.93,31.87,33.73,35.51,37.2,38.81,40.32,41.74,43.05,44.27,45.38,46.39,47.29,48.08,48.76,49.32,49.77,50.1,50.32,50.42,50.41,50.28,50.03,49.67,49.2,48.61,47.92,47.11,46.2,45.19,44.07,42.85,41.54,40.14,38.64,37.06,35.4,33.66,31.84,29.96,28.01,26.0,23.94,21.82,19.66,17.45,15.22,12.95,10.65,8.34,6.01,3.67,1.33,-1.01,-3.34,-5.67,-7.97,-10.25,-12.5,-14.72,-16.9,-19.04,-21.13,-23.16,-25.14,-27.06,-28.91,-30.69,-32.4,-34.02,-35.57,-37.03,-38.4,-39.69,-40.88,-41.97,-42.96,-43.85,-44.64,-45.32,-45.9,-46.37,-46.74,-46.99,-47.14,-47.18,-47.11,-46.93,-46.64,-46.24,-45.74,-45.14,-44.43,-43.62,-42.72,-41.71,-40.61,-39.42,-38.14,-36.78,-35.33,-33.8,-32.2,-30.53,-28.79,-26.99,-25.13,-23.22,-21.25,-19.24,-17.19,-15.1,-12.98,-10.84,-8.68,-6.5,-4.3,-2.11,0.09,2.29,4.47,6.64,8.79,10.92],"dt":0.006,"riel":150.0,"tip":120,"frac":0.43},"ener":[[1.0,230.0,16.7,797.9],[2.0,295.4,18.8,446.4],[3.0,380.1,19.2,150.1],[5.0,578.8,15.5,42.8],[8.0,364.6,6.3,19.6],[12.0,112.1,3.2,13.5]],"kf":{"x":[-2.0,-1.6,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.6,2.0],"F":[1.31,1.55,1.72,1.82,1.87,1.89,1.87,1.82,1.72,1.55,1.31]},"zoom":{"lift":[-0.0,-0.0,-0.02,-0.02,-0.02,-0.03,-0.05,-0.08,-0.11,-0.07,0.05,0.27,0.6,1.05,1.61,2.3,3.11,4.06,5.14,6.37,7.74,9.25,10.89,12.66,14.53,16.48,18.51,20.6,22.73,24.89,27.07,29.26,31.45,33.63,35.8,37.93,40.04,42.1,44.11,46.08,47.98,49.81,51.57,53.26,54.85,56.35,57.75,59.05,-150.0,-150.0,-150.0,-150.0,-150.0,-150.0,-150.0,-150.0,-150.0,-150.0,-150.0,-150.0,-150.0,68.73,68.83,68.87,68.87,68.85,68.84,68.84,68.86,68.87,68.88,68.88,68.88,68.88,68.86,68.85,68.83,68.8,68.77,68.73,68.66,68.58,68.47,68.35,68.21,68.05,67.88,67.71,67.54,67.37,67.2,67.04,66.88,66.73,66.58,66.44,66.3,66.17,66.04,65.91,65.78,65.64,65.5,65.35,65.19,65.03,64.87,64.69,64.51,64.32,64.12,63.92,63.71,63.5,63.28,63.06,62.84,62.62,62.39,62.17,61.94,61.71,61.47,61.23,60.99,60.74,60.49,60.23,59.96,59.68,59.4,59.11,58.82,58.52,58.21,57.9,57.58,57.26,56.93,56.59,56.25,55.91,55.57,55.22,54.86,54.51,54.15,53.78,53.41,53.04,52.66,52.28,51.89,51.5,51.11,50.71,50.3,49.9,49.48,49.07,48.65,48.23,47.8,47.37,46.94,46.5,46.06,45.62,45.18,44.74,44.29,43.84,43.38,42.93,42.47,42.01,41.55,41.08,40.61,40.14,39.67,39.19,38.72,38.24,37.75,37.27,36.78,36.3,35.81,35.31,34.82,34.33,33.83,33.33,32.83,32.33,31.83,31.32,30.82,30.31,29.8,29.29,28.77,28.26,27.74,27.23,26.71,26.19,25.67,25.15,24.62,24.1,23.57,23.04,22.51,21.98,21.45,20.92,20.39,19.85,19.32,18.78,18.25,17.71,17.17,16.63,16.09,15.55,15.01,14.46,13.92,13.38,12.83,12.29,11.74,11.19,10.65,10.1,9.55,9.0,8.46,7.91,7.36,6.81,6.26,5.71,5.16,4.61,4.06,3.51],"ref":[-0.0,-0.0,-0.02,-0.02,-0.02,-0.03,-0.05,-0.08,-0.11,-0.07,0.05,0.27,0.6,1.05,1.61,2.3,3.11,4.06,5.14,6.37,7.74,9.25,10.89,12.66,14.53,16.48,18.51,20.6,22.73,24.89,27.07,29.26,31.45,33.63,35.8,37.93,40.04,42.1,44.11,46.08,47.98,49.81,51.57,53.26,54.85,56.35,57.75,59.05,60.25,61.34,62.33,63.21,63.99,64.65,65.22,65.68,66.04,66.3,66.49,66.59,66.62,66.59,66.51,66.38,66.2,66.01,65.82,65.65,65.48,65.32,65.15,64.98,64.8,64.62,64.44,64.25,64.05,63.86,63.65,63.43,63.2,62.94,62.67,62.37,62.06,61.73,61.39,61.05,60.71,60.37,60.04,59.71,59.38,59.06,58.75,58.44,58.15,57.85,57.56,57.26,56.97,56.67,56.37,56.06,55.74,55.42,55.1,54.76,54.43,54.08,53.73,53.37,53.0,52.64,52.27,51.9,51.53,51.15,50.78,50.41,50.03,49.65,49.27,48.88,48.5,48.1,47.71,47.3,46.89,46.48,46.06,45.63,45.2,44.76,44.32,43.87,43.42,42.96,42.5,42.03,41.57,41.1,40.62,40.14,39.67,39.18,38.7,38.21,37.72,37.23,36.73,36.23,35.72,35.22,34.71,34.19,33.67,33.15,32.63,32.1,31.58,31.04,30.51,29.98,29.44,28.9,28.36,27.82,27.28,26.73,26.19,25.64,25.09,24.54,23.99,23.44,22.89,22.33,21.78,21.22,20.66,20.1,19.54,18.98,18.42,17.85,17.29,16.73,16.16,15.6,15.03,14.46,13.9,13.33,12.76,12.19,11.63,11.06,10.49,9.92,9.35,8.78,8.21,7.64,7.07,6.5,5.93,5.36,4.79,4.22,3.65,3.08,2.51,1.94,1.37,0.8,0.24,-0.33,-0.9,-1.47,-2.04,-2.6,-3.17,-3.74,-4.3,-4.87,-5.43,-6.0,-6.56,-7.12,-7.68,-8.25,-8.81,-9.37,-9.92,-10.48,-11.04,-11.6,-12.15,-12.71,-13.26,-13.81,-14.36,-14.91,-15.46,-16.01,-16.56,-17.1,-17.65,-18.19],"dt":0.001}};
+
+/* ===================== los seis bloques ===================== */
+const B = [
+{
+ id:"B1", nm:"La cuña y su apoyo", sub:"de dónde sale la señal",
+ q:"Cuando el golpe entra, ¿cómo se mueve la cuña, y qué cambia con el ajuste?",
+ entra:["geom_cuña","apoyo","k_hombro","d_palpador"],
+ sale:["w(t)","escalera","x_pico","a_pico","deriva"],
+ eq:"M q'' + C q' + K q = f(t),   con contacto unilateral en el hombro:\n\n    F_hombro = k_hombro · max(0, penetración)        (sólo empuja)\n\nViga de Timoshenko libre-libre · 20 modos · velocity-Verlet · dt = 50 ns",
+ partes:[
+  ["raw", "SVG_RANURA"],
+  ["p", `<p>Lo que cambia entre una cuña ajustada y una suelta no es la cuña — es su <strong>condición de borde</strong>: con el ripple precargado los hombros están cerrados y la cuña queda acoplada al núcleo en toda su longitud; sin precarga los hombros se abren y la cuña queda colgada del ripple.</p>
+  <p>Por eso la escalera S0–S6 no es un cambio gradual de rigidez. La frontera asentada|suelta cae entre S3 (25 % de precarga) y S4 (5 %).</p>
+  <h4>El resultado que mata la idea ingenua</h4>
+  <p>Si uno apoyara un acelerómetro rígido sobre la cuña y leyera su aceleración, leería esto:</p>`],
+  ["f", {id:"figEsc", n:3, cap:"<b>Fig. 3 — El pico de aceleración no ordena la escalera; el desplazamiento sí.</b> Siete estados de ajuste, golpe de 5 mJ, punto de medición a 12,5 mm. La aceleración de la cuña sube hasta S3 y después <em>baja</em>: <b>1545 g es tanto S2 (cuña al 50 %) como S4 (precarga residual)</b>, y un acelerómetro rígido no puede distinguirlas. La excursión, en cambio, crece de 0,31 a 7,12 µm y no se da vuelta nunca."}],
+  ["p", `<p>Ésta es la razón de fondo por la que no se mide la aceleración de la cuña, y es independiente de cuánta precarga haya disponible. El pico de aceleración está dominado por el transitorio rápido del impacto, que no sigue al estado de ajuste; la excursión sigue al movimiento lento, que sí.</p>
+  <p>Un caveat que se cerró midiéndolo: la <strong>deriva</strong> de cuerpo rígido resultó despreciable. La posición media al final del transitorio vale 0,00–0,01 µm contra picos de 0,31 a 7,12 µm, o sea menos del 0,2 %. El ripple reasienta la cuña.</p>`]
+ ],
+ sal:[["w(t)","movimiento de la cuña bajo el palpador","serie","M"],
+      ["escalera","estados de ajuste S0…S6","7 estados","X"],
+      ["x_pico","excursión, S0 → S6, a 5 mJ","0,31 → 6,90 µm","S"],
+      ["a_pico","aceleración, S0 → S6, a 5 mJ","830 → 1062 g, con 4808 en S3","S"],
+      ["deriva","corrimiento permanente tras el golpe","0,01 µm (&lt;0,2 %)","S"]],
+ hip:[["El apoyo es distribuido a lo largo del hombro, no en los extremos","D","Cambia todas las frecuencias modales. De un apoyo en extremos salía el falso «6,1 kHz» que esta revisión corrigió."],
+      ["k_hombro = 2·10¹⁰ N/m por metro de contacto","E","Es la hipótesis más cara del proyecto. Ver B2."],
+      ["La disipación de junta crece al aflojarse (ζ 0,012 → 0,055)","E","De los cinco parámetros estimados de la cuña es el único que mueve el resultado."]],
+ anclas:["test_anclas.py :: la escalera de estados","test_softprobe.py :: test_frecuencia_sube_con_el_apriete"],
+ banco:["A — ¿existe el hueco espectral?"],
+ falla:"Si el aflojamiento real fuera gradual y no un cambio de condición de apoyo, no hay hueco espectral y el método entero se cae."
+},
+{
+ id:"B2", nm:"El hueco espectral", sub:"el fundamento del método", cls:"risk",
+ q:"¿En qué se distingue, medible, una cuña asentada de una suelta?",
+ entra:["w(t)","escalera","k_hombro"],
+ sale:["f_asentada","f_suelta","hueco","banda_baja_S0","banda_baja_S6"],
+ eq:"hombro CERRADO  →  32,9 / 33,4 / 33,6 / 40,0 kHz\nhombro ABIERTO  →   1,28 / 1,29 kHz   (cuerpo rígido sobre el ripple)\n                     y recién después 10,6 / 24,9 kHz de flexión",
+ partes:[
+  ["p",`<p><strong>La frecuencia sube con el apriete, y sube muchísimo.</strong> Una versión anterior de este trabajo afirmaba lo contrario, apoyada en un 6,1 kHz que venía del modelo de apoyo viejo. Estaba mal, y la corrección es lo que hace robusto al método en lugar de frágil.</p>`],
+  ["raw","SVG_BORDES"],
+  ["p",`<p>El reparto de energía que sale de ahí es <em>total</em>, no parcial:</p>`],
+  ["t",{cap:"Espectro del desplazamiento · 12,5 mm · 5 mJ · resolución 25 Hz", cols:["estado","pico","90 % de la energía","por debajo de 1273 Hz"],
+   rows:[["S0 ajustada","33 350 Hz","33 325 – 33 375 Hz","0,0 %",1],["S3 · 25 %","33 075 Hz","13 375 – 34 625 Hz","1,5 %"],["S6 floja","50 Hz","50 – 225 Hz","100,0 %",1]], n:[1,3]}],
+  ["p",`<h4>Dos trampas ya pisadas</h4>
+  <p><strong>1.</strong> El espectro que importa es el del <em>desplazamiento</em>, porque es lo que excita al palpador. El de la aceleración pesa las altas por ω⁴ y da otra cosa.</p>
+  <p><strong>2.</strong> La ventana tiene que ser larga. Con 8 ms el bin vale 125 Hz, y el pico de la cuña suelta «aparece» en 125 Hz por puro artefacto de resolución. Con 40 ms el número correcto es 50 Hz, y el factor entre picos es ×670 y no ×270.</p>
+  <h4>Aquí es donde duele: la sensibilidad a k_hombro</h4>
+  <p>Éste es el único parámetro de todo el trabajo que puede invalidar el método en vez de sólo degradarlo, y nadie lo midió todavía.</p>`],
+  ["f",{id:"figKs", n:5, cap:"<b>Fig. 5 — El diseño está sentado en la rodilla.</b> Separación asentada|suelta contra la rigidez del hombro, relativa al valor nominal estimado. Con el hombro diez veces más blando el primer modo asentado baja a 10,5 kHz, entra en la banda del palpador y la separación <b>se invierte</b>. Ningún diseño de palpador sobrevive a eso, porque no es un problema de palpador: es que el hueco deja de existir."}],
+  ["t",{cap:"Sensibilidad a k_hombro", cols:["k_hombro","1er modo asentada","separación"],
+   rows:[["÷100","3 530 Hz","×0,08  invertida",2],["÷10","10 487 Hz","×0,34  invertida",2],["÷3,3","18 067 Hz","×8,3"],["2·10¹⁰ nominal","32 874 Hz","×150",1],["×3","55 493 Hz","×176"]], n:[1,2]}]
+ ],
+ sal:[["f_asentada","pico espectral del desplazamiento, S0","33 350 Hz","S"],
+      ["f_suelta","pico espectral del desplazamiento, S6","50 Hz","S"],
+      ["hueco","factor entre los dos picos","×670","S"],
+      ["banda_baja_S0","energía de S0 por debajo de 1273 Hz","0,0 %","S"],
+      ["banda_baja_S6","energía de S6 por debajo de 1273 Hz","100,0 %","S"]],
+ hip:[["k_hombro = 2·10¹⁰ N/m/m, heredada de B1","E","<strong>La hipótesis que puede tumbar el método.</strong> Con el hombro 10× más blando la separación se invierte y no hay palpador que lo arregle."]],
+ anclas:["test_softprobe.py :: test_el_filtro_separa_las_dos_bandas_enteras","test_softprobe.py :: test_frecuencia_sube_con_el_apriete","test_modelo.py :: test_el_corte_del_palpador_cae_dentro_del_hueco_de_la_cuña"],
+ banco:["A — ¿existe el hueco espectral? (no necesita palpador)"],
+ falla:"Es el bloque crítico. Si el hueco no existe en el banco, ningún palpador lo arregla y hay que cambiar de método. Por eso el ensayo A se hace con un acelerómetro de choque pegado a la cuña y puede invalidar el enfoque en un día."
+},
+{
+ id:"B3", nm:"El palpador: un pasa-bajos plantado en el hueco", sub:"cómo se mide con 1 N",
+ q:"¿Cómo se mide eso con 1 N de precarga y a 12,5 mm del golpe?",
+ entra:["f_asentada","f_suelta","hueco","F_precarga","d_palpador"],
+ sale:["m_movil","k_medicion","f0","zeta","a_despegue","m_punta","k_precarga"],
+ eq:"m x'' + c (x' − w') + k (x − w) = 0                    (en contacto)\n\nF_contacto = F_precarga − k(x−w) − c(x'−w') + m_punta · w''\n\ndespegue  ⟺  F_contacto ≤ 0  ⟺  a_leída = F / m",
+ partes:[
+  ["topo"],
+  ["p",`<p>La compliancia tiene que estar <strong>en el camino de carga</strong>, entre lo que toca y lo que mide. Con un vástago rígido punta→carro y la flexura carro→cuerpo se obtiene el palpador <em>rígido con pasos de más</em>: el carro sigue a la cuña y el acelerómetro lee los miles de g.</p>
+  <p>El tercer término de la fuerza de contacto es lo que fija el techo de masa de la punta. La punta queda del lado de la cuña, que la arrastra <strong>cinemáticamente</strong> a miles de g; seguirla cuesta <code>m_punta · a_cuña</code>, y esa fuerza sale del contacto, que no puede dar más que la precarga:</p>
+  <pre class="eq">m_punta ≤ F / a_cuña_max = 1 N / 4800 g ≈ 21 mg</pre>
+  <h4>Qué hace el resorte, exactamente</h4>`],
+  ["f",{id:"figH", n:6, cap:"<b>Fig. 6 — Arriba de su resonancia, el palpador deja de leer aceleración y pasa a leer desplazamiento.</b> Amplificación del palpador contra el movimiento de la cuña, normalizada (r = f/f₀, ζ = 0,02). A la izquierda de la resonancia el carro <em>sigue</em> a la cuña y el acelerómetro lee su aceleración real. A la derecha el carro se queda quieto, el resorte absorbe todo el movimiento, y la lectura vale ω₀²·w — o sea el <b>desplazamiento</b> de la cuña, que es la magnitud que sí ordena la escalera. Las dos bandas de la cuña caen a los lados: la asentada a r = 26, donde el rechazo de alta frecuencia vale 1/472 contra lo que leería un palpador rígido."}],
+  ["p",`<h4>Tres resultados que ordenan el diseño</h4>
+  <p><strong>1 · El fondo de escala de cualquier palpador apoyado vale F/m, y no depende del resorte.</strong> Ablandar el acople no cuesta rango: cambia <em>qué parte</em> del movimiento de la cuña cae adentro de ese fondo de escala. Con acople rígido se gasta en los picos de alta frecuencia, que no llevan información; con acople blando se gasta en el desplazamiento, que sí.</p>
+  <p>El límite es <strong>de un solo lado</strong>: acota la semionda que <em>descarga</em> el contacto. Por eso el margen se calcula contra el pico de descarga (73,5 g) y no contra el de compresión (85,9 g), que es el que dimensiona el acelerómetro. Margen real <strong>2,04</strong>.</p>
+  <p><strong>2 · f₀ elige la calidad, la masa elige si sobrevivís — y son independientes.</strong> La separación y el pico leído resultaron función de f₀ (y ζ) sola. Por eso el diseño se hace en dos pasos y no resolviendo un compromiso.</p>`],
+  ["f",{id:"figF0", n:7, cap:"<b>Fig. 7 — f₀ tiene óptimo, y el diseño está en él.</b> La separación crece con f₀ hasta 1273 Hz y después cae, porque el corte se acerca a la banda de la cuña asentada. Pero el pico leído crece como f₀^1,7, y como el fondo de escala vale F/m, cada Hz de más obliga a bajar la masa. La banda útil (&gt;×100) va de 700 a 1700 Hz."}],
+  ["p",`<p><strong>3 · ζ es el parámetro más sensible de todo el trabajo, y tiene piso <em>y</em> techo.</strong></p>
+  <p><em>Techo:</em> con elastómero el rechazo de alta frecuencia cae de 1/r² a 1/r y la separación se desploma de ×150 a ×3. «Flexura metálica y no elastómero» no es una recomendación de segundo orden: es <strong>la</strong> decisión de construcción.</p>
+  <p><em>Piso:</em> con ζ muy bajo, Q es alto y una excitación <strong>sostenida</strong> a f₀ — máquina girando, motores del crawler, ring-down del tiro anterior — despega el palpador con apenas 0,23 µm. Lo que protege es el <em>tiempo de crecimiento</em>: llegar a Q pide ~Q ciclos y el impacto dura ~1,3. Pero el margen es de 16 ms.</p>`],
+  ["f",{id:"figZeta", n:8, cap:"<b>Fig. 8 — El amortiguamiento tiene ventana.</b> Separación contra ζ del acople, con m = 0,68 g, f₀ = 1273 Hz y 1 N. A la izquierda el Q alto deja al palpador vulnerable a excitación sostenida; a la derecha el amortiguamiento se come el rechazo de alta frecuencia. <b>ζ = 0,02</b> cuesta ×150 → ×112 de separación y compra 4× de inmunidad, además de bajar el ring-down de 115 a 29 ms — que es lo que fija el ritmo máximo de disparo."}],
+  ["p",`<h4>Construcción</h4>
+  <p><strong>Flexura de medición:</strong> 2 láminas de acero de resorte de 2 × 0,15 mm, luz 10 mm, empotradas en ambos extremos con la masa al centro. k = 43,5 N/mm, 83 MPa contra ~1000 de límite elástico → <strong>vida infinita, sin cálculo de fatiga</strong>. Pone 17,4 mg del lado punta.</p>
+  <p><strong>Punta:</strong> conviene formar el resalto en la propia lámina. Una bolilla ⌀1 mm agrega 4,1 mg y deja el total en 21,6 mg, apenas por encima del techo.</p>
+  <p><strong>Lastre:</strong> 0,35 g del lado del carro. El conjunto sale naturalmente en 0,33 g, y sin lastre f₀ se va a 1829 Hz con la separación cayendo a ~×105. <em>Agregar masa mejora la medición</em> — es contraintuitivo y es correcto.</p>
+  <p><strong>Cuerpo:</strong> ≥ 7 g, o sea 10× la masa móvil. Con sólo 3× el efecto de masa reducida corre f₀ un 15 %.</p>
+  <p><strong>Flexura de precarga:</strong> 0,30 N/mm. Hace dos trabajos — da la precarga y <em>guía</em> el carro en el eje de medición — y al ser 145× más blanda que la de medición suma ~1 % a la rigidez que fija f₀. Es la que da el <strong>rango de 3 mm</strong> de posicionamiento (F de 0,70 a 1,60 N), y eso es gratis porque la ganancia varía sólo 0,7 % entre 0,5 y 1,5 N: la precarga entra nada más que por el término de Hertz.</p>`]
+ ],
+ sal:[["m_movil","masa móvil (carro + acelerómetro)","0,680 g","X"],
+      ["k_medicion","rigidez del acople blando, en serie con Hertz","43,5 N/mm","M"],
+      ["f0","corte del filtro","1273 Hz","M"],
+      ["zeta","amortiguamiento del acople","0,02","X"],
+      ["a_despegue","fondo de escala útil = F/m","150 g","M"],
+      ["m_punta","techo de masa del lado punta","20 mg","M"],
+      ["k_precarga","rigidez del resorte de precarga","0,30 N/mm","X"]],
+ hip:[["La flexura metálica da ζ ≈ 0,005–0,02","E","Con elastómero el ensayo es inservible. Se mide en un ping (ensayo B)."],
+      ["La resonancia parásita del lado punta (~7,4 kHz) no molesta","E","Cae entre las dos bandas de la cuña, así que en principio no interfiere, pero <strong>no está en el modelo</strong>: la punta se trata como masa pura sin grado de libertad propio. Pendiente."],
+      ["El cuerpo del palpador pesa ≥ 7 g","X","Con 3× la masa móvil el efecto de masa reducida corre f₀ un 15 %."]],
+ anclas:["test_softprobe.py :: test_fondo_de_escala_es_F_sobre_m_y_no_depende_del_resorte","test_softprobe.py :: test_el_amortiguamiento_es_el_parametro_dominante","test_softprobe.py :: test_el_amortiguamiento_tiene_piso_no_solo_techo","test_softprobe.py :: test_la_masa_de_punta_no_cambia_la_lectura_pero_adelanta_el_despegue","test_modelo.py :: test_los_valores_del_palpador_salen_del_codigo_y_no_del_relato"],
+ banco:["B — ping test: da ζ y f₀ de una medición","C — palpador contra referencia","D — robustez"],
+ falla:"Si el ζ construido supera 0,05 hay que rehacer la flexura: más delgada, sin adhesivo en el camino de carga, sin elastómero. Si la punta pesa más de ~30 mg el palpador despega en los golpes fuertes, y se reconoce por el recorte plano en F/m."
+},
+{
+ id:"B4", nm:"La lectura: de la señal a un número", sub:"el rasgo de decisión",
+ q:"¿Qué número se saca del registro, y cuánto separa?",
+ entra:["f0","zeta","a_despegue","m_movil"],
+ sale:["rasgo","separacion","ventaja_rasgo","despegue_detect","a_leida","acelerometro"],
+ eq:"rasgo = ∫ a(t)² dt     sobre 3 ms, con a filtrada a 5 kHz",
+ partes:[
+  ["p",`<p>Esto es lo que el palpador entrega al cable. Es la única figura de todo el documento que muestra lo que se vería en un osciloscopio:</p>`],
+  ["f",{id:"figTr", n:9, cap:"<b>Fig. 9 — Lo que sale del acelerómetro.</b> Tres estados, mismo golpe de 5 mJ, mismo palpador — <em>ojo que cada panel tiene su propia escala</em>. Con la cuña asentada lo que se ve es su propio movimiento de 33 kHz llegando al carro con ganancia 1 (Fig. 6): un rizado de 2,4 g. Con la suelta, el escalón de 7 µm patea al palpador y lo deja sonando a <b>su</b> frecuencia, 1,27 kHz, con 44,5 g. S3, que es la frontera, hace las dos cosas: arranca con el rizado rápido y termina en la oscilación lenta. La amplitud difiere ×19, pero el rasgo difiere ×1230 — ×346 los pone el cuadrado, y el resto lo pone el límite de banda a 5 kHz, que descarta casi todo el rizado de la cuña asentada."}],
+  ["p",`<p><strong>Lo que el palpador mide no es desplazamiento ni velocidad limpios.</strong> Por regresión sobre los 126 casos simulados, ω²x da R² = 0,92 con 40 % de error mediano y ωv da R² = 0,84 con 26 %. La cuña no lo excita con un impulso sino con una ráfaga, así que la lectura es un valor de <strong>espectro de respuesta al choque</strong> a f₀: hay que calibrarla, no se invierte con fórmula cerrada. No es un problema para este ensayo, que clasifica y no mide una magnitud física.</p>
+  <p>La energía de la señal le gana al pico por 3 a 9 veces, y la figura muestra por qué: promedia sobre toda la ráfaga en vez de quedarse con un instante — y el instante del pico está dominado por el transitorio rápido del impacto, que es justamente la parte que <em>no</em> sigue al estado de ajuste.</p>
+  <p>El <strong>límite de banda a 5 kHz</strong> no es cosmético, es la segunda mitad del filtrado. El acople blando ya convirtió los 830 g de la cuña asentada en 2,4 g (Fig. 6); el límite de banda descarta lo que queda de ese rizado de 33 kHz, porque vive muy arriba de la resonancia del palpador y no lleva información del ajuste. Filtrar más alto lo deja entrar por los caminos parásitos; filtrar más bajo recorta la propia resonancia, que es donde está la señal.</p>
+  <h4>La detección de despegue sale gratis y es binaria</h4>
+  <p>En vuelo la única fuerza sobre el carro es la precarga, así que la lectura se clava <strong>exactamente</strong> en −F/m. No hay que calibrar nada para reconocerlo:</p>`],
+  ["f",{id:"figLift", n:10, cap:"<b>Fig. 10 — La firma del despegue es un riel plano.</b> Mismo golpe (12 mJ, cuña suelta), dos puntas: una de 20 mg, dentro del techo, y otra de 120 mg. La pesada arranca el contacto y la señal se recorta exactamente en −150 g = −F/m, porque en vuelo la única fuerza sobre el carro es la precarga. Se detecta contando las muestras con |a + F/m| &lt; 1 % de F/m: <b>0 %</b> en contacto limpio, <b>0,43 %</b> cuando despega. Binario, sin falsos positivos."}],
+  ["p",`<div class="call o"><div class="t">Límite honesto del ensayo</div><p>Resuelve bien la <strong>transición</strong> asentada/suelta, que cae entre S3 y S4, <strong>no el grado de apriete</strong>. Se ve en la Fig. 3 y en la Fig. 9: dentro del grupo asentado la lectura casi no se mueve (2,4 / 2,3 / 2,9 g) y S4, S5 y S6 saturan todos en el mismo valor (45,6 / 44,4 / 44,5 g). Es un ensayo de dos clases, no un medidor de precarga.</p></div>`]
+ ],
+ sal:[["rasgo","rasgo de decisión: energía de la señal","∫a²dt, 3 ms, 5 kHz","X"],
+      ["separacion","separación asentada | suelta, peor energía","×112","S"],
+      ["ventaja_rasgo","∫a²dt contra el pico","×3 a ×9","S"],
+      ["despegue_detect","detección de despegue","riel plano en −F/m","S"],
+      ["a_leida","rango de lectura sobre 126 casos","0,9 a 109 g · cero despegues","S"],
+      ["acelerometro","sensor","ADXL1005 ±100 g · 0,1 g · 44 dB SNR","X"]],
+ hip:[["El ancho de banda útil es 5 kHz","M","Filtrar más alto deja entrar la banda de 33 kHz por los caminos parásitos; más bajo recorta la propia resonancia del palpador."]],
+ anclas:["test_softprobe.py :: test_el_despegue_se_detecta_por_el_riel_plano","test_softprobe.py :: la energía de la señal le gana al pico"],
+ banco:["C — palpador contra referencia","D — robustez y repetibilidad"],
+ falla:"Si la separación medida en banco queda por debajo de ×100, revisar primero ζ (ensayo B) y después el hueco (ensayo A). El rasgo no es el sospechoso: es el mejor de los probados."
+},
+{
+ id:"B5", nm:"El golpe, y cómo se mide a sí mismo", sub:"la covariable",
+ q:"¿Con cuánta energía hay que golpear, y cómo se sabe cuánta fue?",
+ entra:["escalera","rasgo","LAH04"],
+ sale:["E_golpe","ritmo","v_maza","err_cociente","err_absoluto","tau_e"],
+ eq:"u = R·i + L·di/dt + K_F·v          →   con el drive abierto:  u = K_F(x)·v\n\ne = v_rebote / v_incidente = (K·v_r) / (K·v_i) = v_r / v_i      ← K se cancela EXACTO\n\nη = 1 − e²        (fracción de energía entregada a la cuña)",
+ partes:[
+  ["p",`<h4>La energía del golpe tiene óptimo, y no es el mínimo</h4>
+  <p>Golpear más fuerte parece que siempre tiene que dar más señal. No es así, y los dos límites tienen causas distintas:</p>`],
+  ["f",{id:"figEner", n:11, cap:"<b>Fig. 11 — El óptimo es ancho y está en 3–5 mJ.</b> Arriba de 5 mJ el golpe empieza a despegar del hombro <em>también</em> a la cuña ajustada, la disipación de junta pasa a dominar y la escalera se aplana. Abajo de 3 mJ aparece el otro límite, menos obvio: la cuña más ajustada, S0, devuelve más señal que S1 y S2, así que la escalera deja de ordenar en el extremo apretado y es S0 la que limita. El salto S3|S4 —la frontera que el ensayo tiene que resolver— sí prefiere lo más flojo posible."}],
+  ["p",`<h4>Medir la velocidad con la propia bobina</h4>
+  <p>El actuador es un voice coil, y la fuerza contraelectromotriz en sus bornes es proporcional a la velocidad: midiendo u e i se despeja v <strong>sin agregar ningún sensor</strong>. El problema es que la escala K_F(x) varía 31 % a lo largo de la carrera, lo que da 4 % de error en la energía absoluta.</p>
+  <h4>Pero si se miden las dos velocidades, el error de escala se cancela exacto</h4>
+  <p>El discriminante es un <strong>cociente</strong> — índice tipo Leeb, o η = 1 − e² — y en un cociente K se va. Lo que <em>no</em> se cancela es la variación de K entre los dos instantes, o sea dK/dx. Y ahí hay un regalo geométrico:</p>`],
+  ["f",{id:"figKf", n:12, cap:"<b>Fig. 12 — El punto donde el error no importa.</b> Constante de fuerza del LAH04 a lo largo de su carrera. La curva tiene su máximo justo en el centro, y en un máximo la pendiente vale cero: si el impacto y el rebote ocurren ahí, la escala es la misma en los dos instantes aunque la maza se haya movido. El residuo pasa de 0,41 % a 1,5 mm del centro a <b>0,04 %</b> en el centro. Es gratis de conseguir y vale ×10."}],
+  ["t",{cap:"Presupuesto de error del cociente de velocidades", cols:["fuente","contribución"],
+   rows:[["variación de K_F, impacto al centro de carrera","0,04 %"],["ruido","0,138 %"],["offset","0,011 %"],["total sobre e / índice Leeb","0,145 %",1],["total sobre η = 1 − e²","0,48 %"],["el mismo cociente con el sensor inductivo","0,291 %"]], n:[1]}],
+  ["p",`<p>Comparación justa: <strong>0,145 % contra 0,291 %</strong> — el back-EMF es 2× mejor, 138 niveles Leeb distinguibles contra 69. Para la energía <em>absoluta</em> el inductivo gana; el veredicto opuesto de una nota anterior comparaba esa magnitud, que no es la que usa el discriminante.</p>
+  <div class="call r"><div class="t">Cuidado con la arquitectura</div><p>Si el lanzador <strong>separa</strong> la maza — resorte, vuelo libre — la bobina sólo ve la velocidad de separación y <em>no el rebote</em>, y la cancelación no aplica. Con palanca no se separa y el back-EMF ve las dos, pero entonces el 49 % de la masa equivalente <em>es</em> el actuador. Y τ_e = 43 µs es comparable al contacto (60 µs): hay que abrir el drive unos 5 τ_e antes del impacto, o sea 265 µm antes.</p></div>`]
+ ],
+ sal:[["E_golpe","energía de golpe recomendada","3 a 5 mJ","S"],
+      ["ritmo","ritmo máximo de disparo","8 tiros/s","M"],
+      ["v_maza","velocidad de la maza por back-EMF","u = R i + L di/dt + K_F v","M"],
+      ["err_cociente","error del cociente de velocidades","0,145 %","M"],
+      ["err_absoluto","error de la energía absoluta","4 % · repetibilidad 0,17 %","M"],
+      ["tau_e","constante eléctrica de la bobina","43,1 µs","M"]],
+ hip:[["R de la bobina conocida al 5 % y K_F al 2 %","V","Afecta la energía absoluta (4 %), no el cociente."],
+      ["El impacto cae en el centro de carrera","X","Es gratis de conseguir y vale 10× en el residuo de dK/dx."]],
+ anclas:["test_backemf.py :: test_el_error_de_escala_cancela_exacto_en_el_cociente","test_backemf.py :: test_conviene_que_el_impacto_caiga_en_el_centro_de_la_carrera","test_backemf.py :: test_en_el_cociente_el_backemf_le_gana_al_inductivo"],
+ banco:["D — robustez, repetibilidad y orientación"],
+ falla:"Si el back-EMF no llega, queda el sensor inductivo del proyectil: 0,291 % en el cociente, peor pero suficiente. Ningún resultado de B1 a B4 depende de esta elección."
+},
+{
+ id:"B6", nm:"La decisión: asentada o suelta", sub:"el único bloque abierto", cls:"open",
+ q:"¿Cómo se combinan el rasgo y la energía del golpe en un veredicto?",
+ entra:["rasgo","separacion","E_golpe","err_cociente","despegue_detect"],
+ sale:["veredicto","descarte","clasificador"],
+ eq:"veredicto = f( rasgo normalizado por E_golpe )        ← falta calibrar f",
+ partes:[
+  ["p",`<p>El rasgo de B4 separa ×112, pero depende también de con cuánta energía se golpeó, y esa energía varía tiro a tiro. B5 la mide con 0,145 % de error, más que suficiente para usarla como covariable — pero la función que combina las dos cosas todavía no está ajustada, porque ajustarla pide datos de banco y no de simulación.</p>`],
+  ["raw","SVG_DECISION"],
+  ["p",`<p>También queda afuera del modelo el montaje del palpador en el brazo del crawler y su dinámica propia.</p>`]
+ ],
+ sal:[["veredicto","clase","asentada | suelta","X"],
+      ["descarte","tiros descartados","los que despegan","X"],
+      ["clasificador","clasificador conjunto","PENDIENTE","E"]],
+ hip:[["El umbral se calibra en banco contra cuñas de estado conocido","X","Derivarlo del modelo sería confiar en k_hombro, que es la incógnita nº 1."]],
+ anclas:[],
+ banco:["C — palpador contra referencia","D — robustez"],
+ falla:"Es trabajo pendiente, no un riesgo: la separación de ×112 deja muchísimo margen para cualquier clasificador razonable."
+}];
+
+const BANCO = [
+ {k:"A", nm:"¿Existe el hueco espectral?", blk:"B1 · B2", first:1,
+  mata:"La hipótesis <strong>k_hombro</strong>, la única que puede tumbar el método en vez de sólo degradarlo.",
+  inst:"Acelerómetro de choque pegado a la cuña: ≥50 kHz, ±5000 g, 200 kS/s. <strong>No necesita palpador.</strong>",
+  crit:"La cuña asentada responde arriba de 20 kHz y la suelta abajo de 1 kHz."},
+ {k:"B", nm:"Ping test del palpador construido", blk:"B3",
+  mata:"La hipótesis <strong>ζ</strong>, el parámetro más sensible del diseño.",
+  inst:"Un golpecito y el registro del decaimiento. Da ζ <em>y</em> f₀ de una sola medición.",
+  crit:"ζ ≤ 0,02 y f₀ entre 700 y 1700 Hz."},
+ {k:"C", nm:"Palpador contra referencia, barriendo precarga", blk:"B3 · B4 · B6",
+  mata:"Que la separación simulada exista en fierro.",
+  inst:"Palpador más acelerómetro de referencia sobre la ranura de prueba.",
+  crit:"Separación &gt; ×100 entre 25 % y 5 % de precarga."},
+ {k:"D", nm:"Robustez: precarga, despegue, repetibilidad, orientación", blk:"B3 · B4 · B5 · B6",
+  mata:"Los supuestos de operación del crawler.",
+  inst:"El mismo banco de C, variando precarga, energía y orientación.",
+  crit:"Ganancia insensible a la precarga (±20 % → &lt;1 %), umbral de despegue donde lo predice F/m, repetibilidad dentro del presupuesto de ruido."}
+];
+
+/* ===================== render ===================== */
+const RAW = {SVG_RANURA, SVG_BORDES, SVG_DECISION};
+
+function chips(list, prev){
+  return list.map(s=>{
+    const cls = EXT.includes(s) ? "chip ext" : (prev ? "chip" : "chip new");
+    return `<span class="${cls}">${s}</span>`;
+  }).join("");
+}
+
+function table(t){
+  const head = t.cols.map((c,i)=>`<th${(t.n||[]).includes(i)?' style="text-align:right;padding-right:16px"':''}>${c}</th>`).join("");
+  const rows = t.rows.map(r=>{
+    const mark = r.length > t.cols.length ? r[t.cols.length] : 0;
+    const cls = mark===1 ? ' class="key"' : mark===2 ? ' class="bad"' : '';
+    const tds = t.cols.map((_,i)=>`<td${(t.n||[]).includes(i)?' class="n"':''}>${r[i]}</td>`).join("");
+    return `<tr${cls}>${tds}</tr>`;
+  }).join("");
+  return `<div class="tw"><table><caption>${t.cap}</caption><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function salTable(sal){
+  const rows = sal.map(([s,n,v,o])=>
+    `<tr><td>${s}</td><td>${n}</td><td class="n">${v}</td><td style="text-align:center"><span class="pv ${o}">${o}</span></td></tr>`).join("");
+  return `<div class="tw"><table><caption>Lo que este bloque produce</caption><thead><tr><th>símbolo</th><th>qué es</th><th style="text-align:right;padding-right:16px">valor</th><th style="text-align:center">orig.</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function hipTable(hip){
+  const rows = hip.map(([t,o,f])=>
+    `<tr><td style="width:34%">${t}</td><td style="text-align:center;width:44px"><span class="pv ${o}">${o}</span></td><td>${f}</td></tr>`).join("");
+  return `<div class="tw"><table class="txt"><caption>Hipótesis, y qué pasa si son falsas</caption><thead><tr><th>hipótesis</th><th style="text-align:center">orig.</th><th>si es falsa</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function spring(){
+  return `<svg width="100%" height="14" viewBox="0 0 60 14" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 7 H8 L11 2 L17 12 L23 2 L29 12 L35 2 L41 12 L47 2 L50 7 H60" fill="none" stroke="currentColor" stroke-width="1.3" style="color:var(--ink2)"/></svg>`;
+}
+
+const TOPO = `<div class="topo" role="img" aria-label="Topología del palpador: cuña, punta, resorte de medición, carro con el acelerómetro, resorte de precarga y cuerpo">
+  <div class="tbox w">cuña<small>w(t)</small></div>
+  <div class="tlink"><div class="rigid"></div><span>contacto</span></div>
+  <div class="tbox">punta<small>≤ 20 mg</small></div>
+  <div class="tlink">${spring()}<span>k = 43,5 N/mm</span></div>
+  <div class="tbox m">carro<small>0,68 g · acelerómetro</small></div>
+  <div class="tlink">${spring()}<span>F = 1 N · 0,30 N/mm</span></div>
+  <div class="tbox">cuerpo<small>≥ 7 g</small></div>
+</div>
+<p class="cap" style="font-size:14px;color:var(--muted);max-width:68ch;margin:0 0 20px">El resorte va <b>entre la punta y la masa</b>. Con un vástago rígido ahí y la flexura del otro lado, el carro sigue a la cuña y no se filtra nada.</p>`;
+
+function section(b){
+  let h = `<section id="${b.id.toLowerCase()}" class="${b.cls||''}">
+    <div class="shead"><span class="bid">${b.id}</span><div><h2>${b.nm}</h2><p class="sub">${b.sub}</p></div></div>
+    <p class="q">${b.q}</p>
+    <div class="io">
+      <div><span class="lbl">Entra</span>${chips(b.entra,true)}</div>
+      <div><span class="lbl">Sale</span>${chips(b.sale,false)}</div>
+    </div>
+    <pre class="eq">${b.eq}</pre>`;
+  for(const [kind, val] of b.partes){
+    if(kind==="p")    h += `<div class="prose">${val}</div>`;
+    else if(kind==="t")   h += table(val);
+    else if(kind==="raw") h += RAW[val];
+    else if(kind==="topo") h += TOPO;
+    else if(kind==="f")   h += `<figure><svg id="${val.id}" class="plot" role="img" aria-label="${val.cap.replace(/<[^>]+>/g,'')}"></svg><p class="cap">${val.cap}</p></figure>`;
+  }
+  h += salTable(b.sal) + hipTable(b.hip);
+  h += `<div class="ver">
+      <div><span class="lbl">Anclas de pytest</span><ul>${b.anclas.length?b.anclas.map(a=>`<li>${a}</li>`).join(""):"<li>— (bloque abierto)</li>"}</ul></div>
+      <div><span class="lbl">Ensayos de banco</span><ul>${b.banco.map(a=>`<li>${a}</li>`).join("")}</ul></div>
+    </div>
+    <div class="call ${b.cls==='risk'?'r':b.cls==='open'?'o':''}"><div class="t">Si falla</div><p>${b.falla}</p></div>
+  </section>`;
+  return h;
+}
+
+document.getElementById("bloques").innerHTML = B.map(section).join("");
+
+document.getElementById("chain").innerHTML = B.map(b=>{
+  const cls = b.cls==='risk' ? 'node warn' : b.cls==='open' ? 'node opn' : 'node';
+  const flag = b.cls==='risk' ? '<span class="flag">riesgo</span>' : b.cls==='open' ? '<span class="flag">abierto</span>' : '';
+  return `<a class="${cls}" href="#${b.id.toLowerCase()}">${flag}<span class="id">${b.id}</span><span class="nm">${b.nm.split(":")[0]}</span><span class="out">${b.sale.slice(0,3).join(" · ")}</span></a>`;
+}).join("");
+
+document.getElementById("bench").innerHTML = BANCO.map(e=>`
+  <div class="bcard${e.first?' first':''}">
+    <div class="h"><span class="k">${e.k}</span><h3>${e.nm}</h3><span class="blk">${e.blk}</span></div>
+    <dl>
+      <dt>Mata</dt><dd>${e.mata}</dd>
+      <dt>Instrumentos</dt><dd>${e.inst}</dd>
+      <dt>Criterio</dt><dd>${e.crit}</dd>
+    </dl>
+  </div>`).join("");
+
+/* ===================== utilidades de dibujo ===================== */
+const NS="http://www.w3.org/2000/svg";
+const L10=Math.log10;
+function mk(t,a){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e;}
+function txt(p,x,y,s,o={}){const e=mk("text",Object.assign({x,y},o));e.textContent=s;p.appendChild(e);return e;}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function frame(svg,W,H){
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  svg.setAttribute("width",W); svg.setAttribute("height",H);
+  svg.style.height="auto";
+  while(svg.firstChild) svg.removeChild(svg.firstChild);
+}
+const FM='"IBM Plex Mono",ui-monospace,monospace';
+const FA='Archivo,"Helvetica Neue",Arial,sans-serif';
+function wide(svg){return Math.max(320, svg.parentNode.clientWidth);}
+function path(svg,pts,color,w,dash){
+  const d=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const a={d,fill:"none",stroke:color,"stroke-width":w,"stroke-linejoin":"round","stroke-linecap":"round"};
+  if(dash)a["stroke-dasharray"]=dash;
+  svg.appendChild(mk("path",a));
+}
+function axes(svg,W,H,cfg){
+  const line=css("--line"),mut=css("--muted");
+  const {ml,mr,mt,mb}=cfg.m;
+  const x0=ml,x1=W-mr,yB=H-mb,yT=mt;
+  svg.appendChild(mk("line",{x1:x0,x2:x1,y1:yB,y2:yB,stroke:line}));
+  svg.appendChild(mk("line",{x1:x0,x2:x0,y1:yT,y2:yB,stroke:line}));
+  (cfg.yticks||[]).forEach(([v,lab])=>{
+    const y=cfg.Y(v);
+    svg.appendChild(mk("line",{x1:x0,x2:x1,y1:y,y2:y,stroke:line,"stroke-dasharray":"2 4"}));
+    txt(svg,x0-6,y+4,lab,{fill:cfg.ycol||mut,"font-size":11,"font-family":FM,"text-anchor":"end"});
+  });
+  (cfg.xticks||[]).forEach(([v,lab],i)=>{
+    const x=cfg.X(v);
+    svg.appendChild(mk("line",{x1:x,x2:x,y1:yB,y2:yB+4,stroke:line}));
+    const anch = i===0?"start":(i===cfg.xticks.length-1?"end":"middle");
+    txt(svg,x,yB+17,lab,{fill:mut,"font-size":11,"font-family":FM,"text-anchor":anch});
+  });
+  if(cfg.xlab) txt(svg,x1,H-3,cfg.xlab,{fill:mut,"font-size":10.5,"font-family":FA,"text-anchor":"end"});
+  if(cfg.ylab) txt(svg,x0-6,yT-10,cfg.ylab,{fill:cfg.ycol||mut,"font-size":10.5,"font-family":FA,"text-anchor":"start"});
+  return {x0,x1,yT,yB};
+}
+
+/* ===================== Fig 1: el hueco espectral ===================== */
+function figGap(){
+  const svg=document.getElementById("figGap"); if(!svg) return;
+  const W=wide(svg), H=W<520?250:225;
+  frame(svg,W,H);
+  const ink=css("--ink"),mut=css("--muted"),line=css("--line"),hi=css("--hi"),lo=css("--lo"),
+        his=css("--hi-soft"),los=css("--lo-soft"),ink2=css("--ink2");
+  const ml=14,mr=14,mt=W<520?92:78,mb=30;
+  const x0=ml,x1=W-mr,yB=H-mb,yT=mt;
+  const X=v=>x0+(L10(v)-L10(20))/(L10(1e5)-L10(20))*(x1-x0);
+  svg.appendChild(mk("line",{x1:x0,x2:x1,y1:yB,y2:yB,stroke:line,"stroke-width":1}));
+  [[20,"20 Hz"],[100,"100 Hz"],[1000,"1 kHz"],[1e4,"10 kHz"],[1e5,"100 kHz"]].forEach(([v,l],i)=>{
+    const x=X(v);
+    svg.appendChild(mk("line",{x1:x,x2:x,y1:yB,y2:yB+4,stroke:line}));
+    txt(svg,x,yB+18,l,{fill:mut,"font-size":11,"font-family":FM,"text-anchor":i===0?"start":i===4?"end":"middle"});
+  });
+  const bx0=X(50),bx1=X(225);
+  svg.appendChild(mk("rect",{x:bx0,y:yT,width:Math.max(3,bx1-bx0),height:yB-yT,fill:los,stroke:lo,"stroke-width":1}));
+  const ax=X(33350);
+  svg.appendChild(mk("rect",{x:X(28000),y:yT,width:X(45000)-X(28000),height:yB-yT,fill:his}));
+  svg.appendChild(mk("rect",{x:ax-2,y:yT,width:4,height:yB-yT,fill:hi,stroke:hi}));
+  const fx=X(1273);
+  svg.appendChild(mk("line",{x1:fx,x2:fx,y1:yT-10,y2:yB,stroke:ink,"stroke-width":1.4,"stroke-dasharray":"4 3"}));
+  const gy=yB-18;
+  svg.appendChild(mk("line",{x1:bx1+4,x2:ax-6,y1:gy,y2:gy,stroke:mut,"stroke-width":1}));
+  [[bx1+4,1],[ax-6,-1]].forEach(([x,s])=>svg.appendChild(mk("path",{d:`M${x} ${gy} l${5*s} -3 l0 6 z`,fill:mut})));
+  txt(svg,(bx1+ax)/2,gy-6,"×670",{fill:mut,"font-size":11.5,"font-family":FM,"text-anchor":"middle"});
+  const fanch = W<520 ? "start" : "middle", fxl = W<520 ? x0 : fx;
+  txt(svg,fxl,yT-52,"f₀ = 1273 Hz · el corte del palpador",{fill:ink2,"font-size":11.5,"font-family":FM,"text-anchor":fanch});
+  if(W>=520) svg.appendChild(mk("line",{x1:fx,x2:fx,y1:yT-46,y2:yT-10,stroke:ink,"stroke-width":1,"stroke-dasharray":"4 3"}));
+  txt(svg,bx0,yT-30,"S6 floja",{fill:lo,"font-size":13,"font-family":FA,"font-weight":600});
+  txt(svg,bx0,yT-15,"50 – 225 Hz · 100 % bajo el corte",{fill:mut,"font-size":11,"font-family":FM});
+  txt(svg,x1,yT-30,"S0 asentada",{fill:hi,"font-size":13,"font-family":FA,"font-weight":600,"text-anchor":"end"});
+  txt(svg,x1,yT-15,"33,35 kHz · 0 % bajo el corte",{fill:mut,"font-size":11,"font-family":FM,"text-anchor":"end"});
+}
+
+/* ===================== Fig 3: la escalera ===================== */
+function figEsc(){
+  const svg=document.getElementById("figEsc"); if(!svg) return;
+  const W=wide(svg), H=W<520?320:300;
+  frame(svg,W,H);
+  const hi=css("--hi"),lo=css("--lo"),mut=css("--muted"),ink=css("--ink"),los=css("--lo-soft"),line=css("--line"),risk=css("--risk");
+  const m={ml:44,mr:44,mt:36,mb:34};
+  const n=DAT.st.length, span=(W-m.ml-m.mr), step=span/n;
+  const X=i=>m.ml+step*(i+0.5);
+  const YA=v=>H-m.mb-(v/5200)*(H-m.mb-m.mt);
+  const YX=v=>H-m.mb-(v/8)*(H-m.mb-m.mt);
+  const ax=axes(svg,W,H,{m,X:i=>X(i),Y:YA,
+    yticks:[[0,"0"],[1000,"1 k"],[2000,"2 k"],[3000,"3 k"],[4000,"4 k"],[5000,"5 k g"]],
+    xticks:DAT.st.map((r,i)=>[i,r[0]]), ylab:"aceleración de la cuña (barras)"});
+  // barras de aceleracion
+  DAT.st.forEach((r,i)=>{
+    const h=ax.yB-YA(r[2]);
+    svg.appendChild(mk("rect",{x:X(i)-step*0.3,y:YA(r[2]),width:step*0.6,height:h,fill:los,stroke:lo,"stroke-width":1.2}));
+  });
+  // linea de desplazamiento
+  path(svg,DAT.st.map((r,i)=>[X(i),YX(r[1])]),hi,2.4);
+  DAT.st.forEach((r,i)=>svg.appendChild(mk("circle",{cx:X(i),cy:YX(r[1]),r:4,fill:hi})));
+  // eje derecho
+  [[0,"0"],[2,"2"],[4,"4"],[6,"6"],[8,"8 µm"]].forEach(([v,l])=>
+    txt(svg,ax.x1+6,YX(v)+4,l,{fill:hi,"font-size":11,"font-family":FM}));
+  txt(svg,ax.x1+6,ax.yT-10,"excursión (línea)",{fill:hi,"font-size":10.5,"font-family":FA,"text-anchor":"end"});
+  // frontera S3|S4
+  const fx=(X(3)+X(4))/2;
+  svg.appendChild(mk("line",{x1:fx,x2:fx,y1:ax.yT,y2:ax.yB,stroke:ink,"stroke-width":1.2,"stroke-dasharray":"5 4"}));
+  txt(svg,fx-6,ax.yT+12,"asentada",{fill:mut,"font-size":11,"font-family":FM,"text-anchor":"end"});
+  txt(svg,fx+6,ax.yT+12,"suelta",{fill:mut,"font-size":11,"font-family":FM});
+  // la trampa: mismo valor, dos estados opuestos
+  const yg=YA(1545);
+  svg.appendChild(mk("line",{x1:X(2),x2:X(4),y1:yg,y2:yg,stroke:risk,"stroke-width":1.4,"stroke-dasharray":"3 3"}));
+  [[X(2),1],[X(4),-1]].forEach(([x,s])=>svg.appendChild(mk("path",{d:`M${x} ${yg} l${5*s} -3 l0 6 z`,fill:risk})));
+  txt(svg,(X(2)+X(3))/2,yg-9,"1545 g las dos",{fill:risk,"font-size":11.5,"font-family":FM,"text-anchor":"middle"});
+}
+
+/* ===================== Fig 6: la transferencia del palpador ===================== */
+function figH(){
+  const svg=document.getElementById("figH"); if(!svg) return;
+  const W=wide(svg), H=W<520?330:320;
+  frame(svg,W,H);
+  const hi=css("--hi"),lo=css("--lo"),los=css("--lo-soft"),mut=css("--muted"),ink=css("--ink"),ink2=css("--ink2"),line=css("--line");
+  const m={ml:52,mr:16,mt:38,mb:36}, z=0.02;
+  const X=r=>m.ml+(L10(r)-L10(0.02))/(L10(60)-L10(0.02))*(W-m.mr-m.ml);
+  const Y=g=>H-m.mb-(L10(g)-L10(3e-4))/(L10(1500)-L10(3e-4))*(H-m.mb-m.mt);
+  const ax=axes(svg,W,H,{m,X,Y,
+    yticks:[[1e-3,"0,001"],[0.1,"0,1"],[1,"1"],[10,"10"],[1000,"1000"]],
+    xticks:[[0.02,"0,02"],[0.1,"0,1"],[1,"1 = f₀"],[10,"10"],[60,"60   r = f/f₀"]],
+    ylab:"lectura ÷ (ω₀² · w)"});
+  // banda de la cuña suelta
+  svg.appendChild(mk("rect",{x:X(50/1273),y:ax.yT,width:X(225/1273)-X(50/1273),height:ax.yB-ax.yT,fill:los}));
+  // curvas
+  const pts=[], prig=[];
+  for(let i=0;i<=300;i++){
+    const r=0.02*Math.pow(60/0.02, i/300);
+    const g=r*r/Math.sqrt((1-r*r)**2+(2*z*r)**2);
+    pts.push([X(r),Y(g)]); prig.push([X(r),Y(r*r)]);
+  }
+  path(svg,prig,mut,1.6,"6 4");
+  path(svg,pts,hi,2.4);
+  // meseta
+  svg.appendChild(mk("line",{x1:X(3),x2:ax.x1,y1:Y(1),y2:Y(1),stroke:ink2,"stroke-width":1,"stroke-dasharray":"2 4"}));
+  // banda asentada
+  const rs=33350/1273;
+  svg.appendChild(mk("line",{x1:X(rs),x2:X(rs),y1:ax.yT,y2:ax.yB,stroke:hi,"stroke-width":1.6,"stroke-dasharray":"4 3"}));
+  // el rechazo: distancia entre las dos curvas en r = 26
+  svg.appendChild(mk("line",{x1:X(rs),x2:X(rs),y1:Y(1),y2:Y(rs*rs),stroke:ink,"stroke-width":2}));
+  [[Y(1),-1],[Y(rs*rs),1]].forEach(([y,s])=>svg.appendChild(mk("path",{d:`M${X(rs)} ${y} l-3 ${5*s} l6 0 z`,fill:ink})));
+  txt(svg,X(rs)-9,Y(40),"rechazo 1/472",{fill:ink,"font-size":11.5,"font-family":FM,"text-anchor":"end"});
+  txt(svg,X(rs)-9,Y(16),"contra el rígido",{fill:ink,"font-size":11.5,"font-family":FM,"text-anchor":"end"});
+  // etiquetas
+  txt(svg,X(0.024),Y(3),"sigue a la cuña:",{fill:mut,"font-size":11,"font-family":FM});
+  txt(svg,X(0.024),Y(1.1),"lee su aceleración",{fill:mut,"font-size":11,"font-family":FM});
+  txt(svg,X(0.62),Y(70),"resonancia ×25",{fill:ink,"font-size":11.5,"font-family":FM,"text-anchor":"end"});
+  txt(svg,X(17),Y(1)-9,"lee ω₀²·w = DESPLAZAMIENTO",{fill:hi,"font-size":11.5,"font-family":FM,"text-anchor":"end"});
+  txt(svg,X(4.2),Y(130),"palpador rígido",{fill:mut,"font-size":11,"font-family":FM,"text-anchor":"end"});
+  txt(svg,X(0.105),ax.yB-10,"banda de la cuña suelta",{fill:lo,"font-size":11,"font-family":FM,"text-anchor":"middle"});
+  txt(svg,X(rs)-5,ax.yB-10,"S0 · r = 26",{fill:hi,"font-size":11,"font-family":FM,"text-anchor":"end"});
+}
+
+/* ===================== Fig 7: f0 ===================== */
+function figF0(){
+  const svg=document.getElementById("figF0"); if(!svg) return;
+  const W=wide(svg), H=W<520?300:310;
+  frame(svg,W,H);
+  const hi=css("--hi"),his=css("--hi-soft"),ink=css("--ink"),mut=css("--muted"),lo=css("--lo");
+  const nar=W<520, m={ml:40,mr:nar?34:54,mt:34,mb:34};
+  const D=[[600,17.9,91.3],[800,31.7,119.1],[1000,49,139.1],[1273,78.4,150.2],[1600,137.5,113.6],[2000,235.4,80.3],[2500,368.2,48.9],[3200,581.2,26],[4000,869.3,13.7]];
+  const X=v=>m.ml+(L10(v)-L10(560))/(L10(4400)-L10(560))*(W-m.mr-m.ml);
+  const Y=v=>H-m.mb-(v/180)*(H-m.mb-m.mt);
+  const Y2=v=>H-m.mb-(L10(v)-L10(10))/(L10(1000)-L10(10))*(H-m.mb-m.mt);
+  const ax=axes(svg,W,H,{m,X,Y,
+    yticks:[[0,"0"],[50,"×50"],[100,"×100"],[150,"×150"]],
+    xticks:[[600,"600"],[1000,"1 k"],[1273,"1,27 k"],[2000,"2 k"],[3200,"3,2 k"],[4000,"4 k Hz"]],
+    xlab:"f₀ del palpador", ylab:"separación (línea llena)"});
+  svg.appendChild(mk("rect",{x:X(700),y:ax.yT,width:X(1700)-X(700),height:ax.yB-ax.yT,fill:his}));
+  txt(svg,X(700)+5,ax.yT+14,"banda útil >×100",{fill:hi,"font-size":11,"font-family":FM});
+  path(svg,D.map(([f,,s])=>[X(f),Y(s)]),hi,2.2);
+  path(svg,D.map(([f,a])=>[X(f),Y2(a)]),lo,1.6,"5 4");
+  [[10,"10"],[100,"100"],[1000,nar?"1000":"1000 g"]].forEach(([v,l])=>
+    txt(svg,ax.x1+5,Y2(v)+4,l,{fill:lo,"font-size":11,"font-family":FM}));
+  txt(svg,ax.x1+5,ax.yT-10,nar?"pico [g]":"pico leído",{fill:lo,"font-size":10.5,"font-family":FA,"text-anchor":"end"});
+  const o=D[3];
+  svg.appendChild(mk("circle",{cx:X(o[0]),cy:Y(o[2]),r:5,fill:hi}));
+  txt(svg,X(o[0])+9,Y(o[2])-6,"1273 Hz · ×150 · 78 g",{fill:ink,"font-size":11.5,"font-family":FM});
+  txt(svg,X(3200),Y2(581)-10,"a_max ~ f₀^1,7",{fill:mut,"font-size":11,"font-family":FM,"text-anchor":"end"});
+}
+
+/* ===================== Fig 8: zeta ===================== */
+function figZeta(){
+  const svg=document.getElementById("figZeta"); if(!svg) return;
+  const W=wide(svg), H=300, nar=W<520;
+  frame(svg,W,H);
+  const hi=css("--hi"),ink=css("--ink"),mut=css("--muted"),risk=css("--risk"),rs=css("--risk-soft"),s2=css("--surface2");
+  const m={ml:42,mr:16,mt:34,mb:34};
+  const D=[[0.002,154.9],[0.005,150.2],[0.01,139.9],[0.02,112.2],[0.05,39.5],[0.08,14.1],[0.15,2.9],[0.3,0.7]];
+  const X=v=>m.ml+(L10(v)-L10(0.0017))/(L10(0.35)-L10(0.0017))*(W-m.mr-m.ml);
+  const Y=v=>H-m.mb-(L10(v)-L10(0.5))/(L10(300)-L10(0.5))*(H-m.mb-m.mt);
+  const ax=axes(svg,W,H,{m,X,Y,
+    yticks:[[1,"×1"],[10,"×10"],[100,"×100"]],
+    xticks:[[0.002,"0,002"],[0.005,"0,005"],[0.02,"0,02"],[0.05,"0,05"],[0.15,"0,15"],[0.3,"0,3"]],
+    xlab:"ζ del acople", ylab:"separación asentada | suelta"});
+  svg.appendChild(mk("rect",{x:ax.x0,y:ax.yT,width:X(0.02)-ax.x0,height:ax.yB-ax.yT,fill:s2}));
+  txt(svg,ax.x0+6,ax.yB-44,"piso: Q alto —",{fill:mut,"font-size":11,"font-family":FM});
+  txt(svg,ax.x0+6,ax.yB-30,"lo despega una",{fill:mut,"font-size":11,"font-family":FM});
+  txt(svg,ax.x0+6,ax.yB-16,"excitación sostenida",{fill:mut,"font-size":11,"font-family":FM});
+  svg.appendChild(mk("rect",{x:X(0.05),y:ax.yT,width:ax.x1-X(0.05),height:ax.yB-ax.yT,fill:rs}));
+  txt(svg,ax.x1-6,ax.yT+14,"techo: el rechazo",{fill:risk,"font-size":11,"font-family":FM,"text-anchor":"end"});
+  txt(svg,ax.x1-6,ax.yT+28,"cae de 1/r² a 1/r",{fill:risk,"font-size":11,"font-family":FM,"text-anchor":"end"});
+  path(svg,D.map(([z,s])=>[X(z),Y(s)]),hi,2.2);
+  D.forEach(([z,s])=>svg.appendChild(mk("circle",{cx:X(z),cy:Y(s),r:3,fill:css("--paper"),stroke:hi,"stroke-width":1.8})));
+  const zx=X(0.02),zy=Y(112.2);
+  svg.appendChild(mk("circle",{cx:zx,cy:zy,r:5.5,fill:hi}));
+  if(nar){
+    txt(svg,zx+9,zy-16,"ζ = 0,02 · ×112",{fill:ink,"font-size":11.5,"font-family":FM});
+    txt(svg,zx+9,zy-2,"ring-down 29 ms",{fill:ink,"font-size":11.5,"font-family":FM});
+  } else {
+    txt(svg,zx+10,zy-4,"ζ = 0,02 · ×112 · ring-down 29 ms",{fill:ink,"font-size":11.5,"font-family":FM});
+  }
+  txt(svg,X(0.15),Y(2.9)-10,"elastómero",{fill:risk,"font-size":11,"font-family":FM,"text-anchor":"middle"});
+}
+
+/* ===================== Fig 2 (B2): k_hombro ===================== */
+function figKs(){
+  const svg=document.getElementById("figKs"); if(!svg) return;
+  const W=wide(svg), H=W<520?290:300;
+  frame(svg,W,H);
+  const hi=css("--hi"),risk=css("--risk"),mut=css("--muted"),ink=css("--ink"),rs=css("--risk-soft");
+  const m={ml:42,mr:16,mt:34,mb:34};
+  const D=[[0.01,0.08],[0.1,0.34],[0.303,8.3],[1,150.2],[3,176]];
+  const X=v=>m.ml+(L10(v)-L10(0.008))/(L10(4)-L10(0.008))*(W-m.mr-m.ml);
+  const Y=v=>H-m.mb-(L10(v)-L10(0.05))/(L10(300)-L10(0.05))*(H-m.mb-m.mt);
+  const ax=axes(svg,W,H,{m,X,Y,
+    yticks:[[0.1,"×0,1"],[1,"×1"],[10,"×10"],[100,"×100"]],
+    xticks:[[0.01,"÷100"],[0.1,"÷10"],[0.303,"÷3,3"],[1,"nominal"],[3,"×3"]],
+    xlab:"rigidez del hombro, relativa al valor estimado", ylab:"separación asentada | suelta"});
+  svg.appendChild(mk("rect",{x:ax.x0,y:Y(1),width:ax.x1-ax.x0,height:ax.yB-Y(1),fill:rs}));
+  svg.appendChild(mk("line",{x1:ax.x0,x2:ax.x1,y1:Y(1),y2:Y(1),stroke:risk,"stroke-width":1}));
+  txt(svg,ax.x0+8,Y(1)+16,"separación invertida — el hueco desaparece",{fill:risk,"font-size":11,"font-family":FM});
+  path(svg,D.map(([a,b])=>[X(a),Y(b)]),hi,2);
+  D.forEach(([a,b],i)=>{
+    const c = b<1?risk:hi;
+    svg.appendChild(mk("circle",{cx:X(a),cy:Y(b),r:i===3?5:3.4,fill:i===3?c:css("--paper"),stroke:c,"stroke-width":2}));
+  });
+  txt(svg,X(1)-6,Y(150.2)-12,"×150  el diseño",{fill:ink,"font-size":11.5,"font-family":FM,"text-anchor":"end"});
+  txt(svg,X(0.303)+9,Y(8.3)+16,"×8,3",{fill:mut,"font-size":11,"font-family":FM});
+}
+
+/* ===================== Fig 9: las trazas ===================== */
+function figTr(){
+  const svg=document.getElementById("figTr"); if(!svg) return;
+  const W=wide(svg), H=340;
+  frame(svg,W,H);
+  const hi=css("--hi"),lo=css("--lo"),ink2=css("--ink2"),mut=css("--muted"),line=css("--line"),ink=css("--ink");
+  const ml=62,mr=14,mt=16,mb=32, gap=12;
+  const ph=(H-mt-mb-2*gap)/3;
+  const rows=[["S0",hi,"S0 · asentada",3.2],["S3",ink2,"S3 · 25 % — la frontera",20],["S6",lo,"S6 · suelta",52]];
+  rows.forEach(([k,col,lab,amp],ri)=>{
+    const t=DAT.tr[k], yTop=mt+ri*(ph+gap), yMid=yTop+ph/2;
+    svg.appendChild(mk("line",{x1:ml,x2:W-mr,y1:yMid,y2:yMid,stroke:line}));
+    const n=t.a.length, dx=(W-mr-ml)/(n-1);
+    path(svg,t.a.map((v,i)=>[ml+i*dx, yMid-(v/amp)*(ph/2)]),col,1.3);
+    txt(svg,ml-8,yMid-4,lab.split(" ")[0],{fill:col,"font-size":12.5,"font-family":FA,"font-weight":600,"text-anchor":"end"});
+    txt(svg,ml-8,yMid+10,"±"+amp+" g",{fill:mut,"font-size":10.5,"font-family":FM,"text-anchor":"end"});
+    txt(svg,W-mr-2,yTop+12,"pico "+t.pk+" g · ∫a²dt = "+t.sig+" g²ms",{fill:col,"font-size":11,"font-family":FM,"text-anchor":"end"});
+  });
+  const yB=H-mb+4;
+  svg.appendChild(mk("line",{x1:ml,x2:W-mr,y1:yB,y2:yB,stroke:line}));
+  [0,0.5,1,1.5,2,2.5,3].forEach(t=>{
+    const x=ml+(t/3)*(W-mr-ml);
+    svg.appendChild(mk("line",{x1:x,x2:x,y1:yB,y2:yB+4,stroke:line}));
+    txt(svg,x,yB+17,t===3?"3 ms":String(t).replace(".",","),{fill:mut,"font-size":11,"font-family":FM,"text-anchor":t===0?"start":t===3?"end":"middle"});
+  });
+  txt(svg,ml-8,mt+10,"escala",{fill:mut,"font-size":10,"font-family":FA,"text-anchor":"end"});
+}
+
+/* ===================== Fig 10: el despegue ===================== */
+function figLift(){
+  const svg=document.getElementById("figLift"); if(!svg) return;
+  const W=wide(svg), H=W<520?400:360;
+  frame(svg,W,H);
+  const risk=css("--risk"),mut=css("--muted"),line=css("--line"),ink=css("--ink"),hi=css("--hi"),rs=css("--risk-soft"),
+        surf=css("--surface"),ink2=css("--ink2");
+  const m={ml:46,mr:14,mt:W<520?58:44,mb:34+(W<520?126:116)};
+  const X=t=>m.ml+(t/3)*(W-m.mr-m.ml);
+  const Y=v=>H-m.mb-((v+180)/320)*(H-m.mb-m.mt);
+  const ax=axes(svg,W,H,{m,X,Y,
+    yticks:[[100,"100"],[0,"0"],[-100,"−100 g"]],
+    xticks:[[0,"0"],[1,"1"],[2,"2"],[3,"3 ms"]], xlab:"tiempo desde el golpe"});
+  // riel
+  svg.appendChild(mk("rect",{x:ax.x0,y:Y(-150),width:ax.x1-ax.x0,height:ax.yB-Y(-150),fill:rs}));
+  svg.appendChild(mk("line",{x1:ax.x0,x2:ax.x1,y1:Y(-150),y2:Y(-150),stroke:risk,"stroke-width":1.4,"stroke-dasharray":"5 4"}));
+  const d=DAT.lift, n=d.a.length, dx=(ax.x1-ax.x0)/(n-1);
+  path(svg,d.ref.map((v,i)=>[ax.x0+i*dx,Y(v)]),mut,1.3);
+  path(svg,d.a.map((v,i)=>[ax.x0+i*dx,Y(v)]),risk,1.6);
+  txt(svg,ax.x1-4,Y(-150)-7,"−F/m = −150 g · en vuelo la lectura se clava acá",{fill:risk,"font-size":11,"font-family":FM,"text-anchor":"end"});
+  const nar=W<520;
+  txt(svg,ax.x0-32,ax.yT-26,nar?"punta 120 mg → despega (0,43 %)"
+      :"punta de 120 mg → despega, 0,43 % de las muestras en el riel",
+      {fill:risk,"font-size":11,"font-family":FM});
+  txt(svg,ax.x0-32,ax.yT-12,nar?"punta 20 mg → limpio (0 %)"
+      :"punta de 20 mg → contacto limpio, 0 %",
+      {fill:mut,"font-size":11,"font-family":FM});
+
+  /* --- inset: los primeros 250 µs, donde el riel se ve plano --- */
+  const zh=W<520?112:102, zy0=H-zh-6, zy1=H-10, zx0=m.ml, zx1=W-m.mr;
+  svg.appendChild(mk("rect",{x:zx0,y:zy0,width:zx1-zx0,height:zy1-zy0,fill:surf,stroke:line}));
+  const Z=DAT.zoom, nz=Z.lift.length, zdx=(zx1-zx0)/(nz-1);
+  const ZY=v=>zy1-8-((v+170)/330)*(zy1-zy0-16);
+  svg.appendChild(mk("line",{x1:zx0,x2:zx1,y1:ZY(0),y2:ZY(0),stroke:line}));
+  svg.appendChild(mk("line",{x1:zx0,x2:zx1,y1:ZY(-150),y2:ZY(-150),stroke:risk,"stroke-width":1.2,"stroke-dasharray":"5 4"}));
+  path(svg,Z.ref.map((v,i)=>[zx0+i*zdx,ZY(v)]),mut,1.3);
+  path(svg,Z.lift.map((v,i)=>[zx0+i*zdx,ZY(v)]),risk,1.8);
+  txt(svg,zx0+6,zy0+14,"los primeros 250 µs, ampliados",{fill:ink2,"font-size":11,"font-family":FM});
+  txt(svg,zx1-6,ZY(-150)-6,nar?"13 muestras clavadas en −150,00 g"
+      :"13 muestras seguidas clavadas en −150,00 g",
+      {fill:risk,"font-size":11,"font-family":FM,"text-anchor":"end"});
+  // conector con el grafico de arriba
+  const cx0=ax.x0, cx1=ax.x0+(0.25/3)*(ax.x1-ax.x0);
+  svg.appendChild(mk("rect",{x:cx0,y:ax.yT,width:Math.max(4,cx1-cx0),height:ax.yB-ax.yT,fill:"none",stroke:ink2,"stroke-width":1,"stroke-dasharray":"3 3"}));
+  svg.appendChild(mk("line",{x1:cx1,x2:zx1,y1:ax.yB,y2:zy0,stroke:ink2,"stroke-width":.8,"stroke-dasharray":"3 3"}));
+  svg.appendChild(mk("line",{x1:cx0,x2:zx0,y1:ax.yB,y2:zy0,stroke:ink2,"stroke-width":.8,"stroke-dasharray":"3 3"}));
+}
+
+/* ===================== Fig 11: la energía del golpe ===================== */
+function figEner(){
+  const svg=document.getElementById("figEner"); if(!svg) return;
+  const W=wide(svg), H=W<520?300:310;
+  frame(svg,W,H);
+  const hi=css("--hi"),his=css("--hi-soft"),lo=css("--lo"),mut=css("--muted"),ink=css("--ink");
+  const m={ml:46,mr:16,mt:34,mb:34};
+  const X=v=>m.ml+(L10(v)-L10(0.85))/(L10(14)-L10(0.85))*(W-m.mr-m.ml);
+  const Y=v=>H-m.mb-(L10(v)-L10(8))/(L10(1200)-L10(8))*(H-m.mb-m.mt);
+  const ax=axes(svg,W,H,{m,X,Y,
+    yticks:[[10,"×10"],[100,"×100"],[1000,"×1000"]],
+    xticks:[[1,"1"],[2,"2"],[3,"3"],[5,"5"],[8,"8"],[12,"12 mJ"]],
+    xlab:"energía del golpe", ylab:"separación con ∫a²dt"});
+  svg.appendChild(mk("rect",{x:X(3),y:ax.yT,width:X(5)-X(3),height:ax.yB-ax.yT,fill:his}));
+  txt(svg,(X(3)+X(5))/2,ax.yT+14,"óptimo",{fill:hi,"font-size":11,"font-family":FM,"text-anchor":"middle"});
+  path(svg,DAT.ener.map(r=>[X(r[0]),Y(r[1])]),hi,2.4);
+  DAT.ener.forEach(r=>svg.appendChild(mk("circle",{cx:X(r[0]),cy:Y(r[1]),r:3.4,fill:css("--paper"),stroke:hi,"stroke-width":1.8})));
+  path(svg,DAT.ener.map(r=>[X(r[0]),Y(r[3])]),lo,1.8,"5 4");
+  const best=DAT.ener[3];
+  svg.appendChild(mk("circle",{cx:X(best[0]),cy:Y(best[1]),r:5.5,fill:hi}));
+  txt(svg,X(5)+10,Y(best[1])-6,"×"+Math.round(best[1])+" a 5 mJ",{fill:ink,"font-size":11.5,"font-family":FM});
+  txt(svg,X(1)+8,Y(798)-8,"salto S3|S4",{fill:lo,"font-size":11,"font-family":FM});
+  txt(svg,X(12),Y(112)+18,"×112",{fill:mut,"font-size":11,"font-family":FM,"text-anchor":"end"});
+  txt(svg,X(1)+4,Y(230)+18,"S0 deja de ordenar",{fill:mut,"font-size":11,"font-family":FM});
+  txt(svg,X(12),Y(330),"la cuña ajustada",{fill:mut,"font-size":11,"font-family":FM,"text-anchor":"end"});
+  txt(svg,X(12),Y(250),"también despega",{fill:mut,"font-size":11,"font-family":FM,"text-anchor":"end"});
+}
+
+/* ===================== Fig 12: K_F(x) ===================== */
+function figKf(){
+  const svg=document.getElementById("figKf"); if(!svg) return;
+  const W=wide(svg), H=W<520?280:270;
+  frame(svg,W,H);
+  const hi=css("--hi"),lo=css("--lo"),mut=css("--muted"),ink=css("--ink"),his=css("--hi-soft"),line=css("--line");
+  const m={ml:64,mr:16,mt:32,mb:34};
+  const X=v=>m.ml+((v+2.2)/4.4)*(W-m.mr-m.ml);
+  const Y=v=>H-m.mb-((v-1.2)/0.8)*(H-m.mb-m.mt);
+  const ax=axes(svg,W,H,{m,X,Y,
+    yticks:[[1.3,"1,3"],[1.5,"1,5"],[1.7,"1,7"],[1.9,"1,9 N/A"]],
+    xticks:[[-2,"−2"],[-1,"−1"],[0,"centro"],[1,"1"],[2,"2 mm"]],
+    xlab:"posición en la carrera", ylab:"constante de fuerza K_F"});
+  const P=DAT.kf.x.map((x,i)=>[X(x),Y(DAT.kf.F[i])]);
+  path(svg,P,hi,2.4);
+  DAT.kf.x.forEach((x,i)=>svg.appendChild(mk("circle",{cx:X(x),cy:Y(DAT.kf.F[i]),r:3,fill:hi})));
+  // tangente en el centro: horizontal
+  svg.appendChild(mk("line",{x1:X(-0.75),x2:X(0.75),y1:Y(1.89),y2:Y(1.89),stroke:ink,"stroke-width":2}));
+  txt(svg,X(0),Y(1.89)-10,"dK/dx = 0  →  residuo 0,04 %",{fill:ink,"font-size":11.5,"font-family":FM,"text-anchor":"middle"});
+  // tangente a 1,5 mm
+  svg.appendChild(mk("line",{x1:X(1.1),x2:X(1.9),y1:Y(1.70),y2:Y(1.42),stroke:lo,"stroke-width":2}));
+  txt(svg,X(1.55),Y(1.40),"a 1,5 mm del centro: 0,41 %",{fill:lo,"font-size":11,"font-family":FM,"text-anchor":"end"});
+  svg.appendChild(mk("line",{x1:X(0),x2:X(0),y1:ax.yT,y2:ax.yB,stroke:line,"stroke-dasharray":"3 4"}));
+  txt(svg,ax.x0+6,ax.yT+12,"−31 % entre el centro y los extremos",{fill:mut,"font-size":11,"font-family":FM});
+}
+
+function drawAll(){figGap();figEsc();figKs();figH();figF0();figZeta();figTr();figLift();figEner();figKf();}
+drawAll();
+let _t=null;
+addEventListener("resize",()=>{clearTimeout(_t);_t=setTimeout(drawAll,140);});
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",drawAll);
+</script>
+
+</body>
+</html>
