@@ -299,6 +299,11 @@ footer a{color:var(--hi)}
   <span>la cadena <b>cierra</b>: ningún bloque consume un símbolo que nadie produce</span>
   <span>6 bloques · 32 magnitudes · 1 abierto</span>
 </div>
+<div class="call r" style="margin-top:18px">
+  <div class="t">Revisión del 21/09 — dos cosas que hay que leer antes que el resto</div>
+  <p><b>1.</b> La f₀ del palpador (1273 Hz) cae dentro del 1,4 % del modo de cuerpo rígido de la cuña suelta sobre el ripple (1291 Hz). En el modelo no molesta, porque la cuña suelta hace <em>una</em> excursión y no suena; si sonara, el palpador despegaría. Lo responde el ensayo A. <a href="#b3" style="color:inherit">Ver B3</a>.<br>
+  <b>2.</b> El rasgo se calculó siempre <b>sin filtrar</b>: los 5 kHz son una especificación de adquisición que nunca se aplicó al número. Aplicarla <em>mejora</em> la separación ×1,9 a ×8, así que todas las cifras de este documento son conservadoras. <a href="#b4" style="color:inherit">Ver B4</a>.</p>
+</div>
 
 <section id="tesis">
   <div class="shead"><div><h2>La tesis, en una figura</h2><p class="sub">por qué esto puede funcionar</p></div></div>
@@ -525,11 +530,13 @@ const B = [
   ["p",`<p><strong>La frecuencia sube con el apriete, y sube muchísimo.</strong> Una versión anterior de este trabajo afirmaba lo contrario, apoyada en un 6,1 kHz que venía del modelo de apoyo viejo. Estaba mal, y la corrección es lo que hace robusto al método en lugar de frágil.</p>`],
   ["raw","SVG_BORDES"],
   ["p",`<p>El reparto de energía que sale de ahí es <em>total</em>, no parcial:</p>`],
-  ["t",{cap:"Espectro del desplazamiento · 12,5 mm · 5 mJ · resolución 25 Hz", cols:["estado","pico","90 % de la energía","por debajo de 1273 Hz"],
-   rows:[["S0 ajustada","33 350 Hz","33 325 – 33 375 Hz","0,0 %",1],["S3 · 25 %","33 075 Hz","13 375 – 34 625 Hz","1,5 %"],["S6 floja","50 Hz","50 – 225 Hz","100,0 %",1]], n:[1,3]}],
-  ["p",`<h4>Dos trampas ya pisadas</h4>
+  ["t",{cap:"Espectro del desplazamiento · 12,5 mm · 5 mJ · ventana de 40 ms", cols:["estado","qué hace","90 % de la energía","por debajo de 1273 Hz"],
+   rows:[["S0 ajustada","ráfaga de 33 kHz, 0,06 ms","33 325 – 33 375 Hz","0,0 %",1],["S3 · 25 %","las dos cosas","13 375 – 34 625 Hz","1,5 %"],["S6 floja","una excursión, 2,4 ms","continua – 175 Hz","100,0 %",1]], n:[3]}],
+  ["p",`<h4>Tres trampas ya pisadas</h4>
   <p><strong>1.</strong> El espectro que importa es el del <em>desplazamiento</em>, porque es lo que excita al palpador. El de la aceleración pesa las altas por ω⁴ y da otra cosa.</p>
-  <p><strong>2.</strong> La ventana tiene que ser larga. Con 8 ms el bin vale 125 Hz, y el pico de la cuña suelta «aparece» en 125 Hz por puro artefacto de resolución. Con 40 ms el número correcto es 50 Hz, y el factor entre picos es ×670 y no ×270.</p>
+  <p><strong>2.</strong> La ventana tiene que ser larga. Con 8 ms el bin vale 125 Hz y el «pico» de la cuña suelta aparece en 125 Hz por puro artefacto de resolución.</p>
+  <p><strong>3.</strong> Y la trampa de fondo: <strong>la cuña suelta no tiene pico espectral, porque no oscila.</strong> Medido sobre 40 ms, su desplazamiento cruza su propia media <em>dos veces en 5 ms</em>: es una sola excursión de 6,9 µm que llega a su máximo en 0,08 ms y cae al 10 % a los 2,4 ms. Su espectro es un lomo que arranca en continua y termina en ~175 Hz — el espectro de <em>un transitorio</em>, no de un modo. Por eso no tiene sentido citar «×670 entre los picos»: ese factor depende de la ventana, y era la misma trampa de los 125 Hz vista de más lejos.</p>
+  <p>Lo que sí es robusto, y es lo único que el método necesita, es el <em>reparto</em>: contra un corte en 1273 Hz, S0 pone el 0,0 % de su energía por debajo y S6 el 100,0 %. La cuña asentada es una ráfaga de 33 kHz que se apaga en 0,06 ms; la suelta es un escalón. Están a los dos lados del corte, enteras.</p>
   <h4>Aquí es donde duele: la sensibilidad a k_hombro</h4>
   <p>Éste es el único parámetro de todo el trabajo que puede invalidar el método en vez de sólo degradarlo, y nadie lo midió todavía.</p>`],
   ["f",{id:"figKs", n:5, cap:"<b>Fig. 5 — El diseño está sentado en la rodilla.</b> Separación asentada|suelta contra la rigidez del hombro, relativa al valor nominal estimado. Con el hombro diez veces más blando el primer modo asentado baja a 10,5 kHz, entra en la banda del palpador y la separación <b>se invierte</b>. Ningún diseño de palpador sobrevive a eso, porque no es un problema de palpador: es que el hueco deja de existir."}],
@@ -537,11 +544,12 @@ const B = [
    rows:[["÷100","3 530 Hz","×0,08  invertida",2],["÷10","10 487 Hz","×0,34  invertida",2],["÷3,3","18 067 Hz","×8,3"],["2·10¹⁰ nominal","32 874 Hz","×150",1],["×3","55 493 Hz","×176"]], n:[1,2]}]
  ],
  sal:[["f_asentada","pico espectral del desplazamiento, S0","33 350 Hz","S"],
-      ["f_suelta","pico espectral del desplazamiento, S6","50 Hz","S"],
-      ["hueco","factor entre los dos picos","×670","S"],
+      ["f_suelta","banda del desplazamiento de S6","continua – 175 Hz","S"],
+      ["hueco","décadas vacías entre las dos bandas","~2,3","S"],
       ["banda_baja_S0","energía de S0 por debajo de 1273 Hz","0,0 %","S"],
       ["banda_baja_S6","energía de S6 por debajo de 1273 Hz","100,0 %","S"]],
- hip:[["k_hombro = 2·10¹⁰ N/m/m, heredada de B1","E","<strong>La hipótesis que puede tumbar el método.</strong> Con el hombro 10× más blando la separación se invierte y no hay palpador que lo arregle."]],
+ hip:[["k_hombro = 2·10¹⁰ N/m/m, heredada de B1","E","<strong>La hipótesis que puede tumbar el método.</strong> Con el hombro 10× más blando la separación se invierte y no hay palpador que lo arregle."],
+      ["La cuña suelta hace UNA excursión y el ripple la reasienta; no queda sonando sobre él","E","El sistema linealizado con el hombro abierto sí tiene dos modos de cuerpo rígido, en 1,28 y 1,29 kHz. La simulación no lineal no los excita de forma sostenida. Si en el fierro sí sonaran, caerían <strong>justo encima de la f₀ del palpador</strong> — ver B3."]],
  anclas:["test_softprobe.py :: test_el_filtro_separa_las_dos_bandas_enteras","test_softprobe.py :: test_frecuencia_sube_con_el_apriete","test_modelo.py :: test_el_corte_del_palpador_cae_dentro_del_hueco_de_la_cuña"],
  banco:["A — ¿existe el hueco espectral? (no necesita palpador)"],
  falla:"Es el bloque crítico. Si el hueco no existe en el banco, ningún palpador lo arregla y hay que cambiar de método. Por eso el ensayo A se hace con un acelerómetro de choque pegado a la cuña y puede invalidar el enfoque en un día."
@@ -567,10 +575,19 @@ const B = [
   ["p",`<p><strong>3 · ζ es el parámetro más sensible de todo el trabajo, y tiene piso <em>y</em> techo.</strong></p>
   <p><em>Techo:</em> con elastómero el rechazo de alta frecuencia cae de 1/r² a 1/r y la separación se desploma de ×150 a ×3. «Flexura metálica y no elastómero» no es una recomendación de segundo orden: es <strong>la</strong> decisión de construcción.</p>
   <p><em>Piso:</em> con ζ muy bajo, Q es alto y una excitación <strong>sostenida</strong> a f₀ — máquina girando, motores del crawler, ring-down del tiro anterior — despega el palpador con apenas 0,23 µm. Lo que protege es el <em>tiempo de crecimiento</em>: llegar a Q pide ~Q ciclos y el impacto dura ~1,3. Pero el margen es de 16 ms.</p>`],
+  ["p",`<h4 id="coincidencia">Una coincidencia que nadie eligió, y que hay que mirar</h4>
+  <p>La f₀ del palpador salió de optimizar la separación: <strong>1273 Hz</strong>. El modo de cuerpo rígido de la cuña <em>suelta</em> sobre el ripple sale de su masa y de la rigidez del resorte:</p>
+  <pre class="eq">f = √(k_ripple · L / m) / 2π = √(3·10⁷ · 0,05 / 0,0228) / 2π = <b>1291 Hz</b></pre>
+  <p>Los dos números coinciden dentro del <strong>1,4 %</strong>, y son cálculos completamente independientes. Eso importa porque el palpador es vulnerable justo ahí: con ζ = 0,02 una excitación <em>sostenida</em> a f₀ lo despega con 0,92 µm, y la excursión de la cuña suelta es de 6,9 µm — <b>7,5 veces por encima</b>.</p>
+  <p>En el modelo no pasa nada, y la razón es concreta y comprobable: la cuña suelta <strong>no oscila</strong>. Hace una sola excursión y el ripple la reasienta (cruza su media dos veces en 5 ms, B2). Lo que llega al palpador es un escalón, no un seno, y un escalón no alcanza a construir la resonancia. Comprobado con senos sostenidos de verdad, con rampa de 2 ms:</p>`],
+  ["t",{cap:"Excitación SOSTENIDA a 1273 Hz, ζ = 0,02 — lo que pasaría si la cuña sonara", cols:["amplitud","pico leído","¿despega?"],
+   rows:[["0,5 µm","52,8 g","no"],["1,0 µm","105,6 g","no"],["3,0 µm","246,0 g","sí, 16,5 % de las muestras",2],["6,9 µm — la excursión real","306,9 g","sí, 21,8 %",2]], n:[1]}],
+  ["p",`<div class="call r"><div class="t">Lo que esto obliga a hacer</div><p>La inmunidad del palpador depende de una hipótesis sobre la cuña — que el ripple la reasienta de un saque — que <strong>nadie midió</strong>, y que descansa a su vez en <code>k_ripple</code>, un parámetro estimado. Un barrido anterior concluyó que <code>k_ripple</code> podía variar 60 veces sin mover el resultado un 2 %; eso sigue siendo cierto <em>para la separación</em>, pero es falso para esto: <code>k_ripple</code> es exactamente lo que decide dónde cae ese modo respecto de f₀.</p>
+  <p>Tres cosas, en orden de costo: (1) el <strong>detector de despegue de B4 ya cubre este modo de falla</strong> y no hace falta nada nuevo para detectarlo; (2) el <strong>ensayo A</strong> lo responde de una, porque el acelerómetro pegado a la cuña muestra directamente si la cuña suelta suena o hace una excursión; (3) si sonara, mover f₀ cuesta poco: a 1000 Hz la separación baja de ×150 a ×139 (un 7 %) y a 800 Hz a ×119 (un 21 %). <strong>No hay que decidirlo ahora</strong> — hay que medirlo en el ensayo A, que ya era el primero de la lista.</p></div>`],
   ["f",{id:"figZeta", n:8, cap:"<b>Fig. 8 — El amortiguamiento tiene ventana.</b> Separación contra ζ del acople, con m = 0,68 g, f₀ = 1273 Hz y 1 N. A la izquierda el Q alto deja al palpador vulnerable a excitación sostenida; a la derecha el amortiguamiento se come el rechazo de alta frecuencia. <b>ζ = 0,02</b> cuesta ×150 → ×112 de separación y compra 4× de inmunidad, además de bajar el ring-down de 115 a 29 ms — que es lo que fija el ritmo máximo de disparo."}],
   ["p",`<h4>Construcción</h4>
   <p><strong>Flexura de medición:</strong> 2 láminas de acero de resorte de 2 × 0,15 mm, luz 10 mm, empotradas en ambos extremos con la masa al centro. k = 43,5 N/mm, 83 MPa contra ~1000 de límite elástico → <strong>vida infinita, sin cálculo de fatiga</strong>. Pone 17,4 mg del lado punta.</p>
-  <p><strong>Punta:</strong> conviene formar el resalto en la propia lámina. Una bolilla ⌀1 mm agrega 4,1 mg y deja el total en 21,6 mg, apenas por encima del techo.</p>
+  <p><strong>Punta:</strong> la lámina pone 17,4 mg y una bolilla ⌀1 mm agrega 4,1 mg, o sea 21,6 mg contra un techo de 21. Pero ese techo es una cota de <em>simultaneidad</em> —supone que el pico de aceleración de la cuña y el pico de fuerza del resorte caen en el mismo instante, y no caen—: en la simulación el palpador recién despega con <b>120 mg</b>, 5,7 veces más. La bolilla no molesta; no hay que pelear por esos 4 mg.</p>
   <p><strong>Lastre:</strong> 0,35 g del lado del carro. El conjunto sale naturalmente en 0,33 g, y sin lastre f₀ se va a 1829 Hz con la separación cayendo a ~×105. <em>Agregar masa mejora la medición</em> — es contraintuitivo y es correcto.</p>
   <p><strong>Cuerpo:</strong> ≥ 7 g, o sea 10× la masa móvil. Con sólo 3× el efecto de masa reducida corre f₀ un 15 %.</p>
   <p><strong>Flexura de precarga:</strong> 0,30 N/mm. Hace dos trabajos — da la precarga y <em>guía</em> el carro en el eje de medición — y al ser 145× más blanda que la de medición suma ~1 % a la rigidez que fija f₀. Es la que da el <strong>rango de 3 mm</strong> de posicionamiento (F de 0,70 a 1,60 N), y eso es gratis porque la ganancia varía sólo 0,7 % entre 0,5 y 1,5 N: la precarga entra nada más que por el término de Hertz.</p>`]
@@ -580,9 +597,10 @@ const B = [
       ["f0","corte del filtro","1273 Hz","M"],
       ["zeta","amortiguamiento del acople","0,02","X"],
       ["a_despegue","fondo de escala útil = F/m","150 g","M"],
-      ["m_punta","techo de masa del lado punta","20 mg","M"],
+      ["m_punta","techo de masa del lado punta","20 mg (cota); 120 mg simulado","M"],
       ["k_precarga","rigidez del resorte de precarga","0,30 N/mm","X"]],
- hip:[["La flexura metálica da ζ ≈ 0,005–0,02","E","Con elastómero el ensayo es inservible. Se mide en un ping (ensayo B)."],
+ hip:[["La cuña suelta no queda sonando a ~1,29 kHz sobre el ripple","E","<strong>Lo más frágil del diseño después de k_hombro.</strong> Ese modo cae dentro del 1,4 % de la f₀ del palpador. Si sonara con más de ~1–3 µm sostenidos, el palpador despega. El modelo dice que no suena; el ensayo A lo confirma o lo desmiente."],
+      ["La flexura metálica da ζ ≈ 0,005–0,02","E","Con elastómero el ensayo es inservible. Se mide en un ping (ensayo B)."],
       ["La resonancia parásita del lado punta (~7,4 kHz) no molesta","E","Cae entre las dos bandas de la cuña, así que en principio no interfiere, pero <strong>no está en el modelo</strong>: la punta se trata como masa pura sin grado de libertad propio. Pendiente."],
       ["El cuerpo del palpador pesa ≥ 7 g","X","Con 3× la masa móvil el efecto de masa reducida corre f₀ un 15 %."]],
  anclas:["test_softprobe.py :: test_fondo_de_escala_es_F_sobre_m_y_no_depende_del_resorte","test_softprobe.py :: test_el_amortiguamiento_es_el_parametro_dominante","test_softprobe.py :: test_el_amortiguamiento_tiene_piso_no_solo_techo","test_softprobe.py :: test_la_masa_de_punta_no_cambia_la_lectura_pero_adelanta_el_despegue","test_modelo.py :: test_los_valores_del_palpador_salen_del_codigo_y_no_del_relato"],
@@ -594,13 +612,15 @@ const B = [
  q:"¿Qué número se saca del registro, y cuánto separa?",
  entra:["f0","zeta","a_despegue","m_movil"],
  sale:["rasgo","separacion","ventaja_rasgo","despegue_detect","a_leida","acelerometro"],
- eq:"rasgo = ∫ a(t)² dt     sobre 3 ms, con a filtrada a 5 kHz",
+ eq:"rasgo = ∫ a(t)² dt     sobre 3 ms, sobre la señal SIN filtrar\n\n(los 5 kHz del presupuesto de ruido son una especificación de la cadena de\n adquisición; aplicarlos de verdad MEJORA la separación — ver más abajo)",
  partes:[
   ["p",`<p>Esto es lo que el palpador entrega al cable. Es la única figura de todo el documento que muestra lo que se vería en un osciloscopio:</p>`],
-  ["f",{id:"figTr", n:9, cap:"<b>Fig. 9 — Lo que sale del acelerómetro.</b> Tres estados, mismo golpe de 5 mJ, mismo palpador — <em>ojo que cada panel tiene su propia escala</em>. Con la cuña asentada lo que se ve es su propio movimiento de 33 kHz llegando al carro con ganancia 1 (Fig. 6): un rizado de 2,4 g. Con la suelta, el escalón de 7 µm patea al palpador y lo deja sonando a <b>su</b> frecuencia, 1,27 kHz, con 44,5 g. S3, que es la frontera, hace las dos cosas: arranca con el rizado rápido y termina en la oscilación lenta. La amplitud difiere ×19, pero el rasgo difiere ×1230 — ×346 los pone el cuadrado, y el resto lo pone el límite de banda a 5 kHz, que descarta casi todo el rizado de la cuña asentada."}],
+  ["f",{id:"figTr", n:9, cap:"<b>Fig. 9 — Lo que sale del acelerómetro.</b> Tres estados, mismo golpe de 5 mJ, mismo palpador — <em>ojo que cada panel tiene su propia escala</em>. Con la cuña asentada lo que se ve es su propio movimiento de 33 kHz llegando al carro con ganancia 1 (Fig. 6): un rizado de 2,4 g. Con la suelta, el escalón de 7 µm patea al palpador y lo deja sonando a <b>su</b> frecuencia, 1,27 kHz, con 44,5 g. S3, que es la frontera, hace las dos cosas: arranca con el rizado rápido y termina en la oscilación lenta. La amplitud difiere ×19, pero el rasgo difiere ×1230. El cuadrado explica ×346; el resto lo pone la <em>duración</em>: el rizado de S0 se apaga en 0,06 ms y después queda poco, mientras que S6 mantiene la amplitud los 3 ms enteros. En valor eficaz la diferencia es ×35, y ×35² = 1230."}],
   ["p",`<p><strong>Lo que el palpador mide no es desplazamiento ni velocidad limpios.</strong> Por regresión sobre los 126 casos simulados, ω²x da R² = 0,92 con 40 % de error mediano y ωv da R² = 0,84 con 26 %. La cuña no lo excita con un impulso sino con una ráfaga, así que la lectura es un valor de <strong>espectro de respuesta al choque</strong> a f₀: hay que calibrarla, no se invierte con fórmula cerrada. No es un problema para este ensayo, que clasifica y no mide una magnitud física.</p>
-  <p>La energía de la señal le gana al pico por 3 a 9 veces, y la figura muestra por qué: promedia sobre toda la ráfaga en vez de quedarse con un instante — y el instante del pico está dominado por el transitorio rápido del impacto, que es justamente la parte que <em>no</em> sigue al estado de ajuste.</p>
-  <p>El <strong>límite de banda a 5 kHz</strong> no es cosmético, es la segunda mitad del filtrado. El acople blando ya convirtió los 830 g de la cuña asentada en 2,4 g (Fig. 6); el límite de banda descarta lo que queda de ese rizado de 33 kHz, porque vive muy arriba de la resonancia del palpador y no lleva información del ajuste. Filtrar más alto lo deja entrar por los caminos parásitos; filtrar más bajo recorta la propia resonancia, que es donde está la señal.</p>
+  <p>La energía de la señal le gana al pico por 14 a 58 veces —el rango salía ×3 a ×9 cuando se suponía ζ = 0,08— y la figura muestra por qué: promedia sobre toda la ráfaga en vez de quedarse con un instante — y el instante del pico está dominado por el transitorio rápido del impacto, que es justamente la parte que <em>no</em> sigue al estado de ajuste.</p>
+  <div class="call"><div class="t">Todos los números de separación son conservadores</div><p>El rasgo, tal como está calculado en todo este trabajo, se integra sobre la señal <strong>sin filtrar</strong>. Los 5 kHz son una especificación de la cadena de adquisición — entran en el presupuesto de ruido del acelerómetro — pero nunca se aplicaron al cálculo. Aplicando un pasa-bajos real de 5 kHz, la separación <em>mejora</em>: ×579 → ×4608 a 5 mJ, y ×112 → ×210 en la peor energía, porque descarta el rizado de 33 kHz que es casi todo lo que S0 entrega. O sea que el ensayo construido debería andar mejor que lo que dice este documento, no peor.</p></div>
+  <h4>La ventana de 3 ms es un parámetro libre, y mueve el número</h4>
+  <p>Con ζ = 0,02 el palpador tarda 29 ms en apagarse, así que la ventana no espera a que termine: la corta. Y dónde la corte cambia el resultado — separación en la peor energía: <b>×45</b> con 0,5 ms, ×68 con 1 ms, ×98 con 2 ms, <b>×112</b> con 3 ms, <b>×127</b> con 5 ms. Los 3 ms son una elección heredada, no un óptimo; alargarla a 5 ms es gratis (el ritmo de disparo es de 125 ms) y compra un 13 %. Queda pendiente barrerla en serio junto con el filtro.</p>
   <h4>La detección de despegue sale gratis y es binaria</h4>
   <p>En vuelo la única fuerza sobre el carro es la precarga, así que la lectura se clava <strong>exactamente</strong> en −F/m. No hay que calibrar nada para reconocerlo:</p>`],
   ["f",{id:"figLift", n:10, cap:"<b>Fig. 10 — La firma del despegue es un riel plano.</b> Mismo golpe (12 mJ, cuña suelta), dos puntas: una de 20 mg, dentro del techo, y otra de 120 mg. La pesada arranca el contacto y la señal se recorta exactamente en −150 g = −F/m, porque en vuelo la única fuerza sobre el carro es la precarga. Se detecta contando las muestras con |a + F/m| &lt; 1 % de F/m: <b>0 %</b> en contacto limpio, <b>0,43 %</b> cuando despega. Binario, sin falsos positivos."}],
@@ -608,11 +628,13 @@ const B = [
  ],
  sal:[["rasgo","rasgo de decisión: energía de la señal","∫a²dt, 3 ms, 5 kHz","X"],
       ["separacion","separación asentada | suelta, peor energía","×112","S"],
-      ["ventaja_rasgo","∫a²dt contra el pico","×3 a ×9","S"],
+      ["ventaja_rasgo","∫a²dt contra el pico","×14 a ×58","S"],
       ["despegue_detect","detección de despegue","riel plano en −F/m","S"],
       ["a_leida","rango de lectura sobre 126 casos","0,9 a 109 g · cero despegues","S"],
       ["acelerometro","sensor","ADXL1005 ±100 g · 0,1 g · 44 dB SNR","X"]],
- hip:[["El ancho de banda útil es 5 kHz","M","Filtrar más alto deja entrar la banda de 33 kHz por los caminos parásitos; más bajo recorta la propia resonancia del palpador."]],
+ hip:[["El ancho de banda de adquisición es 5 kHz","X","Entra en el presupuesto de ruido, pero <strong>no se aplicó al cálculo del rasgo</strong>: los números reportados son sin filtrar, y con el filtro mejoran ×1,9 a ×8."],
+      ["La ventana de 3 ms es adecuada","E","Es una elección heredada, no un óptimo. Entre 0,5 y 5 ms la separación va de ×45 a ×127."],
+      ["La respuesta propia del acelerómetro no importa","E","No está en el modelo. Un ADXL1005 rueda a ~20 kHz, así que atenuaría parte del rizado de 33 kHz de S0 — otra vez, en la dirección conservadora."]],
  anclas:["test_softprobe.py :: test_el_despegue_se_detecta_por_el_riel_plano","test_softprobe.py :: la energía de la señal le gana al pico"],
  banco:["C — palpador contra referencia","D — robustez y repetibilidad"],
  falla:"Si la separación medida en banco queda por debajo de ×100, revisar primero ζ (ensayo B) y después el hueco (ensayo A). El rasgo no es el sospechoso: es el mejor de los probados."
@@ -635,14 +657,14 @@ const B = [
   ["t",{cap:"Presupuesto de error del cociente de velocidades", cols:["fuente","contribución"],
    rows:[["variación de K_F, impacto al centro de carrera","0,04 %"],["ruido","0,138 %"],["offset","0,011 %"],["total sobre e / índice Leeb","0,145 %",1],["total sobre η = 1 − e²","0,48 %"],["el mismo cociente con el sensor inductivo","0,291 %"]], n:[1]}],
   ["p",`<p>Comparación justa: <strong>0,145 % contra 0,291 %</strong> — el back-EMF es 2× mejor, 138 niveles Leeb distinguibles contra 69. Para la energía <em>absoluta</em> el inductivo gana; el veredicto opuesto de una nota anterior comparaba esa magnitud, que no es la que usa el discriminante.</p>
-  <div class="call r"><div class="t">Cuidado con la arquitectura</div><p>Si el lanzador <strong>separa</strong> la maza — resorte, vuelo libre — la bobina sólo ve la velocidad de separación y <em>no el rebote</em>, y la cancelación no aplica. Con palanca no se separa y el back-EMF ve las dos, pero entonces el 49 % de la masa equivalente <em>es</em> el actuador. Y τ_e = 43 µs es comparable al contacto (60 µs): hay que abrir el drive unos 5 τ_e antes del impacto, o sea 265 µm antes.</p></div>`]
+  <div class="call r"><div class="t">Cuidado con la arquitectura</div><p>Si el lanzador <strong>separa</strong> la maza — resorte, vuelo libre — la bobina sólo ve la velocidad de separación y <em>no el rebote</em>, y la cancelación no aplica. Con palanca no se separa y el back-EMF ve las dos, pero entonces el 49 % de la masa equivalente <em>es</em> el actuador. Y τ_e = 43 µs es comparable al contacto (60 µs): hay que abrir el drive unos 5 τ_e antes del impacto — 215 µs, que a 1,48 m/s son <b>318 µm</b> de carrera. (Una nota anterior decía 265 µm, que son 4,15 τ_e: no cerraba.)</p></div>`]
  ],
  sal:[["E_golpe","energía de golpe recomendada","3 a 5 mJ","S"],
       ["ritmo","ritmo máximo de disparo","8 tiros/s","M"],
       ["v_maza","velocidad de la maza por back-EMF","u = R i + L di/dt + K_F v","M"],
       ["err_cociente","error del cociente de velocidades","0,145 %","M"],
       ["err_absoluto","error de la energía absoluta","4 % · repetibilidad 0,17 %","M"],
-      ["tau_e","constante eléctrica de la bobina","43,1 µs","M"]],
+      ["tau_e","constante eléctrica de la bobina","43,1 µs · abrir 318 µm antes","M"]],
  hip:[["R de la bobina conocida al 5 % y K_F al 2 %","V","Afecta la energía absoluta (4 %), no el cociente."],
       ["El impacto cae en el centro de carrera","X","Es gratis de conseguir y vale 10× en el residuo de dK/dx."]],
  anclas:["test_backemf.py :: test_el_error_de_escala_cancela_exacto_en_el_cociente","test_backemf.py :: test_conviene_que_el_impacto_caiga_en_el_centro_de_la_carrera","test_backemf.py :: test_en_el_cociente_el_backemf_le_gana_al_inductivo"],
@@ -671,9 +693,9 @@ const B = [
 
 const BANCO = [
  {k:"A", nm:"¿Existe el hueco espectral?", blk:"B1 · B2", first:1,
-  mata:"La hipótesis <strong>k_hombro</strong>, la única que puede tumbar el método en vez de sólo degradarlo.",
-  inst:"Acelerómetro de choque pegado a la cuña: ≥50 kHz, ±5000 g, 200 kS/s. <strong>No necesita palpador.</strong>",
-  crit:"La cuña asentada responde arriba de 20 kHz y la suelta abajo de 1 kHz."},
+  mata:"Dos hipótesis de golpe: <strong>k_hombro</strong>, la única que puede tumbar el método, y <strong>si la cuña suelta suena o hace una sola excursión</strong>, que es de lo que depende que el palpador no despegue.",
+  inst:"Acelerómetro de choque pegado a la cuña: ≥50 kHz, ±5000 g, 200 kS/s, registro de al menos 40 ms. <strong>No necesita palpador.</strong>",
+  crit:"La cuña asentada responde arriba de 20 kHz y la suelta abajo de 1 kHz. Y la suelta hace <em>una</em> excursión que se apaga en pocos ms, no un tren sostenido cerca de 1,3 kHz."},
  {k:"B", nm:"Ping test del palpador construido", blk:"B3",
   mata:"La hipótesis <strong>ζ</strong>, el parámetro más sensible del diseño.",
   inst:"Un golpecito y el registro del decaimiento. Da ζ <em>y</em> f₀ de una sola medición.",

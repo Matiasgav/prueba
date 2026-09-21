@@ -57,19 +57,57 @@ def test_los_valores_del_palpador_salen_del_codigo_y_no_del_relato():
 
 
 def test_el_corte_del_palpador_cae_dentro_del_hueco_de_la_cuña():
-    """La razon de ser de la cadena B2 -> B3, en una desigualdad."""
+    """La razon de ser de la cadena B2 -> B3, en una desigualdad.
+
+    `f_suelta` es el TECHO de la banda de S6, no un pico: S6 no oscila, hace
+    una sola excursion, y un transitorio no tiene pico espectral. Lo que el
+    metodo necesita es que las dos bandas caigan a los lados del corte.
+    """
     b2 = [b for b in MODELO if b.id == "B2"][0]
     b3 = [b for b in MODELO if b.id == "B3"][0]
     f_suelta = b2.valor("f_suelta")
     f_asentada = b2.valor("f_asentada")
     f0 = b3.valor("f0")
     assert f_suelta < f0 < f_asentada
-    #  y con holgura de mas de un orden de magnitud a cada lado
-    assert f0 / f_suelta > 10
+    #  con holgura: 7x abajo (175 Hz contra 1273) y 26x arriba
+    assert f0 / f_suelta > 7
     assert f_asentada / f0 > 10
-    #  el reparto de energia es total, no parcial
+    #  el reparto de energia es total, no parcial: eso es lo robusto
     assert b2.valor("banda_baja_S0") == 0.0
     assert b2.valor("banda_baja_S6") == 100.0
+
+
+def test_la_f0_cae_encima_del_modo_de_la_cuna_suelta_sobre_el_ripple():
+    """La coincidencia que encontro la auditoria del 21/09, anclada.
+
+    f0 salio de optimizar la separacion; el modo de cuerpo rigido de la cuña
+    suelta sale de su masa y del ripple. Coinciden dentro del 2 %, y son dos
+    calculos independientes. No es un error: es un riesgo, y este test existe
+    para que no se pierda de vista si mañana se mueve algun numero.
+    """
+    import math
+
+    from wtd.softprobe import design
+    from wtd.wedge import WedgeSpec, standard_states
+
+    w = WedgeSpec()
+    st = standard_states()[6]                      # la floja
+    f_ripple = math.sqrt(st.k_ripple * w.span / 0.0228) / (2 * math.pi)
+    f0 = design().f0()
+    assert abs(f_ripple - f0) / f0 < 0.02, (
+        f"f_ripple = {f_ripple:.0f} Hz contra f0 = {f0:.0f} Hz")
+
+    #  y el limite de despegue en resonancia esta muy por debajo de la
+    #  excursion de la cuña suelta: lo unico que protege es que NO oscile
+    p = design()
+    p.zeta = 0.02
+    x_limite = 2 * p.zeta * p.preload / p.k_series()
+    assert x_limite * 1e6 < 1.0                    # 0.92 um
+    assert 6.9 / (x_limite * 1e6) > 7              # la cuña excursiona 7.5x mas
+
+    #  y el bloque tiene que declararlo como hipotesis estimada
+    b3 = [b for b in MODELO if b.id == "B3"][0]
+    assert any(h.origen == "E" and "1.29 kHz" in h.texto for h in b3.hipotesis)
 
 
 def test_el_riesgo_numero_uno_es_k_hombro():

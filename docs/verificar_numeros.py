@@ -85,12 +85,19 @@ ck(inf['n_salidas'] == 32 and '32 magnitudes' in html, '32 magnitudes')
 ck(inf['abiertos'] == ['B6'] and 'PENDIENTE' in html, 'el unico bloque abierto es B6')
 
 print("\n== numeros que el texto cita ==")
-for needle, lab in [('×670', 'el hueco'), ('0,0 %', 'S0 bajo el corte'),
+for needle, lab in [('0,0 %', 'S0 bajo el corte'),
                     ('100,0 %', 'S6 bajo el corte'), ('0,145 %', 'error del cociente'),
                     ('0,291 %', 'el inductivo'), ('33 350 Hz', 'pico asentada'),
                     ('×1230', 'ganancia del rasgo'), ('1545 g', 'el valor que se repite'),
                     ('0,43 %', 'fraccion en el riel'), ('−150,00 g', 'el riel'),
-                    ('13 muestras', 'el tramo clavado')]:
+                    ('13 muestras', 'el tramo clavado'),
+                    # lo que agrego la auditoria del 21/09
+                    ('1291 Hz', 'el modo de la cuña suelta sobre el ripple'),
+                    ('×14 a ×58', 'la ventaja real del rasgo sobre el pico'),
+                    ('318 µm', 'abrir el drive 5 tau antes'),
+                    ('×4608', 'la separacion con el filtro aplicado de verdad'),
+                    ('120 mg', 'el despegue simulado por masa de punta'),
+                    ('×127', 'la separacion con ventana de 5 ms')]:
     ck(needle in html, f'{lab}: "{needle}"')
 
 ck(abs(DAT['ener'][3][0] - 5.0) < 1e-9 and abs(DAT['ener'][3][1] - 578.8) < 0.11,
@@ -103,8 +110,25 @@ for stale, why in [('6094', 'el 6,1 kHz del apoyo en extremos'),
                    ('1820', 'el f0 del default roto de design()'),
                    ('88,9', 'la k del default roto'),
                    ('3,67 %', 'la fraccion de despegue vieja'),
-                   ('sismometro', 'el mecanismo viejo')]:
+                   ('sismometro', 'el mecanismo viejo'),
+                   # lo que la auditoria del 21/09 saco de circulacion
+                   ('factor entre los dos picos', 'el x670 como resultado'),
+                   ('filtrada a 5 kHz', 'el rasgo NO va filtrado')]:
     ck(stale not in html, f'no quedo "{stale}" ({why})')
+
+print("\n== cifras viejas que SI pueden aparecer, pero solo dentro de su correccion ==")
+#  Un numero corregido no tiene que desaparecer del texto: nombrarlo es lo que
+#  hace verificable la correccion. Lo que no puede es seguir AFIRMADO. Se
+#  comprueba que cada uno aparezca junto a su formula de correccion.
+for viejo, marca, lab in [
+        ('×3 a ×9', 'salía ×3 a ×9 cuando se suponía ζ = 0,08',
+         'la ventaja del rasgo, de la epoca de zeta = 0,08'),
+        ('265 µm', 'Una nota anterior decía 265 µm',
+         'la carrera mal calculada del drive'),
+        ('125 Hz', 'por puro artefacto de resolución',
+         'el pico falso de la ventana corta')]:
+    ck(viejo not in html or marca in html,
+       f'"{viejo}" solo aparece corregido ({lab})')
 
 print()
 print(f'FALLAS: {len(fails)}' if fails else 'TODO OK')

@@ -121,7 +121,7 @@ hay hueco espectral y el método entero se cae.
 **Pregunta:** ¿en qué se distingue, medible, una cuña asentada de una suelta?
 
 **Entra:** `w(t)`, la escalera, `k_hombro`.
-**Sale:** `f_asentada` = 33 350 Hz, `f_suelta` = 50 Hz, `hueco` = ×670, y el
+**Sale:** `f_asentada` = 33 350 Hz, `f_suelta` = 175 Hz (techo de banda), y el
 reparto de energía contra el corte del palpador.
 
 ### La frecuencia sube con el apriete, y sube muchísimo
@@ -147,19 +147,24 @@ ese resorte. No son el mismo modo corrido: son familias de modos distintas.
 
 Espectro del **desplazamiento** (12,5 mm, 5 mJ, resolución 25 Hz):
 
-| estado | pico | 90 % de la energía | por debajo de 1273 Hz |
+| estado | qué hace | 90 % de la energía | por debajo de 1273 Hz |
 |---|---|---|---|
-| S0 ajustada | 33 350 Hz | 33 325 – 33 375 Hz | **0,0 %** |
-| S3 · 25 % | 33 075 Hz | 13 375 – 34 625 Hz | 1,5 % |
-| S6 floja | 50 Hz | 50 – 225 Hz | **100,0 %** |
+| S0 ajustada | ráfaga de 33 kHz, se apaga en 0,06 ms | 33 325 – 33 375 Hz | **0,0 %** |
+| S3 · 25 % | las dos cosas | 13 375 – 34 625 Hz | 1,5 % |
+| S6 floja | una excursión de 6,9 µm, 2,4 ms | continua – 175 Hz | **100,0 %** |
 
 El filtro no las atenúa distinto: **las separa enteras**.
 
-**Dos trampas ya pisadas.** (1) El espectro que importa es el del
+**Tres trampas ya pisadas.** (1) El espectro que importa es el del
 desplazamiento, porque es lo que excita al palpador; el de la aceleración pesa
 las altas por ω⁴ y da otra cosa. (2) La ventana tiene que ser larga: con 8 ms
-el bin vale 125 Hz y el pico de la cuña suelta «aparece» en 125 Hz por puro
-artefacto. Con 40 ms el número correcto es 50 Hz.
+el bin vale 125 Hz y el «pico» de la cuña suelta aparece en 125 Hz por puro
+artefacto. (3) Y la de fondo: **la cuña suelta no tiene pico espectral, porque
+no oscila.** Cruza su propia media dos veces en 5 ms — es *una* excursión, y su
+espectro es el de un transitorio, no el de un modo. Por eso ya no se cita un
+«×670 entre los picos»: ese cociente dependía de la ventana, que era la misma
+trampa de los 125 Hz vista de más lejos. Lo robusto es el reparto: 0,0 % contra
+100,0 %.
 
 ### Aquí es donde duele: la sensibilidad a `k_hombro`
 
@@ -279,6 +284,42 @@ diseño se hace en dos pasos y no resolviendo un compromiso.
 bajar el ring-down de 115 a 29 ms, que es lo que fija el ritmo máximo de
 disparo.
 
+### La coincidencia que nadie eligió
+
+f₀ salió de optimizar la separación: **1273 Hz**. El modo de cuerpo rígido de la
+cuña *suelta* sobre el ripple sale de su masa y de la rigidez del resorte:
+
+```
+f = √(k_ripple · L / m) / 2π = √(3·10⁷ · 0,05 / 0,0228) / 2π = 1291 Hz
+```
+
+Coinciden dentro del **1,4 %**, y son cálculos independientes. Importa porque el
+palpador es vulnerable justo ahí: una excitación *sostenida* a f₀ lo despega con
+0,92 µm, y la excursión de la cuña suelta es 6,9 µm — **7,5 veces más**.
+
+| seno sostenido a 1273 Hz | pico leído | ¿despega? |
+|---|---|---|
+| 0,5 µm | 52,8 g | no |
+| 1,0 µm | 105,6 g | no |
+| 3,0 µm | 246,0 g | **sí**, 16,5 % de las muestras |
+| 6,9 µm — la excursión real | 306,9 g | **sí**, 21,8 % |
+
+En el modelo no pasa, y la razón es comprobable: **la cuña suelta no oscila**,
+hace una excursión y el ripple la reasienta (B2). Lo que llega al palpador es un
+escalón, y un escalón no construye la resonancia.
+
+Pero eso es una hipótesis sobre la cuña, no sobre el palpador, y descansa en
+`k_ripple`, que es estimado. Un barrido anterior concluyó que `k_ripple` podía
+variar 60 veces sin mover el resultado un 2 %: sigue siendo cierto *para la
+separación*, y es falso para esto — `k_ripple` es exactamente lo que decide
+dónde cae ese modo respecto de f₀.
+
+Tres cosas, por costo: (1) el **detector de despegue de B4 ya cubre este modo de
+falla**; (2) el **ensayo A lo responde de una**, porque el acelerómetro pegado a
+la cuña muestra si la suelta suena o hace una excursión; (3) si sonara, mover f₀
+cuesta poco — a 1000 Hz la separación baja de ×150 a ×139 (7 %), a 800 Hz a ×119
+(21 %). No hay que decidirlo ahora: hay que medirlo.
+
 ### Construcción
 
 - **Flexura de medición:** 2 láminas de acero de resorte 2 × 0,15 mm, luz
@@ -301,6 +342,7 @@ disparo.
 
 | hipótesis | origen | si es falsa |
 |---|---|---|
+| **La cuña suelta no queda sonando a ~1,29 kHz sobre el ripple** | **estimado** | **lo más frágil después de `k_hombro`** — ver abajo |
 | La flexura metálica da ζ ≈ 0,005–0,02 | estimado | el ensayo es inservible con elastómero; se mide en un ping |
 | La resonancia parásita del lado punta (~7,4 kHz) no molesta | **estimado** | cae entre las dos bandas, así que en principio no interfiere, pero **no está en el modelo** — la punta se trata como masa pura. **Pendiente** |
 | El cuerpo pesa ≥ 7 g | elegido | f₀ se corre |
@@ -317,13 +359,24 @@ disparo.
 **Sale:** el rasgo de decisión y su poder de separación.
 
 ```
-rasgo = ∫ a(t)² dt   sobre 3 ms, con a filtrada a 5 kHz
+rasgo = ∫ a(t)² dt   sobre 3 ms, sobre la señal SIN filtrar
 ```
+
+> **Los 5 kHz nunca se aplicaron al cálculo.** Son una especificación de la
+> cadena de adquisición y entran en el presupuesto de ruido del acelerómetro,
+> pero el rasgo se integra sobre la señal cruda. Aplicando un pasa-bajos real de
+> 5 kHz la separación **mejora**: ×579 → ×4608 a 5 mJ, y ×112 → ×210 en la peor
+> energía. O sea que todas las cifras de este documento son conservadoras.
+>
+> **Y la ventana de 3 ms es un parámetro libre que mueve el número.** Separación
+> en la peor energía: ×45 con 0,5 ms, ×68 con 1 ms, ×98 con 2 ms, ×112 con 3 ms,
+> ×127 con 5 ms. Los 3 ms son heredados, no óptimos; alargar a 5 ms es gratis
+> (el ritmo de disparo es de 125 ms). Falta barrer ventana y filtro juntos.
 
 | magnitud | valor |
 |---|---|
 | separación asentada \| suelta | **×112** (ζ = 0,02); ×150 con ζ = 0,005 |
-| ventaja sobre el pico | ×3 a ×9 |
+| ventaja sobre el pico | ×14 a ×58 |
 | rango de lectura sobre 126 casos | 0,9 a 109 g, **cero despegues** |
 | acelerómetro | ADXL1005 ±100 g, 0,1 g de masa, 44 dB de SNR peor caso |
 
@@ -386,8 +439,7 @@ precarga.
   señal que S1 y S2, o sea que la escalera deja de ordenar en el extremo
   apretado.
 
-El máximo es ancho: 3–5 mJ da ×25 a ×36 (con ζ pesimista), contra ×23 a 1 mJ y
-×14 a 12 mJ. Para resolver fino la frontera S3|S4 sí conviene lo más flojo
+El máximo es ancho: 3–5 mJ da ×380 a ×579, contra ×230 a 1 mJ y ×112 a 12 mJ. Para resolver fino la frontera S3|S4 sí conviene lo más flojo
 posible: ese salto vale ×459 a 1 mJ.
 
 ### Medir la velocidad con la propia bobina
@@ -479,7 +531,8 @@ Ordenados por cuánto ahorran si fallan.
 - **Instrumentos:** acelerómetro de choque pegado a la cuña, ≥50 kHz, ±5000 g,
   200 kS/s. **No necesita palpador.**
 - **Criterio:** la cuña asentada responde arriba de 20 kHz y la suelta abajo de
-  1 kHz.
+  1 kHz. **Y la suelta hace *una* excursión que se apaga en pocos ms, no un tren
+  sostenido cerca de 1,3 kHz** — de eso depende que el palpador no despegue.
 
 ### B — Ping test del palpador construido → B3
 

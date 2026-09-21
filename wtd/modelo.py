@@ -216,10 +216,13 @@ B2 = Bloque(
     salidas=(
         Magnitud("f_asentada", "Pico espectral del desplazamiento, S0", 33350, "Hz",
                  "S", "El 90 % de la energia cae en 33 325 - 33 375 Hz."),
-        Magnitud("f_suelta", "Pico espectral del desplazamiento, S6", 50, "Hz", "S",
-                 "El 90 % de la energia cae en 50 - 225 Hz."),
-        Magnitud("hueco", "Factor entre los dos picos", 670, "-", "S",
-                 "Dos ordenes y medio de magnitud vacios en el medio."),
+        Magnitud("f_suelta", "Techo de la banda del desplazamiento de S6", 175, "Hz", "S",
+                 "S6 NO tiene pico espectral: no oscila. Hace una sola excursion "
+                 "de 6.9 um que cruza su media dos veces en 5 ms. Su espectro es "
+                 "el de UN TRANSITORIO, no el de un modo."),
+        Magnitud("hueco", "Decadas vacias entre las dos bandas", 2.3, "-", "S",
+                 "No se cita un 'factor entre picos': S6 no tiene pico, asi que "
+                 "ese cociente dependia de la ventana. Lo robusto es el reparto."),
         Magnitud("banda_baja_S0", "Energia de S0 por debajo de 1273 Hz", 0.0, "%", "S"),
         Magnitud("banda_baja_S6", "Energia de S6 por debajo de 1273 Hz", 100.0, "%", "S"),
     ),
@@ -253,6 +256,13 @@ B2 = Bloque(
                   "palpador y la separacion se INVIERTE (x0.34). Ningun diseño "
                   "de palpador sobrevive a eso: no es un problema de palpador, "
                   "es que el hueco deja de existir."),
+        Hipotesis("La cuña suelta hace UNA excursion; el ripple la reasienta y "
+                  "no queda sonando sobre el.", "E",
+                  "El sistema linealizado con el hombro abierto tiene dos modos "
+                  "de cuerpo rigido en 1.28 y 1.29 kHz, y la simulacion no "
+                  "lineal no los excita de forma sostenida. Si en el fierro si "
+                  "sonaran, caerian encima de la f0 del palpador (ver B3) y el "
+                  "palpador despegaria."),
     ),
     anclas=("test_softprobe.py :: test_el_filtro_separa_las_dos_bandas_enteras",
             "test_softprobe.py :: test_frecuencia_sube_con_el_apriete"),
@@ -285,7 +295,8 @@ B3 = Bloque(
         Magnitud("a_despegue", "Fondo de escala util", _p.a_liftoff() / 9.80665, "g", "M",
                  "= F/m, y NO depende del resorte. Es el invariante del diseño."),
         Magnitud("m_punta", "Techo de masa del lado punta", 20.0, "mg", "M",
-                 "= F / a_cuña_max. La punta la arrastra la cuña, no el carro."),
+                 "= F / a_cuña_max. Es una cota de SIMULTANEIDAD y por eso es "
+                 "conservadora: en la simulacion el despegue llega a 120 mg."),
         Magnitud("k_precarga", "Rigidez del resorte de precarga", 0.30, "N/mm", "X",
                  "La fija el POSICIONAMIENTO (rango de 3 mm), no la medicion."),
     ),
@@ -326,6 +337,15 @@ B3 = Bloque(
         "   115 a 29 ms, que es lo que fija el ritmo maximo de disparo."
     ),
     hipotesis=(
+        Hipotesis("La cuña suelta no queda sonando a ~1.29 kHz sobre el ripple.",
+                  "E",
+                  "LO MAS FRAGIL DEL DISEÑO DESPUES DE k_hombro. f_ripple = "
+                  "sqrt(k_ripple*L/m)/2pi = 1291 Hz, contra f0 = 1273 Hz: "
+                  "coinciden dentro del 1.4 %, y son dos calculos "
+                  "independientes. Con zeta = 0.02 una excitacion SOSTENIDA a "
+                  "f0 despega el palpador con 0.92 um, y la excursion de la "
+                  "cuña suelta es 6.9 um. Protege que la cuña no oscila: hace "
+                  "una excursion y listo. Lo responde el ensayo A."),
         Hipotesis("La flexura metalica da zeta ~ 0.005-0.02.", "E",
                   "Con elastomero el ensayo es inservible. Es LA decision de "
                   "construccion, y se mide en un ping (ensayo B)."),
@@ -362,9 +382,10 @@ B4 = Bloque(
                  "Energia de la señal, banda-limitada a 5 kHz, ventana de 3 ms."),
         Magnitud("separacion", "Separacion asentada | suelta", 112.2, "-", "S",
                  "Con zeta = 0.02. Con zeta = 0.005 seria x150."),
-        Magnitud("ventaja_rasgo", "int a^2 dt contra el pico", "3 a 9", "x", "S",
-                 "El pico separa x1.6 a x11.8; la energia de la señal x14 a x36 "
-                 "(y x112 con zeta real)."),
+        Magnitud("ventaja_rasgo", "int a^2 dt contra el pico", "14 a 58", "x", "S",
+                 "El rango 'x3 a x9' salia con zeta = 0.08. Con el diseño "
+                 "vigente (zeta = 0.02) el rasgo separa x112 a x579 y el pico "
+                 "x3.2 a x19.2."),
         Magnitud("despegue_detect", "Deteccion de despegue", "riel plano en -F/m",
                  "-", "S", "0 muestras en contacto limpio, 110 (3.67 %) al despegar."),
         Magnitud("a_leida", "Rango de lectura sobre 126 casos", "0.9 a 109", "g", "S",
@@ -372,7 +393,10 @@ B4 = Bloque(
         Magnitud("acelerometro", "Sensor", "ADXL1005 +-100 g", "-", "X",
                  "0.1 g de masa, 44 dB de SNR en el peor caso."),
     ),
-    ecuacion="rasgo = integral de a(t)^2 dt sobre 3 ms, con a filtrada a 5 kHz",
+    ecuacion="rasgo = integral de a(t)^2 dt sobre 3 ms, SIN filtrar\n\n"
+             "(los 5 kHz son una especificacion de la cadena de adquisicion y\n"
+             " entran en el presupuesto de ruido, pero NO se aplicaron al\n"
+             " calculo: aplicarlos mejora la separacion x1.9 a x8)",
     explicacion=(
         "Lo que el palpador mide NO es desplazamiento ni velocidad limpios. Por "
         "regresion sobre los 126 casos simulados, omega^2 x da R^2 = 0.92 con 40 % "
@@ -396,10 +420,18 @@ B4 = Bloque(
         "ensayo de dos clases, no un medidor de precarga."
     ),
     hipotesis=(
-        Hipotesis("El ancho de banda util es 5 kHz.", "M",
-                  "Filtrar mas alto deja entrar la banda de 33 kHz de la cuña "
-                  "asentada por los caminos parasitos; mas bajo recorta la propia "
-                  "resonancia del palpador."),
+        Hipotesis("El ancho de banda de adquisicion es 5 kHz.", "X",
+                  "Entra en el presupuesto de ruido, pero NO se aplico al "
+                  "calculo del rasgo. Los numeros reportados son sin filtrar, "
+                  "y con el filtro MEJORAN: x579 -> x4608 a 5 mJ, x112 -> x210 "
+                  "en la peor energia."),
+        Hipotesis("La ventana de 3 ms es adecuada.", "E",
+                  "Es una eleccion heredada, no un optimo. La separacion en la "
+                  "peor energia va de x45 (0.5 ms) a x127 (5 ms). Alargarla es "
+                  "gratis: el ritmo de disparo es de 125 ms."),
+        Hipotesis("La respuesta propia del acelerometro no importa.", "E",
+                  "No esta en el modelo. Un ADXL1005 rueda a ~20 kHz y "
+                  "atenuaria parte del rizado de 33 kHz de S0: conservador."),
     ),
     anclas=("test_softprobe.py :: test_el_despegue_se_detecta_por_el_riel_plano",
             "test_softprobe.py :: la energia de la señal le gana al pico"),
@@ -432,7 +464,8 @@ B5 = Bloque(
                  "Sistematico y calibrable; la repetibilidad es 0.17 %."),
         Magnitud("tau_e", "Constante electrica de la bobina", 43.1, "us", "M",
                  "Comparable al contacto (60 us): hay que abrir el drive ~5 tau "
-                 "antes del impacto, o sea 265 um antes."),
+                 "= 215 us antes del impacto, que a 1.48 m/s son 318 um de "
+                 "carrera. Una nota anterior decia 265 um: son 4.15 tau."),
     ),
     ecuacion="e = v_rebote / v_incidente = (K v_r) / (K v_i)   -> K se cancela EXACTO\n"
              "eta = 1 - e^2      (fraccion de energia entregada a la cuña)",

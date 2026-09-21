@@ -502,3 +502,77 @@ en el código para que no vuelvan a confundir:
   y ×0,747 contra ×0,700 también imprime ×0,7. La tolerancia quedó en 1 % o un dígito de la
   precisión impresa, lo que sea mayor — un error real, como el default roto de `design()`,
   daba 40 %.
+
+## Rev. K — 2026-09-21: auditoría hipótesis por hipótesis
+
+Pedido: revisar paso a paso, hipótesis por hipótesis, conclusión por conclusión, que todo
+esté bien razonado. Se recorrió la cadena entera comprobando cada afirmación contra el
+modelo, no contra la memoria. Aparecieron **cinco errores** y **un riesgo que no estaba**.
+
+### El riesgo nuevo: f₀ cae encima del modo de la cuña suelta
+
+f₀ salió de optimizar la separación: 1273 Hz. El modo de cuerpo rígido de la cuña suelta
+sobre el ripple sale de su masa y del resorte:
+
+    f = √(k_ripple · L / m) / 2π = √(3·10⁷ · 0,05 / 0,0228) / 2π = 1291 Hz
+
+**Coinciden dentro del 1,4 %, y son dos cálculos independientes.** Importa porque el
+palpador es vulnerable justo ahí: una excitación sostenida a f₀ lo despega con 0,92 µm, y la
+excursión de la cuña suelta es de 6,9 µm — 7,5 veces más. Comprobado con senos sostenidos:
+a 3 µm despega en el 16,5 % de las muestras, a 6,9 µm en el 21,8 %.
+
+En el modelo no pasa, y la razón es comprobable: **la cuña suelta no oscila**. Su
+desplazamiento cruza su propia media dos veces en 5 ms — es una sola excursión, que llega al
+máximo en 0,08 ms y cae al 10 % a los 2,4 ms. Lo que llega al palpador es un escalón, y un
+escalón no construye la resonancia.
+
+Pero eso es una hipótesis sobre la cuña, no sobre el palpador, y descansa en `k_ripple`, que
+es estimado. **Un barrido anterior concluyó que `k_ripple` podía variar 60 veces sin mover
+el resultado un 2 %: sigue siendo cierto para la separación, y es falso para esto** —
+`k_ripple` es exactamente lo que decide dónde cae ese modo respecto de f₀. El ensayo A lo
+responde de una; el detector de despegue de B4 ya cubre el modo de falla; y si hiciera falta
+mover f₀, a 1000 Hz cuesta el 7 % de separación.
+
+### Los cinco errores
+
+1. **El rasgo nunca se filtró.** B4 declaraba «∫a²dt con a filtrada a 5 kHz». `probe_features`
+   no filtra: los 5 kHz están sólo en el presupuesto de ruido del acelerómetro. Aplicando un
+   pasa-bajos real la separación **mejora** ×579 → ×4608 a 5 mJ y ×112 → ×210 en la peor
+   energía. Todas las cifras del documento eran conservadoras sin decirlo.
+2. **El pie de la Fig. 9 inventaba el mecanismo.** Atribuía el ×1230 al límite de banda.
+   Falso: crudo y filtrado dan idéntico. El factor es la *duración* — el rizado de S0 se
+   apaga en 0,06 ms y S6 mantiene amplitud los 3 ms, así que en valor eficaz la diferencia
+   es ×35, y ×35² = 1230.
+3. **«∫a²dt le gana al pico ×3 a ×9»** venía de la época de ζ = 0,08. Con el diseño vigente
+   es **×14 a ×58**.
+4. **«5 τ_e = 215 µs = 265 µm»** no cerraba: 215 µs a 1,48 m/s son **318 µm**. Los 265 µm son
+   4,15 τ_e.
+5. **«La cuña suelta responde a 50 Hz» y «×670 entre los picos»** son la misma trampa de los
+   125 Hz vista de más lejos: S6 no tiene pico espectral porque no oscila. Se reemplazó por
+   el techo de banda (175 Hz) y por el reparto, que es lo robusto: 0,0 % contra 100,0 %.
+
+### Correcciones menores
+
+- El techo de 20 mg de la punta es una cota de **simultaneidad**, 5,7× conservadora: la
+  simulación despega recién con 120 mg. La recomendación de ahorrarse la bolilla de 4,1 mg
+  era innecesaria.
+- La **ventana de 3 ms es un parámetro libre no declarado** que mueve el número: separación
+  en la peor energía ×45 (0,5 ms), ×68 (1 ms), ×98 (2 ms), ×112 (3 ms), ×127 (5 ms). Es
+  heredada, no óptima, y alargarla es gratis.
+- La **respuesta propia del acelerómetro** no está en el modelo (un ADXL1005 rueda a ~20 kHz
+  y atenuaría el rizado de 33 kHz de S0): otra vez, conservador.
+
+### Lo que resistió la auditoría
+
+- El invariante F/m, analíticamente y en el barrido.
+- Que arriba de la resonancia el palpador lee ω₀²·w: predicho 45,01 g para S6, simulado
+  44,46 g — **1,2 % de diferencia**.
+- Que f₀ y la separación no dependen de la masa, sólo de f₀ y ζ.
+- La no monotonía de la aceleración contra la monotonía de la excursión.
+- Que la cuña asentada está a 33,1 kHz y se apaga en 0,06 ms.
+- El riel de despegue exactamente en −F/m, 13 muestras contiguas entre t = 48 y 60 µs.
+- La cancelación exacta del error de escala en el cociente.
+- `ZETA_SWEEP` y `F0_SWEEP_FLEXURA`, que reproducen punto por punto.
+
+`tests/test_modelo.py` gana `test_la_f0_cae_encima_del_modo_de_la_cuna_suelta_sobre_el_ripple`,
+que ancla la coincidencia para que no se pierda de vista. Suite en **55 tests**.
