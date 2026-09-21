@@ -61,16 +61,16 @@ POR QUE NO SIRVE LA ACELERACION DE LA CUÑA
 
 Barrido de los siete estados de ajuste a 5 mJ, palpador a 12.5 mm del golpe:
 
-    estado            x_pico [um]     a_pico [g]
-    S0 ajustada           0.30             848
-    S2 50 %               0.40            1625
-    S3 25 %               2.38            4855
-    S4 residual           7.11            1549
-    S6 floja 200 um       6.89            1069
+    estado            x_pico [um]     a_pico [g]     lectura [g]
+    S0 ajustada           0.31             830            2.4
+    S2 50 %               0.40            1545            2.9
+    S3 25 %               2.39            4808           16.2
+    S4 residual           7.12            1544           45.6
+    S6 floja 200 um       6.90            1062           44.5
 
 El pico de aceleracion NO ES MONOTONO: sube hasta S3 y despues baja, de modo
-que un mismo valor (~1500 g) corresponde a la cuña al 50 % y a la cuña
-practicamente suelta. El pico esta dominado por el transitorio rapido del
+que 1545 g corresponde exactamente igual a S2 (la cuña al 50 %) y a S4 (la
+cuña con precarga residual). El pico esta dominado por el transitorio rapido del
 impacto, que no sigue al estado. El de desplazamiento si es monotono, porque
 sigue a la excursion lenta, que es la que cambia con el ajuste.
 

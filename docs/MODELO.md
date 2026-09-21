@@ -84,17 +84,20 @@ precarga) y S4 (5 %).
 
 A 5 mJ y 12,5 mm del golpe:
 
-| estado | x_pico [µm] | a_pico [g] |
-|---|---|---|
-| S0 ajustada | 0,30 | 848 |
-| S2 · 50 % | 0,40 | 1625 |
-| S3 · 25 % | 2,38 | **4855** |
-| S4 residual | 7,11 | 1549 |
-| S6 floja | 6,89 | 1069 |
+| estado | x_pico [µm] | a_pico [g] | lectura del palpador [g] |
+|---|---|---|---|
+| S0 ajustada | 0,31 | 830 | 2,4 |
+| S1 · 75 % | 0,30 | 756 | 2,3 |
+| S2 · 50 % | 0,40 | 1545 | 2,9 |
+| S3 · 25 % | 2,39 | **4808** | 16,2 |
+| S4 residual | 7,12 | 1544 | 45,6 |
+| S5 · juego 50 µm | 6,89 | 1073 | 44,4 |
+| S6 · juego 200 µm | 6,90 | 1062 | 44,5 |
 
 **El pico de aceleración no es monótono con la soltura.** Sube hasta S3 y
-después baja, así que ~1500 g corresponde tanto a la cuña al 50 % como a la
-cuña prácticamente suelta. El de desplazamiento sí es monótono.
+después baja, así que **1545 g corresponde tanto a S2 (cuña al 50 %) como a S4
+(precarga residual)**: un acelerómetro rígido no puede distinguirlas. El de
+desplazamiento sí es monótono, y la lectura del palpador lo sigue.
 
 Medir la aceleración cruda de la cuña no sirve — y eso es independiente de
 cuánta precarga haya disponible.

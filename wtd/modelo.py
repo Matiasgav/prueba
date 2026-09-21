@@ -153,10 +153,11 @@ B1 = Bloque(
         Magnitud("escalera", "Estados de ajuste S0..S6", 7, "estados", "X",
                  "Varian precarga 1800 N -> 0, luz 0 -> 200 um y disipacion de "
                  "junta. La frontera asentada|suelta cae entre S3 (25 %) y S4 (5 %)."),
-        Magnitud("x_pico", "Excursion de la cuña, S0 -> S6, a 5 mJ", "0.30 -> 6.89",
+        Magnitud("x_pico", "Excursion de la cuña, S0 -> S6, a 5 mJ", "0.31 -> 6.90",
                  "um", "S", "Monotona con la soltura."),
-        Magnitud("a_pico", "Aceleracion de la cuña, S0 -> S6, a 5 mJ", "848 -> 1069",
-                 "g", "S", "NO monotona: pasa por 4855 g en S3."),
+        Magnitud("a_pico", "Aceleracion de la cuña, S0 -> S6, a 5 mJ", "830 -> 1062",
+                 "g", "S", "NO monotona: pasa por 4808 g en S3, y 1545 g "
+                 "corresponde tanto a S2 como a S4."),
         Magnitud("deriva", "Corrimiento permanente tras el golpe", 0.01, "um", "S",
                  "<0.2 % del pico: el ripple reasienta la cuña. No hay deriva."),
     ),
@@ -171,7 +172,7 @@ B1 = Bloque(
         "El resultado que ordena todo B2 sale de aca: la ESCALERA no es un cambio "
         "gradual de rigidez, es un cambio de condicion de borde. Y el resultado que "
         "mata la idea ingenua sale tambien de aca: el pico de ACELERACION de la cuña "
-        "no es monotono con la soltura (4855 g en S3, 1069 g en S6), asi que un mismo "
+        "no es monotono con la soltura (4808 g en S3, 1062 g en S6), asi que un mismo "
         "numero corresponde a dos estados opuestos. El de DESPLAZAMIENTO si es "
         "monotono. Medir la aceleracion cruda de la cuña no sirve, y eso es "
         "independiente de cuanta precarga haya."
