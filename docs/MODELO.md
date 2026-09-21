@@ -503,6 +503,8 @@ Ordenados por cuánto ahorran si fallan.
 | quiero… | voy a |
 |---|---|
 | la estructura (esto) | `docs/MODELO.md`, `wtd/modelo.py` |
+| **las trece figuras** | el artefacto publicado, https://claude.ai/artifact/XpcvS45VapBXWZUqwFvvpP |
+| regenerar los datos de esas figuras | `python studies/figuras_modelo.py` → `results/figuras_modelo.json` |
 | el orden de magnitud de todo, ejecutable | `python -m wtd.modelo` |
 | la física del palpador | `wtd/softprobe.py` (el docstring es el argumento completo) |
 | la velocidad por back-EMF | `wtd/backemf.py` |
