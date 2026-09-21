@@ -35,14 +35,24 @@ def test_todo_bloque_dice_como_se_verifica_y_que_pasa_si_falla():
 
 
 def test_los_valores_del_palpador_salen_del_codigo_y_no_del_relato():
-    """B3 no puede quedar desactualizado respecto de `softprobe.design()`."""
+    """B3 no puede quedar desactualizado respecto de `softprobe.design()`.
+
+    Las dos mitades hacen falta. Comparar B3 contra `design()` sola es
+    CIRCULAR: si el default de `design()` se corre, B3 se corre con el y el
+    test sigue pasando -- que es exactamente lo que paso con el default viejo
+    de `x_wedge_max`, que devolvia un palpador de 1820 Hz mientras todo el
+    documento decia 1273. Por eso van tambien los valores publicados, a mano.
+    """
     p = design()
     b3 = [b for b in MODELO if b.id == "B3"][0]
     assert b3.valor("m_movil") == pytest.approx(p.mass * 1e3, rel=1e-9)
     assert b3.valor("f0") == pytest.approx(p.f0(), rel=1e-9)
     assert b3.valor("k_medicion") == pytest.approx(p.k_series() / 1e3, rel=1e-9)
     assert b3.valor("a_despegue") == pytest.approx(p.a_liftoff() / G, rel=1e-9)
-    # y el invariante sigue siendo F/m
+    # y contra los numeros PUBLICADOS, que es lo que rompe la circularidad
+    assert b3.valor("m_movil") == pytest.approx(0.680, abs=0.005)
+    assert b3.valor("f0") == pytest.approx(1273.0, rel=0.005)
+    assert b3.valor("k_medicion") == pytest.approx(43.5, rel=0.01)
     assert b3.valor("a_despegue") == pytest.approx(150.0, rel=1e-3)
 
 

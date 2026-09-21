@@ -411,8 +411,16 @@ def design_space(preload: float = 1.0, margin: float = 1.4,
     return out
 
 
+#  Mayor excursion de la cuña sobre los 126 casos (12 mJ a 10 mm), 13.324 um,
+#  mas un 15 % de reserva. NO es un numero redondo elegido a mano: es lo que
+#  mide `studies/soft_probe.py`, y es lo que hace que el default de `design()`
+#  devuelva EL palpador documentado (f0 = 1273 Hz, k = 43.5 N/mm) y no otro.
+#  Estaba en 7.5e-6, que daba f0 = 1820 Hz: el default no reproducia el diseño.
+X_WEDGE_MAX = 15.322686907218941e-6
+
+
 def design(preload: float = 1.0, a_liftoff_g: float = 150.0,
-           x_wedge_max: float = 7.5e-6, a_full_scale_g: float = 100.0,
+           x_wedge_max: float = X_WEDGE_MAX, a_full_scale_g: float = 100.0,
            **kw) -> SoftProbe:
     """Resuelve el palpador a partir de la especificacion del ensayo.
 

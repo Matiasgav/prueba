@@ -403,3 +403,60 @@ banco le sirve a algún bloque.
   (el mecanismo viejo). Ahora dice pasa-bajos discriminante.
 
 Publicado en https://claude.ai/artifact/XpcvS45VapBXWZUqwFvvpP
+
+## Rev. I — 2026-09-21: trece figuras, y el defecto que aparecieron al buscarlas
+
+Pedido del usuario: el modelo integrado necesita más figuras para entenderse.
+
+### El defecto que encontró juntar los datos
+
+Al recalcular los barridos para dibujarlos, los números no cerraban con las tablas
+publicadas. La causa: **`design()` con sus argumentos por defecto no devolvía el palpador
+documentado.** El default `x_wedge_max = 7,5 µm` daba f₀ = 1820 Hz y k = 88,9 N/mm, no los
+1273 Hz y 43,5 N/mm de todo el resto del trabajo. El estudio y los tests pasan el argumento
+explícito (el estudio usa la mayor excursión medida, 13,32 µm × 1,15 = 15,32 µm), así que
+`results/softprobe.json` y las tablas siempre estuvieron bien — pero **`wtd/modelo.py`
+llamaba a `design()` pelado** y heredaba el palpador equivocado.
+
+El test anti-deriva de la rev. H no lo vio porque era **circular**: comparaba B3 contra
+`design()`, o sea `design()` contra sí mismo. Si el default se corre, las dos mitades se
+corren juntas y el test sigue pasando.
+
+- `wtd/softprobe.py`: el default pasa a `X_WEDGE_MAX`, una constante documentada con su
+  procedencia.
+- `tests/test_modelo.py`: además de la comparación contra el código van los **valores
+  publicados escritos a mano** (0,680 g · 1273 Hz · 43,5 N/mm · 150 g). Eso rompe la
+  circularidad.
+
+Con el default corregido, `studies/figuras_modelo.py` reproduce **exactamente** las dos
+tablas publicadas: `ZETA_SWEEP` (78,5 g / ×154,8 … 215,8 g / ×0,7) y `F0_SWEEP_FLEXURA`
+(17,9/×91,3 … 869,3/×13,7). Quedó anotada la métrica, que las tablas usaban sin decirla:
+
+    separación = mín(estados sueltos de ∫a²dt) / máx(estados asentados),
+                 tomada en la PEOR de las seis energías, que siempre es 12 mJ.
+
+### Lo que las figuras nuevas hicieron ver
+
+1. **El palpador no «rechaza» a la cuña asentada: la convierte.** Arriba de su resonancia
+   la lectura vale ω₀²·w, o sea el desplazamiento. Los 830 g de la cuña asentada llegan al
+   carro como 2,4 g — un rechazo de ×346 contra lo que leería un palpador rígido. La
+   discriminación en amplitud es entonces la de la **excursión**: 0,31 µm contra 6,90 µm.
+2. **El límite de banda a 5 kHz es la segunda mitad del filtrado, no un detalle.** La
+   amplitud separa ×19 y el cuadrado la lleva a ×346, pero el rasgo separa ×1230: el resto
+   lo pone el filtro, que descarta el rizado de 33 kHz que domina la señal cruda de S0.
+3. **El óptimo de energía y el salto S3|S4 tiran para lados opuestos.** La separación de
+   grupos tiene máximo en 5 mJ (×579); el salto en la frontera cae monótonamente (×798 a
+   1 mJ, ×13,5 a 12 mJ). Son dos objetivos distintos y hay que elegir cuál se prioriza.
+4. **El riel de despegue son 13 muestras contiguas** clavadas en −150,00 g entre t = 48 y
+   60 µs, con punta de 120 mg a 12 mJ. Con punta de 20 mg, cero.
+
+### Agregado
+
+- `studies/figuras_modelo.py` → `results/figuras_modelo.json`. Reusa las trazas de la cuña
+  (que no dependen del palpador) para que un barrido de horas tarde minutos, y por eso
+  además sirve de verificación de las tablas publicadas.
+- Trece figuras en el artefacto: corte de la ranura, los dos estados de borde, la escalera,
+  la transferencia del palpador, las trazas del acelerómetro, la firma del despegue con su
+  ampliación, el óptimo de energía, K_F(x) y el flujo de decisión.
+
+Publicado en https://claude.ai/artifact/XpcvS45VapBXWZUqwFvvpP
