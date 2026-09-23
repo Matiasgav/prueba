@@ -1,5 +1,7 @@
 # Informe — Oportunidades de robótica de inspección industrial
 
+> Este repositorio también contiene [`engranajes/`](engranajes/README.md): el análisis del torque admisible de un par de mitras KG m0,5 × 20 según Shigley.
+
 Informe profesional en dos formatos, generados desde una única fuente.
 
 ## Entregables
