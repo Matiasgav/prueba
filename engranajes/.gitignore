@@ -1,3 +1,7 @@
 fuentes/*.pdf
 fuentes/khk_plasticos/
 __pycache__/
+*.aux
+*.log
+*.out
+*.toc
