@@ -16,14 +16,10 @@ DPI = 160
 #  (x0, y0, x1, y1), nombre de salida)
 CAPTURAS = [
     ('KG4001WEB-7.pdf', 0, [], (0, 0.28, 1, 0.56), 'kg_codigo_producto'),
-    ('KG4001WEB-7.pdf', 27, ['M50S 20', 'JGMA'],
-     (0, 0.2, 1, 0.37), 'kg_s45c_datos'),
-    ('KG4001WEB-7.pdf', 28, ['M50S 20'], (0, 0.29, 1, 0.47), 'kg_s45c_potencia'),
-    ('KG4001WEB-7.pdf', 37, ['M50SUM 20'], (0, 0.66, 1, 0.99), 'kg_mim_datos'),
-    ('KG4001WEB-7.pdf', 38, ['M50SUM 20'], (0, 0.72, 0.72, 0.98), 'kg_mim_potencia'),
+    ('KG4001WEB-7.pdf', 27, ['M50S 20', 'M50S 25', 'JGMA'],
+     (0, 0.2, 1, 0.41), 'kg_s45c_datos'),
+    ('KG4001WEB-7.pdf', 28, ['M50S 20', 'M50S 25'], (0, 0.29, 1, 0.47), 'kg_s45c_potencia'),
     ('KG4001WEB-7.pdf', 39, ['M50B 20'], (0, 0, 1, 0.47), 'kg_laton_datos'),
-    ('KG3001_web_0009.pdf', 21, ['M50DM 20'], (0, 0.33, 1, 0.52), 'kg_pom_datos'),
-    ('KG3001_web_0009.pdf', 22, ['M50SUM 20'], (0, 0.8, 1, 0.94), 'kg_mim_potencia_2020'),
     ('KG5001JP_reference.pdf', 19, [], (0, 0.04, 1, 0.35), 'kg_condiciones_conicos'),
     ('KG5001JP_reference.pdf', 21, [], (0, 0.76, 1, 0.94), 'kg_conversion_potencia'),
     ('TechnicalData_KGSTOCKGEARS.pdf', 136, ['Outer transverse module'],

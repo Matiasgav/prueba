@@ -14,7 +14,8 @@ Caso de carga (rueda de carro):
   * picos ocasionales de 10 s al torque admisible (T_pico);
   * los dos regímenes se combinan con la regla de Miner, 50 % de daño cada uno.
 
-Metales: ecuaciones de Shigley cap. 15. POM: Lewis (Shigley cap. 14) y KHK.
+Diseños: KG M50S20 (S45C), KG M50B20 (latón), KG M50S25 (S45C),
+RS PRO 521-5780 (m0,8 z16) y mitra a medida m0,6 z21 de SCM415 carburizado.
 """
 import json
 import math
@@ -103,13 +104,6 @@ MATERIALES = {
         'base_H': 'Shigley Fig. 15-12, grado 1, 170 HB',
         'kg_W': {100: 1.5, 200: 3.1, 400: 6.2, 600: 9.3, 800: 12.4, 1000: 15.5},
     },
-    'SUS304L MIM': {
-        'codigo': 'M50SUM20*1103', 'E': 190e3, 'nu': 0.29, 'HB': 120.0, 'Sy': 175.0,
-        'sFlim': 0.40 * SFLIM_REF, 'sHlim': 120.0 / HB_REF * SHLIM_REF,
-        'base_F': 'KG: MIM = 0,4 × S45C',
-        'base_H': 'dureza 120/170 × S45C',
-        'kg_W': {100: 0.5, 200: 1.1, 400: 2.2, 600: 3.3, 800: 4.4, 1000: 5.6},
-    },
     'Latón C3604B': {
         'codigo': 'M50B20-1103', 'E': 100e3, 'nu': 0.34, 'HB': 100.0, 'Sy': 250.0,
         'sFlim': 138.0 / 285.0 * SFLIM_REF, 'sHlim': 100.0 / HB_REF * SHLIM_REF,
@@ -121,27 +115,16 @@ MATERIALES = {
     'SCM415 carburizado': {
         'codigo': 'a medida', 'E': 205e3, 'nu': 0.30, 'HB': 600.0, 'Sy': 800.0,
         'sFlim': 206.8, 'sHlim': 1379.0,
-        'base_F': 'Shigley, carburizado grado 1 (30 kpsi)',
+        'base_F': 'Shigley, carburizado grado 1 (30 kpsi), 58-62 HRC',
         'base_H': 'Shigley, carburizado grado 1 (200 kpsi)',
         'kg_W': None,
     },
 }
-METALES_KG = ['S45C', 'SUS304L MIM', 'Latón C3604B']
 
-COTA_BAJA = {  # hipótesis más pesimistas para el picado de materiales no tabulados
-    'SUS304L MIM': 0.40 * SHLIM_REF,
+COTA_BAJA = {  # hipótesis más pesimista para el picado del latón (no tabulado)
     'Latón C3604B': 207.0 / (2.22 * HB_REF + 200.0) * SHLIM_REF,
 }
 
-POM = {
-    'codigo': 'M50DM20-1103',
-    'y_khk': 0.597, 'Y_lewis': 0.353,
-    'sb_curva': [(1.6e4, 5.65), (1e5, 5.05), (1e6, 4.45), (1e7, 4.0), (1e8, 3.65)],
-    'K_T': 0.80, 'K_L': 1.0, 'K_M': 0.75, 'K_V_khk': 1.40,
-    'C_S_normal': 1.25,   # uniforme, 20 h seguidas (columna 24 h/día)
-    'C_S_pico': 0.80,     # uniforme, <= 3 h/día de carga alta
-    'kg_m08': {'m': 0.8, 'z': 20, 'b': 3.7, 'W100': 1.20},
-}
 KGF = 9.80665
 
 
@@ -260,77 +243,34 @@ def torque_kg(mat):
 
 
 # ---------------------------------------------------------------------------
-# 6. POM (Lewis / KHK), con carga alternada al 70 %
-# ---------------------------------------------------------------------------
-def sb_pom(N):
-    xs = [math.log10(p[0]) for p in POM['sb_curva']]
-    ys = [p[1] for p in POM['sb_curva']]
-    x = min(max(math.log10(max(N, 1)), xs[0]), xs[-1])
-    return float(np.interp(x, xs, ys)) * KGF
-
-
-def capacidad_pom(rpm, N, C_S):
-    g = BASE
-    m, b, d = g['m'], g['b'], g['d']
-    fb = (g['Re'] - b) / g['Re']
-    KV = POM['K_V_khk'] if rpm > 0 else 1.0
-    alt = FACT['alternada']
-    s_adm = sb_pom(N) * KV * POM['K_T'] * POM['K_L'] * POM['K_M'] / C_S * alt
-    T_khk = m * POM['y_khk'] * b * s_adm * fb * d / 2000
-    T_lew = m * POM['Y_lewis'] * b * s_adm * fb * d / 2000
-    k = POM['kg_m08']
-    T08 = 9549.7 * k['W100'] / 1000.0 / 100.0
-    d08 = k['m'] * k['z']
-    Re08 = d08 / (2 * math.sin(math.radians(45)))
-    T_kg = (T08 * (m * b * fb * d) / (k['m'] * k['b'] * (Re08 - k['b']) / Re08 * d08)
-            * sb_pom(N) / sb_pom(1e7) * alt)
-    if rpm == 0:
-        T_kg /= POM['K_V_khk']
-    return {'rpm': rpm, 'N': N, 's_b': sb_pom(N), 's_adm': s_adm, 'fb': fb,
-            'C_S': C_S, 'T_khk': T_khk, 'T_lewis': T_lew, 'T_kgcal': T_kg,
-            'T_adm': min(T_khk, T_lew, T_kg), 'T08_kg': T08}
-
-
-def regimenes_pom():
-    return {'normal': {r: capacidad_pom(r, N_eval(ciclos_normal(r)), POM['C_S_normal'])
-                       for r in DATOS['rpm_normal']},
-            'pico': {r: capacidad_pom(r, N_eval(ciclos_pico(r)), POM['C_S_pico'])
-                     for r in DATOS['rpm']}}
-
-
-# ---------------------------------------------------------------------------
 # 7. Fijación al eje (Shigley tabla 7-4)
 # ---------------------------------------------------------------------------
-def prisionero(D=3.0):
-    F = 85 * 4.44822   # tamaño n.º 2: 85 lbf
+def prisionero(D=3.0, lbf=85):
+    """Shigley tabla 7-4: n.º 2 (bajo M2,5) 85 lbf; n.º 4 (bajo M3) 160 lbf."""
+    F = lbf * 4.44822
     return {'F': F, 'D': D, 'T_uno': F * D / 2000, 'n_S': 2.0,
             'T_seguro': F * D / 2000 / 2.0}
 
 
 # ---------------------------------------------------------------------------
-# 8. Alternativas con Ø exterior <= 14 mm
+# 8. Diseños analizados (todos con d_a <= 14 mm, 1:1, 90°)
 # ---------------------------------------------------------------------------
-ALTERNATIVAS = [
-    ('A', 'KG m0,5 z20', 'S45C', 'Referencia: KG M50S20'),
-    ('B', 'KG m0,5 z25', 'S45C', 'KG M50S25 (stock)'),
-    ('C', 'KG m0,5 z25', 'Latón C3604B', 'KG M50B25 (stock)'),
-    ('D', 'm0,8 z16', 'S45C', 'RS PRO 521-5780 (stock)'),
-    ('E', 'm0,6 z21', 'S45C', 'A medida, S45C'),
-    ('F', 'KG m0,5 z20', 'SCM415 carburizado', 'A medida, m0,5 carburizado'),
-    ('G', 'm0,6 z21', 'SCM415 carburizado', 'A medida, m0,6 carburizado'),
+DISENOS = [
+    # clave, engranaje, material, etiqueta corta, descripción
+    ('M50S20', 'KG m0,5 z20', 'S45C', 'KG M50S20', 'KG M50S20, S45C (stock, referencia)'),
+    ('M50B20', 'KG m0,5 z20', 'Latón C3604B', 'KG M50B20', 'KG M50B20, latón C3604B (stock)'),
+    ('M50S25', 'KG m0,5 z25', 'S45C', 'KG M50S25', 'KG M50S25, S45C (stock)'),
+    ('RS', 'm0,8 z16', 'S45C', 'RS PRO 521-5780', 'RS PRO 521-5780, m0,8 z16, S45C (stock)'),
+    ('CARB', 'm0,6 z21', 'SCM415 carburizado', 'A medida carburizada',
+     'A medida m0,6 z21, SCM415 carburizado 58-62 HRC'),
 ]
+CLAVES = [d[0] for d in DISENOS]
+INFO = {d[0]: {'eng': d[1], 'mat': d[2], 'corto': d[3], 'desc': d[4]} for d in DISENOS}
+GEO = {k: geometria(ENGRANAJES[INFO[k]['eng']]) for k in CLAVES}
 
 
-def alternativas():
-    out = []
-    for cod, eng, mat, desc in ALTERNATIVAS:
-        g = geometria(ENGRANAJES[eng])
-        r = regimenes(g, MATERIALES[mat])
-        out.append({'cod': cod, 'eng': eng, 'mat': mat, 'desc': desc,
-                    'fuente': ENGRANAJES[eng]['fuente'], 'geo': g,
-                    'normal100': r['normal'][100], 'pico100': r['pico'][100],
-                    'pico0': r['pico'][0]})
-    return out
+def calcular_disenos(**kw):
+    return {k: regimenes(GEO[k], MATERIALES[INFO[k]['mat']], **kw) for k in CLAVES}
 
 
 # ---------------------------------------------------------------------------
@@ -382,85 +322,76 @@ def barras(ax, grupos, series, colores, etiquetas, fmt='{:.3f}'):
     ax.set_xticks(x, grupos)
 
 
-def fig_resumen(res, pom):
-    nombres = METALES_KG
-    grupos = ['S45C', 'SUS304L\nMIM', 'Latón\nC3604B', 'POM']
-    fig, axs = plt.subplots(1, 2, figsize=(9.2, 3.8), sharey=True,
-                            gridspec_kw={'width_ratios': [3, 4]})
+SERIES5 = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4']
+
+
+def fig_resumen(res):
+    grupos = ['KG M50S20\nS45C', 'KG M50B20\nlatón', 'KG M50S25\nS45C',
+              'RS PRO\n521-5780', 'A medida\ncarburizada']
+    fig, axs = plt.subplots(2, 1, figsize=(9.2, 6.4), sharex=True)
     rn = DATOS['rpm_normal']
-    ser = [[res[n]['normal'][r]['T_adm'] for n in nombres] + [pom['normal'][r]['T_adm']]
-           for r in rn]
-    barras(axs[0], grupos, ser, RAMPA[1:], [f'{fmt_rpm(r)} rpm' for r in rn])
-    axs[0].set_title('Torque normal (toda la vida)', loc='left', color=TXT, fontsize=10)
-    ser = [[res[n]['pico'][r]['T_adm'] for n in nombres] + [pom['pico'][r]['T_adm']]
-           for r in DATOS['rpm']]
-    barras(axs[1], grupos, ser, RAMPA, [f'{fmt_rpm(r)} rpm' for r in DATOS['rpm']])
-    axs[1].set_title('Torque de pico (10 s, ocasional)', loc='left', color=TXT, fontsize=10)
-    estilo(axs[0], ylabel='Torque admisible por engranaje [N·m]')
-    estilo(axs[1])
-    top = max(max(s) for s in ser) * 1.22
-    axs[0].set_ylim(0, top)
+    barras(axs[0], grupos, [[res[k]['normal'][r]['T_adm'] for k in CLAVES] for r in rn],
+           RAMPA[1:], [f'{fmt_rpm(r)} rpm' for r in rn])
+    axs[0].set_title('Torque normal admisible (toda la vida)', loc='left', color=TXT, fontsize=10)
+    barras(axs[1], grupos, [[res[k]['pico'][r]['T_adm'] for k in CLAVES] for r in DATOS['rpm']],
+           RAMPA, [f'{fmt_rpm(r)} rpm' for r in DATOS['rpm']])
+    axs[1].set_title('Torque de pico admisible (10 s, ocasional)', loc='left', color=TXT, fontsize=10)
     for ax in axs:
-        ax.legend(frameon=False, fontsize=7.5, ncol=4, loc='upper right')
+        estilo(ax, ylabel='Torque [N·m]')
+        ax.legend(frameon=False, fontsize=7.5, ncol=4, loc='upper left')
+    axs[0].set_ylim(0, max(res['CARB']['normal'][0.5]['T_adm'], 0.1) * 1.3)
+    axs[1].set_ylim(0, res['CARB']['pico'][0]['T_adm'] * 1.3)
     fig.tight_layout()
     guardar(fig, 'fig_resumen')
 
 
 def fig_modos(res):
-    grupos = ['S45C', 'SUS304L MIM', 'Latón C3604B']
-    tf = [res[n]['normal'][100]['T_F'] for n in METALES_KG]
-    th = [res[n]['normal'][100]['T_H'] for n in METALES_KG]
-    kg = [torque_kg(MATERIALES[n]) for n in METALES_KG]
-    kg = [k[100] if k else np.nan for k in kg]
-    fig, ax = plt.subplots(figsize=(8.4, 3.4))
-    barras(ax, grupos, [tf, th, kg], SERIES[:3],
-           ['Flexión alternada (Shigley)', 'Picado (Shigley)', 'Tabla KG (flexión, 1 sentido)'])
+    grupos = [INFO[k]['corto'] for k in CLAVES]
+    tf = [res[k]['normal'][100]['T_F'] for k in CLAVES]
+    th = [res[k]['normal'][100]['T_H'] for k in CLAVES]
+    fig, ax = plt.subplots(figsize=(9.0, 3.4))
+    barras(ax, grupos, [tf, th], SERIES[:2], ['Flexión alternada', 'Picado'])
     estilo(ax, ylabel='Torque [N·m]')
-    ax.set_ylim(0, max(kg[0], tf[0]) * 1.35)
-    ax.legend(frameon=False, fontsize=8, ncol=3, loc='upper right')
+    ax.set_yscale('log')
+    ax.set_ylim(0.02, 3)
+    ax.legend(frameon=False, fontsize=8, ncol=2, loc='upper left')
+    ax.tick_params(axis='x', labelsize=8)
     guardar(fig, 'fig_modos')
 
 
-def fig_rpm(res):
-    fig, axs = plt.subplots(1, 2, figsize=(9.2, 3.5), sharey=False)
+def fig_rpm():
+    fig, axs = plt.subplots(1, 2, figsize=(9.2, 3.6))
     rpms = np.linspace(0.5, 200, 240)
-    for i, n in enumerate(METALES_KG):
-        mat = MATERIALES[n]
-        tn = [capacidad(BASE, mat, r, N_eval(ciclos_normal(r)))['T_adm'] for r in rpms]
-        tp = [capacidad(BASE, mat, r, N_eval(ciclos_pico(r)))['T_adm'] for r in rpms]
-        axs[0].plot(rpms, tn, color=SERIES[i], lw=1.8, label=n)
-        axs[1].plot(rpms, tp, color=SERIES[i], lw=1.8, label=n)
-    tn = [capacidad_pom(r, N_eval(ciclos_normal(r)), POM['C_S_normal'])['T_adm'] for r in rpms]
-    tp = [capacidad_pom(r, N_eval(ciclos_pico(r)), POM['C_S_pico'])['T_adm'] for r in rpms]
-    axs[0].plot(rpms, tn, color=SERIES[3], lw=1.8, label='POM')
-    axs[1].plot(rpms, tp, color=SERIES[3], lw=1.8, label='POM')
+    for i, k in enumerate(CLAVES):
+        g, mat = GEO[k], MATERIALES[INFO[k]['mat']]
+        tn = [capacidad(g, mat, r, N_eval(ciclos_normal(r)))['T_adm'] for r in rpms]
+        tp = [capacidad(g, mat, r, N_eval(ciclos_pico(r)))['T_adm'] for r in rpms]
+        axs[0].plot(rpms, tn, color=SERIES5[i], lw=1.8, label=INFO[k]['corto'])
+        axs[1].plot(rpms, tp, color=SERIES5[i], lw=1.8, label=INFO[k]['corto'])
     axs[0].set_title('Torque normal', loc='left', color=TXT, fontsize=10)
     axs[1].set_title('Torque de pico (10 s)', loc='left', color=TXT, fontsize=10)
     for ax in axs:
         estilo(ax, 'Velocidad de la rueda [rpm]', 'Torque admisible [N·m]')
         ax.set_ylim(0, None)
-    axs[1].legend(frameon=False, fontsize=8, loc='upper right')
+    axs[1].legend(frameon=False, fontsize=7.5, loc='upper right')
     fig.tight_layout()
     guardar(fig, 'fig_rpm')
 
 
 def fig_picos():
-    fig, ax = plt.subplots(figsize=(8.4, 3.4))
+    fig, ax = plt.subplots(figsize=(8.6, 3.4))
     ph = np.logspace(-1, 2, 80)
-    for i, n in enumerate(METALES_KG):
-        t = [capacidad(BASE, MATERIALES[n], 100,
-                       N_eval(ciclos_pico(100, p * HORAS_VIDA)))['T_adm'] for p in ph]
-        ax.plot(ph, t, color=SERIES[i], lw=1.8, label=n)
-    t = [capacidad_pom(100, N_eval(ciclos_pico(100, p * HORAS_VIDA)), POM['C_S_pico'])['T_adm']
-         for p in ph]
-    ax.plot(ph, t, color=SERIES[3], lw=1.8, label='POM')
+    for i, k in enumerate(CLAVES):
+        g, mat = GEO[k], MATERIALES[INFO[k]['mat']]
+        t = [capacidad(g, mat, 100, N_eval(ciclos_pico(100, p * HORAS_VIDA)))['T_adm'] for p in ph]
+        ax.plot(ph, t, color=SERIES5[i], lw=1.8, label=INFO[k]['corto'])
     ax.axvline(DATOS['picos_por_hora'], color='#b8b7b1', lw=1, ls='--')
-    ax.text(DATOS['picos_por_hora'] * 1.08, 0.005, 'supuesto: 1 pico por hora',
+    ax.text(DATOS['picos_por_hora'] * 1.08, 0.02, 'supuesto: 1 pico por hora',
             color=TXT2, fontsize=8)
     ax.set_xscale('log')
-    estilo(ax, 'Picos de 10 s por hora de uso', 'Torque de pico admisible [N·m]')
+    estilo(ax, 'Picos de 10 s por hora de uso', 'Pico admisible a 100 rpm [N·m]')
     ax.set_ylim(0, None)
-    ax.legend(frameon=False, fontsize=8, ncol=4, loc='upper right')
+    ax.legend(frameon=False, fontsize=7.5, ncol=3, loc='upper right')
     guardar(fig, 'fig_picos')
 
 
@@ -531,21 +462,6 @@ def fig_sensibilidad():
     guardar(fig, 'fig_sensibilidad')
 
 
-def fig_alternativas(alt):
-    fig, ax = plt.subplots(figsize=(9.0, 3.8))
-    grupos = [a['cod'] + '\n' + a['eng'].replace('KG ', '') + '\n'
-              + a['mat'].replace(' carburizado', '\ncarburizado') for a in alt]
-    barras(ax, grupos, [[a['normal100']['T_adm'] for a in alt],
-                        [a['pico100']['T_adm'] for a in alt]],
-           [SERIES[0], SERIES[1]], ['Torque normal, 100 rpm', 'Pico 10 s, 100 rpm'])
-    estilo(ax, ylabel='Torque admisible [N·m]')
-    ax.set_yscale('log')
-    ax.set_ylim(0.03, 2)
-    ax.legend(frameon=False, fontsize=8, loc='upper left')
-    ax.tick_params(axis='x', labelsize=7.5)
-    guardar(fig, 'fig_alternativas')
-
-
 def fig_geometria():
     g = BASE
     d, Re, b, m = g['d'], g['Re'], g['b'], g['m']
@@ -603,55 +519,43 @@ def fig_geometria():
 def main():
     os.makedirs(FIG, exist_ok=True)
     os.makedirs(RES, exist_ok=True)
-    res = {n: regimenes(BASE, MATERIALES[n]) for n in METALES_KG}
-    pom = regimenes_pom()
-    cota = {n: {r: capacidad(BASE, MATERIALES[n], r, N_eval(ciclos_normal(r)),
-                             sHlim=s)['T_adm'] for r in DATOS['rpm_normal']}
-            for n, s in COTA_BAJA.items()}
-    alt = alternativas()
+    res = calcular_disenos()
+    cota = {r: capacidad(BASE, MATERIALES['Latón C3604B'], r, N_eval(ciclos_normal(r)),
+                         sHlim=COTA_BAJA['Latón C3604B'])['T_adm'] for r in DATOS['rpm_normal']}
     js = lambda d: {str(k): v for k, v in d.items()}  # noqa: E731
     salida = {
-        'datos': DATOS, 'factores': FACT, 'geometria': BASE,
-        'horas_vida': HORAS_VIDA, 'n_picos': N_PICOS,
+        'datos': DATOS, 'factores': FACT, 'horas_vida': HORAS_VIDA, 'n_picos': N_PICOS,
         'referencia': {'HB': HB_REF, 'sFlim': SFLIM_REF, 'sHlim': SHLIM_REF},
-        'metales': {n: {k: js(v) for k, v in d.items()} for n, d in res.items()},
-        'pom': {k: js(v) for k, v in pom.items()},
-        'cota_baja': {n: js(d) for n, d in cota.items()},
-        'kg': {n: torque_kg(MATERIALES[n]) for n in METALES_KG},
-        'prisionero': prisionero(),
+        'disenos': {k: dict(INFO[k], geo=GEO[k],
+                            normal=js(res[k]['normal']), pico=js(res[k]['pico']))
+                    for k in CLAVES},
+        'cota_laton': js(cota),
+        # Tablas KG a flexión (W): M50S20 1,5 W y M50S25 2,5 W a 100 rpm
+        'kg': {'M50S20': 9549.7 * 1.5e-3 / 100, 'M50S25': 9549.7 * 2.5e-3 / 100},
+        'prisionero': {'M2,5 en eje 3': prisionero(3.0, 85),
+                       'M3 en eje 4': prisionero(4.0, 160)},
         'materiales': MATERIALES,
-        'alternativas': alt,
-        'ciclos': {'normal': {str(r): ciclos_normal(r) for r in DATOS['rpm_normal']},
-                   'pico': {str(r): ciclos_pico(r) for r in DATOS['rpm']}},
         'Y_Z': Y_Z(FACT['R']),
     }
     with open(os.path.join(RES, 'resultados.json'), 'w', encoding='utf-8') as fh:
         json.dump(salida, fh, ensure_ascii=False, indent=1)
-    fig_resumen(res, pom)
+    fig_resumen(res)
     fig_modos(res)
-    fig_rpm(res)
+    fig_rpm()
     fig_picos()
     fig_ciclos()
     fig_sensibilidad()
-    fig_alternativas(alt)
     fig_geometria()
 
     print(f'Y_Z={Y_Z(FACT["R"]):.4f} picos={N_PICOS:.0f}')
-    for n, d in res.items():
+    for k in CLAVES:
+        g = GEO[k]
+        print(f"== {INFO[k]['desc']}  d={g['d']} da={g['da']:.2f} Re={g['Re']:.2f} b_ef={g['b_ef']:.2f}")
         for reg in ('normal', 'pico'):
-            for r, v in d[reg].items():
-                print(f"{n:13s} {reg:6s} {r:5g} N={v['N']:.2e} TF={v['T_F']:.4f} "
-                      f"TH={v['T_H']:.4f} -> {v['T_adm']:.4f} {v['modo']} "
-                      f"sFP={v['sFP']:.0f} fl_ok={v['fluencia_ok']}")
-    for reg in ('normal', 'pico'):
-        for r, v in pom[reg].items():
-            print(f"POM {reg} {r:5g} khk={v['T_khk']:.4f} lew={v['T_lewis']:.4f} "
-                  f"kg={v['T_kgcal']:.4f} -> {v['T_adm']:.4f}")
-    for a in alt:
-        print(a['cod'], a['eng'], a['mat'], f"da={a['geo']['da']:.2f} b={a['geo']['b_ef']:.2f}",
-              f"normal={a['normal100']['T_adm']:.4f} pico={a['pico100']['T_adm']:.4f} "
-              f"pico0={a['pico0']['T_adm']:.4f} {a['normal100']['modo']}")
-    print(prisionero())
+            for r, v in res[k][reg].items():
+                print(f"   {reg:6s} {r:5g} N={v['N']:.2e} TF={v['T_F']:.4f} TH={v['T_H']:.4f}"
+                      f" -> {v['T_adm']:.4f} {v['modo']} sFP={v['sFP']:.0f} ok={v['fluencia_ok']}")
+    print(prisionero(3.0, 85), prisionero(4.0, 160))
 
 
 if __name__ == '__main__':
