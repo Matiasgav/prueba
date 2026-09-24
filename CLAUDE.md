@@ -8,7 +8,8 @@ nota de la memoria, con la plantilla GRIS-NOT-001:
 1. Copiar `memoria/plantilla/02489-00-MC000.tex` a
    `memoria/notas/02489-00-MC###.tex`, con `###` = siguiente correlativo libre
    en `memoria/notas/` (la primera es `MC001`).
-2. Completar código, título, autor y fecha en el bloque «DATOS DE LA NOTA».
+2. Completar código, título, autor (Matías Gaviño, salvo que se indique otro) y
+   fecha en el bloque «DATOS DE LA NOTA».
 3. La sección 1 es siempre **Resultados**: conclusiones cortas, con números.
    El resto de las secciones es libre.
 4. Cálculos reproducibles: el script que los genera va junto a la nota
