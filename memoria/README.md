@@ -11,7 +11,14 @@ memoria/
 │   ├── logo-gris.pdf        ← logo reducido GRIS (GRIS-LOGO-003)
 │   └── logo-gris.svg        ← el mismo logo, fuente vectorial
 └── notas/                   ← una nota por archivo: 02489-00-MC###.tex
+    └── 02489-00-MC###/      ← script de cálculo y figuras de esa nota
 ```
+
+## Índice de notas
+
+| Código | Título | Fecha |
+|---|---|---|
+| [02489-00-MC001](notas/02489-00-MC001.pdf) | Torque admisible de los engranajes cónicos de la rueda | 24/09/2026 |
 
 ## Escribir una nota nueva
 

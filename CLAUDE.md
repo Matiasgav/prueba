@@ -15,7 +15,8 @@ nota de la memoria, con la plantilla GRIS-NOT-001:
    (`memoria/notas/02489-00-MC###/`) y las figuras se guardan ahí mismo.
 5. Compilar con `pdflatex` (dos veces) desde `memoria/notas/`, revisar el PDF
    renderizado y subir `.tex` + `.pdf` + script. No subir `.aux`, `.log`, `.out`.
-6. No modificar la plantilla salvo que se pida explícitamente.
+6. Agregar la nota al «Índice de notas» de `memoria/README.md`.
+7. No modificar la plantilla salvo que se pida explícitamente.
 
 Estilo: texto en Latin Modern, código documental en Roboto Condensed Bold,
 títulos numerados, naranja `#FF7A00` solo en el logo. Ver `memoria/README.md`.
