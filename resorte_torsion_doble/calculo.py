@@ -11,7 +11,7 @@ recorrido = 60.0              # grados
 eje = 3.0                     # mm
 
 # --- Diseño elegido -----------------------------------------------------
-d = 0.45                      # mm, diámetro de alambre
+d = 0.38                      # mm, diámetro de alambre (0,015") — mínimo largo con FS ≈ 2
 ID = 3.6                      # mm, diámetro interior libre
 L_brazo, L_lazo = 10.0, 5.0   # mm, brazo exterior y medio lazo central (por cuerpo)
 E = 200_000                   # MPa, cuerda de piano
