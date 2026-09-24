@@ -18,15 +18,15 @@ memoria/
 1. **Copiá la plantilla** a `notas/` con el siguiente número libre:
    `notas/02489-00-MC007.tex`. El `###` es correlativo: mirá la última nota y sumá uno.
 2. **Completá los 4 datos** del principio del archivo: código, título, autor y fecha.
-3. **Escribí los resultados primero**, dentro del recuadro `resultados`.
-4. **El resto es libre.** Contexto, Desarrollo y Pendientes son sugerencias:
+3. **Escribí los resultados primero**, en la sección `Resultados`.
+4. **El resto es libre.** Contexto y Desarrollo son sugerencias:
    borralos, renombralos o agregá los tuyos. Media página es una nota válida.
 5. **Compilá** dos veces desde `notas/`: `pdflatex 02489-00-MC007.tex` (o en Overleaf).
 
 ## Cómo escribir los resultados
 
 Es lo único que se pide. Quien abra la nota tiene que entender qué se sabe ahora
-leyendo solo ese recuadro.
+leyendo solo esa sección.
 
 - Una idea por punto, en una frase.
 - Con números cuando los hay: «error de posición < 2 mm», no «error bajo».
@@ -42,7 +42,6 @@ leyendo solo ese recuadro.
 
 | Comando | Para qué |
 |---|---|
-| `\pendiente{texto}` | Marca en naranja algo por verificar. |
 | `\figura{archivo}{0.8}{pie}` | Inserta una imagen al 80 % del ancho, con pie. |
 | tabla con `\toprule` / `\midrule` / `\bottomrule` | Hay un ejemplo en la plantilla. |
 
@@ -50,8 +49,8 @@ leyendo solo ese recuadro.
 
 - Encabezado: logo reducido **GRIS** (pequeño, sin marco ni banda) a la izquierda
   y el código `02489-00-MC###` a la derecha. El resto de la hoja queda libre.
-- Naranja institucional `#FF7A00`; para texto naranja se usa un tono más oscuro
-  (`#C45E00`) para que se lea bien impreso.
+- Naranja institucional `#FF7A00`, solo en el logo y en la raya corta bajo el título.
+  El texto va en negro y gris.
 - Tipografía: Latin Modern, la tipografía clásica de LaTeX.
 - Logo: `plantilla/logo-gris.pdf`, recortado a su contorno para que no quede margen
   vacío en el encabezado. Si compilás desde `notas/`, se toma de `../plantilla/`.
