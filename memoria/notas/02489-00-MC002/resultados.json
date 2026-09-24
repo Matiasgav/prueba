@@ -1,0 +1,118 @@
+{
+  "relevamiento": {
+    "x_mm": [
+      0.15,
+      0.22,
+      0.28,
+      0.34,
+      0.41,
+      0.48,
+      0.8,
+      1.12,
+      1.45,
+      1.78,
+      2.1,
+      2.75,
+      3.4,
+      4.05,
+      4.7,
+      5.35,
+      6.0,
+      6.65,
+      7.3,
+      7.95,
+      8.6,
+      9.25,
+      9.9,
+      10.23
+    ],
+    "F_medida_N": [
+      68.65,
+      63.74,
+      58.84,
+      54.92,
+      54.92,
+      52.96,
+      40.21,
+      30.79,
+      27.95,
+      24.03,
+      19.61,
+      14.71,
+      11.67,
+      9.71,
+      7.26,
+      6.18,
+      5.1,
+      4.71,
+      3.38,
+      2.89,
+      2.4,
+      1.91,
+      1.77,
+      1.47
+    ],
+    "F_contacto_N": 68.65,
+    "F_ultimo_N": 1.47,
+    "x_mitad_de_contacto_mm": 0.99,
+    "x_decima_de_contacto_mm": 4.92,
+    "valores_caracteristicos_mm": {
+      "20 N": 2.03,
+      "10 N": 3.85,
+      "5 N": 6.16,
+      "2 N": 9.86
+    }
+  },
+  "grado": {
+    "k": 0.654,
+    "Br_efectivo_T": 1.051,
+    "desvio_residuos_pct": 9.3,
+    "residuos_pct": [
+      12.4,
+      10.9,
+      8.1,
+      6.2,
+      11.7,
+      13.0,
+      6.4,
+      -1.5,
+      6.4,
+      7.1,
+      1.5,
+      -0.5,
+      0.4,
+      4.0,
+      -4.7,
+      -1.8,
+      -2.5,
+      7.5,
+      -8.5,
+      -7.9,
+      -10.3,
+      -16.8,
+      -10.8,
+      -20.0
+    ]
+  },
+  "otros_grados": {
+    "F_N35_1p5_N": 25.64,
+    "grados": {
+      "N42": {
+        "factor_fuerza": 1.193,
+        "F_1p5_sin_separador_N": 30.6,
+        "separador_mm": 0.37,
+        "x2N_sin_separador_mm (figura)": 10.65,
+        "x2N_con_separador_mm (figura)": 10.28,
+        "x2N_sin_menos_s_mm": 10.28
+      },
+      "N52": {
+        "factor_fuerza": 1.485,
+        "F_1p5_sin_separador_N": 38.1,
+        "separador_mm": 0.87,
+        "x2N_sin_separador_mm (figura)": 11.69,
+        "x2N_con_separador_mm (figura)": 10.81,
+        "x2N_sin_menos_s_mm": 10.82
+      }
+    }
+  }
+}
