@@ -8,7 +8,8 @@ memoria/
 ├── plantilla/
 │   ├── 02489-00-MC000.tex   ← plantilla (no editar; copiar)
 │   ├── 02489-00-MC000.pdf   ← cómo se ve
-│   └── logo-gris.pdf        ← agregar aquí el logo vectorial
+│   ├── logo-gris.pdf        ← logo reducido GRIS (GRIS-LOGO-003)
+│   └── logo-gris.svg        ← el mismo logo, fuente vectorial
 └── notas/                   ← una nota por archivo: 02489-00-MC###.tex
 ```
 
@@ -20,7 +21,7 @@ memoria/
 3. **Escribí los resultados primero**, dentro del recuadro `resultados`.
 4. **El resto es libre.** Contexto, Desarrollo y Pendientes son sugerencias:
    borralos, renombralos o agregá los tuyos. Media página es una nota válida.
-5. **Compilá** dos veces: `pdflatex 02489-00-MC007.tex` (o en Overleaf).
+5. **Compilá** dos veces desde `notas/`: `pdflatex 02489-00-MC007.tex` (o en Overleaf).
 
 ## Cómo escribir los resultados
 
@@ -51,5 +52,7 @@ leyendo solo ese recuadro.
   y el código `02489-00-MC###` a la derecha. El resto de la hoja queda libre.
 - Naranja institucional `#FF7A00`; para texto naranja se usa un tono más oscuro
   (`#C45E00`) para que se lea bien impreso.
-- Logo: guardá el logo vectorial como `plantilla/logo-gris.pdf`. Mientras no esté,
-  la plantilla escribe «GRIS» en naranja como marcador.
+- Tipografía: Latin Modern, la tipografía clásica de LaTeX.
+- Logo: `plantilla/logo-gris.pdf`, recortado a su contorno para que no quede margen
+  vacío en el encabezado. Si compilás desde `notas/`, se toma de `../plantilla/`.
+  En Overleaf, subilo junto al `.tex`.
