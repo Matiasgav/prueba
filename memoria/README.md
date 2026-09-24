@@ -19,6 +19,7 @@ memoria/
 | Código | Título | Fecha |
 |---|---|---|
 | [02489-00-MC001](notas/02489-00-MC001.pdf) | Torque admisible de los engranajes cónicos de la rueda | 24/09/2026 |
+| [02489-00-MC002](notas/02489-00-MC002.pdf) | Grado del imán con entrehierro de 1,5 mm | 24/09/2026 |
 
 ## Escribir una nota nueva
 
