@@ -232,6 +232,20 @@ def transmotec_k0420s(pdf):
     return c
 
 
+def nsf_sdo0421l(pdf):
+    # Hoja NSF SDO-0421L (gráfico en mapa de bits). Grilla detectada a zoom 4
+    # sobre el recorte: x = 0 mm en 35.5 px, 134 px/mm; y = 0 N en 647.5 px,
+    # 239.2 px/N. Curva roja = 10 % ED (11 W).
+    page = pymupdf.open(pdf)[0]
+    z, clip = 4, pymupdf.Rect(60, 550, 280, 725)
+    fx = lambda px: (px - 35.5) / 134.0
+    fy = lambda py: (647.5 - py) / 239.2
+    c = raster(page, clip, z, {'11 W (10% ED)': (240, 10, 10)}, fx, fy,
+               excluir=pymupdf.Rect(195, 555, 280, 625))
+    c['11 W (10% ED)'] = [p for p in c['11 W (10% ED)'] if 0.45 <= p[0] <= 6.05]
+    return c
+
+
 # --------------------------------------------------------------------------
 # Datos tabulados en la hoja (no hace falta digitalizar)
 # --------------------------------------------------------------------------
@@ -273,38 +287,42 @@ def extraer():
     res['Ledex B12'] = ledex_b12(LEDEX)
     res['Geeplus RD-A420'] = geeplus_rda420(os.path.join(FUE, 'geeplus_RD-A420.pdf'))
     res['Transmotec K0420S'] = transmotec_k0420s(os.path.join(FUE, 'transmotec_K0420S.pdf'))
+    res['NSF SDO-0421L'] = nsf_sdo0421l(os.path.join(FUE, 'nsf_SDO-0421L.pdf'))
     res.update(TABULADOS)
     return res
 
 
-X_IMP = 0.5
-M_PUNTA = 1.0e-3   # masa de punta de impacto supuesta [kg]
+M_PUNTA = 1.0e-3      # masa de punta de impacto supuesta [kg]
+FRAC = 0.60           # fracción de la carrera que se recorre antes del impacto
 
-# (clave en json, curva, x_ini [mm], masa movil [g] o None, etiqueta corta)
+# Candidatos con sección <= 11 mm. (json, curva, carrera S [mm], masa émbolo [g]
+# o None, etiqueta, tipo, resorte, extrapolar)
 CANDIDATOS = [
-    ('Geeplus 141C', '10% ED', 3.0, 2.5, '141C'),
-    ('Takaha CA0422', '24 W (6% ED)', 3.0, None, 'CA0422'),
-    ('Geeplus 110C', '10% ED', 2.0, 1.0, '110C'),
-    ('Takaha CA0425', '24 W (6% ED)', 3.0, None, 'CA0425'),
-    ('Geeplus 144C', '10% ED', 3.5, 3.0, '144C'),
-    ('Kendrion BI 13', '7 W (25% ED)', 3.0, 6.0, 'BI 13'),
-    ('Ledex B12', '13 W (10% ED)', 3.0, 1.4, 'B12 (10%)'),
-    ('Ledex B12', '5.2 W (25% ED)', 2.54, 1.4, 'B12P-255 (25%)'),
-    ('MSA 312', '40 W (10% pulso)', 3.0, 7.0, 'MSA 312'),
-    ('Transmotec K0420S', '10 W (10% ED)', 3.0, None, 'K0420S'),
-    ('Geeplus RD-A420', '11 W (10% ED)', 3.0, 2.0, 'RD-A420'),
+    ('Ledex B12', '13 W (10% ED)', 4.0, 1.4, 'Ledex B12P', 'push (B12P) / pull (B12)', 'no', False),
+    ('Takaha CA0422', '24 W (6% ED)', 4.0, None, 'Takaha CA0422', 'pull', 'no', True),
+    ('NSF SDO-0421L', '11 W (10% ED)', 4.0, 1.9, 'NSF SDO-0421L', 'pull', 'no', False),
+    ('Geeplus RD-A420', '11 W (10% ED)', 4.0, 2.0, 'Geeplus RD-A420', 'pull', 'no', False),
+    ('Transmotec K0420S', '10 W (10% ED)', 4.0, None, 'Transmotec K0420S', 'push, enclavamiento', 'sí (18 gf a 3 mm)', False),
+    ('Ledex B12', '5.2 W (25% ED)', 4.0, 1.4, 'Ledex B12P-255 (25 %)', 'push', 'no', False),
+    ('Takaha CA0422', '24 W (6% ED)', 3.0, None, 'Takaha CA0422 (S = 3)', 'pull', 'no', False),
 ]
-# Embolo sin dato: acero phi 4 mm x ~20 mm (CA04xx) o phi 3 x ~16 (K0420S)
-MASA_ESTIMADA = {'CA0422': 2.0, 'CA0425': 2.2, 'K0420S': 1.0}
+MASA_ESTIMADA = {'Takaha CA0422': 2.0, 'Takaha CA0422 (S = 3)': 2.0, 'Transmotec K0420S': 1.0}
 
 
 def curva(data, modelo, clave):
     p = sorted(data[modelo][clave])
     x = np.array([q[0] for q in p])
     f = np.array([q[1] for q in p])
-    # quitar duplicados en x
     x, idx = np.unique(np.round(x, 4), return_index=True)
     return x, f[idx]
+
+
+def extrapolada(x, f, hasta):
+    """Prolonga la curva con la recta del último milímetro (SUPUESTO)."""
+    m = x >= x.max() - 1.0
+    k, c = np.polyfit(x[m], f[m], 1)
+    xe = np.arange(x.max() + 0.05, hasta + 0.051, 0.05)
+    return np.concatenate([x, xe]), np.concatenate([f, k * xe + c])
 
 
 def integral(x, f, a, b):
@@ -314,25 +332,30 @@ def integral(x, f, a, b):
 
 def analizar(data):
     res = []
-    for modelo, clave, x0, m, et in CANDIDATOS:
+    for modelo, clave, S, m, et, tipo, resorte, extra in CANDIDATOS:
         x, f = curva(data, modelo, clave)
-        xmin = x.min()
-        w_util = integral(x, f, X_IMP, x0)
-        w_tope = integral(x, f, max(xmin, 0.0), x0)
-        f_imp = float(np.interp(X_IMP, x, f))
-        f_ini = float(np.interp(x0, x, f))
+        if extra:
+            x, f = extrapolada(x, f, S)
+        x_imp = (1 - FRAC) * S
+        w = integral(x, f, x_imp, S)
+        f_ini = float(np.interp(S, x, f))
+        f_imp = float(np.interp(x_imp, x, f))
+        xs = np.linspace(x_imp, S, 200)
+        fs = np.interp(xs, x, f)
         masa = m if m is not None else MASA_ESTIMADA[et]
         mt = masa * 1e-3 + M_PUNTA
         res.append(dict(
-            modelo=modelo, curva=clave, etiqueta=et, x_ini=x0,
-            x_min_dato=round(float(xmin), 2),
-            W_util_mJ=round(w_util, 2), W_hasta_tope_mJ=round(w_tope, 2),
-            frac_ultimo_medio_mm=round(1 - w_util / w_tope, 2) if xmin < 0.3 else None,
-            F_imp_N=round(f_imp, 2), F_ini_N=round(f_ini, 2),
-            relacion_F=round(f_imp / f_ini, 1),
-            S_01=round(f_imp * 0.1 / w_util * 100, 1),
+            modelo=modelo, curva=clave, etiqueta=et, tipo=tipo, resorte=resorte,
+            carrera_mm=S, x_imp_mm=round(x_imp, 2), recorrido_mm=round(FRAC * S, 2),
+            dato_hasta_mm=round(float(curva(data, modelo, clave)[0].max()), 2),
+            extrapolado=extra,
+            W_mJ=round(w, 2), F_ini_N=round(f_ini, 2), F_imp_N=round(f_imp, 2),
+            F_media_N=round(w / (FRAC * S), 2),
+            relacion_F=round(f_imp / f_ini, 2),
+            dispersion_F=round(float((fs.max() - fs.min()) / fs.mean()) * 100, 0),
+            S_01=round(f_imp * 0.1 / w * 100, 1),
             masa_g=masa, masa_estimada=m is None,
-            v_max=round((2 * w_util * 1e-3 / mt) ** 0.5, 2),
+            v_max=round((2 * w * 1e-3 / mt) ** 0.5, 2),
             v_4mJ=round((2 * 4e-3 / mt) ** 0.5, 2)))
     return res
 
@@ -369,65 +392,71 @@ def guardar(fig, nombre):
     plt.close(fig)
 
 
+def fmt(v, d=1):
+    return f'{v:.{d}f}'.replace('.', ',')
+
+
 def figuras(data, res):
-    orden = [r for r in res if r['etiqueta'] != 'B12P-255 (25%)']
-    fig, axs = plt.subplots(3, 4, figsize=(7.2, 6.4), sharex=True)
-    for ax in axs.flat[len(orden):]:
-        ax.axis('off')
-    for ax, r in zip(axs.flat, orden):
-        x, f = curva(data, r['modelo'], r['curva'])
-        sel = x <= 5.0
+    orden = res[:5]
+    fig, axs = plt.subplots(1, 5, figsize=(7.2, 2.3), sharey=True)
+    for ax, r, (modelo, clave, S, *_rest) in zip(axs, orden, CANDIDATOS):
+        x, f = curva(data, modelo, clave)
+        sel = x <= 6.0
         ax.plot(x[sel], f[sel], color=S1, lw=1.6)
-        xs = np.linspace(X_IMP, r['x_ini'], 100)
-        ax.fill_between(xs, 0, np.interp(xs, x, f), color=S1, alpha=0.18, lw=0)
-        ax.axvline(X_IMP, color=S2, lw=1.0, ls=(0, (3, 2)))
-        ax.set_title(f"{r['etiqueta']} · {r['curva']}", fontsize=7, color=INK, loc='left')
-        ax.text(0.96, 0.92, f"{r['W_util_mJ']:.1f} mJ".replace('.', ','), transform=ax.transAxes,
-                ha='right', va='top', fontsize=8.5, fontweight='bold', color=INK)
-        ax.set_ylim(0, max(4.2, min(14, float(np.interp(0.4, x, f)) * 1.15)))
-        ax.set_xlim(0, 5)
+        if r['extrapolado']:
+            xe, fe = extrapolada(x, f, S)
+            m = xe >= x.max()
+            ax.plot(xe[m], fe[m], color=S1, lw=1.6, ls=(0, (2, 1.5)))
+        else:
+            xe, fe = x, f
+        xs = np.linspace(r['x_imp_mm'], S, 100)
+        ax.fill_between(xs, 0, np.interp(xs, xe, fe), color=S1, alpha=0.18, lw=0)
+        ax.axvline(r['x_imp_mm'], color=S2, lw=1.0, ls=(0, (3, 2)))
+        ax.axvline(S, color=MUT, lw=0.8)
+        ax.set_title(f"{r['etiqueta']}\n{r['curva']}", fontsize=6.8, color=INK, loc='left')
+        ax.text(0.97, 0.95, f"{fmt(r['W_mJ'])} mJ", transform=ax.transAxes,
+                ha='right', va='top', fontsize=8, fontweight='bold', color=INK)
+        ax.set_xlim(0, 6)
+        ax.set_ylim(0, 4.2)
+        ax.set_xlabel('x [mm]')
         ax.grid(color=GRID, lw=0.5)
         ax.set_axisbelow(True)
-        ax.xaxis.set_tick_params(labelbottom=True)
-    for ax in axs[:, 0]:
-        ax.set_ylabel('F [N]')
-    for ax in list(axs[2, :2]) + list(axs[1, 2:]):
-        ax.set_xlabel('x [mm]')
-    fig.tight_layout(h_pad=1.0, w_pad=0.6)
+    axs[0].set_ylabel('F [N]')
+    fig.tight_layout(w_pad=0.4)
     guardar(fig, 'fig_curvas')
 
-    rs = sorted(res, key=lambda r: r['W_util_mJ'])
-    fig, ax = plt.subplots(figsize=(6.4, 3.5))
-    y = np.arange(len(rs))
-    ax.set_ylim(-1.1, len(rs) - 0.5)
+    rs = res[:6]
+    fig, ax = plt.subplots(figsize=(6.4, 2.6))
+    y = np.arange(len(rs))[::-1]
     ax.axvspan(3, 5, color=S3, alpha=0.15, lw=0)
-    ax.text(4, -0.75, 'objetivo 3–5 mJ', ha='center', va='center', fontsize=7.5, color=SEC)
-    ax.barh(y, [min(r['W_util_mJ'], 12) for r in rs], height=0.62, color=S1,
-            edgecolor='white', linewidth=1.5)
-    for i, r in enumerate(rs):
-        v = r['W_util_mJ']
-        ax.text(min(v, 12) + 0.15, i, f"{v:.1f}".replace('.', ',') + (' →' if v > 12 else ''),
+    ax.barh(y, [r['W_mJ'] for r in rs], height=0.6, color=S1, edgecolor='white', linewidth=1.5)
+    for yy, r in zip(y, rs):
+        ax.text(r['W_mJ'] + 0.1, yy, fmt(r['W_mJ']) + (' (extrap.)' if r['extrapolado'] else ''),
                 va='center', fontsize=7.5, color=INK)
     ax.set_yticks(y, [f"{r['etiqueta']} · {r['curva']}" for r in rs], fontsize=7)
-    ax.set_xlim(0, 13.5)
-    ax.set_xlabel('trabajo magnético estático entre x_ini y x = 0,5 mm [mJ]')
+    ax.set_xlim(0, 7.5)
+    ax.set_xlabel('trabajo estático en 2,4 mm de recorrido (x = 4,0 → 1,6 mm) [mJ]')
+    ax.text(4, y.max() + 0.55, 'objetivo 3–5 mJ', ha='center', va='bottom', fontsize=7, color=SEC)
+    ax.set_ylim(-0.6, y.max() + 1.0)
     ax.grid(axis='x', color=GRID, lw=0.5)
     ax.set_axisbelow(True)
     fig.tight_layout()
     guardar(fig, 'fig_energia')
 
-    fig, ax = plt.subplots(figsize=(6.4, 2.9))
-    for et, col in (('141C', S1), ('CA0422', S2), ('110C', S3)):
-        r = next(q for q in res if q['etiqueta'] == et)
-        x, f = curva(data, r['modelo'], r['curva'])
-        xs = np.linspace(X_IMP, r['x_ini'], 200)
-        ax.plot(xs, np.interp(xs, x, f) / r['F_ini_N'], color=col, lw=1.8)
-        ax.text(X_IMP - 0.05, float(np.interp(X_IMP, x, f)) / r['F_ini_N'], et,
-                ha='right', va='center', fontsize=7.5, color=INK)
+    fig, ax = plt.subplots(figsize=(6.4, 2.6))
+    for r, col in zip(res[:4], (S1, S2, S3, '#4a3aa7')):
+        modelo, clave, S, *_ = next(c for c in CANDIDATOS if c[4] == r['etiqueta'])
+        x, f = curva(data, modelo, clave)
+        if r['extrapolado']:
+            x, f = extrapolada(x, f, S)
+        xs = np.linspace(r['x_imp_mm'], S, 200)
+        ax.plot(4.0 - xs, np.interp(xs, x, f) / r['F_media_N'], color=col, lw=1.8,
+                label=f"{r['etiqueta']} (×{fmt(r['relacion_F'], 1)})")
     ax.axhline(1, color=MUT, lw=0.8)
-    ax.set_xlim(0, 3.1)
-    ax.set_xlabel('distancia al tope x [mm]')
-    ax.set_ylabel('F(x) / F(x_ini)')
+    ax.legend(loc='upper left', fontsize=7, frameon=False)
+    ax.set_xlim(0, 2.5)
+    ax.set_xlabel('recorrido desde la posición de reposo [mm] (impacto a 2,4 mm)')
+    ax.set_ylabel('F / F media')
     ax.grid(color=GRID, lw=0.5)
     fig.tight_layout()
     guardar(fig, 'fig_forma')
@@ -456,6 +485,7 @@ def hojas():
         (os.path.join(FUE, 'kendrion_BI13.pdf'), 0, 'ds_kendrion_BI13', ['Bistable design', 'Armature weight'], []),
         (os.path.join(FUE, 'transmotec_K0420S.pdf'), 0, 'ds_transmotec_K0420S', ['Life time'], [R(140, 378, 238, 391)]),
         (os.path.join(FUE, 'msa_312.pdf'), 1, 'ds_msa_312', ['Armature Weight'], []),
+        (os.path.join(FUE, 'nsf_SDO-0421L.pdf'), 0, 'ds_nsf_SDO-0421L', ['Standard Life 500,000 cycles', 'Plunger Weight: 1.9g'], []),
     ]
     for f, i, nombre, textos, rects in trabajos:
         p = pymupdf.open(f)[i]
@@ -473,14 +503,14 @@ def main():
     json.dump(data, open(os.path.join(HERE, 'curvas.json'), 'w'), indent=0)
     res = analizar(data)
     val = validacion(data)
-    json.dump(dict(supuestos=dict(x_imp_mm=X_IMP, masa_punta_g=M_PUNTA * 1e3,
+    json.dump(dict(supuestos=dict(fraccion_carrera=FRAC, masa_punta_g=M_PUNTA * 1e3,
                                   masa_estimada_g=MASA_ESTIMADA),
                    validacion=val, candidatos=res),
               open(os.path.join(HERE, 'resultados.json'), 'w'), indent=1, ensure_ascii=False)
     for r in res:
-        print(f"{r['etiqueta']:16s} W={r['W_util_mJ']:5.2f} mJ (tope {r['W_hasta_tope_mJ']:5.2f})"
-              f"  F {r['F_ini_N']:.2f}->{r['F_imp_N']:.2f} N  S={r['S_01']}%  "
-              f"v={r['v_max']} v4={r['v_4mJ']}")
+        print(f"{r['etiqueta']:24s} W={r['W_mJ']:5.2f} mJ  F {r['F_ini_N']:.2f}->{r['F_imp_N']:.2f} N"
+              f"  Fm={r['F_media_N']}  rel={r['relacion_F']}  disp={r['dispersion_F']}%  S={r['S_01']}%"
+              f"  v={r['v_max']} v4={r['v_4mJ']}")
     print(json.dumps(val, indent=1))
     figuras(data, res)
     hojas()
