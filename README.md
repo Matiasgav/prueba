@@ -1,7 +1,5 @@
 # Informe — Oportunidades de robótica de inspección industrial
 
-> Ver también [`solenoide/`](solenoide/): memoria de selección del solenoide para el actuador de impacto WTT.
-
 Informe profesional en dos formatos, generados desde una única fuente.
 
 ## Entregables
