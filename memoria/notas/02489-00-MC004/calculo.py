@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Nota 02489-00-MC003 - Selección del actuador del paralelogramo.
+"""Nota 02489-00-MC004 - Selección del actuador del paralelogramo.
 
 Uso (desde esta carpeta):
     python3 calculo.py        # escribe resultados.json y figuras/fig_*.pdf/png

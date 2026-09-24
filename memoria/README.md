@@ -20,7 +20,7 @@ memoria/
 |---|---|---|
 | [02489-00-MC001](notas/02489-00-MC001.pdf) | Torque admisible de los engranajes cónicos de la rueda | 24/09/2026 |
 | [02489-00-MC002](notas/02489-00-MC002.pdf) | Caracterización de los imanes D20×4 | 24/09/2026 |
-| [02489-00-MC003](notas/02489-00-MC003.pdf) | Selección del actuador del paralelogramo | 24/09/2026 |
+| [02489-00-MC004](notas/02489-00-MC004.pdf) | Selección del actuador del paralelogramo | 24/09/2026 |
 
 ## Escribir una nota nueva
 
