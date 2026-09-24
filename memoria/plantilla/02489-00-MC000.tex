@@ -1,0 +1,188 @@
+% !TeX program = pdflatex
+% !TeX encoding = UTF-8
+%=======================================================================
+%  GRIS-NOT-001  ·  Plantilla de notas rápidas para la memoria
+%  Proyecto 00503 - Generator inspection robotic system · Mecanalisis
+%  Identidad: GRIS-IDENTIDAD-001 v1.4
+%-----------------------------------------------------------------------
+%  CÓMO USARLA (en 3 pasos)
+%
+%   1. Copiá este archivo con el código de la nota:
+%         memoria/notas/02489-00-MC007.tex
+%      El número (###) es correlativo: mirá la última nota y sumá uno.
+%
+%   2. Completá los cuatro datos del bloque «DATOS DE LA NOTA».
+%
+%   3. Escribí:
+%        · RESULTADOS  (obligatorio, siempre primero): lo que se sabe
+%          ahora que antes no se sabía. Frases cortas, con números.
+%        · El resto es libre. Usá los títulos que te sirvan, o ninguno.
+%
+%   Compilar:  pdflatex 02489-00-MC007.tex   (dos veces, por el
+%   «página x de y»).  En Overleaf: subí el .tex y logo-gris.pdf.
+%
+%  LOGO: si existe «logo-gris.pdf» junto al .tex (o en ../plantilla/)
+%  se usa ese archivo vectorial. Si no, se dibuja un marcador de texto.
+%=======================================================================
+\documentclass[11pt,a4paper]{article}
+
+%=======================================================================
+%  DATOS DE LA NOTA  ← lo único que hay que tocar arriba
+%=======================================================================
+\newcommand{\codigo}{02489-00-MC000}          % 02489-00-MC###
+\newcommand{\titulo}{Título corto y concreto de la nota}
+\newcommand{\autor}{Nombre Apellido}
+\newcommand{\fecha}{\today}                    % o p. ej. {24/09/2026}
+
+%=======================================================================
+%  ESTILO  (no hace falta tocar nada de aquí hasta \begin{document})
+%=======================================================================
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-noshorthands,es-tabla]{babel}
+\usepackage[default,semibold]{sourcesanspro}
+\usepackage[a4paper,top=3.0cm,bottom=2.4cm,left=2.4cm,right=2.4cm,
+            headheight=18pt,headsep=1.1cm,footskip=1.1cm]{geometry}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{caption}
+\usepackage[most]{tcolorbox}
+\usepackage[hidelinks]{hyperref}
+
+% --- colores -----------------------------------------------------------
+\definecolor{gris-naranja}{HTML}{FF7A00}   % naranja institucional
+\definecolor{gris-naranja-t}{HTML}{C45E00} % naranja para texto (contraste)
+\definecolor{gris-fondo}{HTML}{FFF5EB}     % tinte muy suave
+\definecolor{tinta}{HTML}{1E2328}
+\definecolor{gris-medio}{HTML}{6B7280}
+\definecolor{gris-linea}{HTML}{DADDE1}
+\color{tinta}
+
+\hypersetup{pdftitle={\codigo\ -- \titulo}, pdfauthor={\autor},
+            colorlinks=true, linkcolor=gris-naranja-t, urlcolor=gris-naranja-t}
+
+% --- logo ---------------------------------------------------------------
+\graphicspath{{./}{../plantilla/}{plantilla/}}
+\newcommand{\logogris}{%
+  \IfFileExists{logo-gris.pdf}
+    {\includegraphics[height=9pt]{logo-gris.pdf}}
+    {\IfFileExists{../plantilla/logo-gris.pdf}
+      {\includegraphics[height=9pt]{../plantilla/logo-gris.pdf}}
+      {{\fontsize{12}{12}\selectfont\bfseries\color{gris-naranja}GRIS}}}}
+
+% --- encabezado y pie ---------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\raisebox{-1pt}{\logogris}}
+\fancyhead[R]{\small\color{gris-medio}\codigo}
+\fancyfoot[L]{\footnotesize\color{gris-medio}\titulo}
+\fancyfoot[R]{\footnotesize\color{gris-medio}\thepage\,/\,\pageref{LastPage}}
+
+% --- títulos: discretos, sin numerar -------------------------------------
+\setcounter{secnumdepth}{0}
+\titleformat{\section}{\large\bfseries}{}{0pt}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{gris-medio}}{}{0pt}{}
+\titlespacing*{\section}{0pt}{16pt}{5pt}
+\titlespacing*{\subsection}{0pt}{11pt}{3pt}
+
+% --- texto ------------------------------------------------------------------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\linespread{1.08}
+\setlist{topsep=2pt, itemsep=2pt, parsep=0pt, leftmargin=1.2em}
+\setlist[itemize]{label={\color{gris-naranja}\raisebox{0.15ex}{\small$\bullet$}}}
+\captionsetup{font={small,color=gris-medio}, labelfont=bf, skip=5pt}
+\renewcommand{\arraystretch}{1.25}
+
+% --- cabecera de la nota ------------------------------------------------------
+\newcommand{\cabecera}{%
+  \thispagestyle{fancy}%
+  {\footnotesize\bfseries\color{gris-naranja-t}NOTA TÉCNICA\quad
+   \color{gris-medio}\mdseries Proyecto 00503 · Generator inspection robotic system}\par
+  \vspace{2pt}%
+  {\fontsize{21}{25}\selectfont\bfseries\titulo\par}%
+  \vspace{5pt}%
+  {\small\color{gris-medio}\fecha\quad·\quad\autor\par}%
+  \vspace{4pt}%
+  {\color{gris-linea}\rule{\linewidth}{0.5pt}}\par
+  \vspace{2pt}}
+
+% --- bloque de resultados ------------------------------------------------------
+\newtcolorbox{resultados}{%
+  enhanced, breakable,
+  colback=gris-fondo, colframe=gris-fondo,
+  borderline west={2.5pt}{0pt}{gris-naranja},
+  arc=0pt, outer arc=0pt,
+  left=12pt, right=12pt, top=8pt, bottom=9pt,
+  before skip=6pt, after skip=14pt,
+  fontupper=\normalsize,
+  before upper={{\small\bfseries\color{gris-naranja-t}RESULTADOS}\par\vspace{3pt}}}
+
+% --- ayudas opcionales --------------------------------------------------------
+% \pendiente{...}  → marca algo que falta verificar
+\newcommand{\pendiente}[1]{{\color{gris-naranja-t}\bfseries[#1]}}
+% \figura{archivo}{ancho}{pie}
+\newcommand{\figura}[3]{%
+  \begin{figure}[htbp]\centering
+    \includegraphics[width=#2\linewidth]{#1}\caption{#3}
+  \end{figure}}
+
+%=======================================================================
+\begin{document}
+\cabecera
+
+%-----------------------------------------------------------------------
+%  RESULTADOS  (siempre primero)
+%  Qué se sabe ahora. Cada punto se entiende sin leer el resto.
+%  Si hay un número, ponelo: «error < 2 mm», no «error bajo».
+%-----------------------------------------------------------------------
+\begin{resultados}
+\begin{itemize}
+  \item Primer resultado, en una frase: qué se midió o se decidió y cuánto dio.
+  \item Segundo resultado. Lo que \emph{no} funcionó también es un resultado.
+  \item Siguiente paso concreto, si hay uno.
+\end{itemize}
+\end{resultados}
+
+%-----------------------------------------------------------------------
+%  DE AQUÍ PARA ABAJO, TODO ES LIBRE.
+%  Borrá, renombrá o agregá secciones según lo que la nota necesite.
+%  Una nota de media página es una nota válida.
+%-----------------------------------------------------------------------
+
+\section{Contexto}
+Por qué se hizo esto y qué pregunta se quería responder. Dos o tres líneas
+alcanzan.
+
+\section{Desarrollo}
+Qué se hizo, cómo y con qué. Los datos de detalle van aquí, no en los
+resultados.
+
+\begin{table}[htbp]\centering
+  \caption{Ejemplo de tabla (borrar si no se usa).}
+  \begin{tabular}{l r l}
+    \toprule
+    Ensayo & Valor & Observación \\
+    \midrule
+    Prueba 1 & 12,4 & Referencia \\
+    Prueba 2 & 9,8 & Tras ajuste \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% Figura:  \figura{mi-imagen.png}{0.8}{Qué muestra la imagen.}
+
+\section{Pendientes}
+\begin{itemize}
+  \item Algo que queda por hacer o confirmar \pendiente{verificar}.
+\end{itemize}
+
+\end{document}
