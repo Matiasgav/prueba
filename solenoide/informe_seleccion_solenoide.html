@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Selección de solenoide WTT</title>
+<style>
+:root{
+  --ink:#16202b; --sec:#52514e; --mut:#8a8880; --rule:#cfd5dc; --bg:#ffffff;
+  --navy:#14496b; --navybg:#eff4f9; --ok:#2c6a49; --okbg:#f1f7f3;
+  --warn:#a6690c; --warnbg:#fdf7ec; --bad:#b23b32; --badbg:#fdf4f3;
+}
+@page{ size:A4; margin:18mm 16mm 18mm 18mm; }
+*{ box-sizing:border-box; }
+html{ background:var(--bg); }
+body{ margin:0 auto; max-width:900px; padding:24px 16px 48px; background:var(--bg);
+  color:var(--ink); font:10.5pt/1.5 "DejaVu Sans","Segoe UI",Roboto,Arial,sans-serif; }
+h1{ font-size:21pt; line-height:1.2; color:var(--navy); margin:0 0 6px; }
+h2{ font-size:14.5pt; color:var(--navy); border-bottom:1.5px solid var(--navy);
+  padding-bottom:3px; margin:30px 0 10px; break-after:avoid; }
+h3{ font-size:11.5pt; margin:20px 0 6px; break-after:avoid; }
+p{ margin:6px 0 8px; }
+.sub{ color:var(--sec); font-size:11pt; margin:0 0 14px; }
+.meta{ color:var(--mut); font-size:9pt; }
+table{ border-collapse:collapse; width:100%; margin:8px 0 12px; font-size:8.8pt; }
+th,td{ border-bottom:1px solid var(--rule); padding:4px 5px; text-align:left; vertical-align:top; }
+th{ background:var(--navybg); color:var(--navy); font-weight:700; }
+td.n{ text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+tr{ break-inside:avoid; }
+.box{ border-left:4px solid var(--navy); background:var(--navybg); padding:8px 12px; margin:10px 0; break-inside:avoid; }
+.box.ok{ border-color:var(--ok); background:var(--okbg); }
+.box.warn{ border-color:var(--warn); background:var(--warnbg); }
+.box.bad{ border-color:var(--bad); background:var(--badbg); }
+.box b.t{ display:block; margin-bottom:2px; }
+.ok-t{ color:var(--ok); font-weight:700; } .warn-t{ color:var(--warn); font-weight:700; } .bad-t{ color:var(--bad); font-weight:700; }
+figure{ margin:12px 0 14px; break-inside:avoid; }
+figure img{ width:100%; height:auto; display:block; border:1px solid var(--rule); }
+figcaption{ font-size:8.8pt; color:var(--sec); margin-top:4px; }
+.hoja img{ max-width:100%; max-height:228mm; width:auto; margin:0 auto; }
+.hoja figcaption{ text-align:center; }
+.hoja{ break-before:page; }
+.hoja.first{ break-before:auto; }
+.hoja.first img{ max-height:205mm; }
+.formula{ font-family:"DejaVu Serif",Georgia,serif; font-size:11pt; text-align:center; margin:8px 0; }
+ol,ul{ margin:4px 0 8px; padding-left:22px; }
+li{ margin:2px 0; }
+code{ font-size:9pt; }
+.toc a{ color:var(--navy); text-decoration:none; }
+.small{ font-size:8.8pt; color:var(--sec); }
+.page-break{ break-before:page; }
+a{ color:var(--navy); word-break:break-word; }
+.tablewrap{ overflow-x:auto; }
+@media print{ body{ max-width:none; padding:0; } a{ text-decoration:none; } }
+</style>
+</head>
+<body>
+
+<h1>Memoria de selección del solenoide para el actuador de impacto WTT</h1>
+<p class="sub">Robot de inspección de cuñas de estator — Wedge Tap Test (WTT). Selección, verificación de datos de fabricante y recomendación de compra para ensayo.</p>
+<p class="meta">Fecha: 24 de septiembre de 2026 · Revisión 1 · Fuentes: hojas de datos oficiales de Geeplus, Takaha Kiko, Ledex/Johnson Electric, Kendrion, Magnet-Schultz y Transmotec (anexo B).</p>
+
+<div class="box ok">
+<b class="t">Resumen</b>
+<p>La preselección que se tomó como punto de partida (generada con ChatGPT) está bien encaminada en cuanto a qué fabricantes mirar, pero <b>sobrestima la energía útil de los Geeplus 141C y 110C</b>. Se verificaron todas las cifras contra las hojas de datos y se calculó la energía disponible integrando las curvas fuerza–carrera extraídas de los propios PDF. Con la condición de que el émbolo <b>no llegue al tope interno</b> (impacto a 0,5 mm del tope), las conclusiones son estas:</p>
+<ul>
+<li><b>Takaha CA0422 / CA0425</b> tienen la curva más plana de toda la lista (la fuerza varía solo ×1,3–1,5 en la carrera), entregan 6,0 / 6,8 mJ de trabajo estático y son los menos sensibles a la posición de la cuña. Caben en la envolvente de ~10 × 11 × 21–25 mm y cuestan USD 9. Tienen tres pendientes: son de <b>tracción</b> (hace falta invertir el sentido del golpe), la hoja no declara vida útil y tampoco la masa del émbolo.</li>
+<li>El <b>Geeplus 141C</b> tiene 8,9 mJ si llega al tope, pero <b>solo 4,4 mJ si se detiene a 0,5 mm</b>: la mitad del trabajo está en el último medio milímetro. Una variación de 0,1 mm en la posición de impacto cambia la energía un 13 %. Sirve, pero no le sobra energía.</li>
+<li>El <b>Geeplus 110C</b> queda <b>descartado</b>: sin tocar el tope entrega 1,3 mJ, por debajo del objetivo de 3–5 mJ.</li>
+<li>El <b>Geeplus 144C</b> es la opción robusta de reserva: 9,9 mJ en una ventana de 3 mm, vida declarada &gt;5 M y buje tratado. La contra es el tamaño: Ø13,8 × 21 mm de cuerpo.</li>
+<li>El <b>Ledex B12P</b> (16 × 8 × 10 mm) es el que mejor se ajusta a la envolvente y da 4,2 mJ con bobina para 10 % ED. Pero el catálogo no le asigna una vida de millones de ciclos, así que hay que pedir la cifra a fábrica.</li>
+</ul>
+<p><b>Compra recomendada para banco:</b> 10 × Takaha CA0422 + 10 × CA0425 (bobina de 24 Ω), 3 × Geeplus 141C y 3 × 144C (bobina de 12 V), 2 × Ledex B12P-255-B-3. La elección final debe salir de medir la velocidad del impactador y hacer un ensayo acelerado de vida (sección 9).</p>
+</div>
+
+<h2 id="indice">Contenido</h2>
+<ol class="toc">
+<li><a href="#s1">Objeto y alcance</a></li>
+<li><a href="#s2">Requisitos de la aplicación</a></li>
+<li><a href="#s3">Criterio de selección: trabajo bajo la curva sin tocar el tope</a></li>
+<li><a href="#s4">Metodología y validación de los datos</a></li>
+<li><a href="#s5">Resultados comparativos</a></li>
+<li><a href="#s6">Verificación de la información de partida</a></li>
+<li><a href="#s7">Evaluación por candidato</a></li>
+<li><a href="#s8">Alternativas fuera de la lista</a></li>
+<li><a href="#s9">Selección, plan de ensayo y electrónica de disparo</a></li>
+<li><a href="#s10">Limitaciones</a></li>
+<li><a href="#anexoA">Anexo A — Hojas de datos (capturas)</a></li>
+<li><a href="#anexoB">Anexo B — Fuentes</a></li>
+</ol>
+
+<h2 id="s1">1. Objeto y alcance</h2>
+<p>Esta memoria documenta la selección del solenoide que accionará el impactador del Wedge Tap Test. En ese ensayo se golpean las cuñas del estator de un generador y se mide la respuesta vibratoria para evaluar qué tan ajustada está cada cuña. El actuador no sostiene ni desplaza una carga: su función es entregar un <b>impacto de energía conocida y repetible</b>, de modo que las diferencias en la respuesta medida se deban a la cuña y no al mecanismo de excitación.</p>
+<p>El alcance cubre: (a) verificar contra fuentes primarias los datos de la preselección de partida, (b) calcular con un criterio único la energía que cada candidato puede entregar en esta aplicación, (c) buscar alternativas que no estaban en la lista y (d) recomendar qué comprar y cómo ensayarlo.</p>
+
+<h2 id="s2">2. Requisitos de la aplicación</h2>
+<div class="tablewrap"><table>
+<tr><th>Requisito</th><th>Valor</th><th>Consecuencia para la selección</th></tr>
+<tr><td>Energía por impacto</td><td>3–5 mJ, ajustable</td><td>Se necesita un trabajo magnético útil de ≥ 5 mJ con margen para pérdidas dinámicas; el ajuste se hace con corriente, tensión o ancho de pulso.</td></tr>
+<tr><td>Carrera</td><td>2–4 mm</td><td>Se compara la energía en ventanas de carrera equivalentes.</td></tr>
+<tr><td>Contacto</td><td>El émbolo no debe golpear el tope interno</td><td>Se descarta el último tramo de la curva (x &lt; 0,5 mm), justo donde un solenoide cónico concentra la fuerza.</td></tr>
+<tr><td>Repetibilidad</td><td>Dispersión mínima entre disparos</td><td>Conviene una curva plana, porque la energía depende poco de la posición de la cuña; también masa móvil conocida y guiado de baja fricción.</td></tr>
+<tr><td>Ciclo de trabajo</td><td>Muy bajo, pulsos breves</td><td>Se usan las curvas de 6–10 % ED (pulso), que admiten sobreexcitación.</td></tr>
+<tr><td>Vida</td><td>≥ millones de ciclos</td><td>La vida declarada por el fabricante pesa mucho; si no está declarada, hay que ensayarla.</td></tr>
+<tr><td>Envolvente</td><td>≈ 10 × 10 mm de sección, 20–30 mm de largo</td><td>Los tubulares Ø14 superan la sección; los de bastidor abierto de 10 × 11 mm entran.</td></tr>
+<tr><td>Medición</td><td>Velocidad antes del contacto; E = ½·m·v²</td><td>Hace falta conocer la masa efectiva del émbolo más la punta.</td></tr>
+</table></div>
+
+<h2 id="s3">3. Criterio de selección: trabajo bajo la curva sin tocar el tope</h2>
+<p>La fuerza de retención no mide bien la aptitud del solenoide para esta tarea. Lo que interesa es el trabajo magnético entre el inicio de carrera y el punto de impacto:</p>
+<p class="formula">W<sub>útil</sub> = ∫<sub>x<sub>imp</sub></sub><sup>x<sub>ini</sub></sup> F(x) dx &nbsp;&nbsp;&nbsp;&nbsp; E<sub>c</sub> = η · W<sub>útil</sub> = ½ · m<sub>ef</sub> · v²</p>
+<p>donde <i>x</i> es la distancia al tope magnético (x = 0: émbolo asentado), <i>x</i><sub>ini</sub> es la carrera de partida, <i>x</i><sub>imp</sub> la posición en que el impactador toca la cuña y η la fracción del trabajo estático que se transforma en energía cinética. En esa fracción entran la subida de corriente (L/R), la fuerza contraelectromotriz del movimiento, la fricción y el resorte de retorno.</p>
+<p>Se adoptó <b>x<sub>imp</sub> = 0,5 mm</b>. Es un margen práctico para que, aun con la tolerancia de posición del robot y el rebote, el émbolo no llegue a asentarse. Con este criterio aparecen dos indicadores más:</p>
+<ul>
+<li><b>Planitud</b> F(x<sub>imp</sub>)/F(x<sub>ini</sub>): cuanto más cerca de 1, más uniforme es la aceleración y menos depende la energía de dónde esté la cuña.</li>
+<li><b>Sensibilidad S<sub>0,1</sub></b> = F(x<sub>imp</sub>) · 0,1 mm / W<sub>útil</sub>: cuánto cambia (en %) la energía entregada si la cuña está 0,1 mm más cerca o más lejos. Es la sensibilidad cuando el disparo se controla por posición. Si se mide la velocidad antes del impacto, el error se puede corregir; aun así, conviene que S sea chico.</li>
+</ul>
+
+<h2 id="s4">4. Metodología y validación de los datos</h2>
+<h3>4.1 Fuentes</h3>
+<p>Solo se usaron hojas de datos y catálogos del fabricante o de su distribuidor oficial (anexo B). Los precios y el stock se tomaron de la tienda del fabricante o de DigiKey al 24/09/2026. Cuando un dato de la preselección no apareció en ninguna fuente primaria, se marca como <span class="warn-t">no verificado</span>.</p>
+<h3>4.2 Extracción de las curvas fuerza–carrera</h3>
+<p>No se leyeron las curvas a ojo. El procedimiento (script <code>tools/digitalizar_curvas.py</code>) fue:</p>
+<ul>
+<li><b>Geeplus 110C / 141C / 144C y Takaha CA0422 / CA0425:</b> las curvas están en el PDF como trazos vectoriales. Se leyeron los segmentos (rectas y Bézier) y se convirtieron a mm y N con la posición de las etiquetas de los ejes. El eje de fuerza de Geeplus es logarítmico y se ajustó por mínimos cuadrados con sus 10 etiquetas.</li>
+<li><b>Ledex B12, Geeplus RD-A420 y Transmotec K0420S:</b> el gráfico es una imagen. Se renderizó a 288 ppp, se detectaron los píxeles del color de cada curva y se calibró con la grilla o las etiquetas.</li>
+<li><b>Magnet-Schultz 312:</b> la hoja trae una tabla de fuerza cada 1–2 mm y se usó tal cual. <b>Kendrion BI 13:</b> la hoja solo da fuerza inicial (1 N) y final (4 N), así que se supuso una recta entre ambas.</li>
+</ul>
+<h3>4.3 Validación cruzada</h3>
+<div class="tablewrap"><table>
+<tr><th>Control</th><th>Dato publicado</th><th>Curva extraída</th><th>Diferencia</th></tr>
+<tr><td>Takaha CA0422, 24 W, a 3 mm</td><td class="n">2,00 N (tienda Takaha)</td><td class="n">2,07 N</td><td class="n">+3,5 %</td></tr>
+<tr><td>Takaha CA0425, 24 W, a 3 mm</td><td class="n">2,50 N (tienda Takaha)</td><td class="n">2,52 N</td><td class="n">+0,8 %</td></tr>
+<tr><td>Takaha CA0422, 1,5 W continuo, a 3 mm</td><td class="n">0,18 N</td><td class="n">0,17 N</td><td class="n">−5 %</td></tr>
+<tr><td>Ledex B12 25 % ED a 0,508 / 1,27 / 2,54 mm (tabla de la hoja vs curva del catálogo)</td><td class="n">1,81 / 1,00 / 0,36 N</td><td class="n">1,81 / 0,98 / 0,37 N</td><td class="n">≤ 3 %</td></tr>
+</table></div>
+<p>La coincidencia es de ±5 %, una incertidumbre menor que la tolerancia propia de fabricación (MSA declara ±10 % en su hoja).</p>
+<h3>4.4 Supuestos</h3>
+<ul>
+<li>Se usa la curva de pulso de cada fabricante: 10 % ED en Geeplus, Ledex y Transmotec; 6 % ED (24 W) en Takaha; 10 % "pulse" en MSA; y 25 % en Kendrion, que no publica otra.</li>
+<li>Ventana de carrera: 3,0 → 0,5 mm (2,5 mm útiles). Excepciones: 110C, 2,0 → 0,5 mm porque su carrera es de 2 mm; 144C, 3,5 → 0,5 mm (3 mm útiles).</li>
+<li>Masa de punta de impacto: 1 g adicional al émbolo. En los Takaha y el Transmotec, que no declaran la masa del émbolo, se estimó a partir de la geometría (acero Ø4 × ~20 mm ≈ 2 g).</li>
+<li>Las curvas son estáticas, medidas con corriente de régimen y a 20 °C. Sirven como <b>cota superior</b> del trabajo; η se mide en banco (sección 9).</li>
+</ul>
+
+<h2 id="s5">5. Resultados comparativos</h2>
+<figure>
+<img src="figuras/fig-curvas.png" alt="Curvas fuerza-carrera de diez candidatos con la ventana útil sombreada">
+<figcaption>Figura 1. Curvas fuerza–carrera extraídas de las hojas de datos. El área sombreada es el trabajo útil entre la carrera inicial y x = 0,5 mm (línea naranja), donde se produce el impacto. Las escalas verticales difieren entre paneles.</figcaption>
+</figure>
+<figure>
+<img src="figuras/fig-energia.png" alt="Barras de energía útil por candidato frente al objetivo de 3 a 5 mJ">
+<figcaption>Figura 2. Trabajo magnético estático disponible sin llegar al tope interno. La franja verde es el objetivo de energía cinética (3–5 mJ). Como η &lt; 1, un candidato necesita un margen claro por encima de 5 mJ para cubrir el objetivo sin depender de la sobreexcitación.</figcaption>
+</figure>
+
+<div class="tablewrap"><table>
+<tr><th>Candidato (curva)</th><th>Ventana [mm]</th><th>W<sub>útil</sub> [mJ]</th><th>W hasta el tope [mJ]</th><th>F ini → F imp [N]</th><th>Planitud</th><th>S<sub>0,1</sub> [%]</th><th>m émbolo [g]</th><th>v<sub>máx</sub> [m/s]*</th><th>v para 4 mJ [m/s]*</th></tr>
+<tr><td>Takaha CA0425 (24 W, 6 %)</td><td class="n">3,0→0,5</td><td class="n"><b>6,8</b></td><td class="n">≥ 6,8</td><td class="n">2,52 → 3,18</td><td class="n"><b>1,3</b></td><td class="n"><b>4,6</b></td><td class="n">~2,2 (est.)</td><td class="n">2,07</td><td class="n">1,58</td></tr>
+<tr><td>Takaha CA0422 (24 W, 6 %)</td><td class="n">3,0→0,5</td><td class="n"><b>6,0</b></td><td class="n">≥ 6,0</td><td class="n">2,07 → 3,13</td><td class="n"><b>1,5</b></td><td class="n"><b>5,2</b></td><td class="n">~2,0 (est.)</td><td class="n">2,00</td><td class="n">1,63</td></tr>
+<tr><td>Geeplus 144C (10 % ED)</td><td class="n">3,5→0,5</td><td class="n"><b>9,9</b></td><td class="n">14,7</td><td class="n">1,24 → 7,41</td><td class="n">6,0</td><td class="n">7,5</td><td class="n">3,0</td><td class="n">2,23</td><td class="n">1,41</td></tr>
+<tr><td>Geeplus 141C (10 % ED)</td><td class="n">3,0→0,5</td><td class="n">4,4</td><td class="n">8,9</td><td class="n">0,41 → 5,66</td><td class="n">13,7</td><td class="n">12,8</td><td class="n">2,5</td><td class="n">1,59</td><td class="n">1,51</td></tr>
+<tr><td>Ledex B12 (13 W, 10 %)</td><td class="n">3,0→0,5</td><td class="n">4,2</td><td class="n">5,6</td><td class="n">0,78 → 2,95</td><td class="n">3,8</td><td class="n">7,0</td><td class="n">1,4</td><td class="n">1,88</td><td class="n">1,83</td></tr>
+<tr><td>Ledex B12P-255-B-3 (5,2 W, 25 %)</td><td class="n">2,54→0,5</td><td class="n">1,8</td><td class="n">2,5</td><td class="n">0,37 → 1,83</td><td class="n">4,9</td><td class="n">10,0</td><td class="n">1,4</td><td class="n">1,24</td><td class="n">1,83</td></tr>
+<tr><td>Geeplus RD-A420 (11 W, 10 %)</td><td class="n">3,0→0,5</td><td class="n">4,0</td><td class="n">≥ 4,0</td><td class="n">0,78 → 2,59</td><td class="n">3,3</td><td class="n">6,4</td><td class="n">2,0</td><td class="n">1,64</td><td class="n">1,63</td></tr>
+<tr><td>Transmotec K0420S (10 W, 10 %)</td><td class="n">3,0→0,5</td><td class="n">≥ 4,3</td><td class="n">—</td><td class="n">1,42 → ≥1,77</td><td class="n">1,2</td><td class="n">4,1</td><td class="n">~1 (est.)</td><td class="n">2,07</td><td class="n">2,00</td></tr>
+<tr><td>Kendrion BI 13 (7 W, 25 %)</td><td class="n">3,0→0,5</td><td class="n">5,6</td><td class="n">7,5</td><td class="n">1,0 → 3,5</td><td class="n">3,5</td><td class="n">6,2</td><td class="n">6,0</td><td class="n">1,27</td><td class="n">1,07</td></tr>
+<tr><td>MSA 312 (40 W, pulso 10 %)</td><td class="n">3,0→0,5</td><td class="n">21,0</td><td class="n">27,2</td><td class="n">6,0 → 11,6</td><td class="n">1,9</td><td class="n">5,5</td><td class="n">7,0</td><td class="n">2,29</td><td class="n">1,00</td></tr>
+<tr><td>Geeplus 110C (10 % ED)</td><td class="n">2,0→0,5</td><td class="n">1,3</td><td class="n">2,9</td><td class="n">0,35 → 1,97</td><td class="n">5,6</td><td class="n">14,8</td><td class="n">1,0</td><td class="n">1,15</td><td class="n">2,00</td></tr>
+</table></div>
+<p class="small">* Con émbolo + 1 g de punta. v<sub>máx</sub> supone η = 1 (cota superior). "≥" indica que la curva publicada no llega a x &lt; 0,5 mm (Takaha) o sale del gráfico (Transmotec, recortada a 180 gf), por lo que el valor es una cota inferior. Transmotec K0420S: los datos van de 0,5 a 5,5 mm y el origen de su eje no está definido en la hoja. Datos completos en <code>data_resultados.json</code>.</p>
+
+<figure>
+<img src="figuras/fig-forma.png" alt="Fuerza relativa a la del inicio de carrera para 141C, 110C y CA0422">
+<figcaption>Figura 3. Planitud de la curva en la ventana útil. En el 141C la fuerza se multiplica por 14 entre el inicio de carrera y el punto de impacto, y en el 110C por 5,6. En el CA0422 solo se multiplica por 1,5. Cuanto más plana la curva, más uniforme la aceleración y menor la dependencia de la posición de la cuña.</figcaption>
+</figure>
+
+<div class="box warn">
+<b class="t">Hallazgo principal</b>
+<p>Los solenoides tubulares de polo cónico (Geeplus 110/141/144) concentran la fuerza cerca del tope: en el 141C el <b>50 %</b> del trabajo está en los últimos 0,5 mm, en el 110C el <b>54 %</b> y en el 144C el <b>33 %</b>. Como en esta aplicación el émbolo no debe llegar al tope, esa energía no se puede usar. La preselección valoraba el 141C con energía "sobrada" y el 110C como "borderline, 2–4 mJ". Con el criterio de no tocar el tope, el 141C queda justo (4,4 mJ) y el 110C resulta insuficiente (1,3 mJ).</p>
+</div>
+
+<h2 id="s6">6. Verificación de la información de partida</h2>
+<p>Cada dato de la preselección se contrastó con la fuente primaria. <span class="ok-t">✔</span> = confirmado; <span class="warn-t">≈</span> = correcto con matiz o parcialmente; <span class="bad-t">✘</span> = incorrecto o no verificable.</p>
+<div class="tablewrap"><table>
+<tr><th>Modelo</th><th>Dato de partida</th><th>Verificación</th><th>Fuente</th></tr>
+<tr><td rowspan="4">Geeplus 141C</td><td>Ø14 × 23,4 mm</td><td><span class="warn-t">≈</span> Cuerpo Ø13,8 × 13,7 mm; los 23,4 mm son el largo total con los ejes (10 mm de eje del lado de empuje).</td><td>Catálogo Geeplus 2024, p. 57</td></tr>
+<tr><td>15 N retención a 10 % ED</td><td><span class="warn-t">≈</span> 13,4 N a 0 mm según el trazo vectorial.</td><td>ídem</td></tr>
+<tr><td>"Energía sobrada para 3–5 mJ"</td><td><span class="bad-t">✘</span> 8,9 mJ hasta el tope, pero 4,4 mJ si el impacto es a 0,5 mm.</td><td>Cálculo, sección 5</td></tr>
+<tr><td>3 mm; 13,3 W; émbolo 2,5 g; &gt;5 M ciclos</td><td><span class="ok-t">✔</span></td><td>ídem</td></tr>
+<tr><td rowspan="3">Takaha CA0422</td><td>9,8 × 10,8 × 21,3 mm; 3 mm nominal / 6 máx.; 11 g; USD 9,11; DHL</td><td><span class="ok-t">✔</span></td><td>Hoja CA0422 y tienda Takaha</td></tr>
+<tr><td>2 N a 3 mm en 6 % ED; ≈5–8 mJ</td><td><span class="ok-t">✔</span> 2,07 N; 6,0 mJ entre 3 y 0,5 mm.</td><td>ídem + cálculo</td></tr>
+<tr><td>"Vida genérica Takaha: cientos de miles a millones"</td><td><span class="bad-t">✘</span> No verificable: ni la hoja ni la tienda publican vida útil.</td><td>—</td></tr>
+<tr><td rowspan="2">Geeplus 110C</td><td>Ø11,3 × 19,1 mm; 2 mm; 4,5 N; 11,5 W; 1 g; &gt;5 M</td><td><span class="ok-t">✔</span> (4,8 N; cuerpo Ø11,3 × 13,3 mm, 19,1 mm con ejes)</td><td>Catálogo Geeplus 2024, p. 56</td></tr>
+<tr><td>"≈2–4 mJ, borderline"</td><td><span class="bad-t">✘</span> 2,9 mJ hasta el tope; 1,3 mJ sin tocarlo.</td><td>Cálculo</td></tr>
+<tr><td>Takaha CA0425</td><td>10 × 12 × 24,8 mm; 3 mm; 2,5 N a 3 mm 6 % ED; 24 W; USD 9,19</td><td><span class="ok-t">✔</span> (peso 14 g, no declarado en la preselección)</td><td>Hoja CA0425 y tienda Takaha</td></tr>
+<tr><td>Geeplus 144C</td><td>Ø14 × 21 mm; 5 mm; 12 N; 18,3 W; 3 g; &gt;5 M</td><td><span class="ok-t">✔</span> (12,4 N; 30,7 mm de largo total con ejes; 18 g)</td><td>Catálogo Geeplus 2024, p. 58</td></tr>
+<tr><td rowspan="2">Kendrion BI 13</td><td>13 × 12 × 26 mm; 3 mm; 1 N inicial / 4 N final; 7 W 25 % ED; 6 g</td><td><span class="ok-t">✔</span> Los 6 g son la masa de la armadura; el conjunto pesa 23 g.</td><td>Ficha Kendrion BI 13-F-24V DC 25 ED</td></tr>
+<tr><td>(omitido)</td><td><span class="warn-t">≈</span> Es <b>biestable</b>, con imán permanente: queda enclavado en el tope, justo lo que se quiere evitar.</td><td>ídem</td></tr>
+<tr><td rowspan="3">Ledex B12P-255-B-3</td><td>16 × 8,13 × 10,16 mm; 2,54 mm; 5,2 W; máx. 11 s; 1,4 g</td><td><span class="ok-t">✔</span></td><td>Hoja Ledex B12 (RS) y DigiKey</td></tr>
+<tr><td>"Familia box-frame hasta 5 M ciclos"</td><td><span class="warn-t">≈</span> La web de Johnson Electric dice "hasta 5 M" para toda la línea open-frame. El catálogo 2020 indica "life ratings extend to 3 million cycles depending on the product size and application", y el catálogo anterior da 50 000–100 000 como estándar. No hay cifra para el B12: hay que consultar.</td><td>Catálogos Ledex Open Frame</td></tr>
+<tr><td>DigiKey 330 u, USD 50,71</td><td><span class="ok-t">✔</span> (24/09/2026; plazo de fábrica 16 semanas)</td><td>DigiKey</td></tr>
+<tr><td>MSA 312</td><td>~28,5 mm; hasta 10 mm; 6 N a 3 mm en pulso; 40 W 10 %, máx. 0,1 s; 7 g</td><td><span class="ok-t">✔</span> Sección 19,1 × 19,1 mm y 36 g: muy fuera de la envolvente. "&gt;1 M ciclos típico": <span class="bad-t">✘</span> no figura en la hoja.</td><td>Hoja MSA Type 312</td></tr>
+<tr><td>Transmotec K0420S-12V</td><td>20 × 11 × 7,5 mm; ~0,98 N; 1 W / 10 W; 10 g; 500 k</td><td><span class="ok-t">✔</span> Es <b>de enclavamiento</b> (imán de 100 g de retención) y no tiene CE ni UL. Precio EUR 45,50 no verificado.</td><td>Hoja Transmotec K0420S</td></tr>
+<tr><td>Geeplus RD-A420</td><td>21,4 × 10,8 × 9,8 mm; émbolo 2 g; &gt;250 k</td><td><span class="ok-t">✔</span></td><td>Hoja Geeplus RD-A420</td></tr>
+<tr><td>Delta DSOS-0416-12D</td><td>15,8 × 7,72 × 9,98 mm; 1,52 mm; USD 7,24–7,82; 100 k; EOL 2026-06-02</td><td><span class="warn-t">≈</span> Medidas y carrera confirmadas en DigiKey (USD 7,38/u, 157 u, "Active"). No se pudo acceder a la hoja de Delta (descarga con registro), así que la vida de 100 k y el EOL quedan sin verificar. Con 1,52 mm de carrera queda fuera igual.</td><td>DigiKey</td></tr>
+</table></div>
+
+<h2 id="s7">7. Evaluación por candidato</h2>
+
+<h3>7.1 Takaha CA0422 y CA0425 (bastidor abierto, tracción)</h3>
+<p><span class="ok-t">A favor:</span> es la curva más plana de la lista. La fuerza pasa de 2,1 a 3,1 N (CA0422) y de 2,5 a 3,2 N (CA0425) en toda la ventana, así que la aceleración es casi constante y el trabajo útil (6,0 / 6,8 mJ) da margen sobre el objetivo. Tiene la menor sensibilidad a la posición (S ≈ 5 % por 0,1 mm), la sección es de 9,8 × 10,8 mm y 10 × 12 mm, se compran por unidad a USD 9 con envío DHL y hay cinco bobinados (24–384 Ω). La curva publicada empieza en 0,5 mm, lo que coincide con el punto de impacto elegido.</p>
+<p><span class="warn-t">Pendientes:</span></p>
+<ul>
+<li><b>Es de tracción:</b> el émbolo entra en el bastidor. Para golpear hacia afuera hay tres caminos: una palanca inversora (agrega masa, fricción y juego, y perjudica la repetibilidad), montar la punta en el extremo del émbolo con el robot orientado para golpear "hacia atrás", o pedir a Takaha la variante de empuje (varilla que atraviesa el núcleo). Hay que <b>consultarlo con Takaha antes de diseñar</b>.</li>
+<li><b>Vida no declarada</b> y <b>masa del émbolo no declarada</b> (estimada en ~2 g).</li>
+<li>La curva está medida "antes del calentamiento" (温度上昇前), a 20 °C.</li>
+<li>El émbolo desliza en el bastidor sin buje declarado. Hay que vigilar el desgaste y la fricción, que afectan a η y a su dispersión.</li>
+</ul>
+
+<h3>7.2 Geeplus 141C (tubular push-pull)</h3>
+<p><span class="ok-t">A favor:</span> es push-pull con eje en ambos lados, así que empuja de forma directa. Vida declarada &gt;5 M ciclos con buje de construcción especial y tratamiento térmico. Émbolo de 2,5 g, aislación clase E, tiempo de respuesta de ~6 ms a 3 mm (hoja). Geeplus mecaniza a pedido en lotes chicos, incluido un <b>émbolo de ángulo modificado para más fuerza en posición extendida</b>, que aplanaría la curva (catálogo p. 54, opción 4), y un <b>eje desacoplado del émbolo por resorte</b> (opción 3), que es justo la base de un impactador en vuelo libre.</p>
+<p><span class="warn-t">En contra:</span> con x<sub>imp</sub> = 0,5 mm solo quedan 4,4 mJ de trabajo estático. Con η &lt; 1 no alcanza 5 mJ sin sobreexcitar. La curva es muy empinada (×14) y la energía cambia 13 % por cada 0,1 mm de posición. El diámetro de Ø13,8 mm excede la sección objetivo.</p>
+
+<h3>7.3 Geeplus 144C</h3>
+<p>Misma familia y vida que el 141C, con 5 mm de carrera: se puede trabajar en la zona media de la curva (3,5 → 0,5 mm), donde es menos empinada. Entrega 9,9 mJ, el doble de lo necesario, y la energía se regula bajando la corriente. <span class="warn-t">En contra:</span> cuerpo Ø13,8 × 21 mm (30,7 mm con ejes), 18 g, émbolo de 3 g. Es la opción "segura" si la envolvente admite Ø14.</p>
+
+<h3>7.4 Geeplus 110C</h3>
+<p><span class="bad-t">Descartado.</span> Sin tocar el tope entrega 1,3 mJ, y el 54 % de su trabajo está en el último medio milímetro. Para llegar a 3–5 mJ habría que impactar muy cerca del tope, que es lo que se quiere evitar, y además es el más sensible a la posición (15 % por 0,1 mm).</p>
+
+<h3>7.5 Ledex B12 / B12P (box frame)</h3>
+<p><span class="ok-t">A favor:</span> es el más compacto (16 × 8,1 × 10,2 mm) y tiene versión de empuje (B12P). Émbolo de 1,4 g y stock en DigiKey. Con bobina para 10 % ED (13 W) entrega 4,2 mJ.</p>
+<p><span class="warn-t">En contra:</span> el B12P-255-B-3 de la preselección es una bobina de 12 V a <b>25 %</b> ED (5,2 W), que a su tensión nominal da solo 1,8 mJ. Para usar la curva de 13 W hay que aplicarle ~19 V en pulsos (la tabla de bobinas del catálogo lo admite). La vida no está declarada para este modelo y el catálogo dice que los de bastidor abierto "are typically selected for applications in which extremely long life and precise positioning are not critical". Además cuesta USD 50 frente a USD 9 del Takaha.</p>
+
+<h3>7.6 Geeplus RD-A420</h3>
+<p>La envolvente es prácticamente la del Takaha CA0422 (21,4 × 10,8 × 9,8 mm), con 4,0 mJ y émbolo de 2 g. <span class="bad-t">Descartado</span> por la vida declarada de &gt;250 k ciclos. Sirve como referencia de que el formato admite ese rendimiento.</p>
+
+<h3>7.7 Kendrion BI 13, Transmotec K0420S y MSA 312</h3>
+<ul>
+<li><b>Kendrion BI 13</b> <span class="bad-t">descartado</span>: es biestable, con un imán que retiene la armadura en el tope, y tiene armadura de 6 g (v de 1,07 m/s para 4 mJ) y 23 g de peso total. La hoja no publica curva ni vida.</li>
+<li><b>Transmotec K0420S</b> <span class="bad-t">descartado</span>: es de enclavamiento, tiene 500 k ciclos y no tiene CE ni UL. Su curva es plana y cabe en la envolvente, pero la vida no alcanza para uso industrial.</li>
+<li><b>MSA 312</b> <span class="bad-t">descartado</span>: 21 mJ, pero 19,1 × 19,1 × 28,5 mm y 36 g, con armadura de 7 g. No entra en el robot.</li>
+</ul>
+
+<h2 id="s8">8. Alternativas fuera de la lista</h2>
+<h3>8.1 Actuador de bobina móvil Geeplus VM1614</h3>
+<p>Un actuador de bobina móvil (voice coil) tiene una fuerza <b>proporcional a la corriente y casi independiente de la posición</b>, y puede frenar o retraer activamente invirtiendo la corriente. Eso permite controlar la trayectoria y evitar cualquier contacto con topes, que es exactamente el criterio de la sección 3. El VM1614 de Geeplus tiene cuerpo Ø16 × 14 mm, 9 mm de carrera, 3 g de bobina móvil y 2,3 N de pico a 10 % ED, con bujes de bronce sinterizado. Entre 3 y 6 mm de su carrera la fuerza sube de 1,2 a 2,3 N, lo que da unos 5 mJ en 3 mm. <span class="warn-t">Limitaciones:</span> Ø16 mm y los cables de la bobina se mueven, así que la vida a fatiga de esos cables debe verificarse. Conviene tenerlo en cuenta si se admite superar la sección de 10 × 10 mm y se prioriza el control de velocidad.</p>
+<h3>8.2 Personalización del push-pull Geeplus</h3>
+<p>Geeplus declara que modifica ejes, émbolos y polos en lotes de "100 o menos" (catálogo p. 54). Dos opciones son pertinentes: el émbolo de ángulo bajo, que da más fuerza en posición extendida y aplana la curva del 141C, y el eje desacoplado por resorte, que convierte el émbolo en un martillo de vuelo libre. Vale la pena pedir una cotización del 141C con ambas modificaciones.</p>
+<h3>8.3 Genéricos</h3>
+<p>Se mantiene el criterio de la preselección: los genéricos sin curva ni vida declarada sirven para montar el banco, no para el diseño final.</p>
+
+<h2 id="s9">9. Selección, plan de ensayo y electrónica de disparo</h2>
+<h3>9.1 Matriz de decisión</h3>
+<div class="tablewrap"><table>
+<tr><th>Criterio (peso)</th><th>CA0422</th><th>CA0425</th><th>141C</th><th>144C</th><th>B12P (10 %)</th></tr>
+<tr><td>Energía útil sin tope (25 %)</td><td>4</td><td>4</td><td>2</td><td>5</td><td>2</td></tr>
+<tr><td>Planitud / sensibilidad (20 %)</td><td>5</td><td>5</td><td>1</td><td>3</td><td>3</td></tr>
+<tr><td>Vida declarada (20 %)</td><td>1</td><td>1</td><td>5</td><td>5</td><td>2</td></tr>
+<tr><td>Envolvente (15 %)</td><td>5</td><td>4</td><td>3</td><td>2</td><td>5</td></tr>
+<tr><td>Integración mecánica: empuje directo y guiado (10 %)</td><td>2</td><td>2</td><td>5</td><td>5</td><td>4</td></tr>
+<tr><td>Costo y disponibilidad (10 %)</td><td>5</td><td>5</td><td>3</td><td>3</td><td>3</td></tr>
+<tr><th>Puntaje ponderado (sobre 5)</th><th>3,65</th><th>3,50</th><th>2,95</th><th>3,95</th><th>2,95</th></tr>
+</table></div>
+<p class="small">Escala 1 (malo) a 5 (muy bueno). El 144C gana en el promedio porque tiene energía y vida declarada, pero su tamaño penaliza poco con este peso. <b>Si la sección de 10 × 10 mm es un límite estricto, el 144C y el 141C quedan fuera y la decisión es entre CA0422/CA0425 (sujetos a ensayo de vida) y B12P (sujeto a consulta de vida).</b></p>
+
+<h3>9.2 Recomendación</h3>
+<ol>
+<li><b>Si la sección ~10 × 10 mm es estricta:</b> Takaha <b>CA0422</b> (o CA0425 si entran 12 mm), condicionado a (a) resolver el sentido del golpe con Takaha (versión de empuje) y (b) un ensayo propio de vida de ≥ 5 M impactos. Como alternativa, el Ledex B12P con bobina de 10 % ED, si Johnson Electric confirma por escrito una vida de millones de ciclos.</li>
+<li><b>Si se admite Ø14:</b> Geeplus <b>144C</b>, operando en 3,5 → 0,5 mm con corriente reducida. En paralelo, pedir la cotización del <b>141C</b> modificado (émbolo de ángulo bajo y eje desacoplado).</li>
+<li>No seguir con 110C, RD-A420, BI 13, K0420S, MSA 312 ni DSOS-0416.</li>
+</ol>
+
+<h3>9.3 Compra para banco</h3>
+<div class="tablewrap"><table>
+<tr><th>Ítem</th><th>Cant.</th><th>Bobina / variante</th><th>Fuente</th><th>Precio unit. ref.</th></tr>
+<tr><td>Takaha CA0422</td><td class="n">10</td><td>CA04220240 (24 Ω → 24 W a 24 V)</td><td>takaha-japan.com</td><td class="n">USD 9,11</td></tr>
+<tr><td>Takaha CA0425</td><td class="n">10</td><td>CA04250240 (24 Ω)</td><td>takaha-japan.com</td><td class="n">USD 9,19</td></tr>
+<tr><td>Geeplus 141C</td><td class="n">3</td><td>M141C-12V (97 Ω; 10 % ED a 38 V)</td><td>Geeplus / distribuidor</td><td class="n">cotizar</td></tr>
+<tr><td>Geeplus 144C</td><td class="n">3</td><td>M144C-12V (91,5 Ω; 10 % ED a 38 V)</td><td>Geeplus / distribuidor</td><td class="n">cotizar</td></tr>
+<tr><td>Ledex B12P</td><td class="n">2</td><td>B12P-255-B-3 (27,7 Ω; 13 W a ~19 V)</td><td>DigiKey</td><td class="n">USD 50,71</td></tr>
+</table></div>
+<p class="small">La bobina se elige para que la fuente disponible (p. ej. 24 V) caiga en la columna de 6–10 % ED de la tabla de bobinados. Si la fuente es de 24 V, en Geeplus conviene pedir la bobina que da 10 % ED cerca de 24 V (p. ej. M141C-6V: 19 V a 10 % ED).</p>
+
+<h3>9.4 Ensayos</h3>
+<ol>
+<li><b>Energía real (η):</b> impactador con punta de 1 g sobre un yunque con acelerómetro o celda de carga. Se mide la velocidad antes del contacto con una horquilla óptica doble o un sensor láser de desplazamiento, barriendo tensión y ancho de pulso. Resultado: mapa E(V, t<sub>pulso</sub>) y el η de cada candidato.</li>
+<li><b>Repetibilidad:</b> 1 000 disparos por condición. Criterio orientativo: CV de la velocidad &lt; 2 % (CV de la energía &lt; 4 %).</li>
+<li><b>Sensibilidad a la posición:</b> desplazar el yunque ±0,2 mm y medir ΔE, para contrastar con la S<sub>0,1</sub> de la sección 5.</li>
+<li><b>Vida acelerada:</b> 3 unidades por modelo a 5–10 Hz hasta 5 M impactos (unos 6–12 días). Cada 500 k se mide velocidad, dispersión, juego radial y estado de la superficie del émbolo. Con esto se reemplaza el dato de vida que Takaha no publica.</li>
+<li><b>Temperatura:</b> repetir el punto 1 con la bobina a 60–80 °C, porque la resistencia sube (~0,4 %/°C en cobre) y cae la corriente si el driver es de tensión.</li>
+</ol>
+
+<h3>9.5 Electrónica de disparo</h3>
+<ul>
+<li><b>Driver de corriente controlada</b> (chopper), no de tensión, para que la energía no dependa de la temperatura de la bobina ni de la tensión de la batería del robot.</li>
+<li><b>Pulso con corte antes del impacto:</b> se acelera durante t<sub>pulso</sub> y se corta la corriente con un apagado rápido (zéner o TVS, no un diodo de libre circulación simple, que prolonga la fuerza). Así el impactador llega en <b>vuelo libre</b>, sin fuerza magnética que lo empuje contra la cuña o el tope después del contacto. Esto sirve además para regular la energía.</li>
+<li><b>Térmica:</b> un pulso de 24 W × 15 ms = 0,36 J. A un disparo por segundo el promedio es 0,36 W, por debajo de la potencia continua admisible (1,3–1,5 W). No hay limitación térmica para el uso previsto.</li>
+<li><b>Medición de velocidad integrada:</b> un imán en la punta con un sensor Hall doble, o una horquilla óptica. La tensión inducida en la bobina tras el corte también contiene información de velocidad, pero requiere calibración.</li>
+</ul>
+
+<h2 id="s10">10. Limitaciones</h2>
+<ul>
+<li>Las curvas son estáticas y de catálogo (valores típicos, ±10 %). La energía cinética real depende de η, que se mide en banco.</li>
+<li>La vida útil de Takaha, Ledex B12 y Kendrion no está publicada. La de Geeplus es la declarada por el fabricante, que advierte que depende de la aplicación.</li>
+<li>La masa del émbolo de Takaha y Transmotec es una estimación geométrica.</li>
+<li>Los precios y el stock son al 24/09/2026 y no incluyen envío ni aranceles.</li>
+</ul>
+
+<!-- ============================ ANEXO A ============================ -->
+<h2 id="anexoA" class="page-break">Anexo A — Hojas de datos (capturas)</h2>
+<p>Capturas de página completa de las hojas de datos oficiales. Los recuadros rojos marcan los datos citados en el texto (vida útil y masa del émbolo).</p>
+
+<figure class="hoja first"><img src="hojas_de_datos/takaha-CA0422.jpg" alt="Hoja de datos Takaha CA0422"><figcaption>A.1 Takaha CA0422 (pull solenoid). Tabla de bobinados por tensión y clase de servicio; curva fuerza–carrera a 24 V, antes del calentamiento, a 20 °C.</figcaption></figure>
+<figure class="hoja"><img src="hojas_de_datos/takaha-CA0425.jpg" alt="Hoja de datos Takaha CA0425"><figcaption>A.2 Takaha CA0425.</figcaption></figure>
+<figure class="hoja"><img src="hojas_de_datos/geeplus-141C.jpg" alt="Hoja de datos Geeplus 141C"><figcaption>A.3 Geeplus push-pull size 141 (catálogo Geeplus 2024, p. 57). Vida &gt;5 M, émbolo 2,5 g, curva en escala logarítmica.</figcaption></figure>
+<figure class="hoja"><img src="hojas_de_datos/geeplus-144C.jpg" alt="Hoja de datos Geeplus 144C"><figcaption>A.4 Geeplus push-pull size 144 (p. 58).</figcaption></figure>
+<figure class="hoja"><img src="hojas_de_datos/geeplus-110C.jpg" alt="Hoja de datos Geeplus 110C"><figcaption>A.5 Geeplus push-pull size 110 (p. 56).</figcaption></figure>
+<figure class="hoja"><img src="hojas_de_datos/geeplus-seleccion-vida.jpg" alt="Selección de push-pull Geeplus y vida útil"><figcaption>A.6 Geeplus, criterio de vida de los push-pull pequeños: buje especial con tratamiento térmico para &gt;5 M ciclos nominales; la vida depende de la aplicación (p. 51).</figcaption></figure>
+<figure class="hoja"><img src="hojas_de_datos/geeplus-personalizacion.jpg" alt="Personalización del push-pull Geeplus"><figcaption>A.7 Geeplus, personalización: eje desacoplado por resorte (3) y émbolo de ángulo bajo con más fuerza en posición extendida (4) (p. 54).</figcaption></figure>
+<figure class="hoja"><img src="hojas_de_datos/ledex-B12-catalogo.jpg" alt="Catálogo Ledex B12"><figcaption>A.8 Ledex Box Frame Size B12 (catálogo Open Frame 2020): curvas de 10/25/50/100 % ED y tabla de bobinados.</figcaption></figure>
+<figure class="hoja"><img src="hojas_de_datos/ledex-B12-hoja.jpg" alt="Hoja Ledex B12"><figcaption>A.9 Hoja Ledex Model B12 (distribuidor RS). Nótese la errata "18." a 0,080 in, que debe leerse 1,8 oz.</figcaption></figure>
+<figure class="hoja"><img src="hojas_de_datos/ledex-openframe-vida.jpg" alt="Ledex open frame, vida útil"><figcaption>A.10 Ledex Open Frame, consideraciones de diseño: "Life ratings extend to 3 million cycles depending on the product size and application".</figcaption></figure>
+<figure class="hoja"><img src="hojas_de_datos/geeplus-RD-A420.jpg" alt="Hoja Geeplus RD-A420"><figcaption>A.11 Geeplus RD-A420: vida &gt;250 k ciclos.</figcaption></figure>
+<figure class="hoja"><img src="hojas_de_datos/kendrion-BI13.jpg" alt="Ficha Kendrion BI 13"><figcaption>A.12 Kendrion BI 13-F-24V DC 25 ED: biestable, armadura de 6 g, 23 g en total.</figcaption></figure>
+<figure class="hoja"><img src="hojas_de_datos/transmotec-K0420S.jpg" alt="Hoja Transmotec K0420S"><figcaption>A.13 Transmotec K0420S (latching push type): vida de al menos 500 000 carreras.</figcaption></figure>
+<figure class="hoja"><img src="hojas_de_datos/msa-312.jpg" alt="Hoja Magnet-Schultz 312"><figcaption>A.14 Magnet-Schultz Type 312: tabla de fuerza por carrera; armadura de 7 g y 36 g en total.</figcaption></figure>
+<figure class="hoja"><img src="hojas_de_datos/geeplus-VM1614.jpg" alt="Hoja Geeplus VM1614"><figcaption>A.15 Geeplus VM1614 (actuador de bobina móvil), alternativa de la sección 8.1.</figcaption></figure>
+
+<!-- ============================ ANEXO B ============================ -->
+<h2 id="anexoB" class="page-break">Anexo B — Fuentes</h2>
+<ol class="small">
+<li>Geeplus, <i>Electromechanical Actuators Catalogue 2024</i>: <a href="https://www.geeplus.com/wp-content/uploads/2024/10/GEEPLUS-ELECTROMECHANICAL-ACTUATORS-CATALOGUE-2024-1.pdf">geeplus.com/…/GEEPLUS-ELECTROMECHANICAL-ACTUATORS-CATALOGUE-2024-1.pdf</a> (pp. 22, 51, 54, 56–58).</li>
+<li>Geeplus, <i>Open Frame Solenoid RD-A420</i>: <a href="https://www.geeplus.com/wp-content/uploads/2019/08/Open-Frame-Solenoid_RD-A420.pdf">geeplus.com/…/Open-Frame-Solenoid_RD-A420.pdf</a></li>
+<li>Takaha Kiko, hojas CA0422 y CA0425: <a href="https://www.takaha.co.jp/catalog/CA0422.pdf">takaha.co.jp/catalog/CA0422.pdf</a>, <a href="https://www.takaha.co.jp/catalog/CA0425.pdf">takaha.co.jp/catalog/CA0425.pdf</a></li>
+<li>Takaha Kiko, tienda en línea: <a href="https://takaha-japan.com/products/ca0422">takaha-japan.com/products/ca0422</a>, <a href="https://takaha-japan.com/products/ca0425">takaha-japan.com/products/ca0425</a></li>
+<li>Ledex / Johnson Electric, <i>Open Frame DC Solenoids</i> (2020): <a href="https://www.johnsonelectric.com/pub/media/image/tmp/metric-imperial/20200212_Open_Frame_DC_in_2_.pdf">johnsonelectric.com/…/20200212_Open_Frame_DC_in_2_.pdf</a></li>
+<li>Ledex, hoja Model B12 (RS): <a href="https://docs.rs-online.com/9f8a/0900766b81634a3f.pdf">docs.rs-online.com/9f8a/0900766b81634a3f.pdf</a></li>
+<li>Ledex, catálogo general de solenoides (DigiKey): <a href="https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/6723/Ledex%20Catalog.pdf">mm.digikey.com/…/Ledex Catalog.pdf</a></li>
+<li>DigiKey, B12P-255-B-3: <a href="https://www.digikey.com/en/products/detail/ledex-dormeyer-saia-a-division-of-johnson-electric/B12P-255-B-3/9676151">digikey.com/…/B12P-255-B-3/9676151</a></li>
+<li>Kendrion, <i>Bistable Linear Solenoid BI 13-F-24V DC 25 ED</i>: <a href="https://www.kendrion.com/en/productfinder/group/product/linear-solenoids/bi-13-f-24v-dc-25-ed">kendrion.com/…/bi-13-f-24v-dc-25-ed</a></li>
+<li>Magnet Schultz Ltd, <i>Type 312</i>: <a href="https://magnetschultz.co.uk/wp-content/uploads/312.pdf">magnetschultz.co.uk/wp-content/uploads/312.pdf</a></li>
+<li>Transmotec, <i>K0420S</i>: <a href="https://transmotec.com/Download/Datasheets/Transmotec-Datasheet-K0420S.pdf">transmotec.com/Download/Datasheets/Transmotec-Datasheet-K0420S.pdf</a></li>
+<li>DigiKey, DSOS-0416-12D: <a href="https://www.digikey.com/en/products/detail/delta-electronics/DSOS-0416-12D/6599947">digikey.com/…/DSOS-0416-12D/6599947</a></li>
+</ol>
+<p class="small">Reproducibilidad: <code>python3 tools/digitalizar_curvas.py &lt;carpeta con los PDF&gt; data_curvas.json</code> y luego <code>python3 tools/analisis.py</code> regeneran las curvas, la tabla de resultados y las figuras 1–3.</p>
+
+</body>
+</html>
