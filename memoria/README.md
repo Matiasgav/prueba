@@ -49,9 +49,13 @@ leyendo solo esa sección.
 
 - Encabezado: logo reducido **GRIS** (pequeño, sin marco ni banda) a la izquierda
   y el código `02489-00-MC###` a la derecha. El resto de la hoja queda libre.
-- Naranja institucional `#FF7A00`, solo en el logo y en la raya corta bajo el título.
-  El texto va en negro y gris.
-- Tipografía: Latin Modern, la tipografía clásica de LaTeX.
+- Bajo el encabezado, una línea fina gris de ancho completo.
+- Naranja institucional `#FF7A00`, solo en el logo. El texto va en negro y gris.
+- Títulos numerados (1, 1.1…). Resultados siempre es la sección 1.
+- Tipografía del texto: Latin Modern, la tipografía clásica de LaTeX.
+- Tipografía del código `02489-00-MC###`: Roboto Condensed Bold, que se parece a
+  Geogrotesque Bold, la letra del logo. Geogrotesque no es libre y el SVG del logo
+  no trae sus números. Roboto viene con TeX Live y Overleaf.
 - Logo: `plantilla/logo-gris.pdf`, recortado a su contorno para que no quede margen
   vacío en el encabezado. Si compilás desde `notas/`, se toma de `../plantilla/`.
   En Overleaf, subilo junto al `.tex`.

@@ -73,18 +73,24 @@
       {\includegraphics[height=16pt]{../plantilla/logo-gris.pdf}}
       {{\fontsize{18}{18}\selectfont\bfseries\sffamily\color{gris-naranja}GRIS}}}}
 
+% --- tipografía del cliente (código documental) --------------------------
+% Geogrotesque no es libre; se usa Roboto Condensed Bold, que viene con
+% TeX Live y Overleaf y tiene el mismo aire que el logo.
+\newcommand{\fuentecliente}{\fontfamily{Roboto-TLF}\fontseries{bc}\selectfont}
+
 % --- encabezado y pie ---------------------------------------------------
 \pagestyle{fancy}
 \fancyhf{}
-\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\vspace{3pt}{\color{gris-linea}\hrule height \headrulewidth}}
 \fancyhead[L]{\logogris}
-\fancyhead[R]{\small\color{gris-medio}\codigo}
+\fancyhead[R]{{\fuentecliente\fontsize{12}{12}\selectfont\color{gris-medio}\codigo}}
 \fancyfoot[R]{\footnotesize\color{gris-medio}\thepage}
 
-% --- títulos: discretos, sin numerar -------------------------------------
-\setcounter{secnumdepth}{0}
-\titleformat{\section}{\large\bfseries}{}{0pt}{}
-\titleformat{\subsection}{\normalsize\bfseries\color{gris-medio}}{}{0pt}{}
+% --- títulos numerados ----------------------------------------------------
+\setcounter{secnumdepth}{2}
+\titleformat{\section}{\large\bfseries}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.8em}{}
 \titlespacing*{\section}{0pt}{16pt}{5pt}
 \titlespacing*{\subsection}{0pt}{11pt}{3pt}
 
@@ -103,9 +109,7 @@
   {\fontsize{20}{24}\selectfont\bfseries\titulo\par}%
   \vspace{5pt}%
   {\small\color{gris-medio}\fecha\quad·\quad\autor\par}%
-  \vspace{10pt}%
-  {\color{gris-naranja}\rule{2.2cm}{0.8pt}}\par
-  \vspace{4pt}}
+  \vspace{6pt}}
 
 % --- ayudas opcionales --------------------------------------------------------
 % \figura{archivo}{ancho}{pie}
