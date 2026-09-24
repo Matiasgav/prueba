@@ -31,17 +31,29 @@ Si la carpeta `memoria/` no está en la rama actual, buscarla en las ramas remot
 (`git ls-tree -r --name-only <rama> | grep ^memoria/`) y traerla con `git merge`
 de esa rama, no copiando archivos a mano.
 
-## 2. Crear la nota
+## 2. Elegir el código, crear la nota y reservarla
+
+**El código se elige mirando TODAS las ramas, no la carpeta local.** Varias sesiones
+escriben notas en paralelo, cada una en su rama: mirar solo `memoria/notas/` de la
+rama actual hizo que dos notas distintas salieran como `MC003` (resorte de torsión en
+`claude/jolly-maxwell-wagfg8` y selección del actuador en otra rama).
 
 ```bash
+python3 .claude/skills/informe-memoria/scripts/codigos.py      # códigos usados en todas las ramas
 python3 .claude/skills/informe-memoria/scripts/nueva_nota.py "Título corto" [--autor "Matías Gaviño"] [--fecha 24/09/2026]
 ```
 
-Copia la plantilla con el siguiente correlativo libre, completa los cuatro datos,
-agrega `amsmath`, `amssymb` y `float` al preámbulo y la ruta `figuras/` de la nota a
-`\graphicspath`, y crea la carpeta de la nota. **No tocar la plantilla** en
-`memoria/plantilla/`. Si hay que rehacer una nota existente, editar esa misma nota
-(mismo código), no crear otra.
+`codigos.py` hace `git fetch --all` y lista cada código con su título y las ramas donde
+está. `nueva_nota.py` usa esa misma búsqueda para tomar el siguiente correlativo libre,
+copia la plantilla, completa los cuatro datos, agrega `amsmath`, `amssymb` y `float` al
+preámbulo y la ruta `figuras/` de la nota a `\graphicspath`, y crea la carpeta de la
+nota. **No tocar la plantilla** en `memoria/plantilla/`. Si hay que rehacer una nota
+existente, editar esa misma nota (mismo código), no crear otra.
+
+**Reservar el código enseguida**, antes de investigar o escribir: agregar la fila al
+índice de `memoria/README.md`, hacer commit del esqueleto
+(«Reservar 02489-00-MC###: título») y push a la rama de trabajo. Así el código ya
+aparece en el remoto para las otras sesiones.
 
 Título: corto, que entre en una línea a 20 pt (≈ 40 caracteres). Si se corta con
 guion, acortarlo.
@@ -118,8 +130,17 @@ en Roboto.
 
 ## 8. Cerrar
 
-1. Agregar o actualizar la fila en «Índice de notas» de `memoria/README.md`.
-2. `git add` de `.tex`, `.pdf`, carpeta de la nota y README; commit y push a la rama
+1. **Verificar el código otra vez** justo antes del push (otra sesión pudo haberlo
+   tomado mientras se escribía):
+   ```bash
+   python3 .claude/skills/informe-memoria/scripts/codigos.py --verificar MC###
+   ```
+   Si hay colisión: renumerar la nota propia al siguiente libre (`git mv` del `.tex`,
+   `.pdf` y carpeta; reemplazar el código dentro del `.tex` y del script; recompilar),
+   traer con `git merge` la rama que tiene la otra nota y resolver el índice dejando
+   las dos filas en orden. Nunca renumerar la nota de otra sesión.
+2. Actualizar la fila en «Índice de notas» de `memoria/README.md`.
+3. `git add` de `.tex`, `.pdf`, carpeta de la nota y README; commit y push a la rama
    de trabajo.
-3. Enviar el PDF al usuario y resumir: estructura, de dónde sale cada número y
+4. Enviar el PDF al usuario y resumir: estructura, de dónde sale cada número y
    cualquier discrepancia encontrada.

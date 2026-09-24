@@ -7,7 +7,8 @@ nota de la memoria, con la plantilla GRIS-NOT-001:
 
 1. Copiar `memoria/plantilla/02489-00-MC000.tex` a
    `memoria/notas/02489-00-MC###.tex`, con `###` = siguiente correlativo libre
-   en `memoria/notas/` (la primera es `MC001`).
+   en **todas las ramas del repositorio**, no solo en la local (hay sesiones en
+   paralelo): usar `.claude/skills/informe-memoria/scripts/codigos.py`.
 2. Completar código, título, autor (Matías Gaviño, salvo que se indique otro) y
    fecha en el bloque «DATOS DE LA NOTA».
 3. La sección 1 es siempre **Resultados**: conclusiones cortas, con números.

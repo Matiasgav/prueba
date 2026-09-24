@@ -12,15 +12,23 @@ import pathlib
 import re
 import sys
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import codigos  # noqa: E402
+
 RAIZ = pathlib.Path(__file__).resolve().parents[4]
 PLANTILLA = RAIZ / 'memoria/plantilla/02489-00-MC000.tex'
 NOTAS = RAIZ / 'memoria/notas'
 
 
 def siguiente_codigo():
-    nums = [int(m.group(1)) for p in NOTAS.glob('02489-00-MC*.tex')
-            if (m := re.match(r'02489-00-MC(\d{3})\.tex$', p.name))]
-    return f'02489-00-MC{max(nums, default=0) + 1:03d}'
+    """Siguiente correlativo libre en TODAS las ramas (git fetch --all) y en
+    la carpeta local. Mirar solo la carpeta local provocó la colisión de
+    MC003 (dos sesiones usaron el mismo código en ramas distintas)."""
+    codigos.fetch()
+    usados = codigos.codigos_en_ramas()
+    locales = [m.group(1) for p in NOTAS.glob('02489-00-MC*.tex')
+               if (m := re.match(r'(02489-00-MC\d{3})\.tex$', p.name))]
+    return codigos.siguiente(usados, locales)
 
 
 def main():
@@ -53,6 +61,7 @@ def main():
     destino.write_text(s, encoding='utf-8')
     (NOTAS / codigo / 'figuras').mkdir(parents=True, exist_ok=True)
     print(destino.relative_to(RAIZ))
+    print('Reservá el código ya: commit + push del esqueleto (ver SKILL.md, paso 2).')
 
 
 if __name__ == '__main__':
