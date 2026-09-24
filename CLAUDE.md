@@ -19,6 +19,9 @@ nota de la memoria, con la plantilla GRIS-NOT-001:
 6. Agregar la nota al «Índice de notas» de `memoria/README.md`.
 7. No modificar la plantilla salvo que se pida explícitamente.
 
+El procedimiento completo está en la habilidad `.claude/skills/informe-memoria/`
+(`/informe-memoria`): usarla para todo informe.
+
 Estilo: texto en Latin Modern, código documental en Roboto Condensed Bold,
 títulos numerados, naranja `#FF7A00` solo en el logo. Ver `memoria/README.md`.
 
