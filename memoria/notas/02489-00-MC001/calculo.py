@@ -13,8 +13,12 @@ Caso de carga (rueda de carro):
   * picos ocasionales de 10 s al torque admisible (T_pico);
   * los dos regímenes se combinan con la regla de Miner, 50 % de daño cada uno.
 
-Diseños: KG M50S20 (S45C), KG M50B20 (latón), KG M50S25 (S45C),
-RS PRO 521-5780 (m0,8 z16) y mitra a medida m0,6 z21 de SCM415 carburizado.
+Diseños (d_a <= 11,5 mm, z >= 16 según Shigley tabla 13-3): KG M50S20 (S45C,
+actual), KG M50B20 (latón) y tres mitras a medida: m0,5 z20 de SCM440 bonificado,
+m0,5 z20 y m0,6 z17 de SCM415 carburizado.
+
+También compara con el datasheet de KG (tabla de potencia a flexión) recalculando
+con Shigley en las condiciones de KG.
 """
 import json
 import math
@@ -55,6 +59,7 @@ FACT = {
     'S_F': 1.0, 'S_H': 1.0,
     'K_theta': 1.0, 'Z_W': 1.0,
     'alternada': 0.70,  # flexión con carga en ambos sentidos
+    'Y_Z_fijo': None, 'Z_Z_fijo': None,  # para imponer K_R / C_R (datasheet KG)
 }
 
 # ---------------------------------------------------------------------------
@@ -66,10 +71,12 @@ ENGRANAJES = {
                     'fuente': 'KG M50S20 (catálogo)'},
     'KG m0,5 z25': {'m': 0.5, 'z': 25, 'b': 3.0, 'J': 0.216, 'I': 0.065,
                     'fuente': 'KG M50S25 (catálogo)'},
-    'm0,8 z16': {'m': 0.8, 'z': 16, 'b': None, 'J': 0.185, 'I': 0.058,
-                 'fuente': 'RS PRO 521-5780 (acero, stock)'},
-    # módulo normalizado 0,6 (DIN 780 serie 1); J e I de 20/20 (conservador)
-    'm0,6 z21': {'m': 0.6, 'z': 21, 'b': None, 'J': 0.200, 'I': 0.062,
+    # a medida, mismo tamaño que la M50S20: ancho b = 0,3 R_e
+    'm0,5 z20': {'m': 0.5, 'z': 20, 'b': None, 'J': 0.200, 'I': 0.062,
+                 'fuente': 'a medida'},
+    # a medida, el mayor módulo normalizado que entra en d_a <= 11,5 mm con
+    # z >= 16; J e I interpolados entre 16 y 20 dientes (Figs. 15-7 y 15-6)
+    'm0,6 z17': {'m': 0.6, 'z': 17, 'b': None, 'J': 0.189, 'I': 0.059,
                  'fuente': 'a medida'},
 }
 
@@ -110,7 +117,15 @@ MATERIALES = {
         'base_H': 'dureza 100/170 × S45C',
         'kg_W': None,
     },
-    # Solo para alternativas a medida: Shigley, acero carburizado grado 1
+    # A medida: acero bonificado (templado y revenido) 300 HB, Shigley grado 1
+    'SCM440 bonificado': {
+        'codigo': 'a medida', 'E': 205e3, 'nu': 0.30, 'HB': 300.0, 'Sy': 835.0,
+        'sFlim': 0.30 * 300 + 14.48, 'sHlim': 2.35 * 300 + 162.89,
+        'base_F': 'Shigley ec. (15-23), grado 1, 300 HB',
+        'base_H': 'Shigley ec. (15-22), grado 1, 300 HB',
+        'kg_W': None,
+    },
+    # A medida: Shigley, acero carburizado grado 1
     'SCM415 carburizado': {
         'codigo': 'a medida', 'E': 205e3, 'nu': 0.30, 'HB': 600.0, 'Sy': 800.0,
         'sFlim': 206.8, 'sHlim': 1379.0,
@@ -206,8 +221,8 @@ def capacidad(g, mat, rpm, N, f=None, sHlim=None, alternada=True):
     m, d, b = g['m'], g['d'], g['b_ef']
     Kv = K_v(g, rpm, f['Q_v'])
     KHb = K_Hb(b, f['K_mb'])
-    YZ = Y_Z(f['R'])
-    ZZ = math.sqrt(YZ)
+    YZ = f['Y_Z_fijo'] or Y_Z(f['R'])
+    ZZ = f['Z_Z_fijo'] or math.sqrt(YZ)
     sFlim = mat['sFlim'] * (f['alternada'] if alternada else 1.0)
     sHlim = mat['sHlim'] if sHlim is None else sHlim
     sFP = sFlim * Y_NT(N) / (f['S_F'] * f['K_theta'] * YZ)
@@ -252,24 +267,91 @@ def prisionero(D=3.0, lbf=85):
 
 
 # ---------------------------------------------------------------------------
-# 8. Diseños analizados (todos con d_a <= 14 mm, 1:1, 90°)
+# 8. Diseños analizados (todos con d_a <= 11,5 mm, 1:1, 90°)
 # ---------------------------------------------------------------------------
+DA_MAX = 11.5
 DISENOS = [
-    # clave, engranaje, material, etiqueta corta, descripción
-    ('M50S20', 'KG m0,5 z20', 'S45C', 'KG M50S20', 'KG M50S20, S45C (stock, referencia)'),
-    ('M50B20', 'KG m0,5 z20', 'Latón C3604B', 'KG M50B20', 'KG M50B20, latón C3604B (stock)'),
-    ('M50S25', 'KG m0,5 z25', 'S45C', 'KG M50S25', 'KG M50S25, S45C (stock)'),
-    ('RS', 'm0,8 z16', 'S45C', 'RS PRO 521-5780', 'RS PRO 521-5780, m0,8 z16, S45C (stock)'),
-    ('CARB', 'm0,6 z21', 'SCM415 carburizado', 'A medida carburizada',
-     'A medida m0,6 z21, SCM415 carburizado 58-62 HRC'),
+    # clave, engranaje, material, etiqueta corta, grupo (figura), descripción
+    ('M50S20', 'KG m0,5 z20', 'S45C', 'KG M50S20', 'KG M50S20\nS45C (actual)',
+     'KG M50S20, S45C (stock, actual)'),
+    ('M50B20', 'KG m0,5 z20', 'Latón C3604B', 'KG M50B20', 'KG M50B20\nlatón',
+     'KG M50B20, latón C3604B (stock)'),
+    ('Q20', 'm0,5 z20', 'SCM440 bonificado', 'm0,5 z20 SCM440', 'm0,5 z20\nSCM440 300 HB',
+     'A medida m0,5 z20, SCM440 bonificado 300 HB'),
+    ('C20', 'm0,5 z20', 'SCM415 carburizado', 'm0,5 z20 carb.', 'm0,5 z20\ncarburizada',
+     'A medida m0,5 z20, SCM415 carburizado 58-62 HRC'),
+    ('C17', 'm0,6 z17', 'SCM415 carburizado', 'm0,6 z17 carb.', 'm0,6 z17\ncarburizada',
+     'A medida m0,6 z17, SCM415 carburizado 58-62 HRC'),
 ]
 CLAVES = [d[0] for d in DISENOS]
-INFO = {d[0]: {'eng': d[1], 'mat': d[2], 'corto': d[3], 'desc': d[4]} for d in DISENOS}
+INFO = {d[0]: {'eng': d[1], 'mat': d[2], 'corto': d[3], 'grupo': d[4], 'desc': d[5]}
+        for d in DISENOS}
 GEO = {k: geometria(ENGRANAJES[INFO[k]['eng']]) for k in CLAVES}
+
+
+assert all(GEO[k]['da'] <= DA_MAX and GEO[k]['z'] >= 16 for k in CLAVES)
 
 
 def calcular_disenos(**kw):
     return {k: regimenes(GEO[k], MATERIALES[INFO[k]['mat']], **kw) for k in CLAVES}
+
+
+# ---------------------------------------------------------------------------
+# 8b. Comparación con el datasheet de KG
+# ---------------------------------------------------------------------------
+# Tabla de potencia admisible a flexión (W) del catálogo KG4001, p. 261.
+# La resistencia superficial figura como «-» (no publicada).
+KG_W = {
+    'M50S20': {10: 0.1, 100: 1.5, 200: 3.1, 400: 6.2, 600: 9.3, 800: 12.4, 1000: 15.5},
+    'M50S25': {10: 0.2, 100: 2.5, 200: 5.0, 400: 10.0, 600: 15.0, 800: 20.1, 1000: 25.1},
+}
+KG_GEO = {'M50S20': 'KG m0,5 z20', 'M50S25': 'KG m0,5 z25'}
+# Condiciones de la tabla KG (KG5001, p. 18): JGMA 403-01 / 404-01, >= 1e7
+# ciclos (K_L = 1), choque moderado K_O = 1,25, K_R = 1,2, C_R = 1,15, baño de
+# aceite, ambos engranajes en voladizo, carga en un solo sentido.
+COND_KG = {'K_A': 1.25, 'Y_Z_fijo': 1.2, 'Z_Z_fijo': 1.15}
+N_KG = 1e7
+
+
+def T_kg(W, rpm):
+    return 9549.7 * W / 1000.0 / rpm
+
+
+def comparacion_kg():
+    out = {}
+    for k, tabla in KG_W.items():
+        g = geometria(ENGRANAJES[KG_GEO[k]])
+        filas = {}
+        for rpm, W in tabla.items():
+            c = capacidad(g, MATERIALES['S45C'], rpm, N_KG, f=COND_KG, alternada=False)
+            cb = capacidad(dict(g, b_ef=g['b']), MATERIALES['S45C'], rpm, N_KG,
+                           f=COND_KG, alternada=False)
+            filas[rpm] = {'W': W, 'T_kg': T_kg(W, rpm), 'T_F': c['T_F'], 'T_H': c['T_H'],
+                          'T_F_b_total': cb['T_F'], 'ratio_F': c['T_F'] / T_kg(W, rpm)}
+        out[k] = filas
+    return out
+
+
+def cascada(rpm=100):
+    """Del valor del datasheet (M50S20) al torque admisible de esta nota,
+    cambiando una condición por vez (acumulado)."""
+    g, mat = BASE, MATERIALES['S45C']
+    N = N_eval(ciclos_normal(rpm))
+    pasos = [('Datasheet KG (flexión, condiciones KG)', T_kg(KG_W['M50S20'][rpm], rpm))]
+
+    def tf(f, n, alt):
+        return capacidad(g, mat, rpm, n, f=f, alternada=alt)
+    f = dict(COND_KG)
+    pasos.append(('Shigley con las condiciones KG', tf(f, N_KG, False)['T_F']))
+    f['K_A'] = FACT['K_A']
+    pasos.append(('Motor BLDC suave: $K_A$ 1,25 → 1,0', tf(f, N_KG, False)['T_F']))
+    f['Y_Z_fijo'] = f['Z_Z_fijo'] = None
+    pasos.append(('Confiabilidad: $K_R$ 1,2 → R = 0,95', tf(f, N_KG, False)['T_F']))
+    pasos.append(('Vida: $10^7$ → $2{,}9\\times10^7$ ciclos', tf(f, N, False)['T_F']))
+    c = tf(f, N, True)
+    pasos.append(('Torque en ambos sentidos (70 %)', c['T_F']))
+    pasos.append(('Picado (no publicado por KG)', c['T_adm']))
+    return pasos
 
 
 # ---------------------------------------------------------------------------
@@ -343,8 +425,7 @@ SERIES5 = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4']
 
 
 def fig_resumen(res):
-    grupos = ['KG M50S20\nS45C', 'KG M50B20\nlatón', 'KG M50S25\nS45C',
-              'RS PRO\n521-5780', 'A medida\ncarburizada']
+    grupos = [INFO[k]['grupo'] for k in CLAVES]
     fig, axs = plt.subplots(2, 1, figsize=(9.2, 6.4), sharex=True)
     rn = DATOS['rpm_normal']
     barras(axs[0], grupos, [[res[k]['normal'][r]['T_adm'] for k in CLAVES] for r in rn],
@@ -356,8 +437,8 @@ def fig_resumen(res):
     for ax in axs:
         estilo(ax, ylabel='Torque [N·m]')
         ax.legend(frameon=False, fontsize=7.5, ncol=4, loc='upper left')
-    axs[0].set_ylim(0, max(res['CARB']['normal'][0.5]['T_adm'], 0.1) * 1.3)
-    axs[1].set_ylim(0, res['CARB']['pico'][0]['T_adm'] * 1.3)
+    axs[0].set_ylim(0, max(res[k]['normal'][0.5]['T_adm'] for k in CLAVES) * 1.3)
+    axs[1].set_ylim(0, max(res[k]['pico'][0]['T_adm'] for k in CLAVES) * 1.3)
     fig.tight_layout()
     guardar(fig, 'fig_resumen')
 
@@ -479,6 +560,39 @@ def fig_sensibilidad():
     guardar(fig, 'fig_sensibilidad')
 
 
+def fig_datasheet(comp, pasos):
+    fig, axs = plt.subplots(2, 1, figsize=(8.6, 6.6), gridspec_kw={'height_ratios': [1, 1.05]})
+    ax = axs[0]
+    for i, k in enumerate(comp):
+        rpms = sorted(comp[k])
+        c = SERIES[i]
+        ax.plot(rpms, [comp[k][r]['T_kg'] for r in rpms], 'o', color=c, ms=5,
+                label=f'{k}: datasheet KG (flexión)')
+        ax.plot(rpms, [comp[k][r]['T_F'] for r in rpms], '-', color=c, lw=1.6,
+                label=f'{k}: Shigley, flexión')
+        ax.plot(rpms, [comp[k][r]['T_H'] for r in rpms], '--', color=c, lw=1.3,
+                label=f'{k}: Shigley, picado')
+    ax.set_xscale('log')
+    estilo(ax, 'Velocidad [rpm]', 'Torque [N·m]')
+    ax.set_ylim(0, 0.27)
+    ax.set_title('Mismas condiciones que el datasheet', loc='left', color=TXT, fontsize=10)
+    ax.legend(frameon=False, fontsize=7.5, loc='upper left', bbox_to_anchor=(1.01, 1.0))
+    ax = axs[1]
+    vals = [v for _, v in pasos]
+    y = np.arange(len(pasos))[::-1]
+    for i, (lab, v) in enumerate(pasos):
+        col = SERIES[1] if i == 0 else (SERIES[0] if i < len(pasos) - 1 else TXT)
+        ax.barh(y[i], v, height=0.6, color=col, zorder=3)
+        ax.text(v, y[i], f' {v:.3f}'.replace('.', ','), va='center', fontsize=8, color=TXT)
+    ax.set_yticks(y, [p[0] for p in pasos], fontsize=8)
+    estilo(ax, 'Torque KG M50S20 a 100 rpm [N·m]')
+    ax.grid(axis='y', visible=False)
+    ax.set_xlim(0, max(vals) * 1.22)
+    ax.set_title('Del datasheet a esta nota (acumulado)', loc='left', color=TXT, fontsize=10)
+    fig.tight_layout()
+    guardar(fig, 'fig_datasheet')
+
+
 def fig_geometria():
     g = BASE
     d, Re, b, m = g['d'], g['Re'], g['b'], g['m']
@@ -563,6 +677,18 @@ def main():
     fig_ciclos()
     fig_sensibilidad()
     fig_geometria()
+    comp, pasos = comparacion_kg(), cascada()
+    fig_datasheet(comp, pasos)
+    with open(os.path.join(RES, 'comparacion_kg.json'), 'w', encoding='utf-8') as fh:
+        json.dump({'condiciones_kg': COND_KG, 'N_kg': N_KG,
+                   'tabla': {k: js(v) for k, v in comp.items()},
+                   'cascada_100rpm': pasos}, fh, ensure_ascii=False, indent=1)
+    for k, v in comp.items():
+        for r, x in v.items():
+            print(f"KG {k} {r:5d} T_kg={x['T_kg']:.4f} TF={x['T_F']:.4f} TH={x['T_H']:.4f}"
+                  f" TFb={x['T_F_b_total']:.4f} ratio={x['ratio_F']:.2f}")
+    for lab, t in pasos:
+        print(f'{t:.4f}  {lab}')
 
     print(f'Y_Z={Y_Z(FACT["R"]):.4f} picos={N_PICOS:.0f}')
     for k in CLAVES:
