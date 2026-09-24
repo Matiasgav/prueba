@@ -1,0 +1,322 @@
+% !TeX program = pdflatex
+% !TeX encoding = UTF-8
+%=======================================================================
+%  GRIS-NOT-001  ·  Plantilla de notas rápidas para la memoria
+%  Proyecto 00503 - Generator inspection robotic system · Mecanalisis
+%  Identidad: GRIS-IDENTIDAD-001 v1.4
+%-----------------------------------------------------------------------
+%  CÓMO USARLA (en 3 pasos)
+%
+%   1. Copiá este archivo con el código de la nota:
+%         memoria/notas/02489-00-MC007.tex
+%      El número (###) es correlativo: mirá la última nota y sumá uno.
+%
+%   2. Completá los cuatro datos del bloque «DATOS DE LA NOTA».
+%
+%   3. Escribí:
+%        · Resultados (obligatorio, siempre primero): lo que se sabe
+%          ahora que antes no se sabía. Frases cortas, con números.
+%        · El resto es libre. Usá los títulos que te sirvan, o ninguno.
+%
+%   Compilar:  pdflatex 02489-00-MC007.tex
+%   En Overleaf: subí el .tex y logo-gris.pdf.
+%
+%  LOGO: se usa «logo-gris.pdf» (GRIS-LOGO-003, reducido) de esta carpeta
+%  o de ../plantilla/. Si falta, se escribe «GRIS» como marcador.
+%=======================================================================
+\documentclass[11pt,a4paper]{article}
+
+%=======================================================================
+%  DATOS DE LA NOTA  ← lo único que hay que tocar arriba
+%=======================================================================
+\newcommand{\codigo}{02489-00-MC003}          % 02489-00-MC###
+\newcommand{\titulo}{Resorte de torsión de cuerda de piano \texorpdfstring{$\varnothing$}{Ø}0,50 para eje \texorpdfstring{$\varnothing$}{Ø}3}
+\newcommand{\autor}{Matías Gaviño}
+\newcommand{\fecha}{24/09/2026}                    % o p. ej. {24/09/2026}
+
+%=======================================================================
+%  ESTILO  (no hace falta tocar nada de aquí hasta \begin{document})
+%=======================================================================
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-noshorthands,es-tabla]{babel}
+\usepackage{lmodern}
+\usepackage[a4paper,top=3.0cm,bottom=2.4cm,left=2.4cm,right=2.4cm,
+            headheight=20pt,headsep=1.2cm,footskip=1.1cm]{geometry}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{amsmath,amssymb}
+\usepackage{float}
+\usepackage{pdfpages}
+\usepackage[hidelinks]{hyperref}
+
+% --- colores -----------------------------------------------------------
+\definecolor{gris-naranja}{HTML}{FF7A00}   % naranja institucional
+\definecolor{tinta}{HTML}{1E2328}
+\definecolor{gris-medio}{HTML}{6B7280}
+\definecolor{gris-linea}{HTML}{DADDE1}
+\color{tinta}
+
+\hypersetup{pdftitle={\codigo\ -- \titulo}, pdfauthor={\autor},
+            colorlinks=true, linkcolor=tinta, urlcolor=tinta}
+
+% --- logo ---------------------------------------------------------------
+\graphicspath{{./}{../plantilla/}{plantilla/}}
+\newcommand{\logogris}{%
+  \IfFileExists{logo-gris.pdf}
+    {\includegraphics[height=16pt]{logo-gris.pdf}}
+    {\IfFileExists{../plantilla/logo-gris.pdf}
+      {\includegraphics[height=16pt]{../plantilla/logo-gris.pdf}}
+      {{\fontsize{18}{18}\selectfont\bfseries\sffamily\color{gris-naranja}GRIS}}}}
+
+% --- tipografía del cliente (código documental) --------------------------
+% Geogrotesque no es libre; se usa Roboto Condensed Bold, que viene con
+% TeX Live y Overleaf y tiene el mismo aire que el logo.
+\newcommand{\fuentecliente}{\fontfamily{Roboto-TLF}\fontseries{bc}\selectfont}
+
+% --- encabezado y pie ---------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\vspace{3pt}{\color{gris-linea}\hrule height \headrulewidth}}
+\fancyhead[L]{\logogris}
+\fancyhead[R]{{\fuentecliente\fontsize{12}{12}\selectfont\color{gris-medio}\codigo}}
+\fancyfoot[R]{\footnotesize\color{gris-medio}\thepage}
+
+% --- títulos numerados ----------------------------------------------------
+\setcounter{secnumdepth}{2}
+\titleformat{\section}{\large\bfseries}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.8em}{}
+\titlespacing*{\section}{0pt}{16pt}{5pt}
+\titlespacing*{\subsection}{0pt}{11pt}{3pt}
+
+% --- texto ------------------------------------------------------------------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\linespread{1.05}
+\setlist{topsep=2pt, itemsep=2pt, parsep=0pt, leftmargin=1.2em}
+\setlist[itemize]{label={\raisebox{0.15ex}{\small$\bullet$}}}
+\captionsetup{font={small,color=gris-medio}, labelfont=bf, skip=5pt}
+\renewcommand{\arraystretch}{1.25}
+
+% --- cabecera de la nota ------------------------------------------------------
+\newcommand{\cabecera}{%
+  \thispagestyle{fancy}%
+  {\fontsize{20}{24}\selectfont\bfseries\titulo\par}%
+  \vspace{5pt}%
+  {\small\color{gris-medio}\fecha\quad·\quad\autor\par}%
+  \vspace{6pt}}
+
+% --- ayudas opcionales --------------------------------------------------------
+% \figura{archivo}{ancho}{pie}
+\newcommand{\figura}[3]{%
+  \begin{figure}[htbp]\centering
+    \includegraphics[width=#2\linewidth]{#1}\caption{#3}
+  \end{figure}}
+
+%=======================================================================
+\graphicspath{{./}{../plantilla/}{02489-00-MC003/figuras/}}
+
+\begin{document}
+\cabecera
+
+%-----------------------------------------------------------------------
+%  RESULTADOS  (siempre primero, lo único obligatorio)
+%-----------------------------------------------------------------------
+\section{Resultados}
+Resorte de torsión simple para un eje de $\varnothing$3~mm que da \textbf{5~N$\cdot$mm al montarlo y
+10~N$\cdot$mm tras 60° de recorrido}. El plano va en una hoja aparte, al final de la nota.
+
+\begin{itemize}
+  \item \textbf{Resorte:} cuerda de piano ASTM A228 de \textbf{$\varnothing$0,50~mm}, diámetro interior
+        libre \textbf{3,60~mm} (exterior 4,60~mm), \textbf{9\,+\,60° espiras} (9,17) juntas y a derechas,
+        y \textbf{dos brazos rectos tangenciales de 8~mm}.
+  \item \textbf{Largo del cuerpo:} 5,08~mm libre y 5,25~mm al final del recorrido. Alambre de 134~mm, 0,21~g.
+  \item \textbf{Rigidez:} 0,0832~N$\cdot$mm/° (30,0~N$\cdot$mm por vuelta). Da \textbf{4,99~N$\cdot$mm
+        a 60°} y \textbf{9,99~N$\cdot$mm a 120°} desde la posición libre; en la punta de un brazo de
+        8~mm equivale a \textbf{0,62~N y 1,25~N}.
+  \item \textbf{Rango de trabajo: de 60° a 120° de giro desde libre}. Se monta con 60° de precarga
+        (brazos a 60° entre sí) y trabaja hasta que los brazos quedan paralelos. El límite elástico
+        está en 256° (21,3~N$\cdot$mm): hay 136° de margen más allá del fin de recorrido.
+  \item \textbf{Holgura con el eje:} al cerrarse las espiras el diámetro interior baja a 3,46~mm a 120°;
+        quedan 0,46~mm de juego diametral sobre el eje de 3~mm.
+  \item \textbf{Tensión:} oscila entre 448 y 895~MPa (fibra interior, $K_i = 1{,}10$).
+        \textbf{Coeficiente de seguridad estático: 2,13.}
+  \item \textbf{Con 200 ciclos por mes} (2400 por año) el coeficiente de seguridad a fatiga es
+        \textbf{2,09} durante toda la vida del equipo: 20~años son 48\,000 ciclos, por debajo de los
+        $10^5$ ciclos en los que la resistencia a la fatiga empieza a bajar.
+  \item \textbf{Ciclos admisibles: sin límite práctico.} Con $10^6$ ciclos (417 años a este ritmo) el
+        coeficiente sigue en 2,02. La curva extrapolada llega a coeficiente 1 recién hacia
+        $10^{22}$~ciclos, un número que solo indica que la fatiga no limita este resorte.
+  \item \textbf{Coeficiente de diseño: 2,09.} Fatiga (2,09) y estática (2,13) dan casi lo mismo; manda la fatiga por poco.
+\end{itemize}
+
+\section{Requisitos}
+\begin{table}[H]\centering\small
+  \caption{Datos de partida.}
+  \begin{tabular}{l l}
+    \toprule
+    Par al montar & $M_1 = 5$~N$\cdot$mm \\
+    Par al final del recorrido & $M_2 = 10$~N$\cdot$mm \\
+    Recorrido & 60° \\
+    Eje & $\varnothing$3~mm \\
+    Tipo & Simple, dos brazos rectos de 8~mm \\
+    Material & Cuerda de piano, alambre $\varnothing$0,50~mm \\
+    Uso & 200 ciclos por mes \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Cálculo}
+Método de Shigley, \emph{Diseño en ingeniería mecánica}, capítulo~10 (resortes de torsión helicoidales).
+El cálculo completo está en \texttt{02489-00-MC003/calculo.py}, que escribe \texttt{resultados.json} y las figuras.
+
+\subsection{Rigidez y número de espiras}
+La rigidez pedida es
+\[
+  k = \frac{M_2 - M_1}{\Delta\theta} = \frac{10 - 5}{60^\circ} = 0{,}0833~\text{N·mm/°},
+  \qquad \theta_1 = \frac{M_1}{k} = 60^\circ,\quad \theta_2 = 120^\circ,
+\]
+donde $\theta$ es el giro desde la posición libre. Con $d = 0{,}50$~mm y diámetro interior 3,60~mm, el
+diámetro medio es $D = 4{,}10$~mm y el índice $C = D/d = 8{,}2$ (rango recomendado: 4 a 12).
+La rigidez por vuelta (ec.~10-51, con la constante 10,8 que incluye la fricción entre espiras) es
+\[
+  k' = \frac{d^4 E}{10{,}8\,D\,N_e}, \qquad E = 203{,}4~\text{GPa (tabla 10-5, } d < 0{,}8~\text{mm)},
+\]
+y los brazos suman espiras equivalentes (ec.~10-47):
+\[
+  N_e = N_b + \frac{l_1 + l_2}{3\pi D} = N_b + \frac{8 + 8}{3\pi\cdot 4{,}10} = N_b + 0{,}41 .
+\]
+Para $k = 0{,}0833$~N·mm/° hacen falta $N_e = 9{,}57$ y $N_b = 9{,}16$. Se adopta
+$N_b = 9 + 60^\circ = 9{,}17$ espiras, que deja los brazos a 120° entre sí en posición libre, a 60° al montar
+y paralelos al final. Resulta $k = 0{,}0832$~N·mm/°: 4,99~N·mm a 60° y 9,99~N·mm a 120°
+(0,1\,\% por debajo de lo pedido).
+
+\subsection{Geometría bajo carga}
+Al cargar en el sentido que cierra las espiras, el diámetro medio baja (ec.~10-54) y el cuerpo se alarga:
+\[
+  D' = \frac{N_b\,D}{N_b + \theta/360^\circ}, \qquad L' = d\left(N_b + 1 + \frac{\theta}{360^\circ}\right).
+\]
+\begin{table}[H]\centering\small
+  \caption{Geometría en las tres posiciones.}
+  \begin{tabular}{l r r r}
+    \toprule
+    Posición & $\theta$ & Diámetro interior & Largo del cuerpo \\
+    \midrule
+    Libre & 0° & 3,60~mm & 5,08~mm \\
+    Montaje & 60° & 3,53~mm & 5,17~mm \\
+    Fin de recorrido & 120° & 3,46~mm & 5,25~mm \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+El juego diametral mínimo con el eje es de 0,46~mm: el resorte no se agarrota.
+
+\subsection{Tensión y verificación estática}
+La tensión de flexión máxima está en la fibra interior (ec.~10-43):
+\[
+  K_i = \frac{4C^2 - C - 1}{4C(C-1)} = 1{,}10, \qquad
+  \sigma = K_i\,\frac{32\,M}{\pi d^3}.
+\]
+Con $M_1 = 4{,}99$ y $M_2 = 9{,}99$~N·mm, $\sigma_{\min} = 448$~MPa y $\sigma_{\max} = 895$~MPa.
+Para cuerda de piano, $S_{ut} = A/d^m = 2211/0{,}50^{0{,}145} = 2445$~MPa (tabla 10-4) y la fluencia en
+flexión es $S_y = 0{,}78\,S_{ut} = 1907$~MPa (ec.~10-57). El coeficiente estático es
+\[
+  n_s = \frac{S_y}{\sigma_{\max}} = \frac{1907}{895} = 2{,}13 .
+\]
+El par que lleva la fibra interior a la fluencia es 21,3~N·mm, a 256° desde libre.
+
+\section{Curva de par y rango de trabajo}
+El par crece linealmente con el giro, $M(\theta) = k\,\theta$. La fuerza en la punta del brazo es
+$F = M / 8~\text{mm}$ (figura~\ref{fig:momento}).
+
+\begin{figure}[H]\centering
+  \includegraphics[width=0.86\linewidth]{fig_momento.pdf}
+  \caption{Par $M(\theta)$ y fuerza en la punta del brazo $F(\theta)$. En azul claro, el rango de trabajo
+    (60° a 120° desde libre); a trazos, el límite elástico.}
+  \label{fig:momento}
+\end{figure}
+
+\begin{table}[H]\centering\small
+  \caption{Puntos de trabajo.}
+  \begin{tabular}{l r r r r}
+    \toprule
+    Posición & $\theta$ & $M$ [N·mm] & $F$ en la punta [N] & $\sigma$ [MPa] \\
+    \midrule
+    Libre & 0° & 0 & 0 & 0 \\
+    Montaje & 60° & 4,99 & 0,62 & 448 \\
+    Fin de recorrido & 120° & 9,99 & 1,25 & 895 \\
+    Límite elástico & 256° & 21,3 & 2,66 & 1907 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Fatiga y ciclos admisibles}
+Cada ciclo lleva el resorte de 60° a 120° y de vuelta. La tensión oscila entre 448 y 895~MPa:
+\[
+  \sigma_a = 224~\text{MPa}, \qquad \sigma_m = 671~\text{MPa}, \qquad r = \sigma_a/\sigma_m = 0{,}33 .
+\]
+La resistencia a la fatiga de la tabla 10-6 (ASTM A228 sin granallar, ensayo de 0 a máximo) es
+$S_r = 0{,}53\,S_{ut} = 1296$~MPa a $10^5$ ciclos y $0{,}50\,S_{ut} = 1222$~MPa a $10^6$ ciclos.
+Se pasa a alternada pura con Gerber y se calcula el coeficiente sobre la recta de carga:
+\[
+  S_e = \frac{S_r/2}{1 - \left(\dfrac{S_r}{2 S_{ut}}\right)^2}, \qquad
+  S_a = \frac{r^2 S_{ut}^2}{2 S_e}\left[-1 + \sqrt{1 + \left(\frac{2 S_e}{r S_{ut}}\right)^2}\,\right],
+  \qquad n_f = \frac{S_a}{\sigma_a}.
+\]
+Por debajo de $10^5$ ciclos se usa el valor de $10^5$ (conservador); por encima de $10^6$ se prolonga la
+recta log-log de la tabla, que no tiene respaldo experimental y solo sirve de tendencia.
+
+\begin{table}[H]\centering\small
+  \caption{Coeficiente de seguridad con 200 ciclos por mes.}
+  \begin{tabular}{l r r r}
+    \toprule
+    Vida & Ciclos & $n_f$ fatiga & $n$ de diseño (mín. con $n_s = 2{,}13$) \\
+    \midrule
+    1 año & 2\,400 & 2,09 & 2,09 \\
+    10 años & 24\,000 & 2,09 & 2,09 \\
+    20 años & 48\,000 & 2,09 & 2,09 \\
+    50 años & 120\,000 & 2,08 & 2,08 \\
+    417 años & $10^6$ & 2,02 & 2,02 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Para llegar a $n_f = 1$ haría falta una resistencia $S_r = 480$~MPa, el 20\,\% de $S_{ut}$. La tabla da el
+50\,\% a $10^6$ ciclos y la curva baja solo un 6\,\% por década: extrapolada, el coeficiente llega a 1 hacia
+$10^{22}$ ciclos. \textbf{Los ciclos admisibles no tienen límite práctico}: en cualquier vida realista el
+resorte trabaja con coeficiente $\geq 2$ (figura~\ref{fig:fatiga}).
+
+\begin{figure}[H]\centering
+  \includegraphics[width=0.86\linewidth]{fig_fatiga.pdf}
+  \caption{Coeficiente de seguridad a fatiga en función de los ciclos acumulados, con los puntos de
+    1 y 20 años a 200 ciclos por mes. A trazos, la extrapolación más allá de $10^6$ ciclos.}
+  \label{fig:fatiga}
+\end{figure}
+
+\section{Fabricación y verificación}
+\begin{itemize}
+  \item Material: cuerda de piano ASTM A228 (equivalente europeo aproximado: EN~10270-1 grado SH o DH).
+  \item Alivio de tensiones después de enrollar; sin él, las tensiones residuales bajan la resistencia.
+  \item Cargar siempre en el sentido que cierra las espiras. En sentido contrario las tensiones
+        residuales juegan en contra y el diámetro crece.
+  \item Las fórmulas de manual suelen desviarse $\pm$10\,\% en el par. Medir $M_1$ y $M_2$ en el primer
+        lote y ajustar las espiras de a ¼ de vuelta: cada ¼ de vuelta cambia la rigidez un 2,6\,\%.
+  \item Modelo 3D para CAD: \texttt{02489-00-MC003/resorte\_02489-00-MC003.step} (sólido único, posición
+        libre, eje del resorte en $Z$, unidades mm), generado por \texttt{modelo\_step.py} con CadQuery.
+        Las espiras se modelan con 0,01~mm de separación para que el sólido sea válido.
+\end{itemize}
+
+%-----------------------------------------------------------------------
+%  ANEXO: PLANO (hoja aparte)
+%-----------------------------------------------------------------------
+\clearpage
+\includepdf[landscape=true,pagecommand={\thispagestyle{empty}}]{02489-00-MC003/figuras/plano.pdf}
+
+\end{document}
