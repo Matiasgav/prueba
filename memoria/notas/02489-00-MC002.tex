@@ -30,7 +30,7 @@
 %  DATOS DE LA NOTA  ← lo único que hay que tocar arriba
 %=======================================================================
 \newcommand{\codigo}{02489-00-MC002}          % 02489-00-MC###
-\newcommand{\titulo}{Grado del imán con entrehierro de 1,5~mm}
+\newcommand{\titulo}{Caracterización de los imanes D20$\times$4}
 \newcommand{\autor}{Matías Gaviño}
 \newcommand{\fecha}{24/09/2026}                    % o p. ej. {24/09/2026}
 
@@ -52,7 +52,7 @@
 \usepackage{titlesec}
 \usepackage{fancyhdr}
 \usepackage{caption}
-\usepackage{amsmath}
+\usepackage{amsmath,amssymb}
 \usepackage{float}
 \usepackage[hidelinks]{hyperref}
 
@@ -121,6 +121,8 @@
   \end{figure}}
 
 %=======================================================================
+\graphicspath{{./}{../plantilla/}{02489-00-MC002/figuras/}}
+
 \begin{document}
 \cabecera
 
@@ -128,104 +130,271 @@
 %  RESULTADOS  (siempre primero, lo único obligatorio)
 %-----------------------------------------------------------------------
 \section{Resultados}
-El montaje impone un entrehierro mínimo de 1,5~mm entre el conjunto de dos imanes D20$\times$4
-avellanados y el acero. Se evaluó cambiar los imanes actuales (se comportan como \textbf{N35},
-informe 02489-00-ZIT200) por N42 o N52, cambiando solo el imán o agregando un separador que
-mantiene la fuerza a 1,5~mm en el valor actual.
+Se midió la fuerza de atracción $F(x)$ entre el conjunto de dos imanes NdFeB D20$\times$4 avellanados
+apilados y la estructura de acero, en función del entrehierro $x$, y se la contrastó con un modelo de
+elementos finitos (FEMM~4.2). Detalle del ensayo en 02489-00-ZIT200.
+
+\begin{itemize}
+  \item \textbf{Curva relevada:} 24 puntos entre \textbf{68,7~N en contacto} ($x\approx0{,}15$~mm) y
+        \textbf{1,47~N a 10,23~mm} (tabla~\ref{tab:mediciones}, figura~\ref{fig:curva}).
+  \item \textbf{La fuerza cae muy rápido:} a la mitad con $\approx$1~mm de separación y a la décima parte
+        con $\approx$4,9~mm. Toda aplicación con fuerza a distancia se dimensiona sobre la cola, nunca sobre
+        el valor de contacto.
+  \item \textbf{Valores de diseño} (curva ajustada): 20~N a 2,03~mm; 10~N a 3,84~mm; 5~N a 6,17~mm;
+        2~N a 9,85~mm.
+  \item \textbf{El modelo FEMM reproduce la medición} dentro del 9,3\,\% sobre casi dos décadas de fuerza,
+        con un único factor de escala.
+  \item \textbf{Grado:} ese factor corresponde a $B_r\approx1{,}05$~T. \textbf{Los imanes no son N42:} se
+        comportan como un \textbf{N35}; con las incertidumbres del ensayo, el grado real es N35 o algo superior.
+  \item \textbf{Con el entrehierro mínimo de 1,5~mm del montaje} la fuerza máxima es 25,6~N. Pasar a N52
+        la sube a $\approx$38~N y lleva el alcance a 2~N de 9,85 a 11,69~mm; conservando 25,6~N (con
+        separador) la ganancia es de solo 0,96~mm. \textbf{El grado mueve la cola menos de 2~mm.}
+  \item \textbf{Pendiente:} medir el espesor de la chapa de acero para explicar la tendencia de los residuos
+        (sección~\ref{sec:residuos}) y medir $B_r$ con sonda Hall para fijar el grado.
+\end{itemize}
+
+%-----------------------------------------------------------------------
+\section{Relevamiento}
+
+\subsection{Probeta, instrumento y montaje}
+\textbf{Imanes.} Dos imanes de NdFeB sinterizado D20$\times$4~mm, con avellanado pasante para tornillo M4,
+apilados coaxialmente y en atracción mutua (altura total 8~mm). \textbf{Los avellanados miran al acero}:
+la boca ancha del cono ($\varnothing$10~mm) enfrenta la superficie de atracción.
+
+\textbf{Instrumento.} Dinamómetro digital de gancho (balanza de equipaje): división de 5~g de 0 a 10~kg y
+de 10~g de 10 a 50~kg. Todas las lecturas caen en el primer rango: resolución 5~g ($\approx$0,05~N).
+
+\textbf{Montaje.} El conjunto se apoya sobre una pila de hojas de papel que descansa sobre la estructura de
+acero. El tiro se aplica a mano con un lazo, normal a la superficie, y se registra el máximo indicado al
+desprenderse.
+
+\begin{figure}[H]\centering
+  \begin{minipage}[b]{0.3\linewidth}\centering
+    \includegraphics[width=\linewidth]{foto_imanes.jpg}\\[-2pt]{\small\color{gris-medio}(a) Imanes}
+  \end{minipage}\hfill
+  \begin{minipage}[b]{0.3\linewidth}\centering
+    \includegraphics[width=\linewidth]{foto_dinamometro.jpg}\\[-2pt]{\small\color{gris-medio}(b) Dinamómetro}
+  \end{minipage}\hfill
+  \begin{minipage}[b]{0.3\linewidth}\centering
+    \includegraphics[width=\linewidth]{foto_montaje.jpg}\\[-2pt]{\small\color{gris-medio}(c) Montaje}
+  \end{minipage}
+  \caption{(a) Conjunto ensayado: dos imanes D20$\times$4 avellanados apilados. (b) Dinamómetro digital,
+  resolución 5~g en el rango usado. (c) Disposición del ensayo: las hojas fijan el entrehierro y el tiro
+  es normal a la superficie.}
+  \label{fig:fotos}
+\end{figure}
+
+\subsection{Graduación del entrehierro}
+El entrehierro se fija con el número $n$ de hojas interpuestas:
+\begin{equation}
+x(n)=x_0+n\,t ,
+\end{equation}
+con $t$ el espesor por hoja y $x_0$ el entrehierro residual con $n=0$.
+
+\begin{itemize}
+  \item \textbf{Espesor por hoja:} 200 hojas miden 6,50~mm (0,03250~mm/hoja) y 100 hojas 3,24~mm
+        (0,03240~mm/hoja); coinciden dentro del 0,3\,\%. Se adopta $t=0{,}03250$~mm/hoja, de la
+        referencia de mayor recorrido.
+  \item \textbf{Entrehierro residual:} en contacto directo quedan el niquelado del imán
+        (2$\times$15--25~$\mu$m), la pintura de la estructura y la rugosidad, del orden de 0,1 a 0,2~mm. Se
+        adopta $x_0=0{,}15$~mm; su efecto se evalúa en la sección~\ref{sec:grado}.
+\end{itemize}
+
+\subsection{Mediciones}
+La tabla~\ref{tab:mediciones} reúne las 24 lecturas, sin procesar (hojas y gramos) y convertidas con
+$F=m\,g$, $g=9{,}80665$~m/s$^2$. Los valores de $n$ anotados sin lectura (25, 15, 9, 7, 5, 3 y 1 hojas)
+son puntos previstos y no medidos.
+
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{5pt}
+\caption{Fuerza medida y comparación con el modelo FEMM ajustado ($B_r=1{,}051$~T). Dif.\ =
+$F_{med}/F_{FEMM}-1$.}
+\label{tab:mediciones}
+\begin{tabular}{r r r r r r @{\hspace{18pt}} r r r r r r}
+\toprule
+$n$ & Lect. & $x$ & $F_{med}$ & $F_{FEMM}$ & Dif. & $n$ & Lect. & $x$ & $F_{med}$ & $F_{FEMM}$ & Dif.\\
+ & [g] & [mm] & [N] & [N] & [\%] &  & [g] & [mm] & [N] & [N] & [\%]\\
+\midrule
+0  & 7000 & 0,15 & 68,65 & 61,06 & +12,4 & 120 & 990 & 4,05 & 9,71 & 9,34 & +3,9\\
+2  & 6500 & 0,21 & 63,74 & 57,50 & +10,9 & 140 & 740 & 4,70 & 7,26 & 7,62 & $-$4,8\\
+4  & 6000 & 0,28 & 58,84 & 54,42 & +8,1  & 160 & 630 & 5,35 & 6,18 & 6,29 & $-$1,7\\
+6  & 5600 & 0,34 & 54,92 & 51,71 & +6,2  & 180 & 520 & 6,00 & 5,10 & 5,23 & $-$2,4\\
+8  & 5600 & 0,41 & 54,92 & 49,18 & +11,7 & 200 & 480 & 6,65 & 4,71 & 4,38 & +7,5\\
+10 & 5400 & 0,47 & 52,96 & 46,89 & +12,9 & 220 & 345 & 7,30 & 3,38 & 3,70 & $-$8,6\\
+20 & 4100 & 0,80 & 40,21 & 37,78 & +6,4  & 240 & 295 & 7,95 & 2,89 & 3,14 & $-$7,8\\
+30 & 3140 & 1,12 & 30,79 & 31,27 & $-$1,5 & 260 & 245 & 8,60 & 2,40 & 2,68 & $-$10,3\\
+40 & 2850 & 1,45 & 27,95 & 26,28 & +6,4  & 280 & 195 & 9,25 & 1,91 & 2,30 & $-$16,8\\
+50 & 2450 & 1,77 & 24,03 & 22,43 & +7,1  & 300 & 180 & 9,90 & 1,77 & 1,98 & $-$10,8\\
+60 & 2000 & 2,10 & 19,61 & 19,33 & +1,5  & 310 & 150 & 10,23 & 1,47 & 1,84 & $-$20,0\\
+80 & 1500 & 2,75 & 14,71 & 14,78 & $-$0,5 & & & & & & \\
+100& 1190 & 3,40 & 11,67 & 11,63 & +0,3  & & & & & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Curva característica}
+\begin{figure}[H]\centering
+  \includegraphics[width=\linewidth]{fig_curva_medida.png}
+  \caption{Fuerza medida (puntos) frente al modelo FEMM. Gris: imán N42 nominal ($B_r=1{,}300$~T). Rojo:
+  mismo modelo con la remanencia ajustada ($B_r=1{,}051$~T). El panel derecho amplía la cola.}
+  \label{fig:curva}
+\end{figure}
 
 \begin{table}[H]\centering\small
+\caption{Valores característicos de la curva ajustada.}
+\label{tab:caract}
+\begin{tabular}{r r}
+\toprule
+Fuerza & Entrehierro\\\midrule
+20~N & 2,03~mm\\
+10~N & 3,84~mm\\
+5~N  & 6,17~mm\\
+2~N  & 9,85~mm\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La fuerza de contacto es 68,7~N (7,00~kgf) y cae a la mitad con $\approx$1~mm de separación. Este
+decaimiento en el primer milímetro es la característica dominante del conjunto.
+
+%-----------------------------------------------------------------------
+\section{Estimación del grado}
+\label{sec:grado}
+El grado del material no figura en la documentación de los imanes. Se estima ajustando la curva
+simulada a la medida.
+
+\subsection{Modelo}
+Modelo axisimétrico en FEMM~4.2 con la geometría real: dos imanes D20$\times$4 con el perfil del
+avellanado ($\varnothing$4~mm recto durante 1~mm, luego cono hasta $\varnothing$10~mm en 3~mm), boca hacia
+el acero. Imán con $\mu_{rec}=1{,}05$ y $H_c=B_r/(\mu_0\mu_{rec})$. Acero 1018 de la biblioteca de FEMM
+(curva B--H real), pieza de $\varnothing$100$\times$50~mm. Frontera asintótica y fuerza por tensor de
+tensiones ponderado sobre el acero.
+
+\subsection{Ajuste}
+Mientras el acero no sature el problema es lineal en la magnetización (verificado: acero real y
+material lineal de $\mu_r=10^4$ difieren menos del 0,3\,\%), y la fuerza escala con el cuadrado de la
+remanencia:
+\begin{equation}
+F(x;B_r)=\left(\frac{B_r}{B_{r,ref}}\right)^{2}F(x;B_{r,ref}) .
+\label{eq:br2}
+\end{equation}
+Con $t$ fijado por la calibración, el único parámetro libre es $k=(B_r/B_{r,ref})^2$, ajustado por
+mínimos cuadrados sobre $\log F$ (pondera por igual el rango cercano y el lejano).
+
+\begin{table}[H]\centering\small
+\caption{Resultado del ajuste y sensibilidad al entrehierro residual ($B_{r,ref}=1{,}300$~T).}
+\begin{tabular}{c c c c}
+\toprule
+$x_0$ [mm] & $k$ & $B_r$ [T] & Desvío de residuos\\\midrule
+0,10 & 0,638 & 1,039 & 8,4\,\%\\
+\textbf{0,15} & \textbf{0,654} & \textbf{1,051} & \textbf{9,3\,\%}\\
+0,20 & 0,669 & 1,063 & 10,2\,\%\\
+0,30 & 0,699 & 1,087 & 12,0\,\%\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El grado de catálogo más próximo a $B_r=1{,}051$~T es el \textbf{N35} ($B_r$ nominal 1,19~T). La
+conclusión no depende de $x_0$: en todo el rango $B_r$ queda entre 1,04 y 1,09~T, muy por debajo del N42
+(1,30~T).
+
+\subsection{Tendencia de los residuos}
+\label{sec:residuos}
+\begin{figure}[H]\centering
+  \includegraphics[width=0.6\linewidth]{fig_residuos.png}
+  \caption{Residuos del ajuste. Tienen una tendencia monótona con el entrehierro: el modelo queda corto
+  cerca del contacto y largo a distancia.}
+  \label{fig:residuos}
+\end{figure}
+
+Los residuos no son aleatorios: la medición supera al modelo en +12\,\% cerca del contacto y queda
+$-$20\,\% por debajo en el último punto; la curva medida decae más rápido que la simulada. Si se libera
+también $t$, el óptimo pasa a $t=0{,}0361$~mm/hoja (+11\,\%) y el desvío cae de 9,3\,\% a 4,6\,\%, sin
+tendencia: \emph{el modelo prefiere una pila un 11\,\% más gruesa que la medida con regla}. Dos
+explicaciones compatibles, que este ensayo no separa:
+\begin{itemize}
+  \item \textbf{Compresión de la pila:} si al medir los 6,50~mm las hojas estaban comprimidas y en el
+        ensayo quedan sueltas, el entrehierro real es mayor que el calculado.
+  \item \textbf{Blanco de acero de espesor finito:} el modelo supone 50~mm; si la estructura es más
+        delgada, la fuerza cae más rápido con la distancia.
+\end{itemize}
+Para distinguirlas basta medir el espesor de la chapa y rehacer el modelo con ese valor.
+
+\subsection{Distribución del campo}
+\begin{figure}[H]\centering
+  \includegraphics[width=0.5\linewidth]{fig_campo.png}
+  \caption{Módulo de $|B|$ (escala lineal recortada en 0,6~T; pico de 1,12~T dentro del imán) y líneas de
+  flujo a $x=2$~mm.}
+  \label{fig:campo}
+\end{figure}
+El flujo sale de la cara inferior, cruza el entrehierro, se reparte radialmente en el acero y vuelve por
+el aire a la cara superior. El avellanado concentra el flujo en un anillo sobre su borde.
+
+\subsection{Alcance de la inferencia}
+\begin{itemize}
+  \item \textbf{Resolución:} 5~g; despreciable cerca del contacto ($<$0,1\,\%), 3\,\% en el último punto.
+  \item \textbf{Calibración:} el dinamómetro no se verificó contra masas patrón; un error de escala del
+        2--5\,\% entra directo en $k$ y en $B_r$.
+  \item \textbf{Desprendimiento manual:} componente dinámica y posible desalineación; ambas reducen la
+        fuerza registrada.
+  \item \textbf{Blanco:} espesor y extensión no medidos, superficie pintada; ambas cosas reducen la fuerza.
+  \item \textbf{Entrehierro:} calibración de la pila y espesor del blanco quedan confundidos
+        (sección~\ref{sec:residuos}).
+\end{itemize}
+Calibración, desprendimiento y blanco actúan en el mismo sentido: bajan la fuerza medida. Por eso el
+resultado no es «los imanes son N35» sino que \textbf{el conjunto se comporta como un N35 y el grado real
+es N35 o superior}. Para fijarlo haría falta medir $B_r$ con sonda Hall sobre un imán aislado, o repetir
+el ensayo con un blanco de geometría conocida y el dinamómetro calibrado.
+
+%-----------------------------------------------------------------------
+\section{Comportamiento con otros grados}
+El montaje impone un entrehierro mínimo de \textbf{1,5~mm}: el tramo de contacto no es accesible y la
+fuerza máxima utilizable del conjunto actual es 25,6~N. Se evalúa sustituir los imanes por N42 o N52,
+cambiando solo el imán o agregando un separador no magnético de espesor $s$ que devuelve la fuerza a
+1,5~mm al valor actual. Con la ecuación~\eqref{eq:br2} y las remanencias nominales (N35 1,19~T, N42
+1,30~T, N52 1,45~T):
+\begin{equation}
+F_g(x)=\left(\frac{B_{r,g}}{B_{r,\text{N35}}}\right)^{2}F_{\text{N35}}(x+s) .
+\end{equation}
+
+\begin{figure}[H]\centering
+  \includegraphics[width=\linewidth]{fig_grado_entrehierro.png}
+  \caption{Fuerza con entrehierro mínimo de 1,5~mm. Negro: conjunto actual. Punteadas: solo cambiar el
+  imán. Continuas: imán más separador que iguala la fuerza a 1,5~mm. Los triángulos marcan el alcance a 2~N.}
+  \label{fig:grado}
+\end{figure}
+
+\begin{table}[H]\centering\small
+\caption{Fuerza máxima utilizable y alcance a 2~N, respecto del conjunto actual.}
+\label{tab:grados}
 \begin{tabular}{l c c c c c}
 \toprule
 Variante & Separador & $F(1{,}5\text{ mm})$ & $\Delta F_{\text{máx}}$ & $x$ a 2~N & Ganancia\\
          & [mm]      & [N]                 & [\%]                  & [mm]      & [mm]\\
 \midrule
-N35 actual (referencia) & --   & 25,6           & --      & 9,85  & --\\
-N42 sin separador       & --   & $\approx$30,6  & +19     & 10,65 & +0,80\\
-N42 + separador         & 0,37 & 25,6           & 0       & 10,28 & +0,43\\
-N52 sin separador       & --   & $\approx$38    & +48     & 11,69 & +1,84\\
-N52 + separador         & 0,88 & 25,6           & 0       & 10,81 & +0,96\\
+N35 actual (referencia) & --   & 25,6          & --  & 9,85  & --\\
+N42 sin separador       & --   & $\approx$30,6 & +19 & 10,65 & +0,80\\
+N42 + separador         & 0,37 & 25,6          & 0   & 10,28 & +0,43\\
+N52 sin separador       & --   & $\approx$38   & +48 & 11,69 & +1,84\\
+N52 + separador         & 0,88 & 25,6          & 0   & 10,81 & +0,96\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{itemize}
-  \item \textbf{Fuerza máxima utilizable actual: 25,6~N} a 1,5~mm, poco más de un tercio de los
-        68,7~N medidos en contacto. El tramo por debajo de 1,5~mm no es accesible.
-  \item \textbf{Cambiar solo el imán} sube la fuerza máxima a $\approx$30,6~N (N42, +19\,\%) o
-        $\approx$38~N (N52, +48\,\%), y lleva el alcance a 2~N de 9,85 a 10,65~mm (N42) o 11,69~mm (N52).
-  \item \textbf{Manteniendo la fuerza máxima en 25,6~N} hace falta un separador de 0,37~mm (N42) o
-        0,88~mm (N52), y el alcance a 2~N mejora solo \textbf{0,43~mm} y \textbf{0,96~mm}.
-  \item \textbf{El grado del imán mueve la cola de la curva menos de 2~mm} en el mejor caso. No
-        justifica el cambio si el objetivo es alcance; sí, si falta fuerza cerca y el sistema tolera
-        el aumento.
-  \item \textbf{Siguiente paso:} para ganar alcance, evaluar variantes geométricas (volumen y altura
-        del imán, retorno de flujo por la cara opuesta, espesor del blanco) con el modelo FEMM ya validado.
+  \item \textbf{La fuerza crece mucho más que el alcance.} En la cola la fuerza cae a la mitad cada 2,5 a
+        3~mm: cada 10\,\% de fuerza adicional corre el alcance unos 0,4~mm. El N52, con +48\,\%, gana 1,84~mm.
+  \item \textbf{El separador consume parte de la ganancia.} Corre toda la curva en $s$: el alcance con
+        separador es el de sin separador menos $s$ (10,65 $-$ 0,37 = 10,28~mm; 11,69 $-$ 0,88 = 10,81~mm).
+  \item \textbf{Consecuencia:} el grado no justifica el cambio si el objetivo es alcance; sí, si falta
+        fuerza cerca y el sistema tolera el aumento. Para ganar alcance hay que evaluar la geometría
+        (volumen y altura del imán, retorno de flujo, espesor del blanco) con el modelo FEMM.
+  \item \textbf{Supuestos:} se escala la curva medida, así que las pérdidas del ensayo afectan a todos los
+        grados por igual, y los imanes actuales se toman como N35 nominal. Si fueran de grado mayor, la
+        ganancia sería menor. Los alcances absolutos heredan la tendencia de la sección~\ref{sec:residuos}
+        (pueden estar sobreestimados algunas décimas de milímetro); las diferencias entre grados, mucho menos.
 \end{itemize}
 
-\begin{figure}[H]\centering
-  \includegraphics[width=\linewidth]{02489-00-MC002/figuras/fig_grado_entrehierro.png}
-  \caption{Fuerza de atracción con entrehierro mínimo de 1,5~mm. Negro: conjunto actual. Punteadas:
-  solo cambiar el imán. Continuas: imán más separador que iguala la fuerza a 1,5~mm. Los triángulos
-  marcan el entrehierro al que cada curva cae a 2~N.}
-  \label{fig:grado}
-\end{figure}
-
-%-----------------------------------------------------------------------
-\section{Datos y supuestos}
-
-\begin{table}[H]\centering\small
-\begin{tabular}{l l l}
-\toprule
-Dato & Valor & Origen\\\midrule
-Entrehierro mínimo & 1,5~mm & montaje\\
-Curva de referencia & FEMM ajustada, $B_r$ efectivo 1,051~T & 02489-00-ZIT200, tabla 1\\
-$B_r$ nominal N35 / N42 / N52 & 1,19 / 1,30 / 1,45~T & catálogo\\
-Umbral de alcance & 2~N & criterio de comparación\\
-Separador & No magnético, espesor uniforme & \textbf{supuesto}\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Mientras el acero no sature, la fuerza escala con el cuadrado de la remanencia (02489-00-ZIT200,
-ec.~2). Cada grado se obtiene escalando la curva actual; el separador de espesor $s$ suma
-entrehierro a toda la curva:
-\begin{equation}
-F_g(x)=\left(\frac{B_{r,g}}{B_{r,\text{N35}}}\right)^{2} F_{\text{N35}}(x+s).
-\end{equation}
-Los factores de fuerza son 1,19 (N42) y 1,48 (N52). El separador se elige para que
-$F_g(1{,}5\text{ mm})=25{,}6$~N. El cálculo está en \texttt{02489-00-MC002/calculo.py}
-y sus resultados en \texttt{resultados.json}; los alcances a 2~N salen de las curvas FEMM de la
-figura~\ref{fig:grado}.
-
-%-----------------------------------------------------------------------
-\section{Por qué el alcance crece tan poco}
-
-\paragraph{La fuerza crece mucho más que el alcance.}
-En la cola, la fuerza cae a la mitad cada 2,5 a 3~mm. Un factor constante en la fuerza se
-traduce en un corrimiento acotado del entrehierro: del orden de 0,4~mm por cada 10\,\% de fuerza
-adicional. Por eso el N52, con +48\,\% de fuerza, gana solo 1,84~mm.
-
-\paragraph{El separador consume parte de la ganancia.}
-El separador corre toda la curva en $s$: el alcance con separador es el alcance sin separador
-menos $s$ (10,65 $-$ 0,37 = 10,28~mm; 11,69 $-$ 0,88 = 10,81~mm). Como la curva decae más rápido
-cerca del imán que en la cola, un separador delgado basta para absorber el aumento de fuerza a
-1,5~mm, y en la cola sobrevive aproximadamente la mitad de la ganancia.
-
-%-----------------------------------------------------------------------
-\section{Limitaciones}
-\begin{itemize}
-  \item \textbf{Grado real de los imanes actuales.} Se comportan como N35, pero según
-        02489-00-ZIT200 (sec.~6) el grado real puede ser N35 o algo superior. Si fuera mayor, la
-        ganancia por cambiar de imán sería menor que la informada.
-  \item \textbf{Pérdidas del ensayo trasladadas.} Escalar la curva medida supone que la pintura, el
-        espesor finito del blanco y la desalineación afectan a todos los grados por igual. Vale
-        mientras el acero no sature, condición que el N52 a 1,5~mm exige más.
-  \item \textbf{Remanencias de catálogo.} Dentro de un grado, $B_r$ varía algunos puntos porcentuales
-        entre fabricantes: el doble en fuerza.
-  \item \textbf{Cola de la curva.} La referencia hereda la tendencia de los residuos de
-        02489-00-ZIT200 (sec.~5.3): en la cola el modelo supera a la medición hasta un 20\,\%. Los
-        alcances absolutos pueden estar sobreestimados en algunas décimas de milímetro; las
-        diferencias entre grados, mucho menos.
-\end{itemize}
+El cálculo está en \texttt{02489-00-MC002/calculo.py} (resultados en \texttt{resultados.json}). Los
+alcances a 2~N de la tabla~\ref{tab:grados} salen de las curvas FEMM de la figura~\ref{fig:grado}.
 
 \end{document}
