@@ -28,12 +28,13 @@ def solve(th0, L, Z, d, mu=2e3):
 def worst(L, Z, travel=12.0):
     s = np.linspace(0, 1, N); th = 0.3*np.sin(2*np.pi*s)
     Rs = []; ext = [0, 0]
-    for d in np.linspace(travel/2, -travel/2, 25):
+    for d in np.r_[np.linspace(travel/2, -travel/2, 41), np.linspace(-travel/2, travel/2, 41)]:
         th, R, ymn, ymx = solve(th, L, Z, d); Rs.append(R); ext = [min(ext[0], ymn), max(ext[1], ymx)]
     return min(Rs), ext
 
-import sys
-for Z in [float(v) for v in sys.argv[1].split(",")]:
+if __name__ == '__main__':
+  import sys
+  for Z in [float(v) for v in sys.argv[1].split(",")]:
     best = max(((worst(Z*f, Z), Z*f) for f in (1.02, 1.05, 1.08, 1.12, 1.16, 1.2, 1.25)), key=lambda t: t[0][0])
     (R, ext), L = best
     print(f"largo en z={Z}  mejor L={L:.1f}  R int min={R:.2f}  barrido lateral x=[{ext[0]:.1f},{ext[1]:.1f}]")

@@ -1,0 +1,262 @@
+<title>Flex 3D: opciones</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#f3f5f8; --sheet:#ffffff; --ink:#18223a; --muted:#5b6780; --line:#c9d1de;
+  --dim:#d4145a; --ok:#1b8a4b; --warn:#c17a00; --bad:#d4145a; --scene:#eef2f7;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  color-scheme:dark; --paper:#0f1522; --sheet:#151d2e; --ink:#e4e9f3; --muted:#9aa6bd; --line:#2b3852;
+  --dim:#ff5c93; --ok:#4cc987; --warn:#f0b43c; --bad:#ff5c93; --scene:#111a2a;}}
+:root[data-theme="dark"]{
+  color-scheme:dark; --paper:#0f1522; --sheet:#151d2e; --ink:#e4e9f3; --muted:#9aa6bd; --line:#2b3852;
+  --dim:#ff5c93; --ok:#4cc987; --warn:#f0b43c; --bad:#ff5c93; --scene:#111a2a;}
+body{background:var(--paper);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,sans-serif;padding-inline:16px;padding-block:24px 48px}
+.wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+h1,h2,h3{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:600;margin:0;text-wrap:balance}
+h1{font-size:38px;line-height:1.05} h2{font-size:26px} h3{font-size:21px}
+p{margin:0;max-width:70ch}
+.lede{color:var(--muted)}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.sim{background:var(--sheet);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:12px}
+.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line)}
+.seg button{background:transparent;color:var(--ink);border:0;padding:7px 12px;font:inherit;font-size:14px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--dim);outline-offset:2px}
+.play{background:var(--dim);color:#fff;border:0;padding:8px 16px;font:inherit;font-weight:600;cursor:pointer}
+.slider{display:flex;align-items:center;gap:10px;flex:1 1 240px}
+.slider input{flex:1;accent-color:var(--dim)}
+#view{width:100%;height:520px;display:block;background:var(--scene);touch-action:none}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.ro{border-top:2px solid var(--line);padding-top:6px}
+.ro .k{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.ro .v{font-family:"IBM Plex Mono",monospace;font-size:20px;font-variant-numeric:tabular-nums}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:14px;vertical-align:-2px;margin-right:6px;border-radius:2px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.card{background:var(--sheet);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:8px}
+.card.sel{border-color:var(--ink)}
+.card dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0;font-size:14px}
+.card dt{color:var(--muted)} .card dd{margin:0;font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.hint{font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion: reduce){.play{display:none}}
+</style>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <h1>Flex del conector: opciones en 3D</h1>
+    <p class="lede">Tres formas de absorber los 12 mm de retracción del conector. El color del flex indica el radio interior local. x es la carrera hacia el panel, y la altura (límite 10,5 mm) y z la dirección lateral.</p>
+  </header>
+
+  <div class="sim">
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Opción">
+        <button id="o0" aria-pressed="true">1 · Placa en el piso</button>
+        <button id="o1" aria-pressed="false">2 · S lateral de canto</button>
+        <button id="o2" aria-pressed="false">3 · U rodante de canto</button>
+      </div>
+      <div class="seg" role="group" aria-label="Vista">
+        <button id="v0" aria-pressed="true">Isométrica</button>
+        <button id="v1" aria-pressed="false">Arriba</button>
+        <button id="v2" aria-pressed="false">Lateral</button>
+      </div>
+      <button class="play" id="play">Pausa</button>
+      <label class="slider"><span class="mono" style="font-size:13px">retracción</span><input id="t" type="range" min="0" max="1000" value="0"></label>
+    </div>
+    <canvas id="view" aria-label="Vista 3D del flex"></canvas>
+    <p class="hint">Arrastrá para girar, rueda o pellizco para acercar, botón derecho para desplazar.</p>
+    <div class="legend">
+      <span><i style="background:#2f5fd0"></i>flex R ≥ 3,5</span>
+      <span><i style="background:#c17a00"></i>3 ≤ R &lt; 3,5</span>
+      <span><i style="background:#d4145a"></i>R &lt; 3</span>
+      <span><i style="background:#8fb5a3"></i>placas rígidas</span>
+      <span><i style="background:#d8a13a"></i>pestaña rígida</span>
+      <span><i style="background:#7d8799"></i>conector y guías</span>
+      <span><i style="background:#d4145a;opacity:.35"></i>techo 10,5 mm y línea nominal</span>
+    </div>
+    <div class="readout">
+      <div class="ro"><div class="k">Retracción</div><div class="v" id="r1">–</div></div>
+      <div class="ro"><div class="k">R interior mín. ahora</div><div class="v" id="r2">–</div></div>
+      <div class="ro"><div class="k">W (mainboard → nominal)</div><div class="v" id="r3">–</div></div>
+      <div class="ro"><div class="k">R mín. en toda la carrera</div><div class="v" id="r4">–</div></div>
+    </div>
+  </div>
+
+  <div class="cards">
+    <article class="card sel" id="c0">
+      <h3>1 · Placa del conector en el piso</h3>
+      <dl><dt>W</dt><dd>24 mm (mín. 23)</dd><dt>Largo del flex</dt><dd>30 mm</dd><dt>R mín.</dt><dd>3,16 mm</dd><dt>Espacio lateral</dt><dd>solo el ancho del flex</dd></dl>
+      <ul>
+        <li>Todo en un plano; simple de fabricar y montar.</li>
+        <li>Placa del conector de 5 mm de alto como máximo.</li>
+        <li>El bucle sube a ~14 mm solo mientras está retraído.</li>
+      </ul>
+    </article>
+    <article class="card" id="c1">
+      <h3>2 · S lateral con el flex de canto</h3>
+      <dl><dt>W</dt><dd>≈ 13 mm</dd><dt>Tramo en S</dt><dd>14 mm en z (flex 15,7)</dd><dt>R mín.</dt><dd>3,73 mm (ida y vuelta)</dd><dt>Espacio lateral</dt><dd>~20 mm (S + pestaña)</dd></dl>
+      <ul>
+        <li>El flex sale por el canto lateral de la placa del conector, ya de canto.</li>
+        <li>En la mainboard necesita una pestaña rígida vertical fijada con un soporte.</li>
+        <li>Armado con la S desplazada 6 mm: trabaja ±6 mm y nunca queda recto.</li>
+        <li>El flex parado mide lo que su ancho: ≤ 10 mm de ancho.</li>
+      </ul>
+    </article>
+    <article class="card" id="c2">
+      <h3>3 · U rodante de canto, en canal</h3>
+      <dl><dt>W</dt><dd>≈ 13 mm</dd><dt>Canal</dt><dd>7,6 mm entre caras</dd><dt>R mín.</dt><dd>3,0 mm, constante</dd><dt>Espacio lateral</dt><dd>~25 mm; la U pasa ~6 mm la línea nominal</dd></dl>
+      <ul>
+        <li>La U avanza la mitad de la carrera y el radio no cambia: la opción con menos fatiga.</li>
+        <li>Necesita un canal con dos paredes: sin él, la punta se cierra (con 6,4 mm entre caras el radio baja a 2,5).</li>
+        <li>Dos dobleces extra de 90° y una pestaña rígida en la mainboard.</li>
+        <li>La punta se dibuja como semicírculo; el canal está calculado con la forma elástica real.</li>
+      </ul>
+    </article>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const canvas = document.getElementById('view');
+const renderer = new THREE.WebGLRenderer({canvas, antialias: true});
+renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1));
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true;
+scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(30, 60, 40); scene.add(sun);
+const fill = new THREE.DirectionalLight(0xffffff, 0.3); fill.position.set(-40, 20, -30); scene.add(fill);
+
+const MAT = {
+  mainboard: new THREE.MeshStandardMaterial({color: 0x8fb5a3, roughness: .8}),
+  placa: new THREE.MeshStandardMaterial({color: 0x8fb5a3, roughness: .8}),
+  pestana: new THREE.MeshStandardMaterial({color: 0xd8a13a, roughness: .7}),
+  conector: new THREE.MeshStandardMaterial({color: 0x7d8799, roughness: .5, metalness: .3}),
+  guia: new THREE.MeshStandardMaterial({color: 0x7d8799, roughness: .6, transparent: true, opacity: .35}),
+};
+const flexMat = new THREE.MeshStandardMaterial({vertexColors: true, side: THREE.DoubleSide, roughness: .45});
+const ok = new THREE.Color(0x2f5fd0), warn = new THREE.Color(0xc17a00), bad = new THREE.Color(0xd4145a);
+const colR = R => R < 3 - 1e-3 ? bad : R < 3.5 ? warn : ok;
+
+let oi = 0, u = 0, playing = !matchMedia('(prefers-reduced-motion: reduce)').matches, last = null, hold = 0, dirv = 1;
+let dyn = new THREE.Group(); scene.add(dyn);
+let stat = new THREE.Group(); scene.add(stat);
+
+function ribbonMesh(r){
+  const n = r.p.length, pos = new Float32Array(n * 2 * 3), col = new Float32Array(n * 2 * 3), idx = [];
+  const hw = r.w / 2;
+  for (let i = 0; i < n; i++){
+    const p = r.p[i], c = colR(r.R[i]);
+    for (let s = 0; s < 2; s++){
+      const k = (i * 2 + s) * 3, sg = s ? 1 : -1;
+      pos[k] = p[0] + sg * r.b[0] * hw; pos[k + 1] = p[1] + sg * r.b[1] * hw; pos[k + 2] = p[2] + sg * r.b[2] * hw;
+      col[k] = c.r; col[k + 1] = c.g; col[k + 2] = c.b;
+    }
+    if (i < n - 1){ const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  g.setIndex(idx); g.computeVertexNormals();
+  return new THREE.Mesh(g, flexMat);
+}
+function boxMesh(b){
+  const s = [b.max[0] - b.min[0], b.max[1] - b.min[1], b.max[2] - b.min[2]];
+  const m = new THREE.Mesh(new THREE.BoxGeometry(...s), MAT[b.kind]);
+  m.position.set((b.max[0] + b.min[0]) / 2, (b.max[1] + b.min[1]) / 2, (b.max[2] + b.min[2]) / 2);
+  const e = new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry), new THREE.LineBasicMaterial({color: 0x18223a, transparent: true, opacity: .35}));
+  m.add(e); return m;
+}
+function clear(g){ g.children.slice().forEach(ch => { g.remove(ch); ch.traverse(o => { if (o.geometry) o.geometry.dispose(); }); }); }
+
+function frameBounds(o){
+  const mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
+  for (const f of [o.frames[0], o.frames[o.frames.length - 1]]){
+    for (const r of f.ribbons) for (const p of r.p) for (let k = 0; k < 3; k++){ mn[k] = Math.min(mn[k], p[k]); mx[k] = Math.max(mx[k], p[k]); }
+    for (const b of f.boxes) for (let k = 0; k < 3; k++){ mn[k] = Math.min(mn[k], b.min[k]); mx[k] = Math.max(mx[k], b.max[k]); }
+  }
+  return {mn, mx};
+}
+
+function buildStatic(){
+  clear(stat);
+  const o = D[oi], {mn, mx} = frameBounds(o);
+  const dim = new THREE.Color(css('--dim') || '#d4145a');
+  const pm = new THREE.MeshBasicMaterial({color: dim, transparent: true, opacity: .08, side: THREE.DoubleSide, depthWrite: false});
+  const ceil = new THREE.Mesh(new THREE.PlaneGeometry(mx[0] - mn[0] + 6, mx[2] - mn[2] + 6), pm);
+  ceil.rotation.x = -Math.PI / 2; ceil.position.set((mx[0] + mn[0]) / 2, 10.5, (mx[2] + mn[2]) / 2); stat.add(ceil);
+  const nom = new THREE.Mesh(new THREE.PlaneGeometry(mx[2] - mn[2] + 6, 10.5), pm);
+  nom.rotation.y = Math.PI / 2; nom.position.set(o.W, 5.25, (mx[2] + mn[2]) / 2); stat.add(nom);
+  const lm = new THREE.LineBasicMaterial({color: dim});
+  const edge = (a, b) => stat.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...a), new THREE.Vector3(...b)]), lm));
+  edge([mn[0] - 3, 10.5, mn[2] - 3], [mx[0] + 3, 10.5, mn[2] - 3]);
+  edge([o.W, 0, mn[2] - 3], [o.W, 10.5, mn[2] - 3]); edge([o.W, 0, mx[2] + 3], [o.W, 10.5, mx[2] + 3]);
+  edge([0, 0, mn[2] - 3], [0, 10.5, mn[2] - 3]);
+  const grid = new THREE.GridHelper(Math.max(mx[0] - mn[0], mx[2] - mn[2]) + 20, Math.round((Math.max(mx[0] - mn[0], mx[2] - mn[2]) + 20) / 2), 0x8892a6, 0xc0c8d6);
+  grid.material.transparent = true; grid.material.opacity = .35;
+  grid.position.set((mx[0] + mn[0]) / 2, 0, (mx[2] + mn[2]) / 2); stat.add(grid);
+  document.getElementById('r3').textContent = String(o.W).replace('.', ',') + ' mm';
+  document.getElementById('r4').textContent = o.Rmin.toFixed(2).replace('.', ',') + ' mm';
+}
+
+function setView(v){
+  const o = D[oi], {mn, mx} = frameBounds(o);
+  const cx = (mx[0] + mn[0]) / 2, cz = (mx[2] + mn[2]) / 2, span = Math.max(mx[0] - mn[0], mx[2] - mn[2], 12);
+  controls.target.set(cx, 4, cz);
+  const d = span * 1.25;
+  if (v === 0) camera.position.set(cx + d * .55, 4 + d * .6, cz + d * .75);
+  if (v === 1) camera.position.set(cx, 4 + d * 1.1, cz + .01);
+  if (v === 2) camera.position.set(cx, 5, cz + d * 1.05);
+  camera.lookAt(controls.target); controls.update();
+  ['v0', 'v1', 'v2'].forEach((id, i) => document.getElementById(id).setAttribute('aria-pressed', i === v));
+}
+
+function show(){
+  const o = D[oi], n = o.frames.length, f = o.frames[Math.round(u * (n - 1))];
+  clear(dyn);
+  let rmin = 99;
+  for (const r of f.ribbons){ dyn.add(ribbonMesh(r)); rmin = Math.min(rmin, ...r.R); }
+  for (const b of f.boxes) dyn.add(boxMesh(b));
+  document.getElementById('r1').textContent = f.ret.toFixed(1).replace('.', ',') + ' mm';
+  document.getElementById('r2').textContent = rmin.toFixed(2).replace('.', ',') + ' mm';
+}
+
+function resize(){
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+function bg(){ renderer.setClearColor(new THREE.Color(css('--scene') || '#eef2f7')); buildStatic(); }
+
+const T = document.getElementById('t'), pb = document.getElementById('play');
+function selectOption(i){
+  oi = i; ['o0', 'o1', 'o2'].forEach((id, k) => document.getElementById(id).setAttribute('aria-pressed', k === i));
+  ['c0', 'c1', 'c2'].forEach((id, k) => document.getElementById(id).classList.toggle('sel', k === i));
+  buildStatic(); setView(0); show();
+}
+['o0', 'o1', 'o2'].forEach((id, i) => document.getElementById(id).onclick = () => selectOption(i));
+['v0', 'v1', 'v2'].forEach((id, i) => document.getElementById(id).onclick = () => setView(i));
+pb.onclick = () => { playing = !playing; pb.textContent = playing ? 'Pausa' : 'Reproducir'; last = null; };
+if (!playing) pb.textContent = 'Reproducir';
+// el slider va de retraído (0) a nominal (1000)
+T.oninput = () => { u = T.value / 1000; playing = false; pb.textContent = 'Reproducir'; show(); };
+
+function loop(ts){
+  if (playing && last != null){
+    const dt = (ts - last) / 1000;
+    if (hold > 0) hold -= dt;
+    else { u += dirv * dt / 4; if (u >= 1 || u <= 0){ u = Math.min(1, Math.max(0, u)); dirv = -dirv; hold = 1; } }
+    T.value = Math.round(u * 1000); show();
+  }
+  last = ts; controls.update(); renderer.render(scene, camera); requestAnimationFrame(loop);
+}
+addEventListener('resize', resize);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', bg);
+new MutationObserver(bg).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+resize(); bg(); selectOption(0); requestAnimationFrame(loop);
+</script>
