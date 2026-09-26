@@ -162,7 +162,7 @@ function frameAt(d, seq, s){ // s en 0..1 a lo largo de la secuencia
 function colorR(R){ return R < 3 ? css('--bad') : R < 3.5 ? css('--warn') : css('--ok'); }
 
 function fit(c){ const r = c.getBoundingClientRect(), dpr = devicePixelRatio || 1;
-  const h = +c.getAttribute('height'); c.width = r.width * dpr; c.height = h * dpr; c.style.height = h + 'px';
+  const h = +(c.dataset.h ||= c.getAttribute('height')); c.width = r.width * dpr; c.height = h * dpr; c.style.height = h + 'px';
   const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); return [g, r.width, h]; }
 
 function draw(){
