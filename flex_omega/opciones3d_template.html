@@ -79,6 +79,7 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
       <span><i style="background:#2b2f38"></i>cámara MIPI</span>
       <span><i style="background:#b9c0cc"></i>rosca 12 mm y lente</span>
       <span><i style="background:#ffe08a"></i>LED 3 × 3 × 3</span>
+      <span><i style="background:#fff4c2"></i>guía de luz</span>
       <span><i style="background:#d4145a;opacity:.35"></i>techo y línea nominal</span>
       <label style="display:inline-flex;gap:6px;align-items:center;color:var(--ink)"><input type="checkbox" id="showr"> colorear el flex por radio (azul ≥ 1,17 × mín., ámbar cerca, rojo por debajo)</label>
     </div>
@@ -132,14 +133,13 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
       </ul>
     </article>
     <article class="card" id="c4">
-      <h3>5 · Cámara centrada, S por detrás, LED arriba de la cámara</h3>
-      <dl><dt>Ancho lateral</dt><dd>52 mm: interfaz 0–16, S 16–33, placa del conector 33–52</dd><dt>Cámara</dt><dd>girada 90°, flex recto, lente en z = 26 sobre el piso</dd><dt>S</dt><dd>17 mm en z, flex 22 mm, tira de 9 mm de alto</dd><dt>R mín.</dt><dd>3,50 mm (ida y vuelta)</dd></dl>
+      <h3>5 · Cámara centrada, S por detrás, LED con guía de luz</h3>
+      <dl><dt>Ancho lateral</dt><dd>52 mm: interfaz 0–16, S 16–33, placa del conector 33–52</dd><dt>Cámara</dt><dd>girada 90°, flex recto, lente en z = 26 sobre el piso</dd><dt>S</dt><dd>17 mm en z, flex 22 mm, tira de 11 mm (48 V en 1 oz)</dd><dt>R mín.</dt><dd>3,50 mm (ida y vuelta)</dd></dl>
       <ul>
-        <li>Geometría de la cámara del STEP: módulo de 5,05 mm, cola de 19 mm con rigidizador FR4 y conector AXT a 11,8 mm de la lente, enchufado en la cara delantera de la interfaz.</li>
-        <li>La S sale del canto de la interfaz después del conector de la cámara y pasa por detrás de la cámara, contenida por una pared de 0,5 mm.</li>
-        <li>El flex de la mainboard (MIPI, 48 V y Gigabit) entra por la muesca inferior de la interfaz: 11,4 mm de ancho disponibles.</li>
-        <li>El LED va en una islita sobre la cámara, a ~6 mm de la lente y lejos del conector. Lo alimenta un brazo de 1,8 mm del mismo flex que pasa por encima de la S (R 2,6).</li>
-        <li>Con el brazo del LED arriba, la S queda en 9 mm de alto: 48 V en cobre de 2 oz.</li>
+        <li>Geometría de la cámara del STEP: módulo de 5,05 mm, cola de 19 mm y conector AXT a 11,8 mm de la lente, enchufado en la cara delantera de la interfaz.</li>
+        <li>LED en la interfaz, antes de la cola. Una guía de luz en L pasa por delante de la cola y sale al panel a la altura de la lente, a ~7 mm, del lado contrario al conector.</li>
+        <li>La S pasa por detrás de la cámara, contenida por una pared de 0,5 mm.</li>
+        <li>El flex de la mainboard entra por la muesca inferior de la interfaz: 11,4 mm disponibles.</li>
       </ul>
     </article>
     <article class="card" id="c5">
@@ -160,7 +160,7 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
         <li>La sección de cámara es un tramo rígido de la misma pared; recibe los dos tramos de flex y el conector de la cámara.</li>
         <li>La mainboard llega hasta ~4 mm de la pared frente a la cámara y se recorta hacia atrás donde barren la S y la placa del conector.</li>
         <li>En la esquina las pistas van horizontales y solo se usa la altura por encima del primer doblez: por eso no entra todo por ahí.</li>
-        <li>La S, el LED sobre la cámara y la placa del conector son iguales a la opción 5.</li>
+        <li>La S, el LED con guía de luz y la placa del conector son iguales a la opción 5.</li>
         <li>En la esquina, los dos dobleces perpendiculares necesitan un corte de alivio en el flex, como en tu boceto.</li>
       </ul>
     </article>
@@ -193,6 +193,7 @@ const MAT = {
   guia: new THREE.MeshStandardMaterial({color: 0x7d8799, roughness: .6, transparent: true, opacity: .35}),
   camara: new THREE.MeshStandardMaterial({color: 0x2b2f38, roughness: .4, metalness: .2}),
   rosca: new THREE.MeshStandardMaterial({color: 0xb9c0cc, roughness: .35, metalness: .6}),
+  guia_luz: new THREE.MeshStandardMaterial({color: 0xfff4c2, emissive: 0xffe08a, emissiveIntensity: .25, roughness: .1, transparent: true, opacity: .55}),
   led: new THREE.MeshStandardMaterial({color: 0xffe08a, emissive: 0xffc93c, emissiveIntensity: .6, roughness: .3}),
   panel: new THREE.MeshStandardMaterial({color: 0x9aa3b2, roughness: .8, transparent: true, opacity: .18, depthWrite: false}),
 };
