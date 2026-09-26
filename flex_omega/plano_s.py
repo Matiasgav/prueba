@@ -18,6 +18,7 @@ Y0, H = 0.25, 11.9                       # cinta y techo
 YF0, YF1 = Y0 + 0.35, Y0 + 11.35         # tira de flex de 11 mm
 ROWS = [dict(r, x0=r['x0'] + SH, x1=r['x1'] + SH, **({'cx': r['cx'] + SH} if r['tipo'] == 'Arco' else {})) for r in D['perfil']]
 nom = D['seq']['ret_a_nom'][-1]; ret = D['seq']['nom_a_ret'][-1]
+RMIN_TOL = min(t['R'] for t in D['tol'])
 NZ, NX = np.array(nom['z']), np.array(nom['x']) + SH
 RZ, RX = np.array(ret['z']), np.array(ret['x']) + SH
 
@@ -62,9 +63,9 @@ ax.plot([330, 330], [10, 34], color=INK, lw=0.4)
 label(254, 40, 'FLEX DEL CONECTOR M12 — S LATERAL', fontsize=10, weight='bold')
 label(254, 36, 'Rigid-flex · posición nominal · flex de canto, 11 mm de alto', fontsize=7)
 label(254, 28, 'Unidades: mm    Escala: indicada en cada vista', fontsize=6.5)
-label(254, 24, 'Flex: poliimida 2 capas, 0,2 mm · R int. mín. 3,0', fontsize=6.5)
+label(254, 24, 'Flex: poliimida 2 capas, 0,2 mm · R int. mín. 2,5', fontsize=6.5)
 label(254, 15, 'Material rígido: FR4 1,0 mm', fontsize=6.5)
-label(334, 28, 'Plano: FX-M12-S-01   Rev. A', fontsize=6.5)
+label(334, 28, 'Plano: FX-M12-S-01   Rev. B', fontsize=6.5)
 label(334, 24, 'Formato A3', fontsize=6.5)
 label(334, 15, 'Proyección: vistas alineadas en z', fontsize=6.5)
 
@@ -197,10 +198,10 @@ r = ROWS[-1]; label(262, yy, f"T{len(ROWS)+1}: ({r['z1']:.3f}; {r['x1']:.3f})".r
 notes = ['NOTAS', '1. Posición nominal. Retraído: la placa del conector se desplaza 12,00 hacia atrás (fantasma).',
          '2. La cara delantera de la pestaña fija queda 6,00 detrás de la cara delantera de la placa del conector.',
          '3. El flex sale por la cara delantera de ambas placas, con 1,00 recto antes de doblar.',
-         '4. Radios de la tabla en la línea media; radio interior = R − 0,10. Mínimo en carrera: 3,10 (simulado).',
-         '5. Desarrollo 17,75 ± 0,25 verificado con cuerpo M12 de 6,30 a 7,00 y carrera de 12,5.',
+         '4. Radios de la tabla en la línea media; radio interior = R − 0,10. Exigido ≥ 2,50; mínimo en carrera: ' + f"{RMIN_TOL:.2f}".replace('.', ',') + ' (simulado).',
+         '5. Desarrollo ' + f"{D['L']:.2f}".replace('.', ',') + ' ± 0,25 verificado con cuerpo M12 de 6,30 a 7,00 y carrera de 12,5.',
          '6. Sin pared: la S no pasa de x = −6,2 (≥ 0,9 del flex de la cámara).',
-         '7. Pestaña fija: su canto de salida (z 16,00) queda 15,50 a la izquierda del canto de la placa del conector (z 31,50).']
+         '7. Pestaña fija: su canto de salida (z 16,00) queda ' + ZT + ' a la izquierda del canto de la placa del conector (z ' + f'{Z1:.2f}'.replace('.', ',') + ').']
 yy = 118
 for i, n in enumerate(notes): label(22, 50 - i*4.2, n, fontsize=6.5 if i else 7.5, weight='bold' if i == 0 else 'normal')
 for ext in ('pdf', 'svg', 'png'):

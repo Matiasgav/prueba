@@ -7,7 +7,8 @@ import json, numpy as np
 from multiprocessing import Pool
 import s_lateral as S, arcfit, s_centrada as C
 
-Z, L, TRAVEL = 15.5, 17.75, 12.0
+Z, L, TRAVEL = 14.0, 16.6, 12.0
+RREQ = 2.5                      # radio interior minimo exigido
 B = 6.65                        # cuerpo del conector detras del panel (nominal de 6,3-7)
 XB = -B - 0.1                   # linea media del flex (cara delantera de la placa del conector) en nominal
 A = 6.0                         # la pestaña queda 6 mm detras
@@ -42,17 +43,17 @@ def fit_profile(fr):
     zi, xi = z[1:-1], x[1:-1]                        # tramo libre entre los rectos
     from scipy.interpolate import CubicSpline
     s = np.concatenate([[0], np.cumsum(np.hypot(np.diff(zi), np.diff(xi)))])
-    ss = np.linspace(0, s[-1], 600); pz, px = CubicSpline(s, zi)(ss), CubicSpline(s, xi)(ss)
     cands = []
-    for m in (3, 4, 5, 6):
-      for _ in range(1):
-        kap, lens, dev, ok = arcfit.fit(pz, px, 0.0, 0.0, m, kmax=1/(3.0 + c))
-        if not ok: continue
-        cands.append((dev, m, kap, lens, False))
-        casi = tuple(i for i in range(m) if abs(kap[i]) < 1/25)       # arcos de R > 25 -> rectas
-        if casi:
-            k2, l2, d2, ok2 = arcfit.fit(pz, px, 0.0, 0.0, m, kmax=1/(3.0 + c), fixed0=casi, init=(kap, lens))
-            if ok2: cands.append((d2, m, k2, l2, True))
+    for npts in (600, 500, 700):                                   # varios muestreos: SLSQP a veces no converge
+        ss = np.linspace(0, s[-1], npts); pz, px = CubicSpline(s, zi)(ss), CubicSpline(s, xi)(ss)
+        for m in (3, 4, 5, 6):
+            kap, lens, dev, ok = arcfit.fit(pz, px, 0.0, 0.0, m, kmax=1/(RREQ + c))
+            if not ok: continue
+            cands.append((dev, m, kap, lens, False))
+            casi = tuple(i for i in range(m) if abs(kap[i]) < 1/25)   # arcos de R > 25 -> rectas
+            if casi:
+                k2, l2, d2, ok2 = arcfit.fit(pz, px, 0.0, 0.0, m, kmax=1/(RREQ + c), fixed0=casi, init=(kap, lens))
+                if ok2: cands.append((d2, m, k2, l2, True))
     # preferimos el perfil con rectas y pocos elementos que quede dentro de 0,05 mm
     buenos = [x for x in cands if x[0] < 0.06]
     dev, m, kap, lens, _ = min(buenos, key=lambda x: (not x[4], x[1], x[0])) if buenos else min(cands, key=lambda x: x[0])
@@ -105,12 +106,12 @@ if __name__ == '__main__':
     dxf(rows, 'planos/S_conector_nominal.dxf')
     tol = {}
     with Pool(4) as p:
-        rl = p.map(rl_point, [round(v, 3) for v in np.arange(17.0, 19.01, 0.125)])
+        rl = p.map(rl_point, [round(v, 3) for v in np.arange(15.75, 17.51, 0.125)])
         tolres = p.starmap(C.sweep, [(Z, L, a, tr, 121) for a in (5.65, 6.0, 6.35) for tr in (12.0, 12.5)])
     tol = [dict(a=a, tr=tr, R=round(r[0], 2), xmin=round(r[1], 2), xmax=round(r[2], 2)) for (a, tr), r in zip([(a, tr) for a in (5.65, 6.0, 6.35) for tr in (12.0, 12.5)], tolres)]
     for s_ in seq.values():
         for f in s_: f.pop('th')
-    data = dict(Z=Z, L=L, travel=TRAVEL, B=B, XB=XB, XT=XT, Z0=Z0, A=A,
+    data = dict(Z=Z, L=L, travel=TRAVEL, RREQ=RREQ, B=B, XB=XB, XT=XT, Z0=Z0, A=A,
                 Rmin=round(min(f['R'] for s_ in seq.values() for f in s_), 3),
                 seq=seq, perfil=rows, desvio=round(float(dev), 3), largo_perfil=round(sum(r['largo'] for r in rows), 3),
                 rl=[dict(L=Lv, R=round(R, 3)) for Lv, R in rl], tol=tol)
