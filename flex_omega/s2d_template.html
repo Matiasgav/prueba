@@ -1,0 +1,276 @@
+<title>S del conector</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#f3f5f8; --sheet:#ffffff; --ink:#18223a; --muted:#5b6780; --grid:#e3e8f0; --line:#c9d1de;
+  --dim:#d4145a; --ok:#1b8a4b; --warn:#c17a00; --bad:#d4145a;
+  --pcb:#1f7a3d; --pcbfill:#cfe8d6; --kapton:#c9761a; --cam:#2b2f38; --camfill:#d9dce3;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  color-scheme:dark; --paper:#0f1522; --sheet:#151d2e; --ink:#e4e9f3; --muted:#9aa6bd; --grid:#1f2a40; --line:#2b3852;
+  --dim:#ff5c93; --ok:#4cc987; --warn:#f0b43c; --bad:#ff5c93; --pcb:#4cc987; --pcbfill:#173826; --kapton:#e89a45; --cam:#c9cfdb; --camfill:#2a3345;}}
+:root[data-theme="dark"]{
+  color-scheme:dark; --paper:#0f1522; --sheet:#151d2e; --ink:#e4e9f3; --muted:#9aa6bd; --grid:#1f2a40; --line:#2b3852;
+  --dim:#ff5c93; --ok:#4cc987; --warn:#f0b43c; --bad:#ff5c93; --pcb:#4cc987; --pcbfill:#173826; --kapton:#e89a45; --cam:#c9cfdb; --camfill:#2a3345;}
+body{background:var(--paper);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,sans-serif;padding-inline:16px;padding-block:24px 48px}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:26px}
+h1,h2{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:600;margin:0;text-wrap:balance}
+h1{font-size:38px;line-height:1.05} h2{font-size:25px}
+p{margin:0;max-width:70ch}
+.lede{color:var(--muted)}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.answer{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.cell{background:var(--sheet);border:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.cell .k{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.cell .v{font-family:"IBM Plex Mono",monospace;font-size:26px;font-variant-numeric:tabular-nums}
+.cell .s{font-size:13px;color:var(--muted)}
+.cell.main .v{color:var(--dim)}
+.sim{background:var(--sheet);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:12px}
+.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line)}
+.seg button{background:transparent;color:var(--ink);border:0;padding:7px 12px;font:inherit;font-size:14px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--dim);outline-offset:2px}
+.play{background:var(--dim);color:#fff;border:0;padding:8px 16px;font:inherit;font-weight:600;cursor:pointer}
+.slider{display:flex;align-items:center;gap:10px;flex:1 1 240px}
+.slider input{flex:1;accent-color:var(--dim)}
+canvas{width:100%;display:block;background:var(--sheet)}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.ro{border-top:2px solid var(--line);padding-top:6px}
+.ro .k{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.ro .v{font-family:"IBM Plex Mono",monospace;font-size:20px;font-variant-numeric:tabular-nums}
+.ro.good{border-color:var(--ok)} .ro.bad{border-color:var(--bad)} .ro.bad .v{color:var(--bad)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:22px;height:4px;vertical-align:middle;margin-right:6px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;font-size:14px}
+td,th{padding:6px 12px 6px 0;text-align:left;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:500}
+ol,ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;max-width:74ch}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px}
+.cols section{display:flex;flex-direction:column;gap:10px}
+@media (prefers-reduced-motion: reduce){.play{display:none}}
+</style>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <h1>S lateral del conector M12</h1>
+    <p class="lede">Flex de canto (11 mm de alto) entre una pestaña rígida fija y la placa del conector, que se retrae 12 mm. Vista de arriba, simulada como elástica. Cotas desde la cara interior del panel (x = 0) y desde el borde izquierdo de los 52 mm (z = 0).</p>
+  </header>
+
+  <div class="answer">
+    <div class="cell main"><span class="k">Largo del flex</span><span class="v">18,25 mm</span><span class="s">desarrollado entre los cantos rígidos, con 1 mm recto en cada extremo. Tolerancia ±0,25.</span></div>
+    <div class="cell"><span class="k">Separación en z</span><span class="v">16 mm</span><span class="s">del canto de la pestaña (z 16) al canto de la placa del conector (z 32).</span></div>
+    <div class="cell"><span class="k">Pestaña fija</span><span class="v">6 mm detrás</span><span class="s">de la placa del conector en nominal: la S trabaja +6 / −6 mm, centrada.</span></div>
+    <div class="cell"><span class="k">R interior mínimo</span><span class="v">3,37 mm</span><span class="s">ida y vuelta, con cuerpo del conector de 6,3 a 7 mm y carrera de 12 y 12,5 mm.</span></div>
+  </div>
+
+  <div class="sim">
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Sentido">
+        <button id="s0" aria-pressed="true">Retraído → nominal (montaje)</button>
+        <button id="s1" aria-pressed="false">Nominal → retraído</button>
+      </div>
+      <button class="play" id="play">Pausa</button>
+      <label class="slider"><span class="mono" style="font-size:13px">carrera</span><input id="t" type="range" min="0" max="1000" value="0"></label>
+    </div>
+    <canvas id="cv" height="460" aria-label="Vista de arriba de la S durante la carrera"></canvas>
+    <div class="legend">
+      <span><i style="background:var(--ok)"></i>R ≥ 3,5</span>
+      <span><i style="background:var(--warn)"></i>3 ≤ R &lt; 3,5</span>
+      <span><i style="background:var(--bad)"></i>R &lt; 3</span>
+      <span><i style="background:var(--pcb)"></i>placas rígidas (plano medio ± 0,5)</span>
+      <span><i style="background:var(--cam)"></i>cámara y su flex</span>
+      <span><i style="background:var(--dim);height:1px"></i>panel y límites de 52 mm</span>
+    </div>
+    <div class="readout">
+      <div class="ro"><div class="k">Retracción</div><div class="v" id="v1">–</div></div>
+      <div class="ro"><div class="k">R interior ahora</div><div class="v" id="v2">–</div></div>
+      <div class="ro"><div class="k">R mín. del recorrido</div><div class="v" id="v3">–</div></div>
+      <div class="ro"><div class="k">Distancia al flex de la cámara</div><div class="v" id="v4">–</div></div>
+    </div>
+  </div>
+
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <h2>Por qué 18,25 mm</h2>
+    <p>Radio interior mínimo en toda la carrera (peor caso de tolerancias) según el largo del flex. Por debajo de ~17,7 mm el flex queda tenso al retraer y el radio colapsa. Por encima, sobra flex y el radio baja despacio. 18,25 ± 0,25 queda dentro de la zona segura con margen al precipicio.</p>
+    <canvas id="rl" height="230" aria-label="Radio mínimo según el largo del flex"></canvas>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <h2>Perfil para Solid Edge (posición nominal)</h2>
+    <p>Línea media del flex, vista de arriba: rectas y arcos tangentes. Desvío máximo respecto de la forma simulada: <span class="mono" id="dev">–</span>. Coordenadas (z; x) en mm.</p>
+    <div class="tw"><table id="ptab">
+      <thead><tr><th>#</th><th>Tipo</th><th>Inicio (z; x)</th><th>Fin (z; x)</th><th>Centro (z; x)</th><th>R línea media</th><th>R cara interior</th><th>Ángulo</th><th>Largo</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <canvas id="pl" height="300" aria-label="Plano del perfil nominal"></canvas>
+  </section>
+
+  <div class="cols">
+    <section>
+      <h2>Cómo dibujarlo en SE</h2>
+      <ol>
+        <li>Chapa, plano de arriba (el piso). Origen: cara interior del panel y borde izquierdo de los 52 mm.</li>
+        <li>Boceto abierto con la tabla: recta de 1 mm desde la pestaña, arco R 5,67, recta, arco R 6,09 en sentido contrario, arco R 13,51 y recta de 1 mm. Todas tangentes.</li>
+        <li>Brida de contorno con ese boceto: espesor 0,2, extensión 11 mm hacia arriba (de y 0,6 a 11,6 sobre la cinta), material simétrico respecto de la línea (o usá la capa FLEX_CARA del DXF y el espesor hacia el otro lado).</li>
+        <li>En la brida, que SE tome los arcos del boceto como dobleces; factor neutro 0,5. El desarrollo tiene que dar 18,25 mm entre los cantos.</li>
+        <li>Pestaña y placa del conector como placas de 1 mm con su plano medio en x = −13,15 y x = −7,15. El flex sale de sus cantos (z 16 y z 32) en el plano medio.</li>
+      </ol>
+      <p>El DXF <span class="mono">S_conector_nominal.dxf</span> trae la línea media, las dos caras, la pestaña, la placa en nominal y retraída, el panel y los límites de 52 mm, para importarlo directo al boceto.</p>
+    </section>
+    <section>
+      <h2>Cotas y supuestos</h2>
+      <ul>
+        <li>Cuerpo del conector detrás del panel: 6,65 mm nominal (6,3 a 7). Placa del conector: cara delantera en x = −6,65, plano medio en −7,15.</li>
+        <li>Pestaña fija: plano medio en x = −13,15, canto de salida en z = 16. Se alimenta desde la mainboard con un doblez hacia arriba de R 3.</li>
+        <li>Retraído: placa del conector en x −19,65 a −18,65. El borde delantero de la mainboard tiene que quedar en x ≤ −20,5 donde barren la S y la placa (z 16 a 52).</li>
+        <li>Flex de 0,2 mm, 1 mm recto al salir de cada zona rígida; radio medido en la cara interior.</li>
+        <li>La S no pasa más adelante de x ≈ −6,7: queda a ≥ 1,6 mm del flex de la cámara (x −5,11). No hace falta pared.</li>
+        <li>Verificado con 12,5 mm de carrera: si se tira de más, no se tensa.</li>
+      </ul>
+      <div class="tw"><table id="ttab"><thead><tr><th>Cuerpo conector</th><th>Carrera</th><th>R int. mín.</th><th>Barrido lateral</th></tr></thead><tbody></tbody></table></div>
+    </section>
+  </div>
+</div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const f2 = v => (Math.round(v * 100) / 100).toFixed(2).replace('.', ',');
+let dir = 'ret_a_nom', u = 0, playing = !matchMedia('(prefers-reduced-motion: reduce)').matches, last = null, hold = 0;
+const T = document.getElementById('t'), pb = document.getElementById('play');
+function fit(c){ const r = c.getBoundingClientRect(), dpr = devicePixelRatio || 1, h = +(c.dataset.h ||= c.getAttribute('height'));
+  c.width = r.width * dpr; c.height = h * dpr; c.style.height = h + 'px'; const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); return [g, r.width, h]; }
+const colR = R => R < 3 ? css('--bad') : R < 3.5 ? css('--warn') : css('--ok');
+
+// escena fija: vista de arriba, z horizontal (0..52), x vertical (panel arriba)
+function scene(g, w, h, zmin, zmax, xmin, xmax){
+  const sc = Math.min((w - 30) / (zmax - zmin), (h - 30) / (xmax - xmin));
+  const oz = 15 + (w - 30 - sc * (zmax - zmin)) / 2 - zmin * sc, ox = 15 + xmax * sc;
+  return (z, x) => [oz + z * sc, ox - x * sc];
+}
+function rect(g, P, z0, z1, x0, x1, stroke, fill){ const [a, b] = P(z0, x1), [c, d] = P(z1, x0); g.fillStyle = fill; g.fillRect(a, b, c - a, d - b); g.strokeStyle = stroke; g.lineWidth = 1.2; g.strokeRect(a, b, c - a, d - b); }
+
+function draw(){
+  const seq = D.seq[dir], n = seq.length, fr = seq[Math.round(u * (n - 1))];
+  const [g, w, h] = fit(document.getElementById('cv'));
+  const P = scene(g, w, h, -2, 54, -23, 2.5);
+  g.font = '11px "IBM Plex Mono", monospace';
+  // grilla cada 1 mm, fuerte cada 5
+  for (let z = 0; z <= 52; z++){ g.strokeStyle = css('--grid'); g.globalAlpha = z % 5 ? .5 : 1; g.beginPath(); g.moveTo(...P(z, -23)); g.lineTo(...P(z, 2)); g.stroke(); }
+  for (let x = -23; x <= 2; x++){ g.globalAlpha = x % 5 ? .5 : 1; g.beginPath(); g.moveTo(...P(-2, x)); g.lineTo(...P(54, x)); g.stroke(); }
+  g.globalAlpha = 1;
+  // panel y limites
+  g.strokeStyle = css('--dim'); g.lineWidth = 1.5; g.beginPath(); g.moveTo(...P(-2, 0)); g.lineTo(...P(54, 0)); g.stroke();
+  g.setLineDash([5, 4]); g.lineWidth = 1;
+  for (const z of [0, 52]){ g.beginPath(); g.moveTo(...P(z, -23)); g.lineTo(...P(z, 2)); g.stroke(); }
+  g.beginPath(); g.moveTo(...P(16, -20.5)); g.lineTo(...P(54, -20.5)); g.stroke();
+  g.setLineDash([]); g.fillStyle = css('--dim');
+  g.fillText('panel (x = 0)', ...P(0.5, 0.6)); g.fillText('z = 0', ...P(0.3, -22.4)); g.fillText('z = 52', ...P(48.6, -22.4));
+  g.fillText('borde mainboard x ≤ −20,5', ...P(33, -21.9));
+  // camara: modulo, flex, conector y seccion de camara (referencia)
+  rect(g, P, 21.75, 30.25, -5.05, 0, css('--cam'), css('--camfill'));
+  g.strokeStyle = css('--cam'); g.lineWidth = 2; g.beginPath(); g.moveTo(...P(11.25, -5.11)); g.lineTo(...P(30.25, -5.11)); g.stroke();
+  rect(g, P, 11.25, 17.25, -5.05, -4.7, css('--cam'), css('--camfill'));
+  rect(g, P, 3.6, 16, -7.17, -6.17, css('--pcb'), css('--pcbfill'));
+  g.fillStyle = css('--muted'); g.fillText('cámara', ...P(23.5, -2.2)); g.fillText('sección de cámara', ...P(4, -7.9));
+  // pestaña fija y placa del conector
+  rect(g, P, 4, 16, D.XT - 0.5, D.XT + 0.5, css('--pcb'), css('--pcbfill'));
+  g.fillStyle = css('--muted'); g.fillText('pestaña fija', ...P(6.5, D.XT - 1.4));
+  const X = D.XB - fr.ret;
+  rect(g, P, 32, 52, X - 0.5, X + 0.5, css('--pcb'), css('--pcbfill'));
+  rect(g, P, 38, 50, X + 0.5, X + 0.5 + D.B, css('--line'), css('--camfill'));
+  g.fillStyle = css('--muted'); g.fillText('placa del conector + M12', ...P(38.5, X + 0.5 + D.B / 2));
+  // nominal y retraido de referencia
+  g.setLineDash([3, 3]); g.strokeStyle = css('--muted'); g.lineWidth = 1;
+  for (const xx of [D.XB, D.XB - 12]){ g.beginPath(); g.moveTo(...P(32, xx)); g.lineTo(...P(53, xx)); g.stroke(); }
+  g.setLineDash([]);
+  // flex coloreado por radio
+  const zs = fr.z, xs = fr.x, k = fr.k; g.lineWidth = 4; g.lineCap = 'butt';
+  for (let i = 0; i < zs.length - 1; i++){
+    const ki = Math.max(k[Math.max(0, i - 1)] || 0, k[Math.min(k.length - 1, i)] || 0), R = ki > 0 ? 1 / ki - 0.1 : 99;
+    g.strokeStyle = (i === 0 || i === zs.length - 2) ? css('--kapton') : colR(R);
+    g.beginPath(); g.moveTo(...P(zs[i], xs[i])); g.lineTo(...P(zs[i + 1], xs[i + 1])); g.stroke();
+  }
+  let im = 0; for (let i = 0; i < k.length; i++) if (k[i] > k[im]) im = i;
+  const [mx, my] = P(zs[im + 1], xs[im + 1]);
+  g.strokeStyle = css('--ink'); g.lineWidth = 1.5; g.beginPath(); g.arc(mx, my, 7, 0, 7); g.stroke();
+  g.fillStyle = css('--ink'); g.font = '600 12px "IBM Plex Mono", monospace'; g.fillText('R ' + f2(fr.R), mx + 10, my - 8);
+  // cotas: 16 mm en z y 6 mm en x
+  g.strokeStyle = css('--dim'); g.fillStyle = css('--dim'); g.lineWidth = 1; g.font = '11px "IBM Plex Mono", monospace';
+  const [a1, b1] = P(16, -21.2), [a2] = P(32, -21.2); g.beginPath(); g.moveTo(a1, b1); g.lineTo(a2, b1); g.stroke(); g.fillText('Z = 16', (a1 + a2) / 2 - 18, b1 - 4);
+  const xmax = Math.max(...xs);
+  document.getElementById('v1').textContent = f2(fr.ret) + ' mm';
+  document.getElementById('v2').textContent = f2(fr.R) + ' mm';
+  document.getElementById('v3').textContent = f2(D.Rmin) + ' mm';
+  document.getElementById('v4').textContent = f2(-5.11 - 0.06 - (xmax + 0.1)) + ' mm';
+  document.getElementById('v2').parentElement.className = 'ro ' + (fr.R < 3 ? 'bad' : 'good');
+  document.getElementById('v3').parentElement.className = 'ro ' + (D.Rmin < 3 ? 'bad' : 'good');
+}
+
+function drawRL(){
+  const [g, w, h] = fit(document.getElementById('rl')); const L = 46, R = 14, Tp = 12, B = 34;
+  const Ls = D.rl.map(d => d.L), l0 = Math.min(...Ls), l1 = Math.max(...Ls), r0 = 0, r1 = 4;
+  const px = v => L + (v - l0) / (l1 - l0) * (w - L - R), py = v => Tp + (1 - (Math.max(r0, Math.min(r1, v)) - r0) / (r1 - r0)) * (h - Tp - B);
+  g.font = '11px "IBM Plex Mono", monospace'; g.fillStyle = css('--muted'); g.strokeStyle = css('--grid'); g.lineWidth = 1;
+  for (let v = 0; v <= 4; v++){ g.beginPath(); g.moveTo(L, py(v)); g.lineTo(w - R, py(v)); g.stroke(); g.fillText(v.toFixed(0), 24, py(v) + 4); }
+  for (let v = Math.ceil(l0 * 2) / 2; v <= l1 + 1e-9; v += .5){ g.fillText(v.toFixed(1).replace('.', ','), px(v) - 12, h - 16); }
+  g.fillText('largo del flex (mm) → R interior mínimo (mm)', L, h - 2);
+  g.fillStyle = css('--ok'); g.globalAlpha = .12; g.fillRect(px(18.0), Tp, px(18.5) - px(18.0), h - Tp - B); g.globalAlpha = 1;
+  g.strokeStyle = css('--dim'); g.setLineDash([5, 4]); g.beginPath(); g.moveTo(L, py(3)); g.lineTo(w - R, py(3)); g.stroke(); g.setLineDash([]);
+  g.strokeStyle = css('--ink'); g.lineWidth = 2; g.beginPath(); D.rl.forEach((d, i) => { const x = px(d.L), y = py(d.R); i ? g.lineTo(x, y) : g.moveTo(x, y); }); g.stroke();
+  g.fillStyle = css('--ink'); D.rl.forEach(d => { g.beginPath(); g.arc(px(d.L), py(d.R), 2.5, 0, 7); g.fill(); });
+  g.fillStyle = css('--dim'); g.beginPath(); g.arc(px(D.L), py(3.368), 5, 0, 7); g.fill();
+  g.fillText('18,25', px(D.L) - 14, py(3.368) - 10); g.fillStyle = css('--muted'); g.fillText('tolerancia ±0,25', px(18.0) + 3, h - B - 6);
+}
+
+function drawPlan(){
+  const rows = D.perfil; document.getElementById('dev').textContent = f2(D.desvio) + ' mm';
+  const tb = document.querySelector('#ptab tbody'); tb.innerHTML = '';
+  rows.forEach((r, i) => { const a = r.tipo === 'Arco'; const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i + 1}</td><td>${r.tipo}${a ? ' (' + r.sentido + ')' : ''}</td><td class="mono">${f2(r.z0)}; ${f2(r.x0)}</td><td class="mono">${f2(r.z1)}; ${f2(r.x1)}</td>` +
+      `<td class="mono">${a ? f2(r.cz) + '; ' + f2(r.cx) : '–'}</td><td class="mono">${a ? f2(r.R) : '–'}</td><td class="mono">${a ? f2(r.Rint) : '–'}</td>` +
+      `<td class="mono">${a ? f2(r.barrido) + '°' : f2(r.ang) + '°'}</td><td class="mono">${f2(r.largo)}</td>`; tb.appendChild(tr); });
+  const tt = document.querySelector('#ttab tbody'); tt.innerHTML = '';
+  D.tol.forEach(t => { const tr = document.createElement('tr'); const b = (t.a === 6 ? 6.65 : t.a > 6 ? 6.3 : 7.0);
+    tr.innerHTML = `<td class="mono">${f2(b)} mm</td><td class="mono">${f2(t.tr)} mm</td><td class="mono">${f2(t.R)} mm</td><td class="mono">${f2(t.xmin)} a ${f2(t.xmax)}</td>`; tt.appendChild(tr); });
+  const [g, w, h] = fit(document.getElementById('pl'));
+  const P = scene(g, w, h, 14, 34, -15, -5);
+  g.font = '11px "IBM Plex Mono", monospace';
+  for (let z = 14; z <= 34; z++){ g.strokeStyle = css('--grid'); g.globalAlpha = z % 5 ? .5 : 1; g.beginPath(); g.moveTo(...P(z, -15)); g.lineTo(...P(z, -5)); g.stroke(); }
+  for (let x = -15; x <= -5; x++){ g.globalAlpha = x % 5 ? .5 : 1; g.beginPath(); g.moveTo(...P(14, x)); g.lineTo(...P(34, x)); g.stroke(); }
+  g.globalAlpha = 1;
+  rect(g, P, 14, 16, D.XT - 0.5, D.XT + 0.5, css('--pcb'), css('--pcbfill'));
+  rect(g, P, 32, 34, D.XB - 0.5, D.XB + 0.5, css('--pcb'), css('--pcbfill'));
+  rows.forEach((r, i) => {
+    g.strokeStyle = r.tipo === 'Arco' ? css('--kapton') : css('--ink'); g.lineWidth = 3; g.beginPath();
+    if (r.tipo === 'Recta'){ g.moveTo(...P(r.z0, r.x0)); g.lineTo(...P(r.z1, r.x1)); }
+    else { const a0 = Math.atan2(r.x0 - r.cx, r.z0 - r.cz), a1 = Math.atan2(r.x1 - r.cx, r.z1 - r.cz); const [cx, cy] = P(r.cz, r.cx);
+      const sc = Math.abs(P(1, 0)[0] - P(0, 0)[0]); g.arc(cx, cy, r.R * sc, -a0, -a1, r.sentido === 'antihorario'); }
+    g.stroke();
+    const [mx, my] = P((r.z0 + r.z1) / 2, (r.x0 + r.x1) / 2);
+    g.fillStyle = css('--sheet'); g.beginPath(); g.arc(mx, my, 9, 0, 7); g.fill(); g.strokeStyle = css('--ink'); g.lineWidth = 1; g.stroke();
+    g.fillStyle = css('--ink'); g.textAlign = 'center'; g.fillText(i + 1, mx, my + 4); g.textAlign = 'start';
+  });
+  g.fillStyle = css('--muted'); g.fillText('pestaña (x −13,15)', ...P(14.1, D.XT - 1.2)); g.fillText('placa conector nominal (x −7,15)', ...P(27, D.XB + 1.3));
+}
+
+function setDir(d){ dir = d; ['s0', 's1'].forEach((id, i) => document.getElementById(id).setAttribute('aria-pressed', (i === 0) === (d === 'ret_a_nom'))); draw(); }
+document.getElementById('s0').onclick = () => setDir('ret_a_nom');
+document.getElementById('s1').onclick = () => setDir('nom_a_ret');
+pb.onclick = () => { playing = !playing; pb.textContent = playing ? 'Pausa' : 'Reproducir'; last = null; if (playing) requestAnimationFrame(tick); };
+if (!playing) pb.textContent = 'Reproducir';
+T.oninput = () => { u = T.value / 1000; playing = false; pb.textContent = 'Reproducir'; draw(); };
+function tick(ts){
+  if (!playing) return;
+  if (last != null){ const dt = (ts - last) / 1000; if (hold > 0) hold -= dt; else { u += dt / 5; if (u >= 1){ u = 1; hold = 1.2; } } }
+  if (u >= 1 && hold <= 0){ u = 0; setDir(dir === 'ret_a_nom' ? 'nom_a_ret' : 'ret_a_nom'); }
+  last = ts; T.value = Math.round(u * 1000); draw(); requestAnimationFrame(tick);
+}
+function all(){ draw(); drawRL(); drawPlan(); }
+addEventListener('resize', all);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', all);
+all(); if (playing) requestAnimationFrame(tick);
+</script>
