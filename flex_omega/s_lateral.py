@@ -25,10 +25,11 @@ def solve(th0, L, Z, d, mu=2e3):
     y = np.cumsum(h*np.sin(th))
     return th, 1/k.max() - c, y.min(), y.max()
 
-def worst(L, Z, travel=12.0):
+def worst(L, Z, travel=12.0, a=None):
+    a = travel/2 if a is None else a  # desplazamiento en nominal; en retraido es a - travel
     s = np.linspace(0, 1, N); th = 0.3*np.sin(2*np.pi*s)
     Rs = []; ext = [0, 0]
-    for d in np.r_[np.linspace(travel/2, -travel/2, 41), np.linspace(-travel/2, travel/2, 41)]:
+    for d in np.r_[np.linspace(a, a - travel, 41), np.linspace(a - travel, a, 41)]:
         th, R, ymn, ymx = solve(th, L, Z, d); Rs.append(R); ext = [min(ext[0], ymn), max(ext[1], ymx)]
     return min(Rs), ext
 

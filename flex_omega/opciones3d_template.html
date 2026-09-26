@@ -56,6 +56,7 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
         <button id="o0" aria-pressed="true">1 · Placa en el piso</button>
         <button id="o1" aria-pressed="false">2 · S lateral de canto</button>
         <button id="o2" aria-pressed="false">3 · U rodante de canto</button>
+        <button id="o3" aria-pressed="false">4 · Interfaz + cámara</button>
       </div>
       <div class="seg" role="group" aria-label="Vista">
         <button id="v0" aria-pressed="true">Isométrica</button>
@@ -74,6 +75,8 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
       <span><i style="background:#8fb5a3"></i>placas rígidas</span>
       <span><i style="background:#d8a13a"></i>pestaña rígida</span>
       <span><i style="background:#7d8799"></i>conector y guías</span>
+      <span><i style="background:#2b2f38"></i>cámara MIPI</span>
+      <span><i style="background:#b9c0cc"></i>rosca 12 mm</span>
       <span><i style="background:#d4145a;opacity:.35"></i>techo 10,5 mm y línea nominal</span>
     </div>
     <div class="readout">
@@ -114,6 +117,17 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
         <li>La punta se dibuja como semicírculo; el canal está calculado con la forma elástica real.</li>
       </ul>
     </article>
+    <article class="card" id="c3">
+      <h3>4 · Placa de interfaz fija + cámara + S doble</h3>
+      <dl><dt>Ancho lateral</dt><dd>51 mm de 52: interfaz 21 + S 16 + placa del conector 14</dd><dt>W</dt><dd>≈ 13 mm</dd><dt>S</dt><dd>16 mm en z, flex 19,2 mm, desplazada +3,2 / −8,8</dd><dt>R mín.</dt><dd>3,61 mm (ida y vuelta)</dd></dl>
+      <ul>
+        <li>La pestaña crece y pasa a ser una placa de interfaz fija: recibe el flex de la mainboard (48 V, Gigabit y MIPI) y el conector de la cámara.</li>
+        <li>La cámara va fija contra la ventana del panel y su flex de fábrica se enchufa en la placa de interfaz. No se mueve.</li>
+        <li>Gigabit con 48 V no entra en una tira de 10 mm de alto: van dos tiras en S, que son dos capas de flex independientes del rigid-flex, separadas ~1 mm.</li>
+        <li>Supone 4 mm de cuerpo de conector entre la placa y el panel; eso fija el desplazamiento de la S.</li>
+        <li>La rosca de 12 mm de diámetro no entra bajo 10,5: en el dibujo sobresale 0,75 mm arriba y abajo.</li>
+      </ul>
+    </article>
   </div>
 </div>
 
@@ -140,6 +154,9 @@ const MAT = {
   pestana: new THREE.MeshStandardMaterial({color: 0xd8a13a, roughness: .7}),
   conector: new THREE.MeshStandardMaterial({color: 0x7d8799, roughness: .5, metalness: .3}),
   guia: new THREE.MeshStandardMaterial({color: 0x7d8799, roughness: .6, transparent: true, opacity: .35}),
+  camara: new THREE.MeshStandardMaterial({color: 0x2b2f38, roughness: .4, metalness: .2}),
+  rosca: new THREE.MeshStandardMaterial({color: 0xb9c0cc, roughness: .35, metalness: .6}),
+  panel: new THREE.MeshStandardMaterial({color: 0x9aa3b2, roughness: .8, transparent: true, opacity: .18, depthWrite: false}),
 };
 const flexMat = new THREE.MeshStandardMaterial({vertexColors: true, side: THREE.DoubleSide, roughness: .45});
 const ok = new THREE.Color(0x2f5fd0), warn = new THREE.Color(0xc17a00), bad = new THREE.Color(0xd4145a);
@@ -167,6 +184,10 @@ function ribbonMesh(r){
   return new THREE.Mesh(g, flexMat);
 }
 function boxMesh(b){
+  if (b.cyl){
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(b.r, b.r, b.len, 32), MAT[b.kind]);
+    m.rotation.z = Math.PI / 2; m.position.set(b.x0 + b.len / 2, b.y, b.z); return m;
+  }
   const s = [b.max[0] - b.min[0], b.max[1] - b.min[1], b.max[2] - b.min[2]];
   const m = new THREE.Mesh(new THREE.BoxGeometry(...s), MAT[b.kind]);
   m.position.set((b.max[0] + b.min[0]) / 2, (b.max[1] + b.min[1]) / 2, (b.max[2] + b.min[2]) / 2);
@@ -179,7 +200,7 @@ function frameBounds(o){
   const mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
   for (const f of [o.frames[0], o.frames[o.frames.length - 1]]){
     for (const r of f.ribbons) for (const p of r.p) for (let k = 0; k < 3; k++){ mn[k] = Math.min(mn[k], p[k]); mx[k] = Math.max(mx[k], p[k]); }
-    for (const b of f.boxes) for (let k = 0; k < 3; k++){ mn[k] = Math.min(mn[k], b.min[k]); mx[k] = Math.max(mx[k], b.max[k]); }
+    for (const b of f.boxes){ if (b.cyl || b.kind === 'panel') continue; for (let k = 0; k < 3; k++){ mn[k] = Math.min(mn[k], b.min[k]); mx[k] = Math.max(mx[k], b.max[k]); } }
   }
   return {mn, mx};
 }
@@ -198,6 +219,7 @@ function buildStatic(){
   edge([mn[0] - 3, 10.5, mn[2] - 3], [mx[0] + 3, 10.5, mn[2] - 3]);
   edge([o.W, 0, mn[2] - 3], [o.W, 10.5, mn[2] - 3]); edge([o.W, 0, mx[2] + 3], [o.W, 10.5, mx[2] + 3]);
   edge([0, 0, mn[2] - 3], [0, 10.5, mn[2] - 3]);
+  if (o.env){ for (const z of o.env){ edge([mn[0] - 3, 0, z], [mx[0] + 12, 0, z]); edge([mn[0] - 3, 10.5, z], [mx[0] + 12, 10.5, z]); } }
   const grid = new THREE.GridHelper(Math.max(mx[0] - mn[0], mx[2] - mn[2]) + 20, Math.round((Math.max(mx[0] - mn[0], mx[2] - mn[2]) + 20) / 2), 0x8892a6, 0xc0c8d6);
   grid.material.transparent = true; grid.material.opacity = .35;
   grid.position.set((mx[0] + mn[0]) / 2, 0, (mx[2] + mn[2]) / 2); stat.add(grid);
@@ -235,11 +257,11 @@ function bg(){ renderer.setClearColor(new THREE.Color(css('--scene') || '#eef2f7
 
 const T = document.getElementById('t'), pb = document.getElementById('play');
 function selectOption(i){
-  oi = i; ['o0', 'o1', 'o2'].forEach((id, k) => document.getElementById(id).setAttribute('aria-pressed', k === i));
-  ['c0', 'c1', 'c2'].forEach((id, k) => document.getElementById(id).classList.toggle('sel', k === i));
+  oi = i; ['o0', 'o1', 'o2', 'o3'].forEach((id, k) => document.getElementById(id).setAttribute('aria-pressed', k === i));
+  ['c0', 'c1', 'c2', 'c3'].forEach((id, k) => document.getElementById(id).classList.toggle('sel', k === i));
   buildStatic(); setView(0); show();
 }
-['o0', 'o1', 'o2'].forEach((id, i) => document.getElementById(id).onclick = () => selectOption(i));
+['o0', 'o1', 'o2', 'o3'].forEach((id, i) => document.getElementById(id).onclick = () => selectOption(i));
 ['v0', 'v1', 'v2'].forEach((id, i) => document.getElementById(id).onclick = () => setView(i));
 pb.onclick = () => { playing = !playing; pb.textContent = playing ? 'Pausa' : 'Reproducir'; last = null; };
 if (!playing) pb.textContent = 'Reproducir';

@@ -98,8 +98,47 @@ def opcion_u(W=13.0, G=7.6):
             box(xf + 3.5, W + 12, 0.3, 10.4, zf - c - 0.3, zf - c, 'guia')]))
     return dict(id='u', nombre='U rodante de canto', W=W, Rmin=3.0, frames=frames)
 
-if __name__ == '__main__':
-    out = [opcion_piso(), opcion_s(), opcion_u()]
+def _main():
+    out = [opcion_piso(), opcion_s(), opcion_u(), opcion_camara()]
     for o in out:
         print(o['id'], len(o['frames']), 'Rmin dibujo', min(min(r['R']) for f in o['frames'] for r in f['ribbons']))
     json.dump(out, open('opciones3d.json', 'w'), separators=(',', ':'))
+
+# ---------- Opcion 4: placa de interfaz fija + camara MIPI + S doble de canto ----------
+def opcion_camara(Xn=13.0, b=4.0, Z=16.0, L=19.2, gap=1.0):
+    """Xn: cara de la placa del conector en nominal. b: cuerpo del conector detras del panel.
+    La camara (8,5 x 8,5 x 5,5) queda fija contra el panel y su flex se enchufa en la placa de interfaz,
+    que es la pestaña fija ampliada. Dos tiras en S (flex de dos capas independientes) llevan 48 V y Gigabit."""
+    xp = Xn + b                     # cara interior del panel
+    xi1 = xp - 5.5 - 0.2 - 1.5      # cara delantera de la placa de interfaz (modulo + flex camara + conector)
+    xi = xi1 - 0.5                  # plano medio de la placa de interfaz
+    zi0, zi1 = 0.0, 21.0            # placa de interfaz en z
+    z0 = zi1; zc0 = z0 + Z          # S y placa del conector
+    a = (Xn - 0.5) - xi             # desplazamiento de la S en nominal
+    ai = arc(xi - 3.1, 3.2, 3.1, -np.pi/2, 0)
+    inc = np.stack([np.r_[0, xi - 3.1, ai[1:, 0], xi], np.r_[c, c, ai[1:, 1], 4.3], np.full(len(ai) + 2, 8.5)], 1)
+    frames = []; s = np.linspace(0, 1, s_lateral.N); th = 0.3*np.sin(2*np.pi*s); Rall = []
+    for ret in np.linspace(12, 0, STEPS):
+        X = Xn - ret; dlat = (X - 0.5) - xi
+        th, R, _, _ = s_lateral.solve(th, L, Z, dlat); Rall.append(R)
+        h = L/s_lateral.N
+        zz = np.concatenate([[0], np.cumsum(h*np.cos(th))]); xx = np.concatenate([[0], np.cumsum(h*np.sin(th))])
+        rib = [ribbon(inc, (0, 0, 1), 15)]
+        for off in (-gap/2, gap/2):
+            rib.append(ribbon(np.stack([xi + off + xx, np.full(len(xx), 5.3), z0 + zz], 1), (0, 1, 0), 10))
+        cam_flex = np.array([[xp - 5.6, 5.25, 5.25], [xp - 5.6, 5.25, 20.5]])
+        rib.append(dict(p=cam_flex.tolist(), b=[0, 1, 0], w=6, R=[99, 99]))
+        frames.append(dict(ret=round(ret, 3), ribbons=rib, boxes=[
+            box(-10, 0, 0.2, 1.2, -4, 56, 'mainboard'),
+            box(xi - 0.5, xi + 0.5, 4.3, 10.4, zi0, zi1 - 4, 'pestana'),
+            box(xi - 0.5, xi + 0.5, 0.3, 10.4, zi1 - 4, zi1, 'pestana'),
+            box(xi1, xi1 + 1.5, 3.0, 7.5, 15.5, 20.0, 'conector'),              # conector de la camara
+            box(xp - 5.5, xp, 1.0, 9.5, 1.0, 9.5, 'camara'),                     # modulo MIPI
+            box(X - 1.0, X, 0.3, 10.4, zc0, zc0 + 14, 'placa'),
+            box(X, X + b, 0.3, 10.4, zc0 + 1, zc0 + 13, 'conector'),              # cuerpo del conector
+            dict(cyl=True, x0=X + b, len=12, y=5.25, z=zc0 + 7, r=6, kind='rosca'),
+            box(xp, xp + 1.5, -1, 13, -2, 54, 'panel')]))
+    return dict(id='cam', nombre='Interfaz fija + cámara + S doble', W=Xn, Rmin=round(min(Rall), 2), a=round(a, 2), env=[0, 52], frames=frames)
+
+if __name__ == '__main__':
+    _main()
