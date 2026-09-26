@@ -7,11 +7,11 @@ import json, numpy as np
 from multiprocessing import Pool
 import s_lateral as S, arcfit, s_centrada as C
 
-Z, L, TRAVEL = 16.0, 18.25, 12.0
+Z, L, TRAVEL = 15.5, 17.75, 12.0
 B = 6.65                        # cuerpo del conector detras del panel (nominal de 6,3-7)
-XB = -B - 0.5                   # plano medio de la placa del conector en nominal
+XB = -B - 0.1                   # linea media del flex (cara delantera de la placa del conector) en nominal
 A = 6.0                         # la pestaña queda 6 mm detras
-XT = XB - A                     # plano medio de la pestaña fija
+XT = XB - A                     # linea media del flex en la pestaña fija (cara delantera)
 Z0 = 16.0                       # canto de la pestaña por donde sale el flex
 STR, c = 1.0, 0.1
 
@@ -43,15 +43,19 @@ def fit_profile(fr):
     from scipy.interpolate import CubicSpline
     s = np.concatenate([[0], np.cumsum(np.hypot(np.diff(zi), np.diff(xi)))])
     ss = np.linspace(0, s[-1], 600); pz, px = CubicSpline(s, zi)(ss), CubicSpline(s, xi)(ss)
-    best = None
+    cands = []
     for m in (3, 4, 5, 6):
+      for _ in range(1):
         kap, lens, dev, ok = arcfit.fit(pz, px, 0.0, 0.0, m, kmax=1/(3.0 + c))
-        if ok and dev < 0.05: best = (kap, lens, dev); break
-        if ok and (best is None or dev < best[2]): best = (kap, lens, dev)
-    kap, lens, dev = best
-    casi_rectos = tuple(i for i in range(len(kap)) if abs(kap[i]) < 1/40)   # arcos de R > 40 -> rectas
-    if casi_rectos:
-        kap, lens, dev, ok = arcfit.fit(pz, px, 0.0, 0.0, len(kap), kmax=1/(3.0 + c), fixed0=casi_rectos)
+        if not ok: continue
+        cands.append((dev, m, kap, lens, False))
+        casi = tuple(i for i in range(m) if abs(kap[i]) < 1/25)       # arcos de R > 25 -> rectas
+        if casi:
+            k2, l2, d2, ok2 = arcfit.fit(pz, px, 0.0, 0.0, m, kmax=1/(3.0 + c), fixed0=casi, init=(kap, lens))
+            if ok2: cands.append((d2, m, k2, l2, True))
+    # preferimos el perfil con rectas y pocos elementos que quede dentro de 0,05 mm
+    buenos = [x for x in cands if x[0] < 0.06]
+    dev, m, kap, lens, _ = min(buenos, key=lambda x: (not x[4], x[1], x[0])) if buenos else min(cands, key=lambda x: x[0])
     segs = [('L', 0.0, STR)] + [('L' if abs(k) < 1/200 else 'A', k, l) for k, l in zip(kap, lens)] + [('L', 0.0, STR)]
     merged = []
     for sg in segs:
@@ -87,9 +91,9 @@ def dxf(rows, path):
     # placas de referencia (plano medio +-0,5) y panel
     def rect(z0, z1, x0, x1, ly):
         for a, b in (((z0, x0), (z1, x0)), ((z1, x0), (z1, x1)), ((z1, x1), (z0, x1)), ((z0, x1), (z0, x0))): line(a, b, ly)
-    rect(Z0 - 12, Z0, XT - 0.5, XT + 0.5, 'PESTANA_FIJA')
-    rect(Z0 + Z, 52, XB - 0.5, XB + 0.5, 'PLACA_CONECTOR_NOMINAL')
-    rect(Z0 + Z, 52, XB - 12.5, XB - 11.5, 'PLACA_CONECTOR_RETRAIDA')
+    rect(Z0 - 12, Z0, XT - 0.9, XT + 0.1, 'PESTANA_FIJA')
+    rect(Z0 + Z, 52, XB - 0.9, XB + 0.1, 'PLACA_CONECTOR_NOMINAL')
+    rect(Z0 + Z, 52, XB - 12.9, XB - 11.9, 'PLACA_CONECTOR_RETRAIDA')
     line((0, 0), (52, 0), 'PANEL'); line((0, -30), (0, 2), 'LIMITE_52'); line((52, -30), (52, 2), 'LIMITE_52')
     out.extend(['0', 'ENDSEC', '0', 'EOF'])
     open(path, 'w').write('\n'.join(out) + '\n')
@@ -101,7 +105,7 @@ if __name__ == '__main__':
     dxf(rows, 'planos/S_conector_nominal.dxf')
     tol = {}
     with Pool(4) as p:
-        rl = p.map(rl_point, [round(v, 3) for v in np.arange(17.5, 19.76, 0.125)])
+        rl = p.map(rl_point, [round(v, 3) for v in np.arange(17.0, 19.01, 0.125)])
         tolres = p.starmap(C.sweep, [(Z, L, a, tr, 121) for a in (5.65, 6.0, 6.35) for tr in (12.0, 12.5)])
     tol = [dict(a=a, tr=tr, R=round(r[0], 2), xmin=round(r[1], 2), xmax=round(r[2], 2)) for (a, tr), r in zip([(a, tr) for a in (5.65, 6.0, 6.35) for tr in (12.0, 12.5)], tolres)]
     for s_ in seq.values():

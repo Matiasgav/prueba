@@ -24,7 +24,7 @@ def endpoint(p0, th0, kap, lens):
         th += k*l
     return p, th
 
-def fit(sx, sy, th0, th1, m, kmax=1.0, fixed0=()):
+def fit(sx, sy, th0, th1, m, kmax=1.0, fixed0=(), init=None):
     """sx, sy: puntos de la elastica (tramo libre) equiespaciados en largo de arco."""
     ds = np.hypot(np.diff(sx), np.diff(sy)); s = np.concatenate([[0], np.cumsum(ds)]); Lf = s[-1]
     th = np.unwrap(np.arctan2(np.gradient(sy), np.gradient(sx)))
@@ -42,6 +42,7 @@ def fit(sx, sy, th0, th1, m, kmax=1.0, fixed0=()):
             {'type': 'eq', 'fun': lambda v: np.array([endpoint(p0, th0, *unpack(v))[1] - th1])},
             {'type': 'eq', 'fun': lambda v: np.array([np.sum(v[m:]) - Lf])}]
     bounds = [((0, 0) if i in fixed0 else (-kmax, kmax)) for i in range(m)] + [(0.3, None)]*m
+    if init is not None: k0, lens0 = np.array(init[0], float), np.array(init[1], float)
     k0 = np.clip(k0, -kmax, kmax); k0[list(fixed0)] = 0
     r = minimize(obj, np.concatenate([k0, lens0]), constraints=cons, bounds=bounds, method='SLSQP',
                  options={'maxiter': 2000, 'ftol': 1e-12})
