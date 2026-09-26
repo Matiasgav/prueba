@@ -196,8 +196,72 @@ def opcion_horizontal(Xn=28.0, L=38.0, b=6.5, H=11.9, cinta=0.25):
     return dict(id='horiz', nombre='Cámara horizontal + M12 acodado', W=Xn, Rmin=round(min(a['Rin'] for a in fw + bw), 2),
                 env=[0, 52], H=H, frames=frames)
 
+# ---------- Opcion 7: pared de flex desde el canto lateral de la mainboard (propuesta del usuario) ----------
+def opcion_pared(Xn=13.0, b=6.5, Z=17.0, L=22.0, H=11.9, cinta=0.25):
+    """Igual que la 5 en la zona de camara, S y conector, pero la alimentacion llega por una pared:
+    el flex sale del canto izquierdo de la mainboard, sube 90 grados (R 3,1), gira 90 grados en la esquina
+    (eje vertical, R 3,1) y sigue como pared paralela al panel hasta la seccion rigida de la camara.
+    Por la esquina solo entran ~7 mm de alto: MIPI, LED y alimentacion de la camara. 48 V y Gigabit suben
+    por un segundo tramo desde el canto delantero de la mainboard hasta la base de la seccion de camara."""
+    y0 = cinta; xp = Xn + b; xcam = xp - 5.05; ylens = y0 + 4.25
+    xs0 = xcam - 0.12 - 1.0; xw = xs0 - 0.5          # plano medio de la pared / seccion de camara
+    zc = 26.0 - 11.8; zs0 = 16.0; zs1 = zs0 + Z
+    zml = 3.6                                         # canto izquierdo de la mainboard
+    zcs0 = zml                                        # la seccion de camara empieza donde termina la esquina
+    xmf = xw - 3.1 - 1.3                              # canto delantero de la mainboard frente a la seccion de camara
+    yw0, yw1 = y0 + 4.35, y0 + 11.35                  # pared por la esquina: 7 mm de alto
+    # tramo 1: dobla hacia arriba en el canto izquierdo (perfil en z-y, ancho en x)
+    a1 = arc(zml, y0 + 0.1 + 3.1, 3.1, -np.pi/2, -np.pi)[1:]
+    p1 = np.vstack([[[zml, y0 + 0.1]], a1, [[zml - 3.1, yw0]]])
+    xa, xb = 0.5, xw - 3.1
+    wall1 = np.stack([np.full(len(p1), (xa + xb)/2), p1[:, 1], p1[:, 0]], 1)
+    # tramo 2: pared de canto, recta en x, esquina R 3,1 y recta en z hasta la seccion de camara
+    zw = zml - 3.1
+    cor = arc(xb, zw + 3.1, 3.1, -np.pi/2, 0)
+    p2 = np.vstack([[[xa, zw]], cor, [[xw, zcs0]]])
+    wall2 = np.stack([p2[:, 0], np.full(len(p2), (yw0 + yw1)/2), p2[:, 1]], 1)
+    # tramo 3: 48 V + Gigabit desde el canto delantero de la mainboard a la base de la seccion de camara
+    a3 = arc(xw - 3.1, y0 + 0.1 + 3.1, 3.1, -np.pi/2, 0)
+    p3 = np.vstack([[[xmf, y0 + 0.1]], a3, [[xw, y0 + 4.45]]])
+    up = np.stack([p3[:, 0], p3[:, 1], np.full(len(p3), (zcs0 + 0.2 + 12.2)/2)], 1)
+    # brazo del LED (igual que la 5)
+    xtab = xcam + 0.9; R = 2.6; jog = xtab - xw; ph = np.arccos(1 - jog/(2*R))
+    t1 = np.linspace(np.pi, np.pi - ph, 12); q1 = np.stack([xw + R + R*np.cos(t1), zs0 + R*np.sin(t1)], 1)
+    c2 = q1[-1] + R*np.array([-np.cos(ph), np.sin(ph)])
+    t2 = np.linspace(-ph, 0, 12); q2 = np.stack([c2[0] + R*np.cos(t2), c2[1] + R*np.sin(t2)], 1)
+    arm2 = np.vstack([q1, q2[1:], [[xtab, 22.0]]])
+    arm = np.stack([arm2[:, 0], np.full(len(arm2), y0 + 10.65), arm2[:, 1]], 1)
+    cam_fpc = np.array([[xcam - 0.06, ylens, 30.25], [xcam - 0.06, ylens, 11.25]])
+    frames = []; s = np.linspace(0, 1, s_lateral.N); th = -0.3*np.sin(np.pi*s); Rall = []
+    for ret in np.linspace(12, 0, STEPS):
+        X = Xn - ret; dlat = (X - 0.5) - xw
+        th, Rr, _, _ = s_lateral.solve(th, L, Z, dlat, wall=xs0 - xw); Rall.append(Rr)
+        h = L/s_lateral.N
+        zz = np.concatenate([[0], np.cumsum(h*np.cos(th))]); xx = np.concatenate([[0], np.cumsum(h*np.sin(th))])
+        S = np.stack([xw + xx, np.full(len(xx), y0 + 0.35 + 4.5), zs0 + zz], 1)
+        frames.append(dict(ret=round(ret, 3), ribbons=[
+            ribbon(wall1, (1, 0, 0), xb - xa), ribbon(wall2, (0, 1, 0), yw1 - yw0), ribbon(up, (0, 0, 1), 12.0 - zcs0),
+            ribbon(S, (0, 1, 0), 9.0), ribbon(arm, (0, 1, 0), 1.8, rreq=2.4),
+            dict(p=cam_fpc.tolist(), b=[0, 1, 0], w=8.5, R=[99, 99], rreq=1.44)], boxes=[
+            box(-10, xmf, y0 + 0.2, y0 + 1.2, zml, zs0, 'mainboard'),              # mainboard hasta cerca de la pared
+            box(-10, -0.5, y0 + 0.2, y0 + 1.2, zs0, 54, 'mainboard'),              # recortada donde barre la S y el conector
+            box(xw - 0.5, xw + 0.5, y0 + 4.45, H, zcs0, 12.4, 'placa'),            # seccion rigida de camara (muesca abajo)
+            box(xw - 0.5, xw + 0.5, y0, H, 12.4, zs0, 'placa'),
+            box(xs0, xcam - 0.12, ylens + 0.55 - 3.0, ylens + 0.55 + 3.0, zc - 1.0, zc + 1.0, 'conector'),
+            box(xcam, xcam + 0.35, y0, y0 + 9.6, 11.25, 17.25, 'rigidizador'),
+            box(xcam, xp, y0, y0 + 8.5, 21.75, 30.25, 'camara'),
+            dict(cyl=True, x0=xp - 0.6, len=0.6, y=ylens, z=26.0, r=2.2, kind='rosca'),
+            box(xs0 + 0.05, xs0 + 0.55, y0, y0 + 9.55, zs0 + 0.5, zs1 - 0.5, 'guia'),
+            box(xtab - 0.5, xtab + 0.5, y0 + 8.6, H, 22.0, 29.5, 'placa'),
+            box(xtab + 0.5, xtab + 3.5, y0 + 8.6, y0 + 11.6, 24.5, 27.5, 'led'),
+            box(X - 1.0, X, y0, H, zs1, 52.0, 'placa'),
+            box(X, X + b, y0, H, 38.0, 50.0, 'conector'),
+            dict(cyl=True, x0=X + b, len=12, y=(y0 + H)/2, z=44.0, r=6, kind='rosca'),
+            box(xp, xp + 1.5, -1, 13.5, -2, 54, 'panel')]))
+    return dict(id='pared', nombre='Pared de flex desde el canto lateral', W=Xn, Rmin=round(min(Rall), 2), env=[0, 52], H=H, frames=frames)
+
 def _main():
-    out = [opcion_piso(), opcion_s(), opcion_u(), opcion_camara(), opcion_camara_centrada(), opcion_horizontal()]
+    out = [opcion_piso(), opcion_s(), opcion_u(), opcion_camara(), opcion_camara_centrada(), opcion_horizontal(), opcion_pared()]
     for o in out:
         print(o['id'], len(o['frames']), 'R/Rreq min', round(min(min(r['R'])/r.get('rreq', 3.0) for f in o['frames'] for r in f['ribbons']), 3))
     json.dump(out, open('opciones3d.json', 'w'), separators=(',', ':'))

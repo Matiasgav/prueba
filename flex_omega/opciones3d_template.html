@@ -59,6 +59,7 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
         <button id="o3" aria-pressed="false">4 · Interfaz + cámara</button>
         <button id="o4" aria-pressed="false">5 · Cámara centrada</button>
         <button id="o5" aria-pressed="false">6 · Cámara horizontal</button>
+        <button id="o6" aria-pressed="false">7 · Pared lateral</button>
       </div>
       <div class="seg" role="group" aria-label="Vista">
         <button id="v0" aria-pressed="true">Isométrica</button>
@@ -150,6 +151,17 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
         <li>La placa de cámara recibe el flex de la mainboard con dos curvas de R 3.</li>
         <li>LED del lado contrario al conector, a ~9 mm de la lente, en una islita rígida que baja con una bisagra de flex (R 2,5) desde la placa de cámara.</li>
         <li>Justo: el rigidizador de la cámara queda a 11,77 mm (techo 11,9). Retraído, el arco del conector supera los 12 mm del chasis: montaje sin tapa.</li>
+      </ul>
+    </article>
+    <article class="card" id="c6">
+      <h3>7 · Pared de flex desde el canto lateral (tu propuesta)</h3>
+      <dl><dt>Recorrido</dt><dd>canto izquierdo de la mainboard → sube 90° (R 3) → esquina 90° (R 3) → pared paralela al panel</dd><dt>Por la esquina</dt><dd>7 mm de alto: MIPI, LED y alimentación de cámara</dd><dt>48 V + Gigabit</dt><dd>segundo tramo desde el canto delantero de la mainboard, 8,4 mm</dd><dt>R mín. S</dt><dd>3,50 mm (ida y vuelta)</dd></dl>
+      <ul>
+        <li>La sección de cámara es un tramo rígido de la misma pared; recibe los dos tramos de flex y el conector de la cámara.</li>
+        <li>La mainboard llega hasta ~4 mm de la pared frente a la cámara y se recorta hacia atrás donde barren la S y la placa del conector.</li>
+        <li>En la esquina las pistas van horizontales y solo se usa la altura por encima del primer doblez: por eso no entra todo por ahí.</li>
+        <li>La S, el LED sobre la cámara y la placa del conector son iguales a la opción 5.</li>
+        <li>En la esquina, los dos dobleces perpendiculares necesitan un corte de alivio en el flex, como en tu boceto.</li>
       </ul>
     </article>
   </div>
@@ -286,11 +298,11 @@ function bg(){ renderer.setClearColor(new THREE.Color(css('--scene') || '#eef2f7
 const T = document.getElementById('t'), pb = document.getElementById('play');
 document.getElementById('showr').onchange = e => { showR = e.target.checked; show(); };
 function selectOption(i){
-  oi = i; ['o0', 'o1', 'o2', 'o3', 'o4', 'o5'].forEach((id, k) => document.getElementById(id).setAttribute('aria-pressed', k === i));
-  ['c0', 'c1', 'c2', 'c3', 'c4', 'c5'].forEach((id, k) => document.getElementById(id).classList.toggle('sel', k === i));
+  oi = i; ['o0', 'o1', 'o2', 'o3', 'o4', 'o5', 'o6'].forEach((id, k) => document.getElementById(id).setAttribute('aria-pressed', k === i));
+  ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6'].forEach((id, k) => document.getElementById(id).classList.toggle('sel', k === i));
   buildStatic(); setView(0); show();
 }
-['o0', 'o1', 'o2', 'o3', 'o4', 'o5'].forEach((id, i) => document.getElementById(id).onclick = () => selectOption(i));
+['o0', 'o1', 'o2', 'o3', 'o4', 'o5', 'o6'].forEach((id, i) => document.getElementById(id).onclick = () => selectOption(i));
 ['v0', 'v1', 'v2'].forEach((id, i) => document.getElementById(id).onclick = () => setView(i));
 pb.onclick = () => { playing = !playing; pb.textContent = playing ? 'Pausa' : 'Reproducir'; last = null; };
 if (!playing) pb.textContent = 'Reproducir';
