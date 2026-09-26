@@ -58,6 +58,7 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
         <button id="o2" aria-pressed="false">3 · U rodante de canto</button>
         <button id="o3" aria-pressed="false">4 · Interfaz + cámara</button>
         <button id="o4" aria-pressed="false">5 · Cámara centrada</button>
+        <button id="o5" aria-pressed="false">6 · Cámara horizontal</button>
       </div>
       <div class="seg" role="group" aria-label="Vista">
         <button id="v0" aria-pressed="true">Isométrica</button>
@@ -70,16 +71,15 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
     <canvas id="view" aria-label="Vista 3D del flex"></canvas>
     <p class="hint">Arrastrá para girar, rueda o pellizco para acercar, botón derecho para desplazar.</p>
     <div class="legend">
-      <span><i style="background:#2f5fd0"></i>flex R ≥ 3,5</span>
-      <span><i style="background:#c17a00"></i>3 ≤ R &lt; 3,5</span>
-      <span><i style="background:#d4145a"></i>R &lt; 3</span>
-      <span><i style="background:#8fb5a3"></i>placas rígidas</span>
-      <span><i style="background:#d8a13a"></i>pestaña rígida</span>
-      <span><i style="background:#7d8799"></i>conector y guías</span>
+      <span><i style="background:#1f7a3d"></i>placas rígidas (FR4)</span>
+      <span><i style="background:#c9761a"></i>flex de poliimida (Kapton)</span>
+      <span><i style="background:#cfc58a"></i>rigidizador de la cámara</span>
+      <span><i style="background:#7d8799"></i>conectores y guías</span>
       <span><i style="background:#2b2f38"></i>cámara MIPI</span>
       <span><i style="background:#b9c0cc"></i>rosca 12 mm y lente</span>
       <span><i style="background:#ffe08a"></i>LED 3 × 3 × 3</span>
-      <span><i style="background:#d4145a;opacity:.35"></i>techo 10,5 mm y línea nominal</span>
+      <span><i style="background:#d4145a;opacity:.35"></i>techo y línea nominal</span>
+      <label style="display:inline-flex;gap:6px;align-items:center;color:var(--ink)"><input type="checkbox" id="showr"> colorear el flex por radio (azul ≥ 1,17 × mín., ámbar cerca, rojo por debajo)</label>
     </div>
     <div class="readout">
       <div class="ro"><div class="k">Retracción</div><div class="v" id="r1">–</div></div>
@@ -141,6 +141,17 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
         <li>Pendiente: el flex de la mainboard entra en 11,5 mm de ancho; con MIPI, Gigabit y 48 V necesita unos 15.</li>
       </ul>
     </article>
+    <article class="card" id="c5">
+      <h3>6 · Cámara horizontal invertida + M12 acodado</h3>
+      <dl><dt>Imagen</dt><dd>horizontal; el sensor corrige con flip + espejo</dd><dt>W</dt><dd>28 mm (mín. 26,7), flex del conector 38 mm</dd><dt>R mín.</dt><dd>3,14 mm (ida y vuelta)</dd><dt>Altura</dt><dd>11,3 mm en nominal; ~14,5 mm retraído</dd></dl>
+      <ul>
+        <li>El conector va en una placa horizontal con un M12 acodado. Su flex hace un arco hacia arriba del lado del conector: nada pasa por detrás de la cámara.</li>
+        <li>La cámara va al revés, apoyada en el piso. La cola sube y se dobla 90° hacia atrás (R 1,5, dentro de 12 × 0,12 mm) y se enchufa en una placa de cámara horizontal bajo el techo.</li>
+        <li>La placa de cámara recibe el flex de la mainboard con dos curvas de R 3.</li>
+        <li>LED del lado contrario al conector, a ~9 mm de la lente, en una islita rígida que baja con una bisagra de flex (R 2,5) desde la placa de cámara.</li>
+        <li>Justo: el rigidizador de la cámara queda a 11,77 mm (techo 11,9). Retraído, el arco del conector supera los 12 mm del chasis: montaje sin tapa.</li>
+      </ul>
+    </article>
   </div>
 </div>
 
@@ -162,9 +173,10 @@ const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(30, 60,
 const fill = new THREE.DirectionalLight(0xffffff, 0.3); fill.position.set(-40, 20, -30); scene.add(fill);
 
 const MAT = {
-  mainboard: new THREE.MeshStandardMaterial({color: 0x8fb5a3, roughness: .8}),
-  placa: new THREE.MeshStandardMaterial({color: 0x8fb5a3, roughness: .8}),
-  pestana: new THREE.MeshStandardMaterial({color: 0xd8a13a, roughness: .7}),
+  mainboard: new THREE.MeshStandardMaterial({color: 0x1f7a3d, roughness: .55}),
+  placa: new THREE.MeshStandardMaterial({color: 0x1f7a3d, roughness: .55}),
+  pestana: new THREE.MeshStandardMaterial({color: 0x1f7a3d, roughness: .55}),
+  rigidizador: new THREE.MeshStandardMaterial({color: 0xcfc58a, roughness: .7}),
   conector: new THREE.MeshStandardMaterial({color: 0x7d8799, roughness: .5, metalness: .3}),
   guia: new THREE.MeshStandardMaterial({color: 0x7d8799, roughness: .6, transparent: true, opacity: .35}),
   camara: new THREE.MeshStandardMaterial({color: 0x2b2f38, roughness: .4, metalness: .2}),
@@ -172,9 +184,10 @@ const MAT = {
   led: new THREE.MeshStandardMaterial({color: 0xffe08a, emissive: 0xffc93c, emissiveIntensity: .6, roughness: .3}),
   panel: new THREE.MeshStandardMaterial({color: 0x9aa3b2, roughness: .8, transparent: true, opacity: .18, depthWrite: false}),
 };
-const flexMat = new THREE.MeshStandardMaterial({vertexColors: true, side: THREE.DoubleSide, roughness: .45});
-const ok = new THREE.Color(0x2f5fd0), warn = new THREE.Color(0xc17a00), bad = new THREE.Color(0xd4145a);
-const colR = R => R < 3 - 1e-3 ? bad : R < 3.5 ? warn : ok;
+const flexMat = new THREE.MeshStandardMaterial({vertexColors: true, side: THREE.DoubleSide, roughness: .35, metalness: .05});
+const ok = new THREE.Color(0x2f5fd0), warn = new THREE.Color(0xe0a800), bad = new THREE.Color(0xd4145a), kapton = new THREE.Color(0xc9761a);
+let showR = false;
+const colR = (R, req) => !showR ? kapton : R < req - 1e-3 ? bad : R < req * 1.17 ? warn : ok;
 
 let oi = 0, u = 0, playing = !matchMedia('(prefers-reduced-motion: reduce)').matches, last = null, hold = 0, dirv = 1;
 let dyn = new THREE.Group(); scene.add(dyn);
@@ -184,7 +197,7 @@ function ribbonMesh(r){
   const n = r.p.length, pos = new Float32Array(n * 2 * 3), col = new Float32Array(n * 2 * 3), idx = [];
   const hw = r.w / 2;
   for (let i = 0; i < n; i++){
-    const p = r.p[i], c = colR(r.R[i]);
+    const p = r.p[i], c = colR(r.R[i], r.rreq || 3);
     for (let s = 0; s < 2; s++){
       const k = (i * 2 + s) * 3, sg = s ? 1 : -1;
       pos[k] = p[0] + sg * r.b[0] * hw; pos[k + 1] = p[1] + sg * r.b[1] * hw; pos[k + 2] = p[2] + sg * r.b[2] * hw;
@@ -258,7 +271,7 @@ function show(){
   const o = D[oi], n = o.frames.length, f = o.frames[Math.round(u * (n - 1))];
   clear(dyn);
   let rmin = 99;
-  for (const r of f.ribbons){ dyn.add(ribbonMesh(r)); rmin = Math.min(rmin, ...r.R); }
+  for (const r of f.ribbons){ dyn.add(ribbonMesh(r)); if (!r.rreq || r.rreq === 3) rmin = Math.min(rmin, ...r.R); }
   for (const b of f.boxes) dyn.add(boxMesh(b));
   document.getElementById('r1').textContent = f.ret.toFixed(1).replace('.', ',') + ' mm';
   document.getElementById('r2').textContent = rmin.toFixed(2).replace('.', ',') + ' mm';
@@ -271,12 +284,13 @@ function resize(){
 function bg(){ renderer.setClearColor(new THREE.Color(css('--scene') || '#eef2f7')); buildStatic(); }
 
 const T = document.getElementById('t'), pb = document.getElementById('play');
+document.getElementById('showr').onchange = e => { showR = e.target.checked; show(); };
 function selectOption(i){
-  oi = i; ['o0', 'o1', 'o2', 'o3', 'o4'].forEach((id, k) => document.getElementById(id).setAttribute('aria-pressed', k === i));
-  ['c0', 'c1', 'c2', 'c3', 'c4'].forEach((id, k) => document.getElementById(id).classList.toggle('sel', k === i));
+  oi = i; ['o0', 'o1', 'o2', 'o3', 'o4', 'o5'].forEach((id, k) => document.getElementById(id).setAttribute('aria-pressed', k === i));
+  ['c0', 'c1', 'c2', 'c3', 'c4', 'c5'].forEach((id, k) => document.getElementById(id).classList.toggle('sel', k === i));
   buildStatic(); setView(0); show();
 }
-['o0', 'o1', 'o2', 'o3', 'o4'].forEach((id, i) => document.getElementById(id).onclick = () => selectOption(i));
+['o0', 'o1', 'o2', 'o3', 'o4', 'o5'].forEach((id, i) => document.getElementById(id).onclick = () => selectOption(i));
 ['v0', 'v1', 'v2'].forEach((id, i) => document.getElementById(id).onclick = () => setView(i));
 pb.onclick = () => { playing = !playing; pb.textContent = playing ? 'Pausa' : 'Reproducir'; last = null; };
 if (!playing) pb.textContent = 'Reproducir';

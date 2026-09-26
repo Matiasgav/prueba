@@ -12,6 +12,8 @@ N, TF, TB, S0, S1, H = 60, 0.2, 1.0, 1.0, 1.0, 10.5
 c = TF/2
 
 def ends(cfg, X):
+    if cfg['mode'] == 'horizontal':  # placa del conector horizontal en el piso, el flex llega por su borde trasero
+        return np.array([X - S1, c]), 0.0
     if cfg['mode'] == 'colgada':
         return np.array([X - c, cfg['YB'] - S1]), np.pi/2
     return np.array([X - c, cfg['HB'] + S1]), -np.pi/2
@@ -19,6 +21,8 @@ def ends(cfg, X):
 def obstacle(cfg, X):
     """Zona prohibida para la linea media: x > xl y (y > yo si colgada | y < yo si piso)."""
     xl = X - TF - TB - c
+    if cfg['mode'] == 'horizontal':  # placa + M12 acodado ocupan todo x > X
+        return X - c, -1e9, 1
     if cfg['mode'] == 'piso_atras':  # flex por la cara trasera: la placa queda delante (x > X)
         return X - c - 1e-3, cfg['HB'] + c, -1
     if cfg['mode'] == 'colgada':
@@ -60,8 +64,11 @@ def shape(th, cfg, L, X):
     Lf = L - S0 - S1; h = Lf/N; pe, te = ends(cfg, X)
     t = np.concatenate([[0.0], th, [te]]); k = np.abs(np.diff(t))/h
     x = S0 + np.concatenate([[0], np.cumsum(h*np.cos(th))]); y = c + np.concatenate([[0], np.cumsum(h*np.sin(th))])
-    endy = cfg['YB'] if cfg['mode'] == 'colgada' else cfg['HB']
-    xs = np.concatenate([[0], x, [X - c]]); ys = np.concatenate([[c], y, [endy]])
+    if cfg['mode'] == 'horizontal':
+        xs = np.concatenate([[0], x, [X]]); ys = np.concatenate([[c], y, [c]])
+    else:
+        endy = cfg['YB'] if cfg['mode'] == 'colgada' else cfg['HB']
+        xs = np.concatenate([[0], x, [X - c]]); ys = np.concatenate([[c], y, [endy]])
     return dict(X=X, x=xs, y=ys, k=k, Rin=1/k.max() - c, ytop=ys.max() + c)
 
 def violation(th, cfg, L, X, W):
@@ -71,6 +78,8 @@ def violation(th, cfg, L, X, W):
 
 def guesses(cfg):
     s = np.linspace(0, 1, N)
+    if cfg['mode'] == 'horizontal':
+        return [A*np.sin(2*np.pi*s) for A in (0.8, 1.2, 0.5, 1.6, 2.0)]
     if cfg['mode'] == 'colgada':
         return [np.pi/2*s**3 + A*np.sin(2*np.pi*s)*(1-s) for A in (1.4, 1.0, 1.8, 0.6, 2.2)]
     # arco: sube y baja sobre la placa
@@ -105,7 +114,7 @@ def score(args):
     fw, bw = sweep(cfg, W, L, steps=13, travel=travel)
     if fw is None: return -1.0
     st = fw + bw
-    if not all(a['ok'] for a in st) or max(fw[-1]['ytop'], bw[0]['ytop']) > H + 1e-3: return -1.0
+    if not all(a['ok'] for a in st) or max(fw[-1]['ytop'], bw[0]['ytop']) > cfg.get('H', H) + 1e-3: return -1.0
     if any(selfcross(a) for a in (fw[0], fw[6], bw[6], fw[-1])): return -1.0
     return min(a['Rin'] for a in st)
 

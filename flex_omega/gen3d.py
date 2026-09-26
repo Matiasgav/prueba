@@ -20,10 +20,10 @@ def radius(P):
     R[0], R[-1] = R[1], R[-2]
     return np.minimum(R, 99)
 
-def ribbon(P, b, w):
+def ribbon(P, b, w, rreq=3.0):
     P = np.asarray(P, float)
     keep = np.r_[True, np.linalg.norm(np.diff(P, axis=0), axis=1) > 1e-6]; P = P[keep]
-    return dict(p=np.round(P, 3).tolist(), b=list(b), w=w, R=np.round(radius(P), 2).tolist())
+    return dict(p=np.round(P, 3).tolist(), b=list(b), w=w, R=np.round(radius(P), 2).tolist(), rreq=rreq)
 
 def arc(cx, cy, r, a0, a1, n=16):
     t = np.linspace(a0, a1, n); return np.stack([cx + r*np.cos(t), cy + r*np.sin(t)], 1)
@@ -136,10 +136,58 @@ def opcion_camara_centrada(Xn=13.0, b=6.5, Z=17.5, L=22.5, H=11.9, cinta=0.25):
             box(xp, xp + 1.5, -1, 13.5, -2, 54, 'panel')]))
     return dict(id='camc', nombre='Cámara centrada, S por detrás', W=Xn, Rmin=round(min(Rall), 2), env=[0, 52], H=H, frames=frames)
 
+# ---------- Opcion 6: camara horizontal invertida + conector con M12 acodado en placa horizontal ----------
+def opcion_horizontal(Xn=28.0, L=38.0, b=6.5, H=11.9, cinta=0.25):
+    import fast3
+    y0 = cinta; xp = Xn + b; xcam = xp - 5.05
+    cfg = dict(mode='horizontal', H=H - cinta)
+    fw, bw = fast3.sweep(cfg, Xn, L, steps=STEPS)
+    # cola de la camara: sube 1,05 (zona con rigidizador SUS), curva R1,2 hacia atras, 1,47 recto y rigidizador de 6 mm
+    Rt = 1.5 + 0.06; ytail = y0 + 8.5 + 1.05
+    tail = [[xcam - 0.06, y0 + 8.5], [xcam - 0.06, ytail]]
+    tail += (arc(xcam - 0.06 - Rt, ytail, Rt, 0, np.pi/2)[1:]).tolist()
+    tail += [[xcam - 0.06 - Rt - 1.47 - 6.0, ytail + Rt]]
+    tail3 = np.array([[p[0], p[1], 26.0] for p in tail])
+    ycb1 = ytail + Rt - 0.06 - 1.0; ycb0 = ycb1 - 1.0       # placa de camara bajo el conector (1 mm apareado)
+    xcb0, xcb1 = xcam - 10.0, xcam - 2.5
+    # flex de la mainboard a la placa de camara: sube con dos curvas R3,1
+    ym = (ycb0 + ycb1)/2; xa = xcb0 - 7.2
+    riser = [[0, y0 + 0.1], [xa, y0 + 0.1]]
+    riser += arc(xa, y0 + 0.1 + 3.1, 3.1, -np.pi/2, 0)[1:].tolist()
+    riser += [[xa + 3.1, ym - 3.1]]
+    riser += arc(xa + 6.2, ym - 3.1, 3.1, np.pi, np.pi/2)[1:].tolist()
+    riser += [[xcb0, ym]]
+    riser3 = np.array([[p[0], p[1], 26.5] for p in riser])
+    # isla del LED: lengueta de la placa de camara + bisagra flex que baja 90 grados
+    xt = xp - 8.5
+    hinge = [[xt, ym]] + arc(xt, ym - 2.6, 2.6, np.pi/2, 0)[1:].tolist() + [[xt + 2.6, ym - 3.2]]
+    hinge3 = np.array([[p[0], p[1], 17.5] for p in hinge]); xi = xt + 2.6
+    frames = []
+    for f in fw:
+        X = f['X']
+        arcP = np.stack([f['x'], np.array(f['y']) + y0, np.full(len(f['x']), 44.0)], 1)
+        frames.append(dict(ret=round(Xn - X, 3), ribbons=[ribbon(arcP, (0, 0, 1), 11), ribbon(tail3, (0, 0, 1), 8.5, rreq=1.44),
+                                                          ribbon(riser3, (0, 0, 1), 9), ribbon(hinge3, (0, 0, 1), 4, rreq=2.4)], boxes=[
+            box(-10, 0, y0 + 0.2, y0 + 1.2, -2, 54, 'mainboard'),
+            box(X, X + 6.0, y0 + 0.2, y0 + 1.2, 36.0, 52.0, 'placa'),
+            box(X + 0.5, X + b, y0 + 1.2, H, 38.0, 50.0, 'conector'),
+            dict(cyl=True, x0=X + b, len=12, y=(y0 + H)/2, z=44.0, r=6, kind='rosca'),
+            box(xcam, xp, y0, y0 + 8.5, 21.75, 30.25, 'camara'),
+            dict(cyl=True, x0=xp - 0.6, len=0.6, y=y0 + 4.25, z=26.0, r=2.2, kind='rosca'),
+            box(xcam - 0.06 - Rt - 1.47 - 6.0, xcam - 0.06 - Rt - 1.47, ytail + Rt + 0.06, ytail + Rt + 0.41, 21.2, 30.8, 'rigidizador'),
+            box(xcam - Rt - 1.47 - 4.3, xcam - Rt - 1.47 - 2.3, ycb1, ycb1 + 1.0, 23.0, 29.0, 'conector'),
+            box(xcb0, xcb1, ycb0, ycb1, 21.0, 32.0, 'placa'),
+            box(xcam - 6.0, xt, ycb0, ycb1, 14.0, 21.0, 'placa'),
+            box(xi - 0.5, xi + 0.5, y0 + 2.0, ym - 3.2, 15.0, 20.0, 'placa'),
+            box(xi + 0.5, xi + 3.5, y0 + 2.5, y0 + 5.5, 16.0, 19.0, 'led'),
+            box(xp, xp + 1.5, -1, 13.5, -2, 54, 'panel')]))
+    return dict(id='horiz', nombre='Cámara horizontal + M12 acodado', W=Xn, Rmin=round(min(a['Rin'] for a in fw + bw), 2),
+                env=[0, 52], H=H, frames=frames)
+
 def _main():
-    out = [opcion_piso(), opcion_s(), opcion_u(), opcion_camara(), opcion_camara_centrada()]
+    out = [opcion_piso(), opcion_s(), opcion_u(), opcion_camara(), opcion_camara_centrada(), opcion_horizontal()]
     for o in out:
-        print(o['id'], len(o['frames']), 'Rmin dibujo', min(min(r['R']) for f in o['frames'] for r in f['ribbons']))
+        print(o['id'], len(o['frames']), 'R/Rreq min', round(min(min(r['R'])/r.get('rreq', 3.0) for f in o['frames'] for r in f['ribbons']), 3))
     json.dump(out, open('opciones3d.json', 'w'), separators=(',', ':'))
 
 # ---------- Opcion 4: placa de interfaz fija + camara MIPI + S doble de canto ----------
