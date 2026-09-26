@@ -57,6 +57,7 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
         <button id="o1" aria-pressed="false">2 · S lateral de canto</button>
         <button id="o2" aria-pressed="false">3 · U rodante de canto</button>
         <button id="o3" aria-pressed="false">4 · Interfaz + cámara</button>
+        <button id="o4" aria-pressed="false">5 · Cámara centrada</button>
       </div>
       <div class="seg" role="group" aria-label="Vista">
         <button id="v0" aria-pressed="true">Isométrica</button>
@@ -76,7 +77,8 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
       <span><i style="background:#d8a13a"></i>pestaña rígida</span>
       <span><i style="background:#7d8799"></i>conector y guías</span>
       <span><i style="background:#2b2f38"></i>cámara MIPI</span>
-      <span><i style="background:#b9c0cc"></i>rosca 12 mm</span>
+      <span><i style="background:#b9c0cc"></i>rosca 12 mm y lente</span>
+      <span><i style="background:#ffe08a"></i>LED 3 × 3 × 3</span>
       <span><i style="background:#d4145a;opacity:.35"></i>techo 10,5 mm y línea nominal</span>
     </div>
     <div class="readout">
@@ -128,6 +130,17 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
         <li>La rosca de 12 mm de diámetro no entra bajo 10,5: en el dibujo sobresale 0,75 mm arriba y abajo.</li>
       </ul>
     </article>
+    <article class="card" id="c4">
+      <h3>5 · Cámara centrada, S por detrás de la cámara</h3>
+      <dl><dt>Ancho lateral</dt><dd>52 mm: interfaz 0–14, S 14–31,5, placa del conector 31,5–52</dd><dt>Cámara</dt><dd>lente en z = 26, módulo sobre el piso</dd><dt>S</dt><dd>17,5 mm en z, flex 22,5 mm, tira de 11 mm de alto</dd><dt>R mín.</dt><dd>3,62 mm (ida y vuelta)</dd></dl>
+      <ul>
+        <li>La S pasa por detrás de la cámara. Una pared de 0,5 mm entre ambas evita que el arco empuje la cámara durante la carrera; en nominal no la toca.</li>
+        <li>El LED va en la placa del conector, a 2 mm del borde de la cámara, sin nada delante.</li>
+        <li>Altura útil de 0,25 (cinta) a 11,9 mm: una sola tira de 11 mm entra con 48 V y Gigabit en cobre de 1 oz.</li>
+        <li>Supone cuerpo del conector de 6,5 mm detrás del panel y que la cola de la cámara sale hacia un costado, con su conector arriba de 4,7 mm. Falta confirmarlo con el datasheet.</li>
+        <li>Pendiente: el flex de la mainboard entra en 11,5 mm de ancho; con MIPI, Gigabit y 48 V necesita unos 15.</li>
+      </ul>
+    </article>
   </div>
 </div>
 
@@ -156,6 +169,7 @@ const MAT = {
   guia: new THREE.MeshStandardMaterial({color: 0x7d8799, roughness: .6, transparent: true, opacity: .35}),
   camara: new THREE.MeshStandardMaterial({color: 0x2b2f38, roughness: .4, metalness: .2}),
   rosca: new THREE.MeshStandardMaterial({color: 0xb9c0cc, roughness: .35, metalness: .6}),
+  led: new THREE.MeshStandardMaterial({color: 0xffe08a, emissive: 0xffc93c, emissiveIntensity: .6, roughness: .3}),
   panel: new THREE.MeshStandardMaterial({color: 0x9aa3b2, roughness: .8, transparent: true, opacity: .18, depthWrite: false}),
 };
 const flexMat = new THREE.MeshStandardMaterial({vertexColors: true, side: THREE.DoubleSide, roughness: .45});
@@ -211,15 +225,16 @@ function buildStatic(){
   const dim = new THREE.Color(css('--dim') || '#d4145a');
   const pm = new THREE.MeshBasicMaterial({color: dim, transparent: true, opacity: .08, side: THREE.DoubleSide, depthWrite: false});
   const ceil = new THREE.Mesh(new THREE.PlaneGeometry(mx[0] - mn[0] + 6, mx[2] - mn[2] + 6), pm);
-  ceil.rotation.x = -Math.PI / 2; ceil.position.set((mx[0] + mn[0]) / 2, 10.5, (mx[2] + mn[2]) / 2); stat.add(ceil);
-  const nom = new THREE.Mesh(new THREE.PlaneGeometry(mx[2] - mn[2] + 6, 10.5), pm);
-  nom.rotation.y = Math.PI / 2; nom.position.set(o.W, 5.25, (mx[2] + mn[2]) / 2); stat.add(nom);
+  const HH = o.H || 10.5;
+  ceil.rotation.x = -Math.PI / 2; ceil.position.set((mx[0] + mn[0]) / 2, HH, (mx[2] + mn[2]) / 2); stat.add(ceil);
+  const nom = new THREE.Mesh(new THREE.PlaneGeometry(mx[2] - mn[2] + 6, HH), pm);
+  nom.rotation.y = Math.PI / 2; nom.position.set(o.W, HH / 2, (mx[2] + mn[2]) / 2); stat.add(nom);
   const lm = new THREE.LineBasicMaterial({color: dim});
   const edge = (a, b) => stat.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...a), new THREE.Vector3(...b)]), lm));
-  edge([mn[0] - 3, 10.5, mn[2] - 3], [mx[0] + 3, 10.5, mn[2] - 3]);
-  edge([o.W, 0, mn[2] - 3], [o.W, 10.5, mn[2] - 3]); edge([o.W, 0, mx[2] + 3], [o.W, 10.5, mx[2] + 3]);
-  edge([0, 0, mn[2] - 3], [0, 10.5, mn[2] - 3]);
-  if (o.env){ for (const z of o.env){ edge([mn[0] - 3, 0, z], [mx[0] + 12, 0, z]); edge([mn[0] - 3, 10.5, z], [mx[0] + 12, 10.5, z]); } }
+  edge([mn[0] - 3, HH, mn[2] - 3], [mx[0] + 3, HH, mn[2] - 3]);
+  edge([o.W, 0, mn[2] - 3], [o.W, HH, mn[2] - 3]); edge([o.W, 0, mx[2] + 3], [o.W, HH, mx[2] + 3]);
+  edge([0, 0, mn[2] - 3], [0, HH, mn[2] - 3]);
+  if (o.env){ for (const z of o.env){ edge([mn[0] - 3, 0, z], [mx[0] + 12, 0, z]); edge([mn[0] - 3, HH, z], [mx[0] + 12, HH, z]); } }
   const grid = new THREE.GridHelper(Math.max(mx[0] - mn[0], mx[2] - mn[2]) + 20, Math.round((Math.max(mx[0] - mn[0], mx[2] - mn[2]) + 20) / 2), 0x8892a6, 0xc0c8d6);
   grid.material.transparent = true; grid.material.opacity = .35;
   grid.position.set((mx[0] + mn[0]) / 2, 0, (mx[2] + mn[2]) / 2); stat.add(grid);
@@ -257,11 +272,11 @@ function bg(){ renderer.setClearColor(new THREE.Color(css('--scene') || '#eef2f7
 
 const T = document.getElementById('t'), pb = document.getElementById('play');
 function selectOption(i){
-  oi = i; ['o0', 'o1', 'o2', 'o3'].forEach((id, k) => document.getElementById(id).setAttribute('aria-pressed', k === i));
-  ['c0', 'c1', 'c2', 'c3'].forEach((id, k) => document.getElementById(id).classList.toggle('sel', k === i));
+  oi = i; ['o0', 'o1', 'o2', 'o3', 'o4'].forEach((id, k) => document.getElementById(id).setAttribute('aria-pressed', k === i));
+  ['c0', 'c1', 'c2', 'c3', 'c4'].forEach((id, k) => document.getElementById(id).classList.toggle('sel', k === i));
   buildStatic(); setView(0); show();
 }
-['o0', 'o1', 'o2', 'o3'].forEach((id, i) => document.getElementById(id).onclick = () => selectOption(i));
+['o0', 'o1', 'o2', 'o3', 'o4'].forEach((id, i) => document.getElementById(id).onclick = () => selectOption(i));
 ['v0', 'v1', 'v2'].forEach((id, i) => document.getElementById(id).onclick = () => setView(i));
 pb.onclick = () => { playing = !playing; pb.textContent = playing ? 'Pausa' : 'Reproducir'; last = null; };
 if (!playing) pb.textContent = 'Reproducir';
