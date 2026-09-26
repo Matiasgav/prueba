@@ -59,10 +59,10 @@ ol,ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;max-
   </header>
 
   <div class="answer">
-    <div class="cell main"><span class="k">Largo del flex</span><span class="v">16,6 mm</span><span class="s">desarrollado entre los cantos rígidos, con 1 mm recto en cada extremo. Tolerancia ±0,25.</span></div>
-    <div class="cell"><span class="k">Separación en z</span><span class="v">14,0 mm</span><span class="s">mínima robusta con R ≥ 2,5 y 1 mm recto: del canto de la pestaña (z 16) al canto de la placa del conector (z 30).</span></div>
-    <div class="cell"><span class="k">Pestaña fija</span><span class="v">6 mm detrás</span><span class="s">de la placa del conector en nominal: la S trabaja +6 / −6 mm, centrada.</span></div>
-    <div class="cell"><span class="k">R interior mínimo</span><span class="v">2,59 mm</span><span class="s">exigido ≥ 2,5. Ida y vuelta, con cuerpo del conector de 6,3 a 7 mm, carrera de 12 y 12,5 mm y flex de 16,35 a 16,85.</span></div>
+    <div class="cell main"><span class="k">Largo del flex</span><span class="v">18,4 mm</span><span class="s">desarrollado entre los cantos rígidos, con 1 mm recto en cada extremo. Tolerancia ±0,25.</span></div>
+    <div class="cell"><span class="k">Separación en z</span><span class="v">15,5 mm</span><span class="s">del canto de la pestaña (z 16) al canto de la placa del conector (z 31,5). Con 5 mm entre placas alcanza; no hace falta agrandarla.</span></div>
+    <div class="cell"><span class="k">Pestaña fija</span><span class="v">5 mm detrás</span><span class="s">de la placa del conector en nominal: la S trabaja +5 / −7 mm.</span></div>
+    <div class="cell"><span class="k">R interior mínimo</span><span class="v">≥ 2,9 mm</span><span class="s">exigido ≥ 2,5. Ida y vuelta, con cuerpo del conector de 6,3 a 7 mm, carrera de 12 y 12,5 mm y flex de 18,15 a 18,65.</span></div>
   </div>
 
   <section style="display:flex;flex-direction:column;gap:10px">
@@ -93,13 +93,13 @@ ol,ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;max-
       <div class="ro"><div class="k">Retracción</div><div class="v" id="v1">–</div></div>
       <div class="ro"><div class="k">R interior ahora</div><div class="v" id="v2">–</div></div>
       <div class="ro"><div class="k">R mín. del recorrido</div><div class="v" id="v3">–</div></div>
-      <div class="ro"><div class="k">Distancia al flex de la cámara</div><div class="v" id="v4">–</div></div>
+      <div class="ro"><div class="k">Distancia a la chapa tope</div><div class="v" id="v4">–</div></div>
     </div>
   </div>
 
   <section style="display:flex;flex-direction:column;gap:10px">
-    <h2>Por qué Z = 14 y 16,6 mm</h2>
-    <p>Radio interior mínimo en toda la carrera (peor caso de tolerancias) según el largo del flex, con Z = 14. Por debajo de ~16,1 mm el flex queda tenso al retraer y el radio colapsa; con más largo el radio baja despacio. La ventana con R ≥ 2,5 va de 16,1 a 17,1: 16,6 ± 0,25 queda adentro con margen.</p>
+    <h2>Por qué 18,4 mm</h2>
+    <p>Radio interior mínimo en toda la carrera (peor caso de tolerancias) según el largo del flex, con Z = 15,5 y la pestaña 5 mm detrás. Por debajo de ~17,8 mm el flex queda tenso al retraer y el radio colapsa; con más largo el radio baja despacio. 18,4 ± 0,25 queda en la zona alta de la curva.</p>
     <canvas id="rl" height="230" aria-label="Radio mínimo según el largo del flex"></canvas>
   </section>
 
@@ -120,19 +120,19 @@ ol,ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;max-
         <li>Chapa, plano de arriba (el piso). Origen: cara interior del panel y borde izquierdo de los 52 mm.</li>
         <li>Boceto abierto con la tabla: las rectas y arcos de la tabla, todos tangentes.</li>
         <li>Brida de contorno con ese boceto: espesor 0,2, extensión 11 mm hacia arriba (de y 0,6 a 11,6 sobre la cinta), material simétrico respecto de la línea (o usá la capa FLEX_CARA del DXF y el espesor hacia el otro lado).</li>
-        <li>En la brida, que SE tome los arcos del boceto como dobleces; factor neutro 0,5. El desarrollo tiene que dar 16,6 mm entre los cantos.</li>
-        <li>Pestaña y placa del conector como placas de 1 mm: caras delanteras en x = −12,65 y x = −6,65. El flex va por la cara delantera (hacia el panel) y sale de sus cantos (z 16 y z 30). Las coordenadas de la tabla ya son de la línea media del flex sobre esa cara.</li>
+        <li>En la brida, que SE tome los arcos del boceto como dobleces; factor neutro 0,5. El desarrollo tiene que dar 18,4 mm entre los cantos.</li>
+        <li>Pestaña y placa del conector como placas de 1 mm: caras delanteras en x = −11,65 y x = −6,65. El flex va por la cara delantera (hacia el panel) y sale de sus cantos (z 16 y z 31,5). Las coordenadas de la tabla ya son de la línea media del flex sobre esa cara.</li>
       </ol>
       <p>El DXF <span class="mono">S_conector_nominal.dxf</span> trae la línea media, las dos caras, la pestaña, la placa en nominal y retraída, el panel y los límites de 52 mm, para importarlo directo al boceto.</p>
     </section>
     <section>
       <h2>Cotas y supuestos</h2>
       <ul>
-        <li>Cuerpo del conector detrás del panel: 6,65 mm nominal (6,3 a 7). Placa del conector: cara delantera en x = −6,65, canto de entrada en z = 30.</li>
-        <li>Pestaña fija: cara delantera en x = −12,65 (6,00 detrás de la placa del conector), canto de salida en z = 16. Se alimenta desde la mainboard con un doblez hacia arriba de R 3.</li>
+        <li>Cuerpo del conector detrás del panel: 6,65 mm nominal (6,3 a 7). Placa del conector: cara delantera en x = −6,65, canto de entrada en z = 31,5.</li>
+        <li>Pestaña fija: cara delantera en x = −11,65 (5,00 detrás de la placa del conector), canto de salida en z = 16. Se alimenta desde la mainboard con un doblez hacia arriba de R 3.</li>
         <li>Retraído: placa del conector en x −19,65 a −18,65. El borde delantero de la mainboard tiene que quedar en x ≤ −20,5 donde barren la S y la placa (z 16 a 52).</li>
         <li>Flex de 0,2 mm, 1 mm recto al salir de cada zona rígida; radio mínimo 2,5 medido en la cara interior (IPC-2223 pide 2,4 para 2 capas de 0,2).</li>
-        <li>La S no pasa más adelante de x ≈ −6,2: queda a ≥ 0,9 mm del flex de la cámara (x −5,11). No hace falta pared.</li>
+        <li>Con la pestaña a 5 mm la S se adelanta hasta ~1,4 mm por detrás de la cámara. Una chapa tope de 0,25 (inox o FR4) pegada al dorso de la cámara (cara en x = −5,45, z 21 a 31) la frena: apoya ahí sin tocar el flex de la cámara y el radio no baja de 2,8.</li>
         <li>Verificado con 12,5 mm de carrera: si se tira de más, no se tensa.</li>
       </ul>
       <div class="tw"><table id="ttab"><thead><tr><th>Cuerpo conector</th><th>Carrera</th><th>R int. mín.</th><th>Barrido lateral</th></tr></thead><tbody></tbody></table></div>
@@ -178,6 +178,7 @@ function draw(){
   g.fillText('borde mainboard x ≤ −20,5', ...P(33, -21.9));
   // camara: modulo, flex, conector y seccion de camara (referencia)
   rect(g, P, 21.75, 30.25, -5.05, 0, css('--cam'), css('--camfill'));
+  rect(g, P, 21.0, 31.0, D.WFACE, D.WFACE + 0.25, css('--ink'), css('--line'));
   g.strokeStyle = css('--cam'); g.lineWidth = 2; g.beginPath(); g.moveTo(...P(11.25, -5.11)); g.lineTo(...P(30.25, -5.11)); g.stroke();
   rect(g, P, 11.25, 17.25, -5.05, -4.7, css('--cam'), css('--camfill'));
   rect(g, P, 3.6, 16, -7.17, -6.17, css('--pcb'), css('--pcbfill'));
@@ -211,7 +212,7 @@ function draw(){
   document.getElementById('v1').textContent = f2(fr.ret) + ' mm';
   document.getElementById('v2').textContent = f2(fr.R) + ' mm';
   document.getElementById('v3').textContent = f2(D.Rmin) + ' mm';
-  document.getElementById('v4').textContent = f2(-5.11 - 0.06 - (xmax + 0.1)) + ' mm';
+  document.getElementById('v4').textContent = f2(Math.max(0, D.WFACE - (xmax + 0.1))) + ' mm';
   document.getElementById('v2').parentElement.className = 'ro ' + (fr.R < D.RREQ ? 'bad' : 'good');
   document.getElementById('v3').parentElement.className = 'ro ' + (D.Rmin < D.RREQ ? 'bad' : 'good');
 }
@@ -229,7 +230,7 @@ function drawRL(){
   g.strokeStyle = css('--ink'); g.lineWidth = 2; g.beginPath(); D.rl.forEach((d, i) => { const x = px(d.L), y = py(d.R); i ? g.lineTo(x, y) : g.moveTo(x, y); }); g.stroke();
   g.fillStyle = css('--ink'); D.rl.forEach(d => { g.beginPath(); g.arc(px(d.L), py(d.R), 2.5, 0, 7); g.fill(); });
   const rl0 = D.rl.reduce((a, d) => Math.abs(d.L - D.L) < Math.abs(a.L - D.L) ? d : a); g.fillStyle = css('--dim'); g.beginPath(); g.arc(px(D.L), py(rl0.R), 5, 0, 7); g.fill();
-  g.fillText('16,6', px(D.L) - 12, py(rl0.R) - 10); g.fillStyle = css('--muted'); g.fillText('tolerancia ±0,25', px(D.L - .25) + 3, h - B - 6);
+  g.fillText('18,4', px(D.L) - 12, py(rl0.R) - 10); g.fillStyle = css('--muted'); g.fillText('tolerancia ±0,25', px(D.L - .25) + 3, h - B - 6);
 }
 
 function drawPlan(){
@@ -240,7 +241,7 @@ function drawPlan(){
       `<td class="mono">${a ? f2(r.cz) + '; ' + f2(r.cx) : '–'}</td><td class="mono">${a ? f2(r.R) : '–'}</td><td class="mono">${a ? f2(r.Rint) : '–'}</td>` +
       `<td class="mono">${a ? f2(r.barrido) + '°' : f2(r.ang) + '°'}</td><td class="mono">${f2(r.largo)}</td>`; tb.appendChild(tr); });
   const tt = document.querySelector('#ttab tbody'); tt.innerHTML = '';
-  D.tol.forEach(t => { const tr = document.createElement('tr'); const b = (t.a === 6 ? 6.65 : t.a > 6 ? 6.3 : 7.0);
+  D.tol.forEach(t => { const tr = document.createElement('tr'); const b = t.b;
     tr.innerHTML = `<td class="mono">${f2(b)} mm</td><td class="mono">${f2(t.tr)} mm</td><td class="mono">${f2(t.R)} mm</td><td class="mono">${f2(t.xmin)} a ${f2(t.xmax)}</td>`; tt.appendChild(tr); });
   const [g, w, h] = fit(document.getElementById('pl'));
   const P = scene(g, w, h, 14, 34, -15, -5);
@@ -260,7 +261,7 @@ function drawPlan(){
     g.fillStyle = css('--sheet'); g.beginPath(); g.arc(mx, my, 9, 0, 7); g.fill(); g.strokeStyle = css('--ink'); g.lineWidth = 1; g.stroke();
     g.fillStyle = css('--ink'); g.textAlign = 'center'; g.fillText(i + 1, mx, my + 4); g.textAlign = 'start';
   });
-  g.fillStyle = css('--muted'); g.fillText('pestaña (cara delantera x −12,65)', ...P(14.1, D.XT - 1.4)); g.fillText('placa conector nominal (cara delantera x −6,65)', ...P(24.5, D.XB + 1.3));
+  g.fillStyle = css('--muted'); g.fillText('pestaña (cara delantera x −11,65)', ...P(14.1, D.XT - 1.4)); g.fillText('placa conector nominal (cara delantera x −6,65)', ...P(24.5, D.XB + 1.3));
 }
 
 function setDir(d){ dir = d; ['s0', 's1'].forEach((id, i) => document.getElementById(id).setAttribute('aria-pressed', (i === 0) === (d === 'ret_a_nom'))); draw(); }

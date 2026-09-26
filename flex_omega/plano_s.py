@@ -10,7 +10,7 @@ D = json.load(open('s2d.json'))
 C = 0.1                                  # medio espesor del flex
 B = 6.65                                 # cuerpo del conector detras del panel (nominal)
 XFC = -B                                 # cara delantera de la placa del conector (nominal)
-XFT = XFC - 6.0                          # cara delantera de la pestaña fija
+XFT = XFC - D['A']                       # cara delantera de la pestaña fija
 XLC, XLT = XFC - C, XFT - C              # linea media del flex en cada placa
 SH = XLT - D['XT']                       # corrimiento respecto de la simulacion (flex en el plano medio)
 Z0 = 16.0; Z1 = Z0 + D['Z']; ZT = f"{D['Z']:.2f}".replace('.', ',')
@@ -65,7 +65,7 @@ label(254, 36, 'Rigid-flex · posición nominal · flex de canto, 11 mm de alto'
 label(254, 28, 'Unidades: mm    Escala: indicada en cada vista', fontsize=6.5)
 label(254, 24, 'Flex: poliimida 2 capas, 0,2 mm · R int. mín. 2,5', fontsize=6.5)
 label(254, 15, 'Material rígido: FR4 1,0 mm', fontsize=6.5)
-label(334, 28, 'Plano: FX-M12-S-01   Rev. B', fontsize=6.5)
+label(334, 28, 'Plano: FX-M12-S-01   Rev. C', fontsize=6.5)
 label(334, 24, 'Formato A3', fontsize=6.5)
 label(334, 15, 'Proyección: vistas alineadas en z', fontsize=6.5)
 
@@ -78,6 +78,8 @@ for zz in (0, 52): line(P, (zz, -22.5), (zz, 1.5), color=PH, lw=0.4, ls=(0, (8, 
 line(P, (Z0, -20.5), (52, -20.5), color=PH, lw=0.5, ls=(0, (4, 2))); label(*P(16.3, -20.2), 'borde de la mainboard en x ≤ −20,50', fontsize=5.5, color=PH)
 # camara (referencia)
 rect(P, 21.75, 30.25, -5.05, 0, edgecolor=HID, lw=0.4, ls=(0, (3, 2)))
+rect(P, 21.0, 31.0, D['WFACE'], D['WFACE'] + 0.25, edgecolor=INK, lw=0.5, fill=True, facecolor='#c8cdd6')
+label(*P(21.2, D['WFACE'] + 0.55), 'CHAPA TOPE 0,25 (pegada a la cámara)', fontsize=5.3)
 line(P, (11.25, -5.11), (30.25, -5.11), color=HID, lw=0.4, ls=(0, (3, 2))); label(*P(22.3, -2.8), 'cámara (ref.)', fontsize=5.5, color=HID)
 # pestaña fija
 rect(P, 4.0, Z0, XFT - 1.0, XFT, edgecolor=INK, lw=0.7, fill=True, facecolor='#d7ebdc')
@@ -126,9 +128,9 @@ dim_h(P, 0, Z0, XFT - 1.0, -22, '16,00')
 dim_h(P, Z0, Z1, XFT - 1.0, -22, ZT + ' (separación entre cantos)')
 dim_h(P, Z1, 52, 0, 5, f'{52 - Z1:.2f}'.replace('.', ','))
 dim_v(P, XFC, 0, 52.2, 3, '6,65')
-dim_v(P, XFT, XFC, 3.0, -14, '6,00', side='left')
+dim_v(P, XFT, XFC, 3.0, -14, f"{D['A']:.2f}".replace('.', ','), side='left')
 dim_v(P, XFC - 12, XFC, 52.2, 11, '12,00\ncarrera')
-dim_v(P, XFT, 0, -0.5, -8, '12,65', side='left')
+dim_v(P, XFT, 0, -0.5, -8, f'{-XFT:.2f}'.replace('.', ','), side='left')
 
 # ---------------- VISTA DESDE ATRAS 4:1 (alineada en z) ----------------
 V = view(22, 62, S4, -1.0, 0.0)
@@ -196,11 +198,11 @@ for i, r in enumerate(ROWS):
     label(262, yy, t.replace('.', ','), fontsize=5.6, family='DejaVu Sans Mono'); yy -= 3.4
 r = ROWS[-1]; label(262, yy, f"T{len(ROWS)+1}: ({r['z1']:.3f}; {r['x1']:.3f})".replace('.', ','), fontsize=5.6, family='DejaVu Sans Mono')
 notes = ['NOTAS', '1. Posición nominal. Retraído: la placa del conector se desplaza 12,00 hacia atrás (fantasma).',
-         '2. La cara delantera de la pestaña fija queda 6,00 detrás de la cara delantera de la placa del conector.',
+         '2. La cara delantera de la pestaña fija queda ' + f"{D['A']:.2f}".replace('.', ',') + ' detrás de la cara delantera de la placa del conector.',
          '3. El flex sale por la cara delantera de ambas placas, con 1,00 recto antes de doblar.',
          '4. Radios de la tabla en la línea media; radio interior = R − 0,10. Exigido ≥ 2,50; mínimo en carrera: ' + f"{RMIN_TOL:.2f}".replace('.', ',') + ' (simulado).',
          '5. Desarrollo ' + f"{D['L']:.2f}".replace('.', ',') + ' ± 0,25 verificado con cuerpo M12 de 6,30 a 7,00 y carrera de 12,5.',
-         '6. Sin pared: la S no pasa de x = −6,2 (≥ 0,9 del flex de la cámara).',
+         '6. Chapa tope de 0,25 (inox o FR4) pegada al dorso de la cámara, z 21 a 31, cara en x = −5,45: la S apoya ahí y no toca el flex de la cámara.',
          '7. Pestaña fija: su canto de salida (z 16,00) queda ' + ZT + ' a la izquierda del canto de la placa del conector (z ' + f'{Z1:.2f}'.replace('.', ',') + ').']
 yy = 118
 for i, n in enumerate(notes): label(22, 50 - i*4.2, n, fontsize=6.5 if i else 7.5, weight='bold' if i == 0 else 'normal')

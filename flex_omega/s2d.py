@@ -7,14 +7,15 @@ import json, numpy as np
 from multiprocessing import Pool
 import s_lateral as S, arcfit, s_centrada as C
 
-Z, L, TRAVEL = 14.0, 16.6, 12.0
+Z, L, TRAVEL = 15.5, 18.4, 12.0
 RREQ = 2.5                      # radio interior minimo exigido
 B = 6.65                        # cuerpo del conector detras del panel (nominal de 6,3-7)
 XB = -B - 0.1                   # linea media del flex (cara delantera de la placa del conector) en nominal
-A = 6.0                         # la pestaña queda 6 mm detras
+A = 5.0                         # la pestaña queda 5 mm detras (pedido: 5 mm entre placas)
 XT = XB - A                     # linea media del flex en la pestaña fija (cara delantera)
 Z0 = 16.0                       # canto de la pestaña por donde sale el flex
 STR, c = 1.0, 0.1
+WFACE = -5.45                   # tope: chapa de 0,25 pegada al dorso de la camara (su cara, x desde el panel)
 
 def frames_for(a, n=61):
     Ze, Le = Z - 2*STR, L - 2*STR; h = Le/S.N
@@ -23,7 +24,7 @@ def frames_for(a, n=61):
     for name, ds in (('nom_a_ret', np.linspace(a, a - TRAVEL, n)), ('ret_a_nom', np.linspace(a - TRAVEL, a, n))):
         out = []
         for d in ds:
-            th, R, _, _ = S.solve(th, Le, Ze, d)
+            th, R, _, _ = S.solve(th, Le, Ze, d, wall=WFACE - XT)
             t = np.concatenate([[0], th, [0]]); k = np.abs(np.diff(t))/h
             zz = np.concatenate([[0], np.cumsum(h*np.cos(th))]); xx = np.concatenate([[0], np.cumsum(h*np.sin(th))])
             # agrega los rectos de 1 mm
@@ -34,7 +35,7 @@ def frames_for(a, n=61):
     return seq
 
 def rl_point(Lv):
-    res = [C.sweep(Z, Lv, a, tr, n=121)[0] for a in (5.65, 6.0, 6.35) for tr in (12.0, 12.5)]
+    res = [C.sweep(Z, Lv, a, tr, n=121, wall=WFACE - XT)[0] for a in (A - 0.35, A, A + 0.35) for tr in (12.0, 12.5)]
     return Lv, min(res)
 
 def fit_profile(fr):
@@ -106,12 +107,12 @@ if __name__ == '__main__':
     dxf(rows, 'planos/S_conector_nominal.dxf')
     tol = {}
     with Pool(4) as p:
-        rl = p.map(rl_point, [round(v, 3) for v in np.arange(15.75, 17.51, 0.125)])
-        tolres = p.starmap(C.sweep, [(Z, L, a, tr, 121) for a in (5.65, 6.0, 6.35) for tr in (12.0, 12.5)])
-    tol = [dict(a=a, tr=tr, R=round(r[0], 2), xmin=round(r[1], 2), xmax=round(r[2], 2)) for (a, tr), r in zip([(a, tr) for a in (5.65, 6.0, 6.35) for tr in (12.0, 12.5)], tolres)]
+        rl = p.map(rl_point, [round(v, 3) for v in np.arange(17.5, 19.51, 0.125)])
+        tolres = p.starmap(C.sweep, [(Z, L, a, tr, 121, WFACE - XT) for a in (A - 0.35, A, A + 0.35) for tr in (12.0, 12.5)])
+    tol = [dict(a=a, b=round(6.65 + (A - a), 2), tr=tr, R=round(r[0], 2), xmin=round(r[1], 2), xmax=round(r[2], 2)) for (a, tr), r in zip([(a, tr) for a in (A - 0.35, A, A + 0.35) for tr in (12.0, 12.5)], tolres)]
     for s_ in seq.values():
         for f in s_: f.pop('th')
-    data = dict(Z=Z, L=L, travel=TRAVEL, RREQ=RREQ, B=B, XB=XB, XT=XT, Z0=Z0, A=A,
+    data = dict(Z=Z, L=L, travel=TRAVEL, RREQ=RREQ, WFACE=WFACE, B=B, XB=XB, XT=XT, Z0=Z0, A=A,
                 Rmin=round(min(f['R'] for s_ in seq.values() for f in s_), 3),
                 seq=seq, perfil=rows, desvio=round(float(dev), 3), largo_perfil=round(sum(r['largo'] for r in rows), 3),
                 rl=[dict(L=Lv, R=round(R, 3)) for Lv, R in rl], tol=tol)
