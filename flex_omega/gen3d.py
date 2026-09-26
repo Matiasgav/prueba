@@ -325,8 +325,33 @@ def opcion_led(var):
     return dict(id='led' + var, nombre=names[var], W=X(-6.65), Rmin=round(d2['Rmin'], 2), env=[0, 52], H=H, frames=frames,
                 focus=dict(target=[X(-4.5), 5.5, 16.5], pos=[X(-4.5) + 16, 22, 16.5 - 20]))
 
+# ---------- Sujecion del conjunto (sobre LED A) ----------
+def opcion_sujecion():
+    o = opcion_led('A'); XP = 13.0 + 6.65; X = lambda xr: XP + xr; y0 = 0.25
+    extra = [
+        # tornillo del apilado: atraviesa la seccion de camara, el separador de 2,0 y la placa del LED y rosca en un buje del panel
+        dict(cyl=True, x0=X(-7.97), len=0.8, y=y0 + 7.6, z=10.3, r=1.5, kind='tornillo'),          # cabeza M1.6
+        dict(cyl=True, x0=X(-7.17), len=5.7, y=y0 + 7.6, z=10.3, r=0.8, kind='tornillo'),          # cuerpo M1.6 x 6
+        dict(cyl=True, x0=X(-6.17), len=2.0, y=y0 + 7.6, z=10.3, r=1.3, kind='separador'),         # separador 2,0 = altura del B2B
+        dict(cyl=True, x0=X(-3.57), len=3.57, y=y0 + 7.6, z=10.3, r=1.7, kind='chasis'),           # buje del panel
+        # espuma que aprieta la cola de la camara contra su conector y apoya la placa del LED
+        box(X(-4.7), X(-4.17), y0 + 1.5, y0 + 8.5, 11.5, 17.0, 'espuma'),
+        # nervio del panel: apoya la punta de la placa del LED y separa la luz del LED de la camara
+        box(X(-3.57), X(0), y0 + 0.6, y0 + 8.0, 20.9, 21.5, 'chasis'),
+        # guias de la pestaña fija (ranura vertical en dos postes del chasis)
+        box(X(-16.0), X(-13.7), 0, 11.9, 14.6, 16.0, 'chasis'),
+        box(X(-16.0), X(-13.7), 0, 11.9, 2.9, 4.3, 'chasis'),
+        # tuerca del M12 del lado de afuera del panel
+        dict(cyl=True, x0=XP + 1.5, len=2.0, y=(y0 + 11.9)/2, z=44.0, r=8.0, kind='tuerca'),
+    ]
+    for f in o['frames']:
+        f['boxes'] = f['boxes'] + extra
+    o.update(id='sujecion', nombre='Sujeción del conjunto',
+             focus=dict(target=[X(-6.0), 5.5, 12.0], pos=[X(-6.0) - 14, 24, 12.0 - 22]))
+    return o
+
 def _main():
-    out = [opcion_piso(), opcion_s(), opcion_u(), opcion_camara(), opcion_camara_centrada(), opcion_horizontal(), opcion_pared(), opcion_led('A'), opcion_led('B'), opcion_led('C')]
+    out = [opcion_piso(), opcion_s(), opcion_u(), opcion_camara(), opcion_camara_centrada(), opcion_horizontal(), opcion_pared(), opcion_led('A'), opcion_led('B'), opcion_led('C'), opcion_sujecion()]
     for o in out:
         print(o['id'], len(o['frames']), 'R/Rreq min', round(min(min(r['R'])/r.get('rreq', 3.0) for f in o['frames'] for r in f['ribbons']), 3))
     json.dump(out, open('opciones3d.json', 'w'), separators=(',', ':'))

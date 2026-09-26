@@ -63,6 +63,7 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
         <button id="o7" aria-pressed="false">LED A · B2B</button>
         <button id="o8" aria-pressed="false">LED B · isla</button>
         <button id="o9" aria-pressed="false">LED C · FFC</button>
+        <button id="o10" aria-pressed="false">Sujeción</button>
       </div>
       <div class="seg" role="group" aria-label="Vista">
         <button id="v0" aria-pressed="true">Isométrica</button>
@@ -84,6 +85,10 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
       <span><i style="background:#ffe08a"></i>LED 3 × 3 × 3</span>
       <span><i style="background:#fff4c2"></i>guía de luz</span>
       <span><i style="background:#d9d4c7"></i>cable plano FFC</span>
+      <span><i style="background:#aab2c0"></i>chasis (bujes, nervios, guías)</span>
+      <span><i style="background:#8a939f"></i>tornillo</span>
+      <span><i style="background:#c9a227"></i>separador</span>
+      <span><i style="background:#e38fb0"></i>espuma</span>
       <span><i style="background:#d4145a;opacity:.35"></i>techo y línea nominal</span>
       <label style="display:inline-flex;gap:6px;align-items:center;color:var(--ink)"><input type="checkbox" id="showr"> colorear el flex por radio (azul ≥ 1,17 × mín., ámbar cerca, rojo por debajo)</label>
     </div>
@@ -195,6 +200,17 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
         <li>Montaje simple: se enchufa el cable después de instalar la plaqueta.</li>
       </ul>
     </article>
+    <article class="card" id="c10">
+      <h3>Sujeción del conjunto (con LED A)</h3>
+      <dl><dt>Apilado</dt><dd>1 tornillo M1.6 × 6 + separador 2,0 + buje en el panel</dd><dt>Cámara</dt><dd>pegada a la ventana; su cola apretada por espuma</dd><dt>Pestaña de la S</dt><dd>ranura en dos postes del chasis + tapa</dd><dt>Conector M12</dt><dd>tuerca en el panel</dd></dl>
+      <ul>
+        <li>El tornillo del apilado pasa por la sección de cámara, el separador (misma altura que el B2B) y la placa del LED, y rosca en un buje del panel. Fija la sección de cámara y la placa del LED de una vez.</li>
+        <li>La espuma (~0,8 mm libre, ~0,5 apretada) va entre la placa del LED y el rigidizador de la cámara: mantiene enchufada la cámara y absorbe tolerancias.</li>
+        <li>Un nervio del panel apoya la punta de la placa del LED y hace de barrera de luz entre el LED y la cámara.</li>
+        <li>La pestaña fija de la S baja en una ranura vertical entre dos postes del chasis; la tapa la frena desde arriba.</li>
+        <li>La mainboard va con la cinta de 0,25 y sus tornillos. La placa del conector queda tomada por la tuerca del M12 en nominal.</li>
+      </ul>
+    </article>
   </div>
 </div>
 
@@ -225,6 +241,11 @@ const MAT = {
   camara: new THREE.MeshStandardMaterial({color: 0x2b2f38, roughness: .4, metalness: .2}),
   rosca: new THREE.MeshStandardMaterial({color: 0xb9c0cc, roughness: .35, metalness: .6}),
   guia_luz: new THREE.MeshStandardMaterial({color: 0xfff4c2, emissive: 0xffe08a, emissiveIntensity: .25, roughness: .1, transparent: true, opacity: .55}),
+  chasis: new THREE.MeshStandardMaterial({color: 0xaab2c0, roughness: .8, transparent: true, opacity: .75}),
+  tornillo: new THREE.MeshStandardMaterial({color: 0x8a939f, roughness: .3, metalness: .8}),
+  separador: new THREE.MeshStandardMaterial({color: 0xc9a227, roughness: .35, metalness: .7}),
+  espuma: new THREE.MeshStandardMaterial({color: 0xe38fb0, roughness: .95}),
+  tuerca: new THREE.MeshStandardMaterial({color: 0x9aa3ad, roughness: .35, metalness: .7, transparent: true, opacity: .6}),
   led: new THREE.MeshStandardMaterial({color: 0xffe08a, emissive: 0xffc93c, emissiveIntensity: .6, roughness: .3}),
   panel: new THREE.MeshStandardMaterial({color: 0x9aa3b2, roughness: .8, transparent: true, opacity: .18, depthWrite: false}),
 };
@@ -331,11 +352,11 @@ function bg(){ renderer.setClearColor(new THREE.Color(css('--scene') || '#eef2f7
 const T = document.getElementById('t'), pb = document.getElementById('play');
 document.getElementById('showr').onchange = e => { showR = e.target.checked; show(); };
 function selectOption(i){
-  oi = i; ['o0', 'o1', 'o2', 'o3', 'o4', 'o5', 'o6', 'o7', 'o8', 'o9'].forEach((id, k) => document.getElementById(id).setAttribute('aria-pressed', k === i));
-  ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9'].forEach((id, k) => document.getElementById(id).classList.toggle('sel', k === i));
+  oi = i; ['o0', 'o1', 'o2', 'o3', 'o4', 'o5', 'o6', 'o7', 'o8', 'o9', 'o10'].forEach((id, k) => document.getElementById(id).setAttribute('aria-pressed', k === i));
+  ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10'].forEach((id, k) => document.getElementById(id).classList.toggle('sel', k === i));
   buildStatic(); setView(0); show();
 }
-['o0', 'o1', 'o2', 'o3', 'o4', 'o5', 'o6', 'o7', 'o8', 'o9'].forEach((id, i) => document.getElementById(id).onclick = () => selectOption(i));
+['o0', 'o1', 'o2', 'o3', 'o4', 'o5', 'o6', 'o7', 'o8', 'o9', 'o10'].forEach((id, i) => document.getElementById(id).onclick = () => selectOption(i));
 ['v0', 'v1', 'v2'].forEach((id, i) => document.getElementById(id).onclick = () => setView(i));
 pb.onclick = () => { playing = !playing; pb.textContent = playing ? 'Pausa' : 'Reproducir'; last = null; };
 if (!playing) pb.textContent = 'Reproducir';
