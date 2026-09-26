@@ -99,38 +99,50 @@ def opcion_u(W=13.0, G=7.6):
     return dict(id='u', nombre='U rodante de canto', W=W, Rmin=3.0, frames=frames)
 
 
-# ---------- Opcion 5: camara centrada en los 52 mm, S por detras de la camara ----------
-def opcion_camara_centrada(Xn=13.0, b=6.5, Z=17.5, L=22.5, H=11.9, cinta=0.25):
-    y0 = cinta                       # todo apoya sobre la cinta de 0,25
-    xp = Xn + b                      # cara interior del panel
-    xcam = xp - 5.5                  # dorso del modulo
-    xfpc = xcam - 0.1                # flex de la camara
-    xi1 = xcam - 0.2 - 1.5           # cara delantera de la placa de interfaz
-    xi = xi1 - 0.5                   # plano medio de la interfaz = extremo fijo de la S
-    zs0, zs1 = 14.0, 14.0 + Z        # S entre la interfaz y la placa del conector
-    wall = xi + (Xn - 0.5 - xi) + 0.6  # pared: 0,6 mm por delante de la posicion nominal de la S
-    ym = y0 + 0.35 + 5.5             # centro de la tira de canto (11 mm de alto)
+# ---------- Opcion 5: camara centrada (geometria real del STEP), S por detras, LED arriba de la camara ----------
+def opcion_camara_centrada(Xn=13.0, b=6.5, Z=17.0, L=22.0, H=11.9, cinta=0.25):
+    y0 = cinta; xp = Xn + b; xcam = xp - 5.05          # modulo de 5,05 mm de profundidad (STEP)
+    ylens = y0 + 4.25
+    xs0 = xcam - 0.12 - 1.0                             # cara delantera de la interfaz: flex 0,12 + conector apareado ~1,0
+    xi = xs0 - 0.5                                      # plano medio de la interfaz = extremo fijo de la S
+    zc = 26.0 - 11.8                                    # centro del conector de la camara (11,8 mm de la lente)
+    zs0 = 16.0; zs1 = zs0 + Z                           # S despues del conector de la camara
+    wall_face = xs0                                     # la S no pasa de la cara delantera de la interfaz
+    ys0, ys1 = y0 + 0.35, y0 + 0.35 + 9.0               # tira de la S de 9 mm (48 V en 2 oz + Gigabit)
+    ya0, ya1 = y0 + 9.75, y0 + 11.55                    # brazo del LED de 1,8 mm, por encima de la S y de la pared
+    # flex de la mainboard: entra por la muesca inferior de la interfaz (z 0,5 a 11,9)
     ai = arc(xi - 3.1, y0 + 0.1 + 3.1, 3.1, -np.pi/2, 0)
-    inc = np.stack([np.r_[0, xi - 3.1, ai[1:, 0], xi], np.r_[y0 + 0.1, y0 + 0.1, ai[1:, 1], 4.7], np.full(len(ai) + 2, 6.25)], 1)
+    inc = np.stack([np.r_[0, xi - 3.1, ai[1:, 0], xi], np.r_[y0 + 0.1, y0 + 0.1, ai[1:, 1], y0 + 4.45], np.full(len(ai) + 2, 6.2)], 1)
+    # brazo del LED: S de dos arcos R 2,6 desde el canto de la interfaz hasta la islita sobre la camara
+    xtab = xcam + 0.9; R = 2.6; jog = xtab - xi
+    ph = np.arccos(1 - jog/(2*R))
+    t1 = np.linspace(np.pi, np.pi - ph, 12); p1 = np.stack([xi + R + R*np.cos(t1), zs0 + R*np.sin(t1)], 1)
+    c2 = p1[-1] + R*np.array([-np.cos(ph), np.sin(ph)])
+    t2 = np.linspace(-ph, 0, 12); p2 = np.stack([c2[0] + R*np.cos(t2), c2[1] + R*np.sin(t2)], 1)
+    arm2 = np.vstack([p1, p2[1:], [[xtab, 22.0]]])
+    arm = np.stack([arm2[:, 0], np.full(len(arm2), (ya0 + ya1)/2), arm2[:, 1]], 1)
+    cam_fpc = np.array([[xcam - 0.06, ylens, 30.25], [xcam - 0.06, ylens, 11.25]])
     frames = []; s = np.linspace(0, 1, s_lateral.N); th = -0.3*np.sin(np.pi*s); Rall = []
     for ret in np.linspace(12, 0, STEPS):
         X = Xn - ret; dlat = (X - 0.5) - xi
-        th, R, _, _ = s_lateral.solve(th, L, Z, dlat, wall=wall - xi); Rall.append(R)
+        th, Rr, _, _ = s_lateral.solve(th, L, Z, dlat, wall=wall_face - xi); Rall.append(Rr)
         h = L/s_lateral.N
         zz = np.concatenate([[0], np.cumsum(h*np.cos(th))]); xx = np.concatenate([[0], np.cumsum(h*np.sin(th))])
-        S = np.stack([xi + xx, np.full(len(xx), ym), zs0 + zz], 1)
-        camf = np.array([[xfpc, y0 + 4.25, 30.25], [xfpc, y0 + 4.25, 10.75]])
-        frames.append(dict(ret=round(ret, 3), ribbons=[ribbon(inc, (0, 0, 1), 11.5), ribbon(S, (0, 1, 0), 11),
-                                                        dict(p=camf.tolist(), b=[0, 1, 0], w=6.5, R=[99, 99])], boxes=[
+        S = np.stack([xi + xx, np.full(len(xx), (ys0 + ys1)/2), zs0 + zz], 1)
+        frames.append(dict(ret=round(ret, 3), ribbons=[
+            ribbon(inc, (0, 0, 1), 11.4), ribbon(S, (0, 1, 0), 9.0), ribbon(arm, (0, 1, 0), 1.8, rreq=2.4),
+            dict(p=cam_fpc.tolist(), b=[0, 1, 0], w=8.5, R=[99, 99], rreq=1.44)], boxes=[
             box(-10, 0, y0 + 0.2, y0 + 1.2, -2, 54, 'mainboard'),
-            box(xi - 0.5, xi + 0.5, 4.7, H, 0, zs0, 'pestana'),
-            box(xi - 0.5, xi + 0.5, y0, H, 12.2, zs0, 'pestana'),
-            box(xi1, xi1 + 1.5, 4.9, 7.7, 10.75, 13.75, 'conector'),           # conector de la camara
+            box(xi - 0.5, xi + 0.5, y0 + 4.45, H, 0, 12.4, 'placa'),               # interfaz: muesca para el flex de entrada
+            box(xi - 0.5, xi + 0.5, y0, H, 12.4, zs0, 'placa'),                    # interfaz: zona completa (conector camara + salida S)
+            box(xs0, xcam - 0.12, ylens + 0.55 - 3.0, ylens + 0.55 + 3.0, zc - 1.0, zc + 1.0, 'conector'),
+            box(xcam, xcam + 0.35, y0, y0 + 9.6, 11.25, 17.25, 'rigidizador'),      # FR4 de la cola de la camara
             box(xcam, xp, y0, y0 + 8.5, 21.75, 30.25, 'camara'),
-            dict(cyl=True, x0=xp - 0.6, len=0.6, y=y0 + 4.25, z=26.0, r=2.2, kind='rosca'),
-            box(wall, wall + 0.5, y0, H, zs0, zs1 - 0.5, 'guia'),
+            dict(cyl=True, x0=xp - 0.6, len=0.6, y=ylens, z=26.0, r=2.2, kind='rosca'),
+            box(wall_face + 0.05, wall_face + 0.55, y0, y0 + 9.55, zs0 + 0.5, zs1 - 0.5, 'guia'),
+            box(xtab - 0.5, xtab + 0.5, y0 + 8.6, H, 22.0, 29.5, 'placa'),          # islita del LED sobre la camara
+            box(xtab + 0.5, xtab + 3.5, y0 + 8.6, y0 + 11.6, 24.5, 27.5, 'led'),
             box(X - 1.0, X, y0, H, zs1, 52.0, 'placa'),
-            box(X, X + 2.8, y0 + 3.0, y0 + 6.0, 32.2, 35.2, 'led'),
             box(X, X + b, y0, H, 38.0, 50.0, 'conector'),
             dict(cyl=True, x0=X + b, len=12, y=(y0 + H)/2, z=44.0, r=6, kind='rosca'),
             box(xp, xp + 1.5, -1, 13.5, -2, 54, 'panel')]))
