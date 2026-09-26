@@ -11,6 +11,9 @@ import elastica2 as E
 import fast
 
 STEPS = 13
+RMIN = 3.0
+import os
+RMIN = float(os.environ.get('RMIN', 3.0)); E.TRAVEL = float(os.environ.get('TRAVEL', 12)); fast.XEXTRA = float(os.environ.get('XEXTRA', 0)); fast.LEFT = float(os.environ.get('LEFT', 0)); fast.GUIDES = set(filter(None, os.environ.get('GUIDES', '').split(',')))
 
 def score(args):
     W, L, Rb = args
@@ -25,7 +28,7 @@ def score(args):
     return min(a['Rin'] for a in st)
 
 def best_L(pool, W, Rb):
-    Ls = np.arange(W + 8, W + 16.01, 1.0)
+    Ls = np.arange(W + 4, W + 16.01, 1.0)
     s = pool.map(score, [(W, L, Rb) for L in Ls])
     i = int(np.argmax(s)); L0 = Ls[i]
     Lr = [L0 - .5, L0 + .5]
@@ -34,7 +37,7 @@ def best_L(pool, W, Rb):
     return max(cand)
 
 if __name__ == '__main__':
-    Rb = float(sys.argv[1]); lo, hi = 20.0, 36.0
+    Rb = float(sys.argv[1]); lo, hi = 12.0, 36.0
     t0 = time.time()
     with Pool(4) as pool:
         Rhi, Lhi = best_L(pool, hi, Rb)
@@ -43,6 +46,6 @@ if __name__ == '__main__':
             mid = (lo + hi) / 2
             R, L = best_L(pool, mid, Rb)
             print(f"Rb={Rb} W={mid} -> R={R:.2f} L={L}  ({time.time()-t0:.0f}s)", flush=True)
-            if R >= 3.0: hi, Lhi, Rhi = mid, L, R
+            if R >= RMIN: hi, Lhi, Rhi = mid, L, R
             else: lo = mid
     print(f"RESULT Rb={Rb} Wmin={hi} L={Lhi} R={Rhi:.2f}")
