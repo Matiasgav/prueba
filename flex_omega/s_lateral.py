@@ -6,7 +6,8 @@ import numpy as np
 from scipy.optimize import minimize
 N = 60; c = 0.1
 
-def solve(th0, L, Z, d, mu=2e3):
+def solve(th0, L, Z, d, mu=2e3, wall=None):
+    """wall: limite superior del desplazamiento lateral (pared entre la S y la camara)."""
     h = L/N; lam = np.zeros(2)
     def f(th):
         t = np.concatenate([[0.0], th, [0.0]]); dd = np.diff(t)
@@ -15,6 +16,9 @@ def solve(th0, L, Z, d, mu=2e3):
         r = np.array([h*cs.sum() - Z, h*sn.sum() - d])
         v += lam@r + mu/2*r@r
         g += (lam[0] + mu*r[0])*(-h*sn) + (lam[1] + mu*r[1])*(h*cs)
+        if wall is not None:
+            y = np.cumsum(h*sn); p = np.maximum(y - (wall - c), 0); v += mu*p@p
+            gy = 2*mu*p; Gy = np.cumsum(gy[::-1])[::-1]; g += Gy*(h*cs)
         return v, g
     th = th0
     for _ in range(10):
