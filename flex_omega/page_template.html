@@ -1,0 +1,266 @@
+<title>Omega del flex</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#f3f5f8; --sheet:#ffffff; --ink:#18223a; --muted:#5b6780; --grid:#e3e8f0;
+  --flexc:#1f3fd1; --dim:#d4145a; --ok:#1b8a4b; --warn:#c17a00; --bad:#d4145a; --line:#c9d1de;
+  --board:#2f7d5b; --boardfill:#d9efe4;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  color-scheme:dark; --paper:#0f1522; --sheet:#151d2e; --ink:#e4e9f3; --muted:#9aa6bd; --grid:#1f2a40;
+  --flexc:#7f9bff; --dim:#ff5c93; --ok:#4cc987; --warn:#f0b43c; --bad:#ff5c93; --line:#2b3852;
+  --board:#5cc497; --boardfill:#18382c;}}
+:root[data-theme="dark"]{
+  color-scheme:dark; --paper:#0f1522; --sheet:#151d2e; --ink:#e4e9f3; --muted:#9aa6bd; --grid:#1f2a40;
+  --flexc:#7f9bff; --dim:#ff5c93; --ok:#4cc987; --warn:#f0b43c; --bad:#ff5c93; --line:#2b3852;
+  --board:#5cc497; --boardfill:#18382c;}
+body{background:var(--paper);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,sans-serif;padding-inline:16px;padding-block:24px 48px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:600;letter-spacing:.01em;text-wrap:balance;margin:0}
+h1{font-size:40px;line-height:1.05}
+h2{font-size:26px}
+p{margin:0;max-width:68ch}
+.lede{color:var(--muted)}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.answer{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.cell{background:var(--sheet);border:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.cell .k{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.cell .v{font-family:"IBM Plex Mono",monospace;font-size:28px;font-variant-numeric:tabular-nums}
+.cell .s{font-size:13px;color:var(--muted)}
+.cell.main .v{color:var(--dim)}
+.sim{background:var(--sheet);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:14px}
+.controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line)}
+.seg button{background:transparent;color:var(--ink);border:0;padding:7px 12px;font:inherit;font-size:14px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--dim);outline-offset:2px}
+.play{background:var(--dim);color:#fff;border:0;padding:8px 16px;font:inherit;font-weight:600;cursor:pointer}
+.slider{display:flex;align-items:center;gap:10px;flex:1 1 260px}
+.slider input{flex:1;accent-color:var(--dim)}
+canvas{width:100%;display:block;background:var(--sheet)}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.ro{border-top:2px solid var(--line);padding-top:6px}
+.ro .k{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.ro .v{font-family:"IBM Plex Mono",monospace;font-size:20px;font-variant-numeric:tabular-nums}
+.ro.bad{border-color:var(--bad)} .ro.bad .v{color:var(--bad)}
+.ro.good{border-color:var(--ok)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:22px;height:4px;vertical-align:middle;margin-right:6px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.cols section{display:flex;flex-direction:column;gap:10px}
+ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:68ch}
+table{border-collapse:collapse;font-size:14px}
+.tw{overflow-x:auto}
+td,th{padding:6px 12px 6px 0;text-align:left;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:500}
+@media (prefers-reduced-motion: reduce){.play{display:none}}
+</style>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <h1>Omega del flex: carrera de 12 mm con R ≥ 3</h1>
+    <p class="lede">Simulación del flex como elástica (tira elástica inextensible, empotrada en la mainboard y en la placa del conector). Así se comporta un flex libre, sin conformar: busca la forma de mínima energía de flexión, no la omega de arcos y rectas del CAD.</p>
+  </header>
+
+  <div class="answer">
+    <div class="cell main"><span class="k">Ancho mínimo W</span><span class="v">≈ 31 mm</span><span class="s">desde el inicio del tramo de 1 mm hasta la línea nominal. Límite duro ≈ 30,5 mm.</span></div>
+    <div class="cell"><span class="k">Largo del flex L</span><span class="v">45 mm</span><span class="s">largo desarrollado entre bordes rígidos (incluye 1 mm recto en cada extremo).</span></div>
+    <div class="cell"><span class="k">Radio mínimo en todo el recorrido</span><span class="v">3,13 mm</span><span class="s">ida y vuelta, 81 posiciones simuladas.</span></div>
+    <div class="cell"><span class="k">Altura en retraído</span><span class="v">≈ 17 mm</span><span class="s">el bucle sube por encima de 10,5 solo mientras está retraído. En nominal: 10,5 mm.</span></div>
+  </div>
+
+  <div class="sim" id="sim">
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Diseño">
+        <button id="d0" aria-pressed="true">W 31 · L 45 (propuesta)</button>
+        <button id="d1" aria-pressed="false">W 26,4 · L 35,9 (tu dibujo)</button>
+      </div>
+      <div class="seg" role="group" aria-label="Sentido">
+        <button id="s0" aria-pressed="true">Retraído → nominal</button>
+        <button id="s1" aria-pressed="false">Nominal → retraído</button>
+      </div>
+      <button class="play" id="play">Pausa</button>
+      <label class="slider"><span class="mono" style="font-size:13px">carrera</span><input id="t" type="range" min="0" max="1000" value="0"></label>
+    </div>
+    <canvas id="cv" height="440" aria-label="Forma del flex durante la carrera"></canvas>
+    <div class="legend">
+      <span><i style="background:var(--ok)"></i>R ≥ 3,5 mm</span>
+      <span><i style="background:var(--warn)"></i>3 ≤ R &lt; 3,5 mm</span>
+      <span><i style="background:var(--bad)"></i>R &lt; 3 mm</span>
+      <span><i style="background:var(--dim);height:1px"></i>límite 10,5 mm y posición nominal</span>
+    </div>
+    <div class="readout">
+      <div class="ro" id="r1"><div class="k">Retracción</div><div class="v" id="v1">–</div></div>
+      <div class="ro" id="r2"><div class="k">R mín. ahora</div><div class="v" id="v2">–</div></div>
+      <div class="ro" id="r3"><div class="k">R mín. del recorrido</div><div class="v" id="v3">–</div></div>
+      <div class="ro" id="r4"><div class="k">Altura máx. ahora</div><div class="v" id="v4">–</div></div>
+    </div>
+    <canvas id="ch" height="170" aria-label="Radio mínimo según la retracción"></canvas>
+  </div>
+
+  <div class="cols">
+    <section>
+      <h2>Qué muestra la simulación</h2>
+      <ul>
+        <li>El flex libre <b>no se queda como omega</b>. En nominal toma una S suave: sube, apoya en el piso cerca del conector y entra vertical. Al retraer, esa S se levanta y forma un bucle alto y cerrado, parecido a una omega pero asimétrico.</li>
+        <li>El radio mínimo aparece en el bucle del retraído y en las zonas cercanas a los empotramientos, no en la cresta.</li>
+        <li>Hay <b>histéresis</b>: a la ida y a la vuelta el flex pasa por formas distintas y da un salto (snap) a mitad de carrera. Por eso se chequean los dos sentidos.</li>
+        <li>Con tu ancho actual (≈ 26,4 mm) el mejor largo posible da R ≈ 2,5 mm. No llega a 3 mm sin algo que guíe la forma.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Supuestos del modelo</h2>
+      <ul>
+        <li>Origen en el inicio del tramo de 1 mm de la mainboard; el flex sale horizontal. Entra vertical al borde de la placa del conector a 10,5 mm, con 1 mm recto en ese extremo también.</li>
+        <li>Paredes: no baja de la mainboard (y ≥ 0) ni sale de 0 ≤ x ≤ W. Arriba de 10,5 solo se permite en retraído.</li>
+        <li>El conector se traslada 12 mm en horizontal sin girar.</li>
+        <li>Rigidez uniforme y comportamiento elástico. El cobre que plastifica o un flex conformado cambian la forma: validarlo con una maqueta.</li>
+      </ul>
+    </section>
+  </div>
+
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <h2>Barrido ancho × largo</h2>
+    <p>Mejor radio mínimo alcanzable en todo el recorrido (ida y vuelta) para cada ancho, eligiendo el largo óptimo.</p>
+    <div class="tw"><table>
+      <thead><tr><th>W (mm)</th><th>Mejor L (mm)</th><th>R mín. (mm)</th><th>¿Cumple R ≥ 3?</th></tr></thead>
+      <tbody>
+        <tr><td>24</td><td>34</td><td>2,51</td><td>No</td></tr>
+        <tr><td>26,4</td><td>35,9</td><td>2,50</td><td>No</td></tr>
+        <tr><td>28</td><td>45</td><td>2,48</td><td>No</td></tr>
+        <tr><td>30</td><td>44,5</td><td>2,8 – 3,0</td><td>Justo, depende del salto</td></tr>
+        <tr><td>30,5</td><td>45,5</td><td>3,10</td><td>Sí</td></tr>
+        <tr><td>31</td><td>45</td><td>3,13</td><td>Sí (recomendado)</td></tr>
+        <tr><td>32</td><td>49</td><td>3,41</td><td>Sí</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <h2>Si necesitás bajar de 31 mm</h2>
+    <ul>
+      <li><b>Guiar la forma.</b> Un nervio o mandril de R 3 en la carcasa (o un rigidizador local en la cresta) fuerza la omega de tu dibujo y el flex deja de elegir su forma. Con eso tus 26,4 mm son viables.</li>
+      <li><b>Pre-conformar el flex</b> (termoformado de la poliimida con la omega) ayuda, pero la memoria es parcial; conviene combinarlo con una guía.</li>
+      <li><b>Bucle rodante (U).</b> Si hay lugar debajo de la placa del conector, llevar el flex hacia adelante y volver en U: la carrera solo desplaza la U a la mitad (6 mm) y el radio no cambia. Es la solución clásica para carreras lineales, pero ocupa ~7–8 mm más allá de la línea nominal.</li>
+      <li><b>Revisar el radio de 3 mm.</b> Para un uso estático (se dobla una vez) IPC-2223 pide ~6× el espesor en 1 capa, ~12× en 2 capas y ~24× en multicapa. Con un flex de 2 capas de 0,1–0,15 mm, 3 mm tiene margen y aceptar 2,5 mm permitiría W ≈ 26 mm.</li>
+    </ul>
+  </section>
+</div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+let di = 0, dir = 'fw', u = 0, playing = !matchMedia('(prefers-reduced-motion: reduce)').matches, last = null;
+const cv = document.getElementById('cv'), ch = document.getElementById('ch'), T = document.getElementById('t');
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+function frameAt(d, seq, s){ // s en 0..1 a lo largo de la secuencia
+  const n = seq.length - 1, f = s * n, i = Math.min(n - 1, Math.floor(f));
+  return seq[Math.round(f)];
+}
+function colorR(R){ return R < 3 ? css('--bad') : R < 3.5 ? css('--warn') : css('--ok'); }
+
+function fit(c){ const r = c.getBoundingClientRect(), dpr = devicePixelRatio || 1;
+  const h = +c.getAttribute('height'); c.width = r.width * dpr; c.height = h * dpr; c.style.height = h + 'px';
+  const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); return [g, r.width, h]; }
+
+function draw(){
+  const d = D[di], seq = d[dir], fr = frameAt(d, seq, u);
+  const [g, w, h] = fit(cv);
+  const xmin = -4, xmax = d.W + 3, ymin = -2, ymax = 19;
+  const sc = Math.min((w - 20) / (xmax - xmin), (h - 20) / (ymax - ymin));
+  const ox = 10 + (w - 20 - sc * (xmax - xmin)) / 2 - xmin * sc, oy = h - 10 + ymin * sc;
+  const P = (x, y) => [ox + x * sc, oy - y * sc];
+  // grilla 1 mm / 5 mm
+  g.lineWidth = 1;
+  for (let x = Math.ceil(xmin); x <= xmax; x++){ g.strokeStyle = css('--grid'); g.globalAlpha = x % 5 ? .45 : 1;
+    g.beginPath(); g.moveTo(...P(x, ymin)); g.lineTo(...P(x, ymax)); g.stroke(); }
+  for (let y = Math.ceil(ymin); y <= ymax; y++){ g.globalAlpha = y % 5 ? .45 : 1;
+    g.beginPath(); g.moveTo(...P(xmin, y)); g.lineTo(...P(xmax, y)); g.stroke(); }
+  g.globalAlpha = 1;
+  // mainboard
+  g.fillStyle = css('--boardfill'); g.strokeStyle = css('--board'); g.lineWidth = 1.5;
+  let [a, b] = P(-4, .8), [c2, e] = P(0, -.8); g.fillRect(a, b, c2 - a, e - b); g.strokeRect(a, b, c2 - a, e - b);
+  g.fillStyle = css('--muted'); g.font = '12px "IBM Plex Mono", monospace'; g.fillText('mainboard', ...P(-3.9, -1.7));
+  // limites
+  g.strokeStyle = css('--dim'); g.setLineDash([6, 4]); g.lineWidth = 1.2;
+  g.beginPath(); g.moveTo(...P(0, 10.5)); g.lineTo(...P(d.W, 10.5)); g.stroke();
+  g.beginPath(); g.moveTo(...P(d.W, 0)); g.lineTo(...P(d.W, ymax)); g.stroke();
+  g.beginPath(); g.moveTo(...P(d.W - 12, 10.5)); g.lineTo(...P(d.W - 12, ymax)); g.stroke();
+  g.setLineDash([]); g.fillStyle = css('--dim');
+  g.fillText('10,5', ...P(.3, 10.9)); g.fillText('nominal', ...P(d.W - 5.2, ymax - .9)); g.fillText('retraído', ...P(d.W - 11.8, ymax - .9));
+  // cota W
+  const [wx0, wy] = P(0, -1.4), [wx1] = P(d.W, -1.4);
+  g.beginPath(); g.moveTo(wx0, wy); g.lineTo(wx1, wy); g.stroke();
+  g.fillText('W = ' + String(d.W).replace('.', ',') + ' mm', (wx0 + wx1) / 2 - 30, wy - 4);
+  // placa conector
+  const X = fr.X; g.fillStyle = css('--boardfill'); g.strokeStyle = css('--board');
+  [a, b] = P(X - .8, ymax - .2); [c2, e] = P(X + .8, 10.5); g.fillRect(a, b, c2 - a, e - b); g.strokeRect(a, b, c2 - a, e - b);
+  [a, b] = P(X + .8, 15.5); [c2, e] = P(X + 3, 12.5); g.fillRect(a, b, c2 - a, e - b); g.strokeRect(a, b, c2 - a, e - b);
+  // flex coloreado por radio
+  const xs = fr.x, ys = fr.y, k = fr.k; g.lineCap = 'round'; g.lineWidth = 4;
+  for (let i = 0; i < xs.length - 1; i++){
+    const ki = Math.max(k[Math.max(0, i - 1)] || 0, k[Math.min(k.length - 1, i)] || 0);
+    const R = ki > 0 ? 1 / ki : 99;
+    g.strokeStyle = (i === 0 || i === xs.length - 2) ? css('--flexc') : colorR(R);
+    g.beginPath(); g.moveTo(...P(xs[i], ys[i])); g.lineTo(...P(xs[i + 1], ys[i + 1])); g.stroke();
+  }
+  // marcar radio minimo
+  let im = 0; for (let i = 0; i < k.length; i++) if (k[i] > k[im]) im = i;
+  const [mx, my] = P(xs[im + 1] ?? xs[im], ys[im + 1] ?? ys[im]);
+  g.strokeStyle = css('--ink'); g.lineWidth = 1.5; g.beginPath(); g.arc(mx, my, 7, 0, 7); g.stroke();
+  g.fillStyle = css('--ink'); g.font = '600 13px "IBM Plex Mono", monospace';
+  g.fillText('R ' + fr.Rmin.toFixed(2).replace('.', ','), mx + 10, my - 8);
+
+  // readouts
+  const ret = d.W - X;
+  document.getElementById('v1').textContent = ret.toFixed(1).replace('.', ',') + ' mm';
+  document.getElementById('v2').textContent = fr.Rmin.toFixed(2).replace('.', ',') + ' mm';
+  document.getElementById('v3').textContent = d.Rmin.toFixed(2).replace('.', ',') + ' mm';
+  document.getElementById('v4').textContent = fr.ymax.toFixed(1).replace('.', ',') + ' mm';
+  document.getElementById('r2').className = 'ro ' + (fr.Rmin < 3 ? 'bad' : 'good');
+  document.getElementById('r3').className = 'ro ' + (d.Rmin < 3 ? 'bad' : 'good');
+  const nominal = ret < .05;
+  document.getElementById('r4').className = 'ro ' + (nominal ? (fr.ymax > 10.51 ? 'bad' : 'good') : '');
+  drawChart(d, ret);
+}
+
+function drawChart(d, ret){
+  const [g, w, h] = fit(ch); const L = 44, R = 12, Tp = 12, B = 30;
+  const px = r => L + (r / 12) * (w - L - R), rmin = 2, rmax = 4.5;
+  const py = v => Tp + (1 - (Math.min(rmax, Math.max(rmin, v)) - rmin) / (rmax - rmin)) * (h - Tp - B);
+  g.font = '11px "IBM Plex Mono", monospace'; g.fillStyle = css('--muted'); g.strokeStyle = css('--grid'); g.lineWidth = 1;
+  for (let v = 2; v <= 4.5; v += .5){ g.beginPath(); g.moveTo(L, py(v)); g.lineTo(w - R, py(v)); g.stroke(); g.fillText(v.toFixed(1), 8, py(v) + 4); }
+  for (let r = 0; r <= 12; r += 2){ g.fillText(r, px(r) - 4, h - 12); }
+  g.fillText('retracción (mm) → R mín (mm)', L, h - 0);
+  g.strokeStyle = css('--dim'); g.setLineDash([5, 4]); g.beginPath(); g.moveTo(L, py(3)); g.lineTo(w - R, py(3)); g.stroke(); g.setLineDash([]);
+  for (const [s, col, lw] of [['fw', css('--flexc'), dir === 'fw' ? 2.5 : 1.2], ['bw', css('--muted'), dir === 'bw' ? 2.5 : 1.2]]){
+    g.strokeStyle = col; g.lineWidth = lw; g.beginPath();
+    d[s].forEach((f, i) => { const x = px(d.W - f.X), y = py(f.Rmin); i ? g.lineTo(x, y) : g.moveTo(x, y); }); g.stroke();
+  }
+  g.fillStyle = css('--flexc'); g.fillText('ida', w - R - 60, Tp + 10); g.fillStyle = css('--muted'); g.fillText('vuelta', w - R - 30, Tp + 10);
+  g.strokeStyle = css('--ink'); g.lineWidth = 1; g.beginPath(); g.moveTo(px(ret), Tp); g.lineTo(px(ret), h - B); g.stroke();
+}
+
+function setBtn(ids, on){ ids.forEach(id => document.getElementById(id).setAttribute('aria-pressed', id === on)); }
+document.getElementById('d0').onclick = () => { di = 0; setBtn(['d0', 'd1'], 'd0'); draw(); };
+document.getElementById('d1').onclick = () => { di = 1; setBtn(['d0', 'd1'], 'd1'); draw(); };
+document.getElementById('s0').onclick = () => { dir = 'fw'; setBtn(['s0', 's1'], 's0'); draw(); };
+document.getElementById('s1').onclick = () => { dir = 'bw'; setBtn(['s0', 's1'], 's1'); draw(); };
+const pb = document.getElementById('play');
+pb.onclick = () => { playing = !playing; pb.textContent = playing ? 'Pausa' : 'Reproducir'; last = null; if (playing) requestAnimationFrame(tick); };
+if (!playing) pb.textContent = 'Reproducir';
+T.oninput = () => { u = T.value / 1000; playing = false; pb.textContent = 'Reproducir'; draw(); };
+let hold = 0;
+function tick(ts){
+  if (!playing) return;
+  if (last != null){ const dt = (ts - last) / 1000;
+    if (hold > 0) hold -= dt; else { u += dt / 5; if (u >= 1){ u = 1; hold = 1.2; } } }
+  if (u >= 1 && hold <= 0){ u = 0; dir = dir === 'fw' ? 'bw' : 'fw'; setBtn(['s0', 's1'], dir === 'fw' ? 's0' : 's1'); }
+  last = ts; T.value = Math.round(u * 1000); draw(); requestAnimationFrame(tick);
+}
+addEventListener('resize', draw);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+draw(); if (playing) requestAnimationFrame(tick);
+</script>
