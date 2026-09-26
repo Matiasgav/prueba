@@ -64,18 +64,18 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
   </header>
 
   <div class="answer">
-    <div class="cell main"><span class="k">Ancho W recomendado</span><span class="v">32 mm</span><span class="s">desde el borde de la mainboard hasta la cara exterior del flex en nominal. Mínimo absoluto ≈ 30,5 mm, sin margen.</span></div>
-    <div class="cell"><span class="k">Placa del conector</span><span class="v">9,5 − 4</span><span class="s">R = 4 en tu fórmula: la placa va de 5 a 10,5 mm (5,5 mm de alto). Con R = 3 no se llega a 3 mm en ningún ancho.</span></div>
-    <div class="cell"><span class="k">Largo del flex L</span><span class="v">43,5 mm</span><span class="s">desarrollado entre bordes rígidos, con 1 mm recto en cada extremo.</span></div>
-    <div class="cell"><span class="k">Radio interior mínimo</span><span class="v">3,23 mm</span><span class="s">en toda la carrera, ida y vuelta. En nominal llega a 10,4 mm de alto; en retraído el bucle sube a ~14 mm.</span></div>
+    <div class="cell main"><span class="k">Placa del conector en el piso</span><span class="v">W 24 mm</span><span class="s">placa de 5 mm de alto apoyada en el piso, el flex sale hacia arriba. Mínimo absoluto ≈ 23 mm.</span></div>
+    <div class="cell"><span class="k">Largo del flex L</span><span class="v">30 mm</span><span class="s">desarrollado entre bordes rígidos, con 1 mm recto en cada extremo.</span></div>
+    <div class="cell"><span class="k">Radio interior mínimo</span><span class="v">3,16 mm</span><span class="s">en toda la carrera, ida y vuelta. En nominal llega a 10,1 mm; en retraído, ~14 mm.</span></div>
+    <div class="cell"><span class="k">Contra la placa colgada</span><span class="v">−8 mm</span><span class="s">la colgada necesita W 32 y L 43,5 para el mismo radio. Desaparece la J bajo la placa.</span></div>
   </div>
 
   <div class="sim" id="sim">
     <div class="controls">
       <div class="seg" role="group" aria-label="Diseño">
-        <button id="d0" aria-pressed="true">W 32 · L 43,5 · R 4 (propuesta)</button>
-        <button id="d1" aria-pressed="false">W 30,5 · L 42 · R 4 (mínimo)</button>
-        <button id="d2" aria-pressed="false">W 26,4 · R 3 (tu dibujo)</button>
+        <button id="d0" aria-pressed="true">Placa en el piso · W 24 · L 30</button>
+        <button id="d1" aria-pressed="false">Colgada 9,5 − 4 · W 32 · L 43,5</button>
+        <button id="d2" aria-pressed="false">Tu dibujo · W 26,4 · L 38,4</button>
       </div>
       <div class="seg" role="group" aria-label="Sentido">
         <button id="s0" aria-pressed="true">Retraído → nominal</button>
@@ -100,50 +100,56 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
     <canvas id="ch" height="170" aria-label="Radio mínimo según la retracción"></canvas>
   </div>
 
+  <section style="display:flex;flex-direction:column;gap:12px" id="planos">
+    <h2>Plano en posición nominal</h2>
+    <p>Perfil para el boceto de chapa: rectas y arcos tangentes que siguen la forma simulada en nominal (desvío máx. <span id="pdev" class="mono">–</span>). Extremos, tangentes y largo desarrollado exactos. Coordenadas de la línea media del flex; origen en el borde de la mainboard, a nivel de la cara inferior del flex. Los DXF de cada alternativa (capas línea media y las dos caras) están en <span class="mono">flex_omega/planos/</span>.</p>
+    <canvas id="pl" height="380" aria-label="Plano del perfil nominal"></canvas>
+    <div class="tw"><table id="ptab">
+      <thead><tr><th>#</th><th>Tipo</th><th>Inicio (x, y)</th><th>Fin (x, y)</th><th>Centro (x, y)</th><th>R línea media</th><th>R interior</th><th>Ángulo</th><th>Largo</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <p class="lede" id="pnote"></p>
+  </section>
+
   <div class="cols">
     <section>
       <h2>Qué muestra la simulación</h2>
       <ul>
-        <li>El flex libre <b>no se queda como omega</b>. En nominal forma una joroba baja y una J que entra por debajo de la placa del conector. Al retraer, la joroba sube y se cierra en un bucle, parecido a una omega pero asimétrico.</li>
-        <li>El punto crítico es <b>la J de entrada a la placa del conector</b>, no el bucle. Con la placa empezando a 4 mm (R = 3) el flex apoya en el piso y tiene que girar 90° en menos de 3 mm de alto: el radio interior no pasa de ~2,96 mm aunque agrandes W.</li>
-        <li>Subiendo el borde de la placa a 5 mm (R = 4) la J tiene lugar y el ancho mínimo pasa a depender del bucle: ≈ 30,5 mm.</li>
-        <li>Con tu dibujo (W 26,4, R 3) el mejor largo posible da R ≈ 2,6 mm.</li>
+        <li><b>Placa en el piso.</b> El flex sale de la mainboard, sube en un arco suave y baja al borde superior de la placa del conector. No hay J por debajo de la placa, que era el punto más exigido de la versión colgada.</li>
+        <li>El límite pasa a ser la altura de la placa: el arco tiene que entrar bajo 10,5. Con la placa de hasta 5 mm, W ≈ 23 mm; con 5,25 mm o más ya no se llega a R 3.</li>
+        <li><b>Tu dibujo</b> (colgada, placa 9,5 − 3, W 26,4) es prácticamente el óptimo para R 2,5: con L 38,4 el radio interior mínimo es 2,58 mm. Para R 3 no alcanza.</li>
+        <li>El flex libre no mantiene la omega de arcos del CAD: la forma real es la de la animación.</li>
       </ul>
     </section>
     <section>
       <h2>Supuestos del modelo</h2>
       <ul>
-        <li>Flex de 0,2 mm; el radio de 3 mm se mide en la cara interior (línea media ≥ 3,1).</li>
-        <li>Mainboard y placa del conector de 1 mm. El flex sale horizontal por la cara inferior de la mainboard y sube por la cara derecha de la placa del conector.</li>
-        <li>1 mm recto al salir de cada zona rígida. Placa del conector de 9,5 − R de alto, con la cara superior a 10,5.</li>
-        <li>Obstáculos: piso y = 0, mainboard (x ≥ 0), línea nominal (x ≤ W), la placa y el conector (a la derecha de la placa, por encima de su borde inferior). En nominal nada supera 10,5; en retraído el flex sí puede.</li>
-        <li>Material elástico y uniforme. El cobre que plastifica o un flex conformado cambian la forma: validarlo con una maqueta.</li>
+        <li>Flex de 0,2 mm; el radio se mide en la cara interior. PCB de 1 mm.</li>
+        <li>El flex sale horizontal por la cara inferior de la mainboard. En la placa del conector va por la cara derecha, con el conector.</li>
+        <li>1 mm recto al salir de cada zona rígida.</li>
+        <li>Obstáculos: piso, mainboard, línea nominal, la placa y el conector. En nominal nada supera 10,5; en retraído el flex sí puede.</li>
+        <li>Material elástico y uniforme. Validar con una maqueta.</li>
       </ul>
     </section>
   </div>
 
   <section style="display:flex;flex-direction:column;gap:10px">
-    <h2>Ancho mínimo según el R de la placa</h2>
-    <p>Bisección sobre W. Para cada W se toma el mejor largo L y se exige R interior ≥ 3 en toda la carrera, en los dos sentidos.</p>
+    <h2>Alternativas evaluadas</h2>
+    <p>Ancho mínimo por bisección, con el mejor largo para cada ancho y chequeo de radio en toda la carrera, ida y vuelta.</p>
     <div class="tw"><table>
-      <thead><tr><th>R en 9,5 − R</th><th>Alto de la placa</th><th>W mínimo</th><th>L</th><th>R interior mín.</th></tr></thead>
+      <thead><tr><th>Alternativa</th><th>R interior exigido</th><th>W mínimo</th><th>Diseño con margen</th></tr></thead>
       <tbody>
-        <tr><td>3</td><td>6,5 mm</td><td>no llega (máx. 2,96)</td><td>–</td><td>–</td></tr>
-        <tr><td>3,5</td><td>6 mm</td><td>30,75 mm</td><td>42,25 mm</td><td>3,03</td></tr>
-        <tr><td>4</td><td>5,5 mm</td><td>30,25 mm</td><td>42,25 mm</td><td>3,01</td></tr>
-        <tr><td>5</td><td>4,5 mm</td><td>30 mm</td><td>43 mm</td><td>3,02</td></tr>
+        <tr><td><b>Placa en el piso, 5 mm de alto</b></td><td>3</td><td>23 mm</td><td>W 24 · L 30 · R 3,16</td></tr>
+        <tr><td>Placa en el piso, 4,5 mm</td><td>3</td><td>23 mm</td><td>W 24 · L 30 · R 3,15</td></tr>
+        <tr><td>Placa en el piso, 5,5 mm o más</td><td>3</td><td>no llega</td><td>–</td></tr>
+        <tr><td>Placa en el piso, 5 mm</td><td>2,5</td><td>≈ 20 mm</td><td>–</td></tr>
+        <tr><td>Colgada 9,5 − 4</td><td>3</td><td>30,25 mm</td><td>W 32 · L 43,5 · R 3,23</td></tr>
+        <tr><td>Colgada 9,5 − 3 (tu dibujo)</td><td>3</td><td>no llega</td><td>–</td></tr>
+        <tr><td>Colgada 9,5 − 3 (tu dibujo)</td><td>2,5</td><td>25,7 mm</td><td>W 26,4 · L 38,4 · R 2,58</td></tr>
+        <tr><td>Colgada, carrera 10 mm</td><td>3</td><td>28,9 mm</td><td>–</td></tr>
+        <tr><td>Colgada con guías de radio en los extremos</td><td>3</td><td>30,75 mm</td><td>no mejora</td></tr>
       </tbody>
     </table></div>
-  </section>
-
-  <section style="display:flex;flex-direction:column;gap:10px">
-    <h2>Si necesitás un ancho menor</h2>
-    <ul>
-      <li><b>Guiar la forma.</b> Un nervio o mandril de R 3 en la carcasa fuerza la omega de tu dibujo y el flex deja de elegir su forma.</li>
-      <li><b>Pre-conformar el flex</b> (termoformado de la poliimida). Ayuda, pero la memoria es parcial; conviene combinarlo con una guía.</li>
-      <li><b>Bucle rodante (U).</b> Si hay lugar debajo del conector, el flex va hacia adelante y vuelve en U: la carrera mueve la U solo 6 mm y el radio no cambia.</li>
-      <li><b>Revisar los 3 mm.</b> Para flex estático IPC-2223 pide ~12× el espesor en 2 capas: con 0,2 mm son 2,4 mm. Con 2,5 mm de radio el ancho bajaría bastante.</li>
-    </ul>
   </section>
 </div>
 
@@ -195,12 +201,13 @@ function draw(){
   g.fillText('W = ' + String(d.W).replace('.', ',') + ' mm', (wx0 + wx1) / 2 - 30, wy - 4);
   // placa conector
   const X = fr.X; g.fillStyle = css('--boardfill'); g.strokeStyle = css('--board');
-  // placa vertical de 9,5 - R a la izquierda del flex; el flex va por su cara derecha
-  [a, b] = P(X - .2 - 1.0, 10.5); [c2, e] = P(X - .2, d.YB); g.fillRect(a, b, c2 - a, e - b); g.strokeRect(a, b, c2 - a, e - b);
-  g.fillStyle = css('--flexc'); [a, b] = P(X - .2, 10.5); [c2, e] = P(X, d.YB); g.fillRect(a, b, c2 - a, e - b);
-  // conector en la cara derecha (esquemático)
-  g.fillStyle = css('--boardfill'); [a, b] = P(X, 9.5); [c2, e] = P(X + 3, 5.5); g.fillRect(a, b, c2 - a, e - b); g.strokeRect(a, b, c2 - a, e - b);
-  g.fillStyle = css('--muted'); g.fillText('conector', ...P(X + .2, 10));
+  // placa del conector (1 mm) a la izquierda del flex; flex y conector en la cara derecha
+  const y0b = d.mode === 'piso' ? 0 : d.YB, y1b = d.mode === 'piso' ? d.HB : 10.5;
+  [a, b] = P(X - .2 - 1.0, y1b); [c2, e] = P(X - .2, y0b); g.fillRect(a, b, c2 - a, e - b); g.strokeRect(a, b, c2 - a, e - b);
+  g.fillStyle = css('--flexc'); [a, b] = P(X - .2, y1b); [c2, e] = P(X, y0b); g.fillRect(a, b, c2 - a, e - b);
+  const yc0 = y0b + .5, yc1 = Math.max(yc0 + 1, y1b - 1);
+  g.fillStyle = css('--boardfill'); [a, b] = P(X, yc1); [c2, e] = P(X + 3, yc0); g.fillRect(a, b, c2 - a, e - b); g.strokeRect(a, b, c2 - a, e - b);
+  g.fillStyle = css('--muted'); g.fillText('conector', ...P(X + .2, y1b + .4));
   // flex coloreado por radio
   const xs = fr.x, ys = fr.y, k = fr.k; g.lineCap = 'butt'; g.lineWidth = Math.max(2.5, .2 * sc);
   for (let i = 0; i < xs.length - 1; i++){
@@ -246,8 +253,66 @@ function drawChart(d, ret){
   g.strokeStyle = css('--ink'); g.lineWidth = 1; g.beginPath(); g.moveTo(px(ret), Tp); g.lineTo(px(ret), h - B); g.stroke();
 }
 
+
+function f2(v){ return (Math.round(v * 100) / 100).toFixed(2).replace('.', ','); }
+function drawPlan(){
+  const d = D[di], segs = d.segmentos;
+  document.getElementById('pdev').textContent = f2(d.desvio_ajuste) + ' mm';
+  const tb = document.querySelector('#ptab tbody'); tb.innerHTML = '';
+  segs.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    const arc = r.tipo === 'Arco';
+    tr.innerHTML = `<td>${i + 1}</td><td>${r.tipo}${arc ? ' (' + r.sentido + ')' : ''}</td><td class="mono">${f2(r.x0)}; ${f2(r.y0)}</td><td class="mono">${f2(r.x1)}; ${f2(r.y1)}</td>` +
+      `<td class="mono">${arc ? f2(r.cx) + '; ' + f2(r.cy) : '–'}</td><td class="mono">${arc ? f2(r.R) : '–'}</td><td class="mono">${arc ? f2(r.Rint) : '–'}</td>` +
+      `<td class="mono">${arc ? f2(r.barrido) + '°' : f2(r.dir) + '°'}</td><td class="mono">${f2(r.largo)}</td>`;
+    tb.appendChild(tr);
+  });
+  document.getElementById('pnote').textContent = `Largo desarrollado ${f2(d.largo_plano)} mm (flex de ${String(d.L).replace('.', ',')} mm). ` +
+    `Espesor 0,2 mm: en la chapa usá la línea media con espesor simétrico, o la capa FLEX_CARA_A / FLEX_CARA_B del DXF con el espesor hacia el otro lado. ` +
+    `Altura máxima en nominal: ${f2(d.ytop_nominal)} mm.`;
+  const [g, w, h] = fit(document.getElementById('pl'));
+  const xmin = -3, xmax = d.W + 4, ymin = -2.5, ymax = 12;
+  const sc = Math.min((w - 20) / (xmax - xmin), (h - 20) / (ymax - ymin));
+  const ox = 10 + (w - 20 - sc * (xmax - xmin)) / 2 - xmin * sc, oy = h - 10 + ymin * sc;
+  const P = (x, y) => [ox + x * sc, oy - y * sc];
+  g.font = '11px "IBM Plex Mono", monospace';
+  g.strokeStyle = css('--dim'); g.setLineDash([6, 4]); g.lineWidth = 1;
+  g.beginPath(); g.moveTo(...P(xmin, 10.5)); g.lineTo(...P(xmax, 10.5)); g.stroke();
+  g.beginPath(); g.moveTo(...P(xmin, 0)); g.lineTo(...P(xmax, 0)); g.stroke();
+  g.beginPath(); g.moveTo(...P(d.W, 0)); g.lineTo(...P(d.W, 11.5)); g.stroke(); g.setLineDash([]);
+  g.fillStyle = css('--dim'); g.fillText('10,5', ...P(xmin + .1, 10.8)); g.fillText('W ' + f2(d.W), ...P(d.W + .3, 11.2));
+  // placas
+  g.strokeStyle = css('--board'); g.fillStyle = css('--boardfill');
+  const box = (x0, y0, x1, y1) => { const [a, b] = P(x0, y1), [c2, e] = P(x1, y0); g.fillRect(a, b, c2 - a, e - b); g.strokeRect(a, b, c2 - a, e - b); };
+  box(-3, .2, 0, 1.2);
+  if (d.mode === 'piso') box(d.W - 1.2, 0, d.W - .2, d.HB); else box(d.W - 1.2, d.YB, d.W - .2, 10.5);
+  // segmentos numerados, centros y radios
+  segs.forEach((r, i) => {
+    const col = r.tipo === 'Arco' ? css('--flexc') : css('--ink');
+    g.strokeStyle = col; g.lineWidth = 2.5; g.beginPath();
+    if (r.tipo === 'Recta'){ g.moveTo(...P(r.x0, r.y0)); g.lineTo(...P(r.x1, r.y1)); }
+    else {
+      const a0 = Math.atan2(r.y0 - r.cy, r.x0 - r.cx), a1 = Math.atan2(r.y1 - r.cy, r.x1 - r.cx);
+      const [cx, cy] = P(r.cx, r.cy); g.arc(cx, cy, r.R * sc, -a0, -a1, r.sentido === 'antihorario');
+    }
+    g.stroke();
+    const [mx, my] = P((r.x0 + r.x1) / 2, (r.y0 + r.y1) / 2);
+    g.fillStyle = css('--sheet'); g.beginPath(); g.arc(mx, my, 9, 0, 7); g.fill();
+    g.strokeStyle = col; g.lineWidth = 1; g.stroke();
+    g.fillStyle = col; g.textAlign = 'center'; g.fillText(i + 1, mx, my + 4); g.textAlign = 'start';
+    if (r.tipo === 'Arco' && r.R < 20){
+      const [cx, cy] = P(r.cx, r.cy); g.strokeStyle = css('--muted'); g.beginPath();
+      g.moveTo(cx - 4, cy); g.lineTo(cx + 4, cy); g.moveTo(cx, cy - 4); g.lineTo(cx, cy + 4); g.stroke();
+    }
+  });
+  // cota W
+  g.strokeStyle = css('--dim'); g.lineWidth = 1; const [ax, ay] = P(0, -1.6), [bx] = P(d.W, -1.6);
+  g.beginPath(); g.moveTo(ax, ay); g.lineTo(bx, ay); g.stroke();
+  g.fillStyle = css('--dim'); g.textAlign = 'center'; g.fillText('W = ' + f2(d.W) + ' mm', (ax + bx) / 2, ay - 4); g.textAlign = 'start';
+}
+
 function setBtn(ids, on){ ids.forEach(id => document.getElementById(id).setAttribute('aria-pressed', id === on)); }
-['d0', 'd1', 'd2'].forEach((id, i) => document.getElementById(id).onclick = () => { di = i; setBtn(['d0', 'd1', 'd2'], id); draw(); });
+['d0', 'd1', 'd2'].forEach((id, i) => document.getElementById(id).onclick = () => { di = i; setBtn(['d0', 'd1', 'd2'], id); draw(); drawPlan(); });
 document.getElementById('s0').onclick = () => { dir = 'fw'; setBtn(['s0', 's1'], 's0'); draw(); };
 document.getElementById('s1').onclick = () => { dir = 'bw'; setBtn(['s0', 's1'], 's1'); draw(); };
 const pb = document.getElementById('play');
@@ -262,7 +327,7 @@ function tick(ts){
   if (u >= 1 && hold <= 0){ u = 0; dir = dir === 'fw' ? 'bw' : 'fw'; setBtn(['s0', 's1'], dir === 'fw' ? 's0' : 's1'); }
   last = ts; T.value = Math.round(u * 1000); draw(); requestAnimationFrame(tick);
 }
-addEventListener('resize', draw);
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
-draw(); if (playing) requestAnimationFrame(tick);
+addEventListener('resize', () => { draw(); drawPlan(); });
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { draw(); drawPlan(); });
+draw(); drawPlan(); if (playing) requestAnimationFrame(tick);
 </script>
