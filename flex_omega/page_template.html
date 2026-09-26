@@ -60,21 +60,22 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
 <div class="wrap">
   <header style="display:flex;flex-direction:column;gap:8px">
     <h1>Omega del flex: carrera de 12 mm con R ≥ 3</h1>
-    <p class="lede">Simulación del flex como elástica (tira elástica inextensible, empotrada en la mainboard y en la placa del conector). Así se comporta un flex libre, sin conformar: busca la forma de mínima energía de flexión, no la omega de arcos y rectas del CAD.</p>
+    <p class="lede">Simulación del flex como elástica: tira elástica inextensible de 0,2 mm, empotrada en la cara inferior de la mainboard y en la cara derecha de la placa del conector. Así se comporta un flex libre, sin conformar: busca la forma de mínima energía de flexión, no la omega de arcos y rectas del CAD.</p>
   </header>
 
   <div class="answer">
-    <div class="cell main"><span class="k">Ancho mínimo W</span><span class="v">≈ 31 mm</span><span class="s">desde el inicio del tramo de 1 mm hasta la línea nominal. Límite duro ≈ 30,5 mm.</span></div>
-    <div class="cell"><span class="k">Largo del flex L</span><span class="v">45 mm</span><span class="s">largo desarrollado entre bordes rígidos (incluye 1 mm recto en cada extremo).</span></div>
-    <div class="cell"><span class="k">Radio mínimo en todo el recorrido</span><span class="v">3,13 mm</span><span class="s">ida y vuelta, 81 posiciones simuladas.</span></div>
-    <div class="cell"><span class="k">Altura en retraído</span><span class="v">≈ 17 mm</span><span class="s">el bucle sube por encima de 10,5 solo mientras está retraído. En nominal: 10,5 mm.</span></div>
+    <div class="cell main"><span class="k">Ancho W recomendado</span><span class="v">32 mm</span><span class="s">desde el borde de la mainboard hasta la cara exterior del flex en nominal. Mínimo absoluto ≈ 30,5 mm, sin margen.</span></div>
+    <div class="cell"><span class="k">Placa del conector</span><span class="v">9,5 − 4</span><span class="s">R = 4 en tu fórmula: la placa va de 5 a 10,5 mm (5,5 mm de alto). Con R = 3 no se llega a 3 mm en ningún ancho.</span></div>
+    <div class="cell"><span class="k">Largo del flex L</span><span class="v">43,5 mm</span><span class="s">desarrollado entre bordes rígidos, con 1 mm recto en cada extremo.</span></div>
+    <div class="cell"><span class="k">Radio interior mínimo</span><span class="v">3,23 mm</span><span class="s">en toda la carrera, ida y vuelta. En nominal llega a 10,4 mm de alto; en retraído el bucle sube a ~14 mm.</span></div>
   </div>
 
   <div class="sim" id="sim">
     <div class="controls">
       <div class="seg" role="group" aria-label="Diseño">
-        <button id="d0" aria-pressed="true">W 31 · L 45 (propuesta)</button>
-        <button id="d1" aria-pressed="false">W 26,4 · L 35,9 (tu dibujo)</button>
+        <button id="d0" aria-pressed="true">W 32 · L 43,5 · R 4 (propuesta)</button>
+        <button id="d1" aria-pressed="false">W 30,5 · L 42 · R 4 (mínimo)</button>
+        <button id="d2" aria-pressed="false">W 26,4 · R 3 (tu dibujo)</button>
       </div>
       <div class="seg" role="group" aria-label="Sentido">
         <button id="s0" aria-pressed="true">Retraído → nominal</button>
@@ -88,11 +89,11 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
       <span><i style="background:var(--ok)"></i>R ≥ 3,5 mm</span>
       <span><i style="background:var(--warn)"></i>3 ≤ R &lt; 3,5 mm</span>
       <span><i style="background:var(--bad)"></i>R &lt; 3 mm</span>
-      <span><i style="background:var(--dim);height:1px"></i>límite 10,5 mm y posición nominal</span>
+      <span><i style="background:var(--dim);height:1px"></i>límite 10,5 mm y posiciones nominal / retraída</span>
     </div>
     <div class="readout">
       <div class="ro" id="r1"><div class="k">Retracción</div><div class="v" id="v1">–</div></div>
-      <div class="ro" id="r2"><div class="k">R mín. ahora</div><div class="v" id="v2">–</div></div>
+      <div class="ro" id="r2"><div class="k">R interior mín. ahora</div><div class="v" id="v2">–</div></div>
       <div class="ro" id="r3"><div class="k">R mín. del recorrido</div><div class="v" id="v3">–</div></div>
       <div class="ro" id="r4"><div class="k">Altura máx. ahora</div><div class="v" id="v4">–</div></div>
     </div>
@@ -103,47 +104,45 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
     <section>
       <h2>Qué muestra la simulación</h2>
       <ul>
-        <li>El flex libre <b>no se queda como omega</b>. En nominal toma una S suave: sube, apoya en el piso cerca del conector y entra vertical. Al retraer, esa S se levanta y forma un bucle alto y cerrado, parecido a una omega pero asimétrico.</li>
-        <li>El radio mínimo aparece en el bucle del retraído y en las zonas cercanas a los empotramientos, no en la cresta.</li>
-        <li>Hay <b>histéresis</b>: a la ida y a la vuelta el flex pasa por formas distintas y da un salto (snap) a mitad de carrera. Por eso se chequean los dos sentidos.</li>
-        <li>Con tu ancho actual (≈ 26,4 mm) el mejor largo posible da R ≈ 2,5 mm. No llega a 3 mm sin algo que guíe la forma.</li>
+        <li>El flex libre <b>no se queda como omega</b>. En nominal forma una joroba baja y una J que entra por debajo de la placa del conector. Al retraer, la joroba sube y se cierra en un bucle, parecido a una omega pero asimétrico.</li>
+        <li>El punto crítico es <b>la J de entrada a la placa del conector</b>, no el bucle. Con la placa empezando a 4 mm (R = 3) el flex apoya en el piso y tiene que girar 90° en menos de 3 mm de alto: el radio interior no pasa de ~2,96 mm aunque agrandes W.</li>
+        <li>Subiendo el borde de la placa a 5 mm (R = 4) la J tiene lugar y el ancho mínimo pasa a depender del bucle: ≈ 30,5 mm.</li>
+        <li>Con tu dibujo (W 26,4, R 3) el mejor largo posible da R ≈ 2,6 mm.</li>
       </ul>
     </section>
     <section>
       <h2>Supuestos del modelo</h2>
       <ul>
-        <li>Origen en el inicio del tramo de 1 mm de la mainboard; el flex sale horizontal. Entra vertical al borde de la placa del conector a 10,5 mm, con 1 mm recto en ese extremo también.</li>
-        <li>Paredes: no baja de la mainboard (y ≥ 0) ni sale de 0 ≤ x ≤ W. Arriba de 10,5 solo se permite en retraído.</li>
-        <li>El conector se traslada 12 mm en horizontal sin girar.</li>
-        <li>Rigidez uniforme y comportamiento elástico. El cobre que plastifica o un flex conformado cambian la forma: validarlo con una maqueta.</li>
+        <li>Flex de 0,2 mm; el radio de 3 mm se mide en la cara interior (línea media ≥ 3,1).</li>
+        <li>Mainboard y placa del conector de 1 mm. El flex sale horizontal por la cara inferior de la mainboard y sube por la cara derecha de la placa del conector.</li>
+        <li>1 mm recto al salir de cada zona rígida. Placa del conector de 9,5 − R de alto, con la cara superior a 10,5.</li>
+        <li>Obstáculos: piso y = 0, mainboard (x ≥ 0), línea nominal (x ≤ W), la placa y el conector (a la derecha de la placa, por encima de su borde inferior). En nominal nada supera 10,5; en retraído el flex sí puede.</li>
+        <li>Material elástico y uniforme. El cobre que plastifica o un flex conformado cambian la forma: validarlo con una maqueta.</li>
       </ul>
     </section>
   </div>
 
   <section style="display:flex;flex-direction:column;gap:10px">
-    <h2>Barrido ancho × largo</h2>
-    <p>Mejor radio mínimo alcanzable en todo el recorrido (ida y vuelta) para cada ancho, eligiendo el largo óptimo.</p>
+    <h2>Ancho mínimo según el R de la placa</h2>
+    <p>Bisección sobre W. Para cada W se toma el mejor largo L y se exige R interior ≥ 3 en toda la carrera, en los dos sentidos.</p>
     <div class="tw"><table>
-      <thead><tr><th>W (mm)</th><th>Mejor L (mm)</th><th>R mín. (mm)</th><th>¿Cumple R ≥ 3?</th></tr></thead>
+      <thead><tr><th>R en 9,5 − R</th><th>Alto de la placa</th><th>W mínimo</th><th>L</th><th>R interior mín.</th></tr></thead>
       <tbody>
-        <tr><td>24</td><td>34</td><td>2,51</td><td>No</td></tr>
-        <tr><td>26,4</td><td>35,9</td><td>2,50</td><td>No</td></tr>
-        <tr><td>28</td><td>45</td><td>2,48</td><td>No</td></tr>
-        <tr><td>30</td><td>44,5</td><td>2,8 – 3,0</td><td>Justo, depende del salto</td></tr>
-        <tr><td>30,5</td><td>45,5</td><td>3,10</td><td>Sí</td></tr>
-        <tr><td>31</td><td>45</td><td>3,13</td><td>Sí (recomendado)</td></tr>
-        <tr><td>32</td><td>49</td><td>3,41</td><td>Sí</td></tr>
+        <tr><td>3</td><td>6,5 mm</td><td>no llega (máx. 2,96)</td><td>–</td><td>–</td></tr>
+        <tr><td>3,5</td><td>6 mm</td><td>30,75 mm</td><td>42,25 mm</td><td>3,03</td></tr>
+        <tr><td>4</td><td>5,5 mm</td><td>30,25 mm</td><td>42,25 mm</td><td>3,01</td></tr>
+        <tr><td>5</td><td>4,5 mm</td><td>30 mm</td><td>43 mm</td><td>3,02</td></tr>
       </tbody>
     </table></div>
   </section>
 
   <section style="display:flex;flex-direction:column;gap:10px">
-    <h2>Si necesitás bajar de 31 mm</h2>
+    <h2>Si necesitás un ancho menor</h2>
     <ul>
-      <li><b>Guiar la forma.</b> Un nervio o mandril de R 3 en la carcasa (o un rigidizador local en la cresta) fuerza la omega de tu dibujo y el flex deja de elegir su forma. Con eso tus 26,4 mm son viables.</li>
-      <li><b>Pre-conformar el flex</b> (termoformado de la poliimida con la omega) ayuda, pero la memoria es parcial; conviene combinarlo con una guía.</li>
-      <li><b>Bucle rodante (U).</b> Si hay lugar debajo de la placa del conector, llevar el flex hacia adelante y volver en U: la carrera solo desplaza la U a la mitad (6 mm) y el radio no cambia. Es la solución clásica para carreras lineales, pero ocupa ~7–8 mm más allá de la línea nominal.</li>
-      <li><b>Revisar el radio de 3 mm.</b> Para un uso estático (se dobla una vez) IPC-2223 pide ~6× el espesor en 1 capa, ~12× en 2 capas y ~24× en multicapa. Con un flex de 2 capas de 0,1–0,15 mm, 3 mm tiene margen y aceptar 2,5 mm permitiría W ≈ 26 mm.</li>
+      <li><b>Guiar la forma.</b> Un nervio o mandril de R 3 en la carcasa fuerza la omega de tu dibujo y el flex deja de elegir su forma.</li>
+      <li><b>Pre-conformar el flex</b> (termoformado de la poliimida). Ayuda, pero la memoria es parcial; conviene combinarlo con una guía.</li>
+      <li><b>Bucle rodante (U).</b> Si hay lugar debajo del conector, el flex va hacia adelante y vuelve en U: la carrera mueve la U solo 6 mm y el radio no cambia.</li>
+      <li><b>Revisar los 3 mm.</b> Para flex estático IPC-2223 pide ~12× el espesor en 2 capas: con 0,2 mm son 2,4 mm. Con 2,5 mm de radio el ancho bajaría bastante.</li>
     </ul>
   </section>
 </div>
@@ -168,7 +167,7 @@ function fit(c){ const r = c.getBoundingClientRect(), dpr = devicePixelRatio || 
 function draw(){
   const d = D[di], seq = d[dir], fr = frameAt(d, seq, u);
   const [g, w, h] = fit(cv);
-  const xmin = -4, xmax = d.W + 3, ymin = -2, ymax = 19;
+  const xmin = -4, xmax = d.W + 3, ymin = -2, ymax = Math.max(12.5, d.ytop + 1);
   const sc = Math.min((w - 20) / (xmax - xmin), (h - 20) / (ymax - ymin));
   const ox = 10 + (w - 20 - sc * (xmax - xmin)) / 2 - xmin * sc, oy = h - 10 + ymin * sc;
   const P = (x, y) => [ox + x * sc, oy - y * sc];
@@ -181,7 +180,7 @@ function draw(){
   g.globalAlpha = 1;
   // mainboard
   g.fillStyle = css('--boardfill'); g.strokeStyle = css('--board'); g.lineWidth = 1.5;
-  let [a, b] = P(-4, .8), [c2, e] = P(0, -.8); g.fillRect(a, b, c2 - a, e - b); g.strokeRect(a, b, c2 - a, e - b);
+  let [a, b] = P(-4, 1.0), [c2, e] = P(0, 0); g.fillRect(a, b, c2 - a, e - b); g.strokeRect(a, b, c2 - a, e - b);
   g.fillStyle = css('--muted'); g.font = '12px "IBM Plex Mono", monospace'; g.fillText('mainboard', ...P(-3.9, -1.7));
   // limites
   g.strokeStyle = css('--dim'); g.setLineDash([6, 4]); g.lineWidth = 1.2;
@@ -196,10 +195,14 @@ function draw(){
   g.fillText('W = ' + String(d.W).replace('.', ',') + ' mm', (wx0 + wx1) / 2 - 30, wy - 4);
   // placa conector
   const X = fr.X; g.fillStyle = css('--boardfill'); g.strokeStyle = css('--board');
-  [a, b] = P(X - .8, ymax - .2); [c2, e] = P(X + .8, 10.5); g.fillRect(a, b, c2 - a, e - b); g.strokeRect(a, b, c2 - a, e - b);
-  [a, b] = P(X + .8, 15.5); [c2, e] = P(X + 3, 12.5); g.fillRect(a, b, c2 - a, e - b); g.strokeRect(a, b, c2 - a, e - b);
+  // placa vertical de 9,5 - R a la izquierda del flex; el flex va por su cara derecha
+  [a, b] = P(X - .2 - 1.0, 10.5); [c2, e] = P(X - .2, d.YB); g.fillRect(a, b, c2 - a, e - b); g.strokeRect(a, b, c2 - a, e - b);
+  g.fillStyle = css('--flexc'); [a, b] = P(X - .2, 10.5); [c2, e] = P(X, d.YB); g.fillRect(a, b, c2 - a, e - b);
+  // conector en la cara derecha (esquemático)
+  g.fillStyle = css('--boardfill'); [a, b] = P(X, 9.5); [c2, e] = P(X + 3, 5.5); g.fillRect(a, b, c2 - a, e - b); g.strokeRect(a, b, c2 - a, e - b);
+  g.fillStyle = css('--muted'); g.fillText('conector', ...P(X + .2, 10));
   // flex coloreado por radio
-  const xs = fr.x, ys = fr.y, k = fr.k; g.lineCap = 'round'; g.lineWidth = 4;
+  const xs = fr.x, ys = fr.y, k = fr.k; g.lineCap = 'butt'; g.lineWidth = Math.max(2.5, .2 * sc);
   for (let i = 0; i < xs.length - 1; i++){
     const ki = Math.max(k[Math.max(0, i - 1)] || 0, k[Math.min(k.length - 1, i)] || 0);
     const R = ki > 0 ? 1 / ki : 99;
@@ -244,8 +247,7 @@ function drawChart(d, ret){
 }
 
 function setBtn(ids, on){ ids.forEach(id => document.getElementById(id).setAttribute('aria-pressed', id === on)); }
-document.getElementById('d0').onclick = () => { di = 0; setBtn(['d0', 'd1'], 'd0'); draw(); };
-document.getElementById('d1').onclick = () => { di = 1; setBtn(['d0', 'd1'], 'd1'); draw(); };
+['d0', 'd1', 'd2'].forEach((id, i) => document.getElementById(id).onclick = () => { di = i; setBtn(['d0', 'd1', 'd2'], id); draw(); });
 document.getElementById('s0').onclick = () => { dir = 'fw'; setBtn(['s0', 's1'], 's0'); draw(); };
 document.getElementById('s1').onclick = () => { dir = 'bw'; setBtn(['s0', 's1'], 's1'); draw(); };
 const pb = document.getElementById('play');
