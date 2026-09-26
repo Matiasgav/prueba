@@ -60,6 +60,9 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
         <button id="o4" aria-pressed="false">5 · Cámara centrada</button>
         <button id="o5" aria-pressed="false">6 · Cámara horizontal</button>
         <button id="o6" aria-pressed="false">7 · Pared lateral</button>
+        <button id="o7" aria-pressed="false">LED A · B2B</button>
+        <button id="o8" aria-pressed="false">LED B · isla</button>
+        <button id="o9" aria-pressed="false">LED C · FFC</button>
       </div>
       <div class="seg" role="group" aria-label="Vista">
         <button id="v0" aria-pressed="true">Isométrica</button>
@@ -80,6 +83,7 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
       <span><i style="background:#b9c0cc"></i>rosca 12 mm y lente</span>
       <span><i style="background:#ffe08a"></i>LED 3 × 3 × 3</span>
       <span><i style="background:#fff4c2"></i>guía de luz</span>
+      <span><i style="background:#d9d4c7"></i>cable plano FFC</span>
       <span><i style="background:#d4145a;opacity:.35"></i>techo y línea nominal</span>
       <label style="display:inline-flex;gap:6px;align-items:center;color:var(--ink)"><input type="checkbox" id="showr"> colorear el flex por radio (azul ≥ 1,17 × mín., ámbar cerca, rojo por debajo)</label>
     </div>
@@ -164,6 +168,33 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-si
         <li>En la esquina, los dos dobleces perpendiculares necesitan un corte de alivio en el flex, como en tu boceto.</li>
       </ul>
     </article>
+    <article class="card" id="c7">
+      <h3>LED A · placa del LED con conector board-to-board</h3>
+      <dl><dt>LED</dt><dd>a la altura de la lente, z 17,8–20,8 (~7 mm de la lente)</dd><dt>Placa del LED</dt><dd>0,6 mm, z 6–21,5, delante de la cola de la cámara</dd><dt>Conector</dt><dd>B2B apilable de 2,0 mm apareado, en z 6,5–9,5</dd><dt>Juego a la cola</dt><dd>~0,5 mm al rigidizador de la cámara</dd></dl>
+      <ul>
+        <li>El B2B se enchufa en la sección de cámara donde la cola de la cámara ya terminó (z &lt; 11,25).</li>
+        <li>Montaje: con la cámara ya enchufada, la placa del LED baja 1 mm adelantada y se presiona hacia atrás para enchufar.</li>
+        <li>Estándar y desmontable. Ejemplos a verificar: Hirose DF40, Molex SlimStack, Panasonic A35S.</li>
+      </ul>
+    </article>
+    <article class="card" id="c8">
+      <h3>LED B · isla del mismo rigid-flex</h3>
+      <dl><dt>LED</dt><dd>z 17,9–20,9, a la altura de la lente</dd><dt>Isla</dt><dd>rígida de 0,8 mm, a ~0,4 mm del flex de la cámara</dd><dt>Brazo</dt><dd>flex de 1,7 mm por arriba de la cola, S de R 2,6</dd><dt>Extra</dt><dd>ninguna pieza nueva</dd></dl>
+      <ul>
+        <li>El brazo sale del canto superior de la sección de cámara y pasa por encima del rigidizador (0,1 mm de juego vertical: ajustado).</li>
+        <li>La S del conector ya no molesta: arranca desde su pestaña, mucho más atrás.</li>
+        <li>Montaje delicado: la isla baja entre la cola de la cámara y el panel.</li>
+      </ul>
+    </article>
+    <article class="card" id="c9">
+      <h3>LED C · placa pegada al panel + cable plano (FFC)</h3>
+      <dl><dt>LED</dt><dd>z 17,8–20,8, apoyado contra la ventana del panel</dd><dt>Placa del LED</dt><dd>0,8 mm, pegada o clipeada al panel</dd><dt>Cable</dt><dd>FFC de 2–3 vías (1,7 mm) por arriba de la cola</dd><dt>Conectores</dt><dd>ZIF en la sección de cámara y en la placa del LED</dd></dl>
+      <ul>
+        <li>El LED queda alineado con su ventana sin depender de las tolerancias de la plaqueta.</li>
+        <li>El cable pasa por arriba del rigidizador de la cámara y absorbe el juego.</li>
+        <li>Montaje simple: se enchufa el cable después de instalar la plaqueta.</li>
+      </ul>
+    </article>
   </div>
 </div>
 
@@ -210,7 +241,7 @@ function ribbonMesh(r){
   const n = r.p.length, pos = new Float32Array(n * 2 * 3), col = new Float32Array(n * 2 * 3), idx = [];
   const hw = r.w / 2;
   for (let i = 0; i < n; i++){
-    const p = r.p[i], c = colR(r.R[i], r.rreq || 3);
+    const p = r.p[i], c = r.col && !showR ? new THREE.Color(r.col) : colR(r.R[i], r.rreq || 3);
     for (let s = 0; s < 2; s++){
       const k = (i * 2 + s) * 3, sg = s ? 1 : -1;
       pos[k] = p[0] + sg * r.b[0] * hw; pos[k + 1] = p[1] + sg * r.b[1] * hw; pos[k + 2] = p[2] + sg * r.b[2] * hw;
@@ -273,6 +304,7 @@ function setView(v){
   const cx = (mx[0] + mn[0]) / 2, cz = (mx[2] + mn[2]) / 2, span = Math.max(mx[0] - mn[0], mx[2] - mn[2], 12);
   controls.target.set(cx, 4, cz);
   const d = span * 1.25;
+  if (v === 0 && o.focus){ controls.target.set(...o.focus.target); camera.position.set(...o.focus.pos); camera.lookAt(controls.target); controls.update(); ['v0', 'v1', 'v2'].forEach((id, i) => document.getElementById(id).setAttribute('aria-pressed', i === v)); return; }
   if (v === 0) camera.position.set(cx + d * .55, 4 + d * .6, cz + d * .75);
   if (v === 1) camera.position.set(cx, 4 + d * 1.1, cz + .01);
   if (v === 2) camera.position.set(cx, 5, cz + d * 1.05);
@@ -299,11 +331,11 @@ function bg(){ renderer.setClearColor(new THREE.Color(css('--scene') || '#eef2f7
 const T = document.getElementById('t'), pb = document.getElementById('play');
 document.getElementById('showr').onchange = e => { showR = e.target.checked; show(); };
 function selectOption(i){
-  oi = i; ['o0', 'o1', 'o2', 'o3', 'o4', 'o5', 'o6'].forEach((id, k) => document.getElementById(id).setAttribute('aria-pressed', k === i));
-  ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6'].forEach((id, k) => document.getElementById(id).classList.toggle('sel', k === i));
+  oi = i; ['o0', 'o1', 'o2', 'o3', 'o4', 'o5', 'o6', 'o7', 'o8', 'o9'].forEach((id, k) => document.getElementById(id).setAttribute('aria-pressed', k === i));
+  ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9'].forEach((id, k) => document.getElementById(id).classList.toggle('sel', k === i));
   buildStatic(); setView(0); show();
 }
-['o0', 'o1', 'o2', 'o3', 'o4', 'o5', 'o6'].forEach((id, i) => document.getElementById(id).onclick = () => selectOption(i));
+['o0', 'o1', 'o2', 'o3', 'o4', 'o5', 'o6', 'o7', 'o8', 'o9'].forEach((id, i) => document.getElementById(id).onclick = () => selectOption(i));
 ['v0', 'v1', 'v2'].forEach((id, i) => document.getElementById(id).onclick = () => setView(i));
 pb.onclick = () => { playing = !playing; pb.textContent = playing ? 'Pausa' : 'Reproducir'; last = null; };
 if (!playing) pb.textContent = 'Reproducir';

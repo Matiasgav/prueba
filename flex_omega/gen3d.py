@@ -252,8 +252,81 @@ def opcion_pared(Xn=13.0, b=6.5, Z=17.0, L=22.0, H=11.9, cinta=0.25):
             box(xp, xp + 1.5, -1, 13.5, -2, 54, 'panel')]))
     return dict(id='pared', nombre='Pared de flex desde el canto lateral', W=Xn, Rmin=round(min(Rall), 2), env=[0, 52], H=H, frames=frames)
 
+# ---------- Opciones LED A/B/C sobre el diseño final (S centrada Z 14 + pared lateral para la camara) ----------
+def opcion_led(var):
+    """var: 'A' placa del LED con conector board-to-board, 'B' isla del mismo rigid-flex, 'C' placa en el panel + FFC.
+    Coordenadas: x = XP + x_rel (x_rel desde la cara interior del panel), y sobre la cinta de 0,25, z en los 52 mm."""
+    d2 = json.load(open('s2d.json'))
+    y0, H = 0.25, 11.9; XP = 13.0 + 6.65
+    X = lambda xr: XP + xr
+    frames = []
+    # camara (STEP): modulo, lente, cola, rigidizador FR4 y conector AXT
+    cam = [box(X(-5.05), X(0), y0, y0 + 8.5, 21.75, 30.25, 'camara'),
+           dict(cyl=True, x0=X(-0.6), len=0.6, y=y0 + 4.25, z=26.0, r=2.2, kind='rosca'),
+           box(X(-5.05), X(-4.7), y0, y0 + 9.6, 11.25, 17.25, 'rigidizador'),
+           box(X(-6.17), X(-5.17), y0 + 1.8, y0 + 7.8, 13.2, 15.2, 'conector')]
+    cam_fpc = dict(p=[[X(-5.11), y0 + 4.25, 30.25], [X(-5.11), y0 + 4.25, 11.25]], b=[0, 1, 0], w=8.5, R=[99, 99], rreq=1.44)
+    # seccion de camara alimentada por la pared lateral (esquina)
+    xwf = X(-6.27); zml = 3.6; zw = zml - 3.1; xa = X(-24.0); xb = xwf - 3.1
+    a1 = arc(zml, y0 + 0.1 + 3.1, 3.1, -np.pi/2, -np.pi)[1:]
+    p1 = np.vstack([[[zml, y0 + 0.1]], a1, [[zw, y0 + 4.35]]])
+    wall1 = np.stack([np.full(len(p1), xa + 3.0), p1[:, 1], p1[:, 0]], 1)
+    cor = arc(xb, zw + 3.1, 3.1, -np.pi/2, 0)
+    p2 = np.vstack([[[xa, zw]], cor, [[xwf, zml]]])
+    wall2 = np.stack([p2[:, 0], np.full(len(p2), y0 + 7.85), p2[:, 1]], 1)
+    # pestaña fija de la S y su alimentacion desde la mainboard (48 V + Gigabit)
+    xtf = X(-12.75)
+    at = arc(xtf - 3.1, y0 + 0.1 + 3.1, 3.1, -np.pi/2, 0)
+    pt = np.vstack([[[X(-17.5), y0 + 0.1]], at, [[xtf, y0 + 4.45]]])
+    feed = np.stack([pt[:, 0], pt[:, 1], np.full(len(pt), 9.5)], 1)
+    fixed = [box(-10, X(-17.5), y0 + 0.2, y0 + 1.2, zml, 16.0, 'mainboard'),
+             box(-10, X(-20.5), y0 + 0.2, y0 + 1.2, 16.0, 54.0, 'mainboard'),
+             box(X(-7.17), X(-6.17), y0, H, zml, 16.0, 'placa'),                          # seccion de camara
+             box(X(-13.65), X(-12.65), y0 + 4.45, H, 4.0, 15.0, 'placa'),                # pestaña fija
+             box(X(-13.65), X(-12.65), y0, H, 15.0, 16.0, 'placa'),
+             box(XP, XP + 1.5, -1, 13.5, -2, 54, 'panel')]
+    led = []; extra_rib = []
+    if var == 'A':
+        led = [box(X(-4.17), X(-3.57), y0 + 0.6, y0 + 8.0, 6.0, 21.5, 'placa'),          # placa del LED 0,6 mm
+               box(X(-6.17), X(-4.17), y0 + 2.0, y0 + 6.5, 6.5, 9.5, 'conector'),        # B2B apareado 2,0 mm
+               box(X(-3.57), X(-1.07), y0 + 3.0, y0 + 6.0, 17.8, 20.8, 'led')]
+    elif var == 'B':
+        xi = X(-4.2); R = 2.6; jog = xi - xwf; ph = np.arccos(1 - jog/(2*R))
+        t1 = np.linspace(np.pi, np.pi - ph, 12); q1 = np.stack([xwf + R + R*np.cos(t1), 16.0 + R*np.sin(t1)], 1)
+        c2 = q1[-1] + R*np.array([-np.cos(ph), np.sin(ph)])
+        t2 = np.linspace(-ph, 0, 12); q2 = np.stack([c2[0] + R*np.cos(t2), c2[1] + R*np.sin(t2)], 1)
+        arm = np.vstack([q1, q2[1:], [[xi, 21.6]]])
+        extra_rib = [ribbon(np.stack([arm[:, 0], np.full(len(arm), y0 + 10.8), arm[:, 1]], 1), (0, 1, 0), 1.7, rreq=2.5)]
+        led = [box(xi - 0.4, xi + 0.4, y0 + 2.4, y0 + 9.7, 17.4, 21.6, 'placa'),          # isla rigida
+               box(xi - 0.4, xi + 0.4, y0 + 9.7, y0 + 11.6, 20.2, 21.6, 'placa'),
+               box(xi + 0.4, xi + 2.9, y0 + 3.0, y0 + 6.0, 17.9, 20.9, 'led')]
+    else:
+        xf = X(-4.35)
+        ffc = [[X(-5.17), 8.0], [xf - 0.6, 8.0]] + arc(xf - 0.6, 8.6, 0.6, -np.pi/2, 0)[1:].tolist() + \
+              [[xf, 17.2]] + arc(xf + 0.6, 17.2, 0.6, np.pi, np.pi/2)[1:].tolist()
+        ffc3 = np.array([[p[0], y0 + 10.75, p[1]] for p in ffc])
+        extra_rib = [dict(ribbon(ffc3, (0, 1, 0), 1.7, rreq=0.5), col='#d9d4c7')]
+        led = [box(X(-6.17), X(-5.17), y0 + 9.6, y0 + 11.6, 6.5, 9.5, 'conector'),       # ZIF en la seccion de camara
+               box(X(-3.4), X(-2.6), y0 + 1.0, y0 + 11.6, 16.5, 21.5, 'placa'),          # placa del LED pegada al panel
+               box(X(-4.1), X(-3.4), y0 + 9.9, y0 + 11.6, 17.3, 20.5, 'conector'),       # ZIF en la placa del LED
+               box(X(-2.6), X(-0.1), y0 + 3.0, y0 + 6.0, 17.8, 20.8, 'led')]
+    for f in d2['seq']['ret_a_nom'][::2] + [d2['seq']['ret_a_nom'][-1]]:
+        ret = f['ret']; Xf = X(-6.65) - ret
+        Sp = np.stack([np.array(f['x']) + XP, np.full(len(f['x']), y0 + 0.35 + 5.5), np.array(f['z'])], 1)
+        frames.append(dict(ret=round(ret, 3), ribbons=[ribbon(wall1, (1, 0, 0), 6.0), ribbon(wall2, (0, 1, 0), 7.0),
+                                                        ribbon(feed, (0, 0, 1), 10.0), ribbon(Sp, (0, 1, 0), 11.0, rreq=2.5),
+                                                        cam_fpc] + extra_rib,
+                           boxes=fixed + cam + led + [box(Xf - 1.0, Xf, y0, H, 30.0, 52.0, 'placa'),
+                                                      box(Xf, Xf + 6.65, y0, H, 38.0, 50.0, 'conector'),
+                                                      dict(cyl=True, x0=Xf + 6.65, len=12, y=(y0 + H)/2, z=44.0, r=6, kind='rosca')]))
+    frames = frames[::-1]   # de retraido a nominal
+    frames = sorted(frames, key=lambda f: -f['ret'])
+    names = {'A': 'LED A · placa + B2B', 'B': 'LED B · isla rigid-flex', 'C': 'LED C · placa en panel + FFC'}
+    return dict(id='led' + var, nombre=names[var], W=X(-6.65), Rmin=round(d2['Rmin'], 2), env=[0, 52], H=H, frames=frames,
+                focus=dict(target=[X(-4.5), 5.5, 16.5], pos=[X(-4.5) + 16, 22, 16.5 - 20]))
+
 def _main():
-    out = [opcion_piso(), opcion_s(), opcion_u(), opcion_camara(), opcion_camara_centrada(), opcion_horizontal(), opcion_pared()]
+    out = [opcion_piso(), opcion_s(), opcion_u(), opcion_camara(), opcion_camara_centrada(), opcion_horizontal(), opcion_pared(), opcion_led('A'), opcion_led('B'), opcion_led('C')]
     for o in out:
         print(o['id'], len(o['frames']), 'R/Rreq min', round(min(min(r['R'])/r.get('rreq', 3.0) for f in o['frames'] for r in f['ribbons']), 3))
     json.dump(out, open('opciones3d.json', 'w'), separators=(',', ':'))
