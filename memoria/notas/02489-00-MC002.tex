@@ -1,0 +1,400 @@
+% !TeX program = pdflatex
+% !TeX encoding = UTF-8
+%=======================================================================
+%  GRIS-NOT-001  ·  Plantilla de notas rápidas para la memoria
+%  Proyecto 00503 - Generator inspection robotic system · Mecanalisis
+%  Identidad: GRIS-IDENTIDAD-001 v1.4
+%-----------------------------------------------------------------------
+%  CÓMO USARLA (en 3 pasos)
+%
+%   1. Copiá este archivo con el código de la nota:
+%         memoria/notas/02489-00-MC007.tex
+%      El número (###) es correlativo: mirá la última nota y sumá uno.
+%
+%   2. Completá los cuatro datos del bloque «DATOS DE LA NOTA».
+%
+%   3. Escribí:
+%        · Resultados (obligatorio, siempre primero): lo que se sabe
+%          ahora que antes no se sabía. Frases cortas, con números.
+%        · El resto es libre. Usá los títulos que te sirvan, o ninguno.
+%
+%   Compilar:  pdflatex 02489-00-MC007.tex
+%   En Overleaf: subí el .tex y logo-gris.pdf.
+%
+%  LOGO: se usa «logo-gris.pdf» (GRIS-LOGO-003, reducido) de esta carpeta
+%  o de ../plantilla/. Si falta, se escribe «GRIS» como marcador.
+%=======================================================================
+\documentclass[11pt,a4paper]{article}
+
+%=======================================================================
+%  DATOS DE LA NOTA  ← lo único que hay que tocar arriba
+%=======================================================================
+\newcommand{\codigo}{02489-00-MC002}          % 02489-00-MC###
+\newcommand{\titulo}{Caracterización de los imanes D20$\times$4}
+\newcommand{\autor}{Matías Gaviño}
+\newcommand{\fecha}{24/09/2026}                    % o p. ej. {24/09/2026}
+
+%=======================================================================
+%  ESTILO  (no hace falta tocar nada de aquí hasta \begin{document})
+%=======================================================================
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-noshorthands,es-tabla]{babel}
+\usepackage{lmodern}
+\usepackage[a4paper,top=3.0cm,bottom=2.4cm,left=2.4cm,right=2.4cm,
+            headheight=20pt,headsep=1.2cm,footskip=1.1cm]{geometry}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{amsmath,amssymb}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+
+% --- colores -----------------------------------------------------------
+\definecolor{gris-naranja}{HTML}{FF7A00}   % naranja institucional
+\definecolor{tinta}{HTML}{1E2328}
+\definecolor{gris-medio}{HTML}{6B7280}
+\definecolor{gris-linea}{HTML}{DADDE1}
+\color{tinta}
+
+\hypersetup{pdftitle={\codigo\ -- \titulo}, pdfauthor={\autor},
+            colorlinks=true, linkcolor=tinta, urlcolor=tinta}
+
+% --- logo ---------------------------------------------------------------
+\graphicspath{{./}{../plantilla/}{plantilla/}}
+\newcommand{\logogris}{%
+  \IfFileExists{logo-gris.pdf}
+    {\includegraphics[height=16pt]{logo-gris.pdf}}
+    {\IfFileExists{../plantilla/logo-gris.pdf}
+      {\includegraphics[height=16pt]{../plantilla/logo-gris.pdf}}
+      {{\fontsize{18}{18}\selectfont\bfseries\sffamily\color{gris-naranja}GRIS}}}}
+
+% --- tipografía del cliente (código documental) --------------------------
+% Geogrotesque no es libre; se usa Roboto Condensed Bold, que viene con
+% TeX Live y Overleaf y tiene el mismo aire que el logo.
+\newcommand{\fuentecliente}{\fontfamily{Roboto-TLF}\fontseries{bc}\selectfont}
+
+% --- encabezado y pie ---------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\vspace{3pt}{\color{gris-linea}\hrule height \headrulewidth}}
+\fancyhead[L]{\logogris}
+\fancyhead[R]{{\fuentecliente\fontsize{12}{12}\selectfont\color{gris-medio}\codigo}}
+\fancyfoot[R]{\footnotesize\color{gris-medio}\thepage}
+
+% --- títulos numerados ----------------------------------------------------
+\setcounter{secnumdepth}{2}
+\titleformat{\section}{\large\bfseries}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.8em}{}
+\titlespacing*{\section}{0pt}{16pt}{5pt}
+\titlespacing*{\subsection}{0pt}{11pt}{3pt}
+
+% --- texto ------------------------------------------------------------------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\linespread{1.05}
+\setlist{topsep=2pt, itemsep=2pt, parsep=0pt, leftmargin=1.2em}
+\setlist[itemize]{label={\raisebox{0.15ex}{\small$\bullet$}}}
+\captionsetup{font={small,color=gris-medio}, labelfont=bf, skip=5pt}
+\renewcommand{\arraystretch}{1.25}
+
+% --- cabecera de la nota ------------------------------------------------------
+\newcommand{\cabecera}{%
+  \thispagestyle{fancy}%
+  {\fontsize{20}{24}\selectfont\bfseries\titulo\par}%
+  \vspace{5pt}%
+  {\small\color{gris-medio}\fecha\quad·\quad\autor\par}%
+  \vspace{6pt}}
+
+% --- ayudas opcionales --------------------------------------------------------
+% \figura{archivo}{ancho}{pie}
+\newcommand{\figura}[3]{%
+  \begin{figure}[htbp]\centering
+    \includegraphics[width=#2\linewidth]{#1}\caption{#3}
+  \end{figure}}
+
+%=======================================================================
+\graphicspath{{./}{../plantilla/}{02489-00-MC002/figuras/}}
+
+\begin{document}
+\cabecera
+
+%-----------------------------------------------------------------------
+%  RESULTADOS  (siempre primero, lo único obligatorio)
+%-----------------------------------------------------------------------
+\section{Resultados}
+Se midió la fuerza de atracción $F(x)$ entre el conjunto de dos imanes NdFeB D20$\times$4 avellanados
+apilados y la estructura de acero, en función del entrehierro $x$, y se la contrastó con un modelo de
+elementos finitos (FEMM~4.2). Detalle del ensayo en 02489-00-ZIT200.
+
+\begin{itemize}
+  \item \textbf{Curva relevada:} 24 puntos entre \textbf{68,7~N en contacto} ($x\approx0{,}15$~mm) y
+        \textbf{1,47~N a 10,23~mm} (tabla~\ref{tab:mediciones}, figura~\ref{fig:curva}).
+  \item \textbf{La fuerza cae muy rápido:} a la mitad con $\approx$1~mm de separación y a la décima parte
+        con $\approx$4,9~mm. Toda aplicación con fuerza a distancia se dimensiona sobre la cola, nunca sobre
+        el valor de contacto.
+  \item \textbf{Valores de diseño} (curva ajustada): 20~N a 2,03~mm; 10~N a 3,84~mm; 5~N a 6,17~mm;
+        2~N a 9,85~mm.
+  \item \textbf{El modelo FEMM reproduce la medición} dentro del 9,3\,\% sobre casi dos décadas de fuerza,
+        con un único factor de escala.
+  \item \textbf{Grado:} ese factor corresponde a $B_r\approx1{,}05$~T. \textbf{Los imanes no son N42:} se
+        comportan como un \textbf{N35}; con las incertidumbres del ensayo, el grado real es N35 o algo superior.
+  \item \textbf{Con el entrehierro mínimo de 1,5~mm del montaje} la fuerza máxima es 25,6~N. Pasar a N52
+        la sube a $\approx$38~N y lleva el alcance a 2~N de 9,85 a 11,69~mm; conservando 25,6~N (con
+        separador) la ganancia es de solo 0,96~mm. \textbf{El grado mueve la cola menos de 2~mm.}
+  \item \textbf{Pendiente:} medir el espesor de la chapa de acero para explicar la tendencia de los residuos
+        (sección~\ref{sec:residuos}) y medir $B_r$ con sonda Hall para fijar el grado.
+\end{itemize}
+
+%-----------------------------------------------------------------------
+\section{Relevamiento}
+
+\subsection{Probeta, instrumento y montaje}
+\textbf{Imanes.} Dos imanes de NdFeB sinterizado D20$\times$4~mm, con avellanado pasante para tornillo M4,
+apilados coaxialmente y en atracción mutua (altura total 8~mm). \textbf{Los avellanados miran al acero}:
+la boca ancha del cono ($\varnothing$10~mm) enfrenta la superficie de atracción.
+
+\textbf{Instrumento.} Dinamómetro digital de gancho (balanza de equipaje): división de 5~g de 0 a 10~kg y
+de 10~g de 10 a 50~kg. Todas las lecturas caen en el primer rango: resolución 5~g ($\approx$0,05~N).
+
+\textbf{Montaje.} El conjunto se apoya sobre una pila de hojas de papel que descansa sobre la estructura de
+acero. El tiro se aplica a mano con un lazo, normal a la superficie, y se registra el máximo indicado al
+desprenderse.
+
+\begin{figure}[H]\centering
+  \begin{minipage}[b]{0.3\linewidth}\centering
+    \includegraphics[width=\linewidth]{foto_imanes.jpg}\\[-2pt]{\small\color{gris-medio}(a) Imanes}
+  \end{minipage}\hfill
+  \begin{minipage}[b]{0.3\linewidth}\centering
+    \includegraphics[width=\linewidth]{foto_dinamometro.jpg}\\[-2pt]{\small\color{gris-medio}(b) Dinamómetro}
+  \end{minipage}\hfill
+  \begin{minipage}[b]{0.3\linewidth}\centering
+    \includegraphics[width=\linewidth]{foto_montaje.jpg}\\[-2pt]{\small\color{gris-medio}(c) Montaje}
+  \end{minipage}
+  \caption{(a) Conjunto ensayado: dos imanes D20$\times$4 avellanados apilados. (b) Dinamómetro digital,
+  resolución 5~g en el rango usado. (c) Disposición del ensayo: las hojas fijan el entrehierro y el tiro
+  es normal a la superficie.}
+  \label{fig:fotos}
+\end{figure}
+
+\subsection{Graduación del entrehierro}
+El entrehierro se fija con el número $n$ de hojas interpuestas:
+\begin{equation}
+x(n)=x_0+n\,t ,
+\end{equation}
+con $t$ el espesor por hoja y $x_0$ el entrehierro residual con $n=0$.
+
+\begin{itemize}
+  \item \textbf{Espesor por hoja:} 200 hojas miden 6,50~mm (0,03250~mm/hoja) y 100 hojas 3,24~mm
+        (0,03240~mm/hoja); coinciden dentro del 0,3\,\%. Se adopta $t=0{,}03250$~mm/hoja, de la
+        referencia de mayor recorrido.
+  \item \textbf{Entrehierro residual:} en contacto directo quedan el niquelado del imán
+        (2$\times$15--25~$\mu$m), la pintura de la estructura y la rugosidad, del orden de 0,1 a 0,2~mm. Se
+        adopta $x_0=0{,}15$~mm; su efecto se evalúa en la sección~\ref{sec:grado}.
+\end{itemize}
+
+\subsection{Mediciones}
+La tabla~\ref{tab:mediciones} reúne las 24 lecturas, sin procesar (hojas y gramos) y convertidas con
+$F=m\,g$, $g=9{,}80665$~m/s$^2$. Los valores de $n$ anotados sin lectura (25, 15, 9, 7, 5, 3 y 1 hojas)
+son puntos previstos y no medidos.
+
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{5pt}
+\caption{Fuerza medida y comparación con el modelo FEMM ajustado ($B_r=1{,}051$~T). Dif.\ =
+$F_{med}/F_{FEMM}-1$.}
+\label{tab:mediciones}
+\begin{tabular}{r r r r r r @{\hspace{18pt}} r r r r r r}
+\toprule
+$n$ & Lect. & $x$ & $F_{med}$ & $F_{FEMM}$ & Dif. & $n$ & Lect. & $x$ & $F_{med}$ & $F_{FEMM}$ & Dif.\\
+ & [g] & [mm] & [N] & [N] & [\%] &  & [g] & [mm] & [N] & [N] & [\%]\\
+\midrule
+0  & 7000 & 0,15 & 68,65 & 61,06 & +12,4 & 120 & 990 & 4,05 & 9,71 & 9,34 & +3,9\\
+2  & 6500 & 0,21 & 63,74 & 57,50 & +10,9 & 140 & 740 & 4,70 & 7,26 & 7,62 & $-$4,8\\
+4  & 6000 & 0,28 & 58,84 & 54,42 & +8,1  & 160 & 630 & 5,35 & 6,18 & 6,29 & $-$1,7\\
+6  & 5600 & 0,34 & 54,92 & 51,71 & +6,2  & 180 & 520 & 6,00 & 5,10 & 5,23 & $-$2,4\\
+8  & 5600 & 0,41 & 54,92 & 49,18 & +11,7 & 200 & 480 & 6,65 & 4,71 & 4,38 & +7,5\\
+10 & 5400 & 0,47 & 52,96 & 46,89 & +12,9 & 220 & 345 & 7,30 & 3,38 & 3,70 & $-$8,6\\
+20 & 4100 & 0,80 & 40,21 & 37,78 & +6,4  & 240 & 295 & 7,95 & 2,89 & 3,14 & $-$7,8\\
+30 & 3140 & 1,12 & 30,79 & 31,27 & $-$1,5 & 260 & 245 & 8,60 & 2,40 & 2,68 & $-$10,3\\
+40 & 2850 & 1,45 & 27,95 & 26,28 & +6,4  & 280 & 195 & 9,25 & 1,91 & 2,30 & $-$16,8\\
+50 & 2450 & 1,77 & 24,03 & 22,43 & +7,1  & 300 & 180 & 9,90 & 1,77 & 1,98 & $-$10,8\\
+60 & 2000 & 2,10 & 19,61 & 19,33 & +1,5  & 310 & 150 & 10,23 & 1,47 & 1,84 & $-$20,0\\
+80 & 1500 & 2,75 & 14,71 & 14,78 & $-$0,5 & & & & & & \\
+100& 1190 & 3,40 & 11,67 & 11,63 & +0,3  & & & & & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Curva característica}
+\begin{figure}[H]\centering
+  \includegraphics[width=\linewidth]{fig_curva_medida.png}
+  \caption{Fuerza medida (puntos) frente al modelo FEMM. Gris: imán N42 nominal ($B_r=1{,}300$~T). Rojo:
+  mismo modelo con la remanencia ajustada ($B_r=1{,}051$~T). El panel derecho amplía la cola.}
+  \label{fig:curva}
+\end{figure}
+
+\begin{table}[H]\centering\small
+\caption{Valores característicos de la curva ajustada.}
+\label{tab:caract}
+\begin{tabular}{r r}
+\toprule
+Fuerza & Entrehierro\\\midrule
+20~N & 2,03~mm\\
+10~N & 3,84~mm\\
+5~N  & 6,17~mm\\
+2~N  & 9,85~mm\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La fuerza de contacto es 68,7~N (7,00~kgf) y cae a la mitad con $\approx$1~mm de separación. Este
+decaimiento en el primer milímetro es la característica dominante del conjunto.
+
+%-----------------------------------------------------------------------
+\section{Estimación del grado}
+\label{sec:grado}
+El grado del material no figura en la documentación de los imanes. Se estima ajustando la curva
+simulada a la medida.
+
+\subsection{Modelo}
+Modelo axisimétrico en FEMM~4.2 con la geometría real: dos imanes D20$\times$4 con el perfil del
+avellanado ($\varnothing$4~mm recto durante 1~mm, luego cono hasta $\varnothing$10~mm en 3~mm), boca hacia
+el acero. Imán con $\mu_{rec}=1{,}05$ y $H_c=B_r/(\mu_0\mu_{rec})$. Acero 1018 de la biblioteca de FEMM
+(curva B--H real), pieza de $\varnothing$100$\times$50~mm. Frontera asintótica y fuerza por tensor de
+tensiones ponderado sobre el acero.
+
+\subsection{Ajuste}
+Mientras el acero no sature el problema es lineal en la magnetización (verificado: acero real y
+material lineal de $\mu_r=10^4$ difieren menos del 0,3\,\%), y la fuerza escala con el cuadrado de la
+remanencia:
+\begin{equation}
+F(x;B_r)=\left(\frac{B_r}{B_{r,ref}}\right)^{2}F(x;B_{r,ref}) .
+\label{eq:br2}
+\end{equation}
+Con $t$ fijado por la calibración, el único parámetro libre es $k=(B_r/B_{r,ref})^2$, ajustado por
+mínimos cuadrados sobre $\log F$ (pondera por igual el rango cercano y el lejano).
+
+\begin{table}[H]\centering\small
+\caption{Resultado del ajuste y sensibilidad al entrehierro residual ($B_{r,ref}=1{,}300$~T).}
+\begin{tabular}{c c c c}
+\toprule
+$x_0$ [mm] & $k$ & $B_r$ [T] & Desvío de residuos\\\midrule
+0,10 & 0,638 & 1,039 & 8,4\,\%\\
+\textbf{0,15} & \textbf{0,654} & \textbf{1,051} & \textbf{9,3\,\%}\\
+0,20 & 0,669 & 1,063 & 10,2\,\%\\
+0,30 & 0,699 & 1,087 & 12,0\,\%\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El grado de catálogo más próximo a $B_r=1{,}051$~T es el \textbf{N35} ($B_r$ nominal 1,19~T). La
+conclusión no depende de $x_0$: en todo el rango $B_r$ queda entre 1,04 y 1,09~T, muy por debajo del N42
+(1,30~T).
+
+\subsection{Tendencia de los residuos}
+\label{sec:residuos}
+\begin{figure}[H]\centering
+  \includegraphics[width=0.6\linewidth]{fig_residuos.png}
+  \caption{Residuos del ajuste. Tienen una tendencia monótona con el entrehierro: el modelo queda corto
+  cerca del contacto y largo a distancia.}
+  \label{fig:residuos}
+\end{figure}
+
+Los residuos no son aleatorios: la medición supera al modelo en +12\,\% cerca del contacto y queda
+$-$20\,\% por debajo en el último punto; la curva medida decae más rápido que la simulada. Si se libera
+también $t$, el óptimo pasa a $t=0{,}0361$~mm/hoja (+11\,\%) y el desvío cae de 9,3\,\% a 4,6\,\%, sin
+tendencia: \emph{el modelo prefiere una pila un 11\,\% más gruesa que la medida con regla}. Dos
+explicaciones compatibles, que este ensayo no separa:
+\begin{itemize}
+  \item \textbf{Compresión de la pila:} si al medir los 6,50~mm las hojas estaban comprimidas y en el
+        ensayo quedan sueltas, el entrehierro real es mayor que el calculado.
+  \item \textbf{Blanco de acero de espesor finito:} el modelo supone 50~mm; si la estructura es más
+        delgada, la fuerza cae más rápido con la distancia.
+\end{itemize}
+Para distinguirlas basta medir el espesor de la chapa y rehacer el modelo con ese valor.
+
+\subsection{Distribución del campo}
+\begin{figure}[H]\centering
+  \includegraphics[width=0.5\linewidth]{fig_campo.png}
+  \caption{Módulo de $|B|$ (escala lineal recortada en 0,6~T; pico de 1,12~T dentro del imán) y líneas de
+  flujo a $x=2$~mm.}
+  \label{fig:campo}
+\end{figure}
+El flujo sale de la cara inferior, cruza el entrehierro, se reparte radialmente en el acero y vuelve por
+el aire a la cara superior. El avellanado concentra el flujo en un anillo sobre su borde.
+
+\subsection{Alcance de la inferencia}
+\begin{itemize}
+  \item \textbf{Resolución:} 5~g; despreciable cerca del contacto ($<$0,1\,\%), 3\,\% en el último punto.
+  \item \textbf{Calibración:} el dinamómetro no se verificó contra masas patrón; un error de escala del
+        2--5\,\% entra directo en $k$ y en $B_r$.
+  \item \textbf{Desprendimiento manual:} componente dinámica y posible desalineación; ambas reducen la
+        fuerza registrada.
+  \item \textbf{Blanco:} espesor y extensión no medidos, superficie pintada; ambas cosas reducen la fuerza.
+  \item \textbf{Entrehierro:} calibración de la pila y espesor del blanco quedan confundidos
+        (sección~\ref{sec:residuos}).
+\end{itemize}
+Calibración, desprendimiento y blanco actúan en el mismo sentido: bajan la fuerza medida. Por eso el
+resultado no es «los imanes son N35» sino que \textbf{el conjunto se comporta como un N35 y el grado real
+es N35 o superior}. Para fijarlo haría falta medir $B_r$ con sonda Hall sobre un imán aislado, o repetir
+el ensayo con un blanco de geometría conocida y el dinamómetro calibrado.
+
+%-----------------------------------------------------------------------
+\section{Comportamiento con otros grados}
+El montaje impone un entrehierro mínimo de \textbf{1,5~mm}: el tramo de contacto no es accesible y la
+fuerza máxima utilizable del conjunto actual es 25,6~N. Se evalúa sustituir los imanes por N42 o N52,
+cambiando solo el imán o agregando un separador no magnético de espesor $s$ que devuelve la fuerza a
+1,5~mm al valor actual. Con la ecuación~\eqref{eq:br2} y las remanencias nominales (N35 1,19~T, N42
+1,30~T, N52 1,45~T):
+\begin{equation}
+F_g(x)=\left(\frac{B_{r,g}}{B_{r,\text{N35}}}\right)^{2}F_{\text{N35}}(x+s) .
+\end{equation}
+
+\begin{figure}[H]\centering
+  \includegraphics[width=\linewidth]{fig_grado_entrehierro.png}
+  \caption{Fuerza con entrehierro mínimo de 1,5~mm. Negro: conjunto actual. Punteadas: solo cambiar el
+  imán. Continuas: imán más separador que iguala la fuerza a 1,5~mm. Los triángulos marcan el alcance a 2~N.}
+  \label{fig:grado}
+\end{figure}
+
+\begin{table}[H]\centering\small
+\caption{Fuerza máxima utilizable y alcance a 2~N, respecto del conjunto actual.}
+\label{tab:grados}
+\begin{tabular}{l c c c c c}
+\toprule
+Variante & Separador & $F(1{,}5\text{ mm})$ & $\Delta F_{\text{máx}}$ & $x$ a 2~N & Ganancia\\
+         & [mm]      & [N]                 & [\%]                  & [mm]      & [mm]\\
+\midrule
+N35 actual (referencia) & --   & 25,6          & --  & 9,85  & --\\
+N42 sin separador       & --   & $\approx$30,6 & +19 & 10,65 & +0,80\\
+N42 + separador         & 0,37 & 25,6          & 0   & 10,28 & +0,43\\
+N52 sin separador       & --   & $\approx$38   & +48 & 11,69 & +1,84\\
+N52 + separador         & 0,88 & 25,6          & 0   & 10,81 & +0,96\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{La fuerza crece mucho más que el alcance.} En la cola la fuerza cae a la mitad cada 2,5 a
+        3~mm: cada 10\,\% de fuerza adicional corre el alcance unos 0,4~mm. El N52, con +48\,\%, gana 1,84~mm.
+  \item \textbf{El separador consume parte de la ganancia.} Corre toda la curva en $s$: el alcance con
+        separador es el de sin separador menos $s$ (10,65 $-$ 0,37 = 10,28~mm; 11,69 $-$ 0,88 = 10,81~mm).
+  \item \textbf{Consecuencia:} el grado no justifica el cambio si el objetivo es alcance; sí, si falta
+        fuerza cerca y el sistema tolera el aumento. Para ganar alcance hay que evaluar la geometría
+        (volumen y altura del imán, retorno de flujo, espesor del blanco) con el modelo FEMM.
+  \item \textbf{Supuestos:} se escala la curva medida, así que las pérdidas del ensayo afectan a todos los
+        grados por igual, y los imanes actuales se toman como N35 nominal. Si fueran de grado mayor, la
+        ganancia sería menor. Los alcances absolutos heredan la tendencia de la sección~\ref{sec:residuos}
+        (pueden estar sobreestimados algunas décimas de milímetro); las diferencias entre grados, mucho menos.
+\end{itemize}
+
+El cálculo está en \texttt{02489-00-MC002/calculo.py} (resultados en \texttt{resultados.json}). Los
+alcances a 2~N de la tabla~\ref{tab:grados} salen de las curvas FEMM de la figura~\ref{fig:grado}.
+
+\end{document}
