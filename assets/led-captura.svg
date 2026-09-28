@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 452" width="720" height="452" role="img" aria-labelledby="ti de">
+<title id="ti">Fracción de flujo capturada por la ventana</title><desc id="de">Curvas de flujo acumulado vs semiángulo para LEDs de 80, 120 y 150 grados; en 19,65 grados capturan 19,4, 11,3 y 8,7 por ciento.</desc>
+<style>
+  text { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","DejaVu Sans",Arial,sans-serif; fill: #16202b; }
+  .t-title { font-size: 15px; font-weight: 700; }
+  .t-sub   { font-size: 12px; fill: #52514e; }
+  .t-lab   { font-size: 12px; }
+  .t-labb  { font-size: 12px; font-weight: 600; }
+  .t-small { font-size: 11px; fill: #52514e; }
+  .t-axis  { font-size: 11px; fill: #8a8880; font-variant-numeric: tabular-nums; }
+  .t-val   { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .t-note  { font-size: 10.5px; fill: #8a8880; }
+  .t-inv   { fill: #ffffff; }
+  .grid    { stroke: #e4e6ea; stroke-width: 1; }
+  .axis    { stroke: #c3c2b7; stroke-width: 1; }
+  .st-thin { fill: none; stroke: #14496b; stroke-width: 1.6; }
+  .st-hair { fill: none; stroke: #8a8880; stroke-width: 1; }
+  .st-dash { fill: none; stroke: #8a8880; stroke-width: 1; stroke-dasharray: 4 3; }
+</style>
+<rect width="720" height="452" fill="#ffffff"/>
+<text x="2.0" y="18.0" class="t-title" text-anchor="start">Fracción del flujo total dentro de un semiángulo</text>
+<text x="2.0" y="36.0" class="t-sub" text-anchor="start">Modelo I(θ) = I0·cosᵐθ ajustado a la media intensidad de cada LED. La ventana de Ø 5 mm a 7 mm captura</text>
+<text x="2.0" y="51.0" class="t-sub" text-anchor="start">en directo hasta α = 19,65°.</text>
+<line x1="70.0" y1="342.0" x2="630.0" y2="342.0" class="grid"/>
+<text x="62.0" y="346.0" class="t-axis" text-anchor="end">0 %</text>
+<line x1="70.0" y1="292.0" x2="630.0" y2="292.0" class="grid"/>
+<text x="62.0" y="296.0" class="t-axis" text-anchor="end">20 %</text>
+<line x1="70.0" y1="242.0" x2="630.0" y2="242.0" class="grid"/>
+<text x="62.0" y="246.0" class="t-axis" text-anchor="end">40 %</text>
+<line x1="70.0" y1="192.0" x2="630.0" y2="192.0" class="grid"/>
+<text x="62.0" y="196.0" class="t-axis" text-anchor="end">60 %</text>
+<line x1="70.0" y1="142.0" x2="630.0" y2="142.0" class="grid"/>
+<text x="62.0" y="146.0" class="t-axis" text-anchor="end">80 %</text>
+<line x1="70.0" y1="92.0" x2="630.0" y2="92.0" class="grid"/>
+<text x="62.0" y="96.0" class="t-axis" text-anchor="end">100 %</text>
+<text x="70.0" y="360.0" class="t-axis" text-anchor="middle">0°</text>
+<text x="132.2" y="360.0" class="t-axis" text-anchor="middle">10°</text>
+<text x="194.4" y="360.0" class="t-axis" text-anchor="middle">20°</text>
+<text x="256.7" y="360.0" class="t-axis" text-anchor="middle">30°</text>
+<text x="318.9" y="360.0" class="t-axis" text-anchor="middle">40°</text>
+<text x="381.1" y="360.0" class="t-axis" text-anchor="middle">50°</text>
+<text x="443.3" y="360.0" class="t-axis" text-anchor="middle">60°</text>
+<text x="505.6" y="360.0" class="t-axis" text-anchor="middle">70°</text>
+<text x="567.8" y="360.0" class="t-axis" text-anchor="middle">80°</text>
+<text x="630.0" y="360.0" class="t-axis" text-anchor="middle">90°</text>
+<line x1="70.0" y1="342.0" x2="630.0" y2="342.0" class="axis"/>
+<text x="350.0" y="378.0" class="t-note" text-anchor="middle">semiángulo desde el eje del LED</text>
+<rect x="70.0" y="92.0" width="122.3" height="250.0" fill="#eef5f1" rx="0.0"/>
+<path d="M192.3 92.0 V342.0" class="st-dash"/>
+<text x="198.3" y="104.0" class="t-small" text-anchor="start">α = 19,65°: borde de la ventana</text>
+<polyline points="70.0,342.0 76.2,341.9 82.4,341.5 88.7,340.8 94.9,339.8 101.1,338.6 107.3,337.1 113.6,335.4 119.8,333.3 126.0,331.1 132.2,328.6 138.4,325.9 144.7,322.9 150.9,319.7 157.1,316.3 163.3,312.7 169.6,308.8 175.8,304.8 182.0,300.7 188.2,296.3 194.4,291.8 200.7,287.2 206.9,282.4 213.1,277.5 219.3,272.5 225.6,267.4 231.8,262.2 238.0,257.0 244.2,251.7 250.4,246.3 256.7,240.9 262.9,235.5 269.1,230.1 275.3,224.7 281.6,219.3 287.8,213.9 294.0,208.6 300.2,203.3 306.4,198.0 312.7,192.8 318.9,187.8 325.1,182.8 331.3,177.8 337.6,173.0 343.8,168.3 350.0,163.8 356.2,159.3 362.4,155.0 368.7,150.8 374.9,146.8 381.1,142.9 387.3,139.2 393.6,135.6 399.8,132.2 406.0,128.9 412.2,125.8 418.4,122.8 424.7,120.0 430.9,117.4 437.1,114.9 443.3,112.6 449.6,110.4 455.8,108.4 462.0,106.6 468.2,104.8 474.4,103.2 480.7,101.8 486.9,100.5 493.1,99.3 499.3,98.2 505.6,97.3 511.8,96.4 518.0,95.6 524.2,95.0 530.4,94.4 536.7,93.9 542.9,93.5 549.1,93.2 555.3,92.9 561.6,92.6 567.8,92.5 574.0,92.3 580.2,92.2 586.4,92.1 592.7,92.1 598.9,92.0 605.1,92.0 611.3,92.0 617.6,92.0 623.8,92.0 630.0,92.0" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="192.3" cy="293.4" r="4.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<polyline points="70.0,342.0 76.2,341.9 82.4,341.7 88.7,341.3 94.9,340.8 101.1,340.1 107.3,339.3 113.6,338.3 119.8,337.2 126.0,335.9 132.2,334.5 138.4,332.9 144.7,331.2 150.9,329.3 157.1,327.4 163.3,325.3 169.6,323.0 175.8,320.6 182.0,318.1 188.2,315.5 194.4,312.8 200.7,309.9 206.9,306.9 213.1,303.8 219.3,300.6 225.6,297.3 231.8,294.0 238.0,290.5 244.2,286.9 250.4,283.2 256.7,279.5 262.9,275.7 269.1,271.8 275.3,267.8 281.6,263.8 287.8,259.8 294.0,255.6 300.2,251.5 306.4,247.2 312.7,243.0 318.9,238.7 325.1,234.4 331.3,230.1 337.6,225.7 343.8,221.4 350.0,217.0 356.2,212.6 362.4,208.3 368.7,203.9 374.9,199.6 381.1,195.3 387.3,191.0 393.6,186.8 399.8,182.5 406.0,178.4 412.2,174.2 418.4,170.2 424.7,166.2 430.9,162.2 437.1,158.3 443.3,154.5 449.6,150.8 455.8,147.1 462.0,143.5 468.2,140.0 474.4,136.7 480.7,133.4 486.9,130.2 493.1,127.1 499.3,124.1 505.6,121.2 511.8,118.5 518.0,115.9 524.2,113.4 530.4,111.0 536.7,108.7 542.9,106.6 549.1,104.7 555.3,102.8 561.6,101.1 567.8,99.5 574.0,98.1 580.2,96.8 586.4,95.7 592.7,94.7 598.9,93.9 605.1,93.2 611.3,92.7 617.6,92.3 623.8,92.1 630.0,92.0" fill="none" stroke="#eb6834" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="192.3" cy="313.7" r="4.5" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
+<polyline points="70.0,342.0 76.2,341.9 82.4,341.8 88.7,341.5 94.9,341.1 101.1,340.6 107.3,339.9 113.6,339.2 119.8,338.3 126.0,337.4 132.2,336.3 138.4,335.1 144.7,333.8 150.9,332.4 157.1,330.9 163.3,329.2 169.6,327.5 175.8,325.7 182.0,323.7 188.2,321.7 194.4,319.5 200.7,317.3 206.9,315.0 213.1,312.6 219.3,310.0 225.6,307.4 231.8,304.7 238.0,302.0 244.2,299.1 250.4,296.1 256.7,293.1 262.9,290.0 269.1,286.8 275.3,283.6 281.6,280.3 287.8,276.9 294.0,273.4 300.2,269.9 306.4,266.3 312.7,262.7 318.9,259.0 325.1,255.3 331.3,251.5 337.6,247.7 343.8,243.9 350.0,240.0 356.2,236.1 362.4,232.1 368.7,228.1 374.9,224.1 381.1,220.1 387.3,216.1 393.6,212.0 399.8,208.0 406.0,203.9 412.2,199.8 418.4,195.8 424.7,191.7 430.9,187.7 437.1,183.6 443.3,179.6 449.6,175.6 455.8,171.6 462.0,167.7 468.2,163.8 474.4,159.9 480.7,156.1 486.9,152.3 493.1,148.6 499.3,144.9 505.6,141.3 511.8,137.8 518.0,134.3 524.2,130.9 530.4,127.6 536.7,124.4 542.9,121.2 549.1,118.2 555.3,115.2 561.6,112.4 567.8,109.7 574.0,107.1 580.2,104.7 586.4,102.4 592.7,100.2 598.9,98.2 605.1,96.5 611.3,94.9 617.6,93.6 623.8,92.5 630.0,92.0" fill="none" stroke="#1baf7a" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="192.3" cy="320.3" r="4.5" fill="#1baf7a" stroke="#ffffff" stroke-width="2"/>
+<circle cx="318.9" cy="187.8" r="4.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<text x="327.9" y="205.8" class="t-small" text-anchor="start">62 % dentro de ±40°: el resto sale más abierto</text>
+<rect x="70.0" y="386.0" width="9.0" height="9.0" fill="#2a78d6" rx="2.0"/>
+<text x="85.0" y="394.0" class="t-small" text-anchor="start">OSLON SSL 80 (2φ = 80°): 19,4 % en α</text>
+<rect x="370.0" y="386.0" width="9.0" height="9.0" fill="#eb6834" rx="2.0"/>
+<text x="385.0" y="394.0" class="t-small" text-anchor="start">LED lambertiano (2φ = 120°): 11,3 % en α</text>
+<rect x="70.0" y="403.0" width="9.0" height="9.0" fill="#1baf7a" rx="2.0"/>
+<text x="85.0" y="411.0" class="t-small" text-anchor="start">LED de 150°: 8,7 % en α</text>
+<text x="2.0" y="444.0" class="t-note" text-anchor="start">Cálculo propio: F(θ) = 1 − cos^(m+1) θ. 2φ del OSLON SSL 80 según datasheet ams OSRAM v1.10.</text>
+</svg>

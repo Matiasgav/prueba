@@ -9,7 +9,7 @@ Sintaxis propia sobre Markdown
 ------------------------------
     ::: nota <clase> | <titulo>      llamado (clave, dato, riesgo, inferencia)
     ::: kpi                          fila de indicadores: valor || etiqueta || nota
-    ::: fig <id> | <epigrafe> | <fuente>
+    ::: fig <id> | <epigrafe> | <fuente> [| <ancho 0-1>]
     ::: tarjetas <n>                 grilla de tarjetas
     ::: tarjeta <titulo> | <meta>
     ::: detalle <titulo>             bloque desplegable
@@ -372,8 +372,11 @@ def render_dir_html(meta, body, out, ctx):
         fid = parts[0]
         cap = parts[1] if len(parts) > 1 else ''
         src = parts[2] if len(parts) > 2 else ''
+        ancho = float(parts[3]) if len(parts) > 3 and parts[3] else 1.0
         FIGN['n'] += 1
-        out.append('<figure class="fig" id="%s">' % fid)
+        out.append('<figure class="fig" id="%s"%s>'
+                   % (fid, ' style="--fig-w:%d%%"' % (ancho * 100)
+                      if ancho < 1 else ''))
         out.append(svg_inline(fid))
         out.append('<figcaption>%s%s</figcaption>'
                    % (inline_html(cap),
@@ -683,7 +686,7 @@ HTML = """<!DOCTYPE html>
   figure.fig {{ margin:1.8rem 0; padding:1rem 1rem .6rem;
                 border:1px solid var(--line); border-radius:5px;
                 background:var(--paper); }}
-  figure.fig svg {{ display:block; width:100%; height:auto; }}
+  figure.fig svg {{ display:block; width:100%; max-width:var(--fig-w,100%); height:auto; margin:0 auto; }}
   figcaption {{ font-size:.8rem; color:var(--ink-2); margin-top:.7rem;
                 padding-top:.6rem; border-top:1px solid var(--line);
                 line-height:1.5; }}
@@ -793,7 +796,10 @@ TEXCH = {'\\': r'\textbackslash{}', '&': r'\&', '%': r'\%', '$': r'\$',
          '·': r'\textperiodcentered{}', '≈': r'$\approx$', '≥': r'$\geq$',
          '≤': r'$\leq$', '−': r'$-$', '°': r'\textdegree{}',
          '•': r'\textbullet{}', '…': r'\dots{}', '™': r'\texttrademark{}',
-         '®': r'\textregistered{}', '½': r'$\frac{1}{2}$'}
+         '®': r'\textregistered{}', '½': r'$\frac{1}{2}$',
+         'α': r'$\alpha$', 'η': r'$\eta$', 'θ': r'$\theta$',
+         'φ': r'$\varphi$', 'Δ': r'$\Delta$', 'µ': r'$\mu$',
+         'ᵐ': r'\textsuperscript{m}'}
 
 
 def esc_tex(s):
@@ -895,7 +901,7 @@ def render_dir_tex(meta, body, out):
         n = max(1, len(rows))
         out.append(r'\begin{center}\setlength{\tabcolsep}{4pt}')
         colspec = ('>{\\raggedright\\arraybackslash}p{%.3f\\linewidth}'
-                   % (0.94 / n)) * n
+                   % (0.92 / n)) * n
         out.append(r'\begin{tabular}{%s}' % colspec)
         cells = []
         for r in rows:
@@ -903,8 +909,10 @@ def render_dir_tex(meta, body, out):
             val = inline_tex(c[0]) if c else ''
             lab = inline_tex(c[1]) if len(c) > 1 else ''
             note = inline_tex(c[2]) if len(c) > 2 else ''
-            cells.append(r'{\color{navy}\Large\bfseries %s}\\[2pt]'
-                         r'{\small %s}\\[1pt]{\footnotesize\color{gray2} %s}'
+            # \par y no \\: dentro de una columna p{} con \arraybackslash,
+            # \\ cierra la fila de la tabla y desarma la grilla de indicadores.
+            cells.append(r'{\color{navy}\Large\bfseries %s}\par\vspace{2pt}'
+                         r'{\small %s}\par\vspace{1pt}{\footnotesize\color{gray2} %s}'
                          % (val, lab, note))
         out.append(' & '.join(cells) + r' \\')
         out.append(r'\end{tabular}\end{center}')
@@ -913,9 +921,10 @@ def render_dir_tex(meta, body, out):
         fid = parts[0]
         cap = parts[1] if len(parts) > 1 else ''
         src = parts[2] if len(parts) > 2 else ''
+        ancho = float(parts[3]) if len(parts) > 3 and parts[3] else 1.0
         out.append(r'\begin{figure}[htbp]\centering')
-        out.append(r'\fbox{\includegraphics[width=0.98\linewidth]{assets/%s.pdf}}'
-                   % fid)
+        out.append(r'\fbox{\includegraphics[width=%.2f\linewidth]{assets/%s.pdf}}'
+                   % (0.98 * ancho, fid))
         out.append(r'\caption*{\footnotesize\raggedright %s%s}'
                    % (inline_tex(cap),
                       r' {\color{gray2}%s}' % inline_tex(src) if src else ''))
@@ -1049,12 +1058,22 @@ def render_tex(meta, blocks):
                .replace('<<SUBTITULO>>', inline_tex(meta.get('subtitulo', '')))
                .replace('<<EDICION>>', inline_tex(meta.get('edicion', '')))
                .replace('<<FECHA>>', inline_tex(meta.get('fecha', '')))
+               .replace('<<ENCABEZADO>>', inline_tex(meta.get('encabezado', ENCABEZADO)))
+               .replace('<<AVISO>>', inline_tex(meta.get('aviso', AVISO)))
                .replace('<<BODY>>', '\n'.join(out)))
 
 
+# Valores por omision (informe original); cada fuente puede fijar los suyos en
+# la cabecera con las claves "encabezado" y "aviso".
+ENCABEZADO = ('Oportunidades de robótica de inspección industrial para '
+              'generación y utilities')
+AVISO = ('Documento de trabajo para decisión de inversión. Las hipótesis y las '
+         'fuentes recopiladas no constituyen conclusiones de investigación '
+         'mientras no estén verificadas.')
+
 TEX = r"""% !TeX program = pdflatex
 %=======================================================================
-%  Informe generado desde source/informe.md por tools/md2report.py
+%  Informe generado por tools/md2report.py
 %  Compilar:  pdflatex informe.tex  (tres veces, por el indice)
 %=======================================================================
 \documentclass[11pt,a4paper]{article}
@@ -1128,8 +1147,7 @@ TEX = r"""% !TeX program = pdflatex
 \pagestyle{fancy}
 \fancyhf{}
 \renewcommand{\headrulewidth}{0.4pt}
-\fancyhead[L]{\sffamily\footnotesize\color{gray2}Oportunidades de robótica de
-  inspección industrial para generación y utilities}
+\fancyhead[L]{\sffamily\footnotesize\color{gray2}<<ENCABEZADO>>}
 \fancyfoot[C]{\sffamily\footnotesize\thepage}
 
 % --- distintivos ------------------------------------------------------
@@ -1203,9 +1221,7 @@ TEX = r"""% !TeX program = pdflatex
 \vspace{12pt}
 {\normalsize <<FECHA>>\par}
 \vfill
-{\sffamily\footnotesize\color{gray2}Documento de trabajo para decisión de
-inversión. Las hipótesis y las fuentes recopiladas no constituyen conclusiones
-de investigación mientras no estén verificadas.\par}
+{\sffamily\footnotesize\color{gray2}<<AVISO>>\par}
 \end{titlepage}
 \setcounter{page}{2}
 

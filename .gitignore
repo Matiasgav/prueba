@@ -1,0 +1,8 @@
+# Auxiliares de LaTeX
+*.aux
+*.log
+*.out
+*.toc
+# Datasheet descargado por tools/led_figures.py
+tools/.cache/
+__pycache__/

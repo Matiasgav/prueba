@@ -45,3 +45,39 @@ pdflatex informe_robotica_inspeccion.tex   # tres veces, por el índice
 Paquetes LaTeX requeridos (TeX Live): `texlive-latex-recommended`,
 `texlive-latex-extra`, `texlive-lang-spanish`, `texlive-fonts-recommended`.
 Para exportar las figuras a PDF: `pip install cairosvg`.
+
+---
+
+# Memoria técnica — Selección del LED OSLON SSL 80
+
+Segundo informe generado con la misma herramienta: justifica la selección del
+LED **ams OSRAM OSLON SSL 80, GW CS8PM1.PM, 5000 K, bin LUMQ** para el módulo
+de iluminación compacto (conducto de aluminio de Ø 5 × 7 mm) del robot de
+almacenamiento de medicamentos.
+
+| Archivo | Descripción |
+|---|---|
+| `informe_led_oslon_ssl80.html` | Informe HTML autocontenido, con 15 figuras embebidas. |
+| `informe_led_oslon_ssl80.tex` / `.pdf` | Versión LaTeX y PDF compilado (23 páginas). |
+| `source/informe_led_oslon_ssl80.md` | Fuente del informe. |
+| `tools/led_montecarlo.py` | Cálculo óptico: captura directa y Monte Carlo del conducto (pared difusa y especular). |
+| `tools/led_figures.py` | Tres figuras propias y doce capturas recortadas del datasheet oficial v1.10. |
+
+El informe incluye el resumen ejecutivo, los requisitos frente al cumplimiento
+del LED, las características eléctricas, ópticas, térmicas y mecánicas, la
+comparación con otras alternativas, el driver recomendado, el cálculo óptico con
+análisis de sensibilidad, los riesgos, el abastecimiento, el plan de prototipo y
+las fuentes consultadas.
+
+```bash
+pip install numpy pymupdf cairosvg
+python3 tools/led_figures.py              # descarga el datasheet a tools/.cache/
+python3 tools/md2report.py source/informe_led_oslon_ssl80.md \
+        informe_led_oslon_ssl80.html informe_led_oslon_ssl80.tex
+pdflatex informe_led_oslon_ssl80.tex      # tres veces
+python3 tools/led_montecarlo.py           # tablas de eficiencia del conducto
+```
+
+`tools/md2report.py` acepta ahora las claves `encabezado` y `aviso` en la
+cabecera de la fuente, y un ancho opcional por figura
+(`::: fig id | epígrafe | fuente | 0.6`).
