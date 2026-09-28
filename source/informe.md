@@ -3,8 +3,6 @@ titulo: Oportunidades de robótica de inspección industrial para generación y 
 subtitulo: Marco de evaluación, mapa de candidatos y plan de verificación
 edicion: Edición 2026 · Documento de trabajo para decisión de inversión
 fecha: Fecha de corte de la evidencia recopilada: 31 de agosto de 2026
-encabezado: Oportunidades de robótica de inspección industrial para generación y utilities
-nota_portada: Documento de trabajo para decisión de inversión. Las hipótesis y las fuentes recopiladas no constituyen conclusiones de investigación mientras no estén verificadas.
 ---
 
 # Resumen ejecutivo

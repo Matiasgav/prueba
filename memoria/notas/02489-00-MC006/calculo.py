@@ -1,6 +1,10 @@
-"""Figuras del informe del flex del conector M12 (SVG para el HTML, PDF para LaTeX).
-Uso (desde flex_omega/):  python3 informe/figuras.py <carpeta_capturas>
-Planta como en Solid Edge: panel abajo; z hacia la derecha, x hacia el panel (hacia abajo en la figura)."""
+"""02489-00-MC006 · Forma y largo del flex del conector M12.
+Genera las figuras y resultados.json de la nota a partir de:
+  - flex_omega/s_layout.json: modelo final (elástica) con el layout del 27/9, calculado por flex_omega/s_layout.py;
+  - geom_simple.json: geometría simplificada para dibujar (3 arcos R 3,5), calculada por geom_simple.py;
+  - capturas/*.jpg: capturas de las páginas 2D y del visor 3D de alternativas (flex_omega/*.html).
+Planta como en Solid Edge: panel abajo; z hacia la derecha, x hacia el panel (hacia abajo en la figura).
+Uso: python3 calculo.py  (desde cualquier carpeta)"""
 import json, os, sys, io
 import numpy as np
 import matplotlib; matplotlib.use('Agg')
@@ -8,9 +12,10 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, Arc
 from PIL import Image
 
-OUT = 'informe/assets'; os.makedirs(OUT, exist_ok=True)
-CAP = sys.argv[1] if len(sys.argv) > 1 else 'capturas'
-D = json.load(open('s_layout.json')); G = json.load(open('informe/geom_simple.json'))
+AQUI = os.path.dirname(os.path.abspath(__file__)); FLEX = os.path.join(AQUI, '..', '..', '..', 'flex_omega')
+OUT = os.path.join(AQUI, 'figuras'); os.makedirs(OUT, exist_ok=True)
+CAP = os.path.join(AQUI, 'capturas')
+D = json.load(open(os.path.join(FLEX, 's_layout.json'))); G = json.load(open(os.path.join(AQUI, 'geom_simple.json')))
 Z, L, A, ZC = D['Z'], D['L'], D['A'], D['ZC']; ZT = ZC + Z
 YO, Z0C, M0, M1 = D['cam_pcb_x'], D['cam_pcb_z0'], D['mod_z0'], D['mod_z1']
 
@@ -24,10 +29,9 @@ plt.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 8, 'text.color':
 f2 = lambda v: f'{v:.2f}'.replace('.', ',')
 f1 = lambda v: f'{v:.1f}'.replace('.', ',')
 
-def save(fig, name, dpi=150):
-    for ext in ('svg', 'pdf'):
+def save(fig, name, dpi=150, exts=('pdf', 'png')):
+    for ext in exts:
         fig.savefig(f'{OUT}/{name}.{ext}', dpi=dpi, bbox_inches='tight', pad_inches=0.04)
-    if os.environ.get('PREVIEW'): fig.savefig(f"{os.environ['PREVIEW']}/{name}.png", dpi=110, bbox_inches='tight')
     plt.close(fig)
 
 # ------------------------------------------------------------------ geometria simplificada (coords absolutas)
@@ -45,7 +49,7 @@ for tipo, sg, v in segs:
 TP = [to_abs(*t) for t in tang]
 PAN0 = YO + 1.0 + 1.12 + 5.05
 json.dump(dict(tangentes=[[round(a, 3), round(b, 3)] for a, b in TP],
-               centros=[[round(v, 3) for v in to_abs(*a['c'])] for a in arcs]), open('informe/geom_simple_tangentes.json', 'w'))
+               centros=[[round(v, 3) for v in to_abs(*a['c'])] for a in arcs]), open(os.path.join(AQUI, 'geom_simple_tangentes.json'), 'w'))
 PS = np.array([to_abs(*q) for q in G['puntos']])
 nom = D['seq']['ret_a_nom'][-1]; NZ, NX = np.array(nom['z']), np.array(nom['x'])
 
@@ -94,7 +98,7 @@ ax.text(22.5, -11.3, 'flex retraído', color=KAP, fontsize=7.5, ha='left')
 dimh(ax, ZC, ZT, -14.6, 'Z = separación entre cantos (la medida a minimizar)')
 ext(ax, [((ZC, -12.9), (ZC, -14.8)), ((ZT, -A - 0.9), (ZT, -14.8))])
 ax.set_xlim(-2, 41); ax.set_ylim(PAN + 1.6, -16.2)
-save(fig, 'flex-problema')
+save(fig, 'fig_problema')
 
 # ------------------------------------------------------------------ 2. geometria para dibujar
 fig, ax = plt.subplots(figsize=(7.4, 4.4)); scene(ax, ghost=False, labels=False)
@@ -126,7 +130,7 @@ ax.text(44.2, 0.5, 'x = 0', fontsize=6.5, color=S1, ha='right', va='top')
 ax.plot([11.4, 13.0], [3.0, 3.0], color=KAP, lw=2.4); ax.text(13.3, 3.0, 'geometría para dibujar', fontsize=7, va='center', color=INK)
 ax.plot([11.4, 13.0], [4.2, 4.2], color=MUT, lw=0.9, ls=(0, (3, 2))); ax.text(13.3, 4.2, 'forma simulada', fontsize=7, va='center', color=INK)
 ax.set_xlim(11, 45.5); ax.set_ylim(6.6, -11.4)
-save(fig, 'flex-geometria')
+save(fig, 'fig_geometria')
 
 # ------------------------------------------------------------------ 3. carrera
 fr = D['seq']['nom_a_ret']; idx = [0, 10, 20, 30, 40, 50, 60]; col = ['#b9d6f7'] + RAMP
@@ -141,7 +145,7 @@ for j, i in enumerate(idx[::-1]):
     ax.text(-0.4, -f['ret'] - 0.4, f"{f['ret']:.0f}", fontsize=7, ha='right', va='center', color=SEC)
 ax.text(-0.4, -14.2, 'retracción\n(mm)', fontsize=7, ha='right', va='center', color=SEC)
 ax.set_xlim(-4, 41); ax.set_ylim(5.0, -15.2)
-save(fig, 'flex-carrera')
+save(fig, 'fig_carrera')
 
 # ------------------------------------------------------------------ 4. robustez (small multiples, un eje cada uno)
 rl = D['rl']; Ls = [r['L'] for r in rl]
@@ -165,14 +169,14 @@ a.plot(Ls, [r['gap'] for r in rl], color=S1, lw=2, marker='o', ms=4)
 a.axhline(0.3, color=CRIT, lw=1, ls=(0, (4, 2))); a.axvspan(18.75, 19.25, color=S1, alpha=.10, lw=0)
 a.text(20, 0.36, 'mín. 0,3 (apoya)', color=CRIT, fontsize=7, ha='right', va='bottom')
 a.set_xlabel('largo entre cantos (mm)', fontsize=7); a.set_ylim(0, 2.7)
-save(fig, 'flex-robustez')
+save(fig, 'fig_robustez')
 
 # ------------------------------------------------------------------ 5. galerias de alternativas
 def gallery(name, items, ncol=2, w=7.4):
     n = len(items); nr = (n + ncol - 1)//ncol
     ims = []
     for f, *_ in items:
-        im = Image.open(f'{CAP}/{f}.png').convert('RGB'); s = 640/im.size[0]
+        im = Image.open(f'{CAP}/{f}.jpg').convert('RGB'); s = 640/im.size[0]
         ims.append(im.resize((640, int(im.size[1]*s)), Image.LANCZOS))
     h = max(i.size[1] for i in ims)/640*w/ncol
     fig = plt.figure(figsize=(w, nr*(h + 0.62)))
@@ -187,23 +191,32 @@ def gallery(name, items, ncol=2, w=7.4):
         fig.text(x0 + 0.012, yt, mark[0], color=mark[1], fontsize=9, va='top', weight='bold')
         fig.text(x0 + 0.04, yt, t, fontsize=8, weight='bold', va='top', color=INK)
         fig.text(x0 + 0.04, yt - 0.2/(nr*(h + 0.62)), v, fontsize=7.2, va='top', color=SEC)
-    save(fig, name, dpi=110)
+    save(fig, name, dpi=150, exts=('jpg',))
 
-gallery('flex-galeria-1', [
+gallery('fig_galeria_1', [
     ('2d_colgada', 'Omega libre, conector colgando', 'W = 32 mm · R 3,4 · ocupa demasiado', 'no'),
     ('2d_tu_dibujo', 'Omega del primer boceto', 'W = 26,4 mm · R 2,7 · sigue ancho', 'no'),
     ('2d_piso', 'Conector en el piso, flex hacia arriba', 'W = 24 mm · R 3,7 · mejora, no alcanza', 'no'),
     ('2d_s_centrada', 'S lateral en el plano de las placas', 'Z = 15,5 · R 3 · punto de partida elegido', 'si')])
-gallery('flex-galeria-2', [
+gallery('fig_galeria_2', [
     ('3d_piso', 'Placa en el piso (3D)', 'arco de R 3: el mismo ancho que en 2D (≈ 24)', 'no'),
     ('3d_u_rodante', 'U rodante', 'pide un canal de 7,6 mm libre', 'no'),
     ('3d_s_lateral', 'S lateral de canto', 'la más compacta: base de la solución', 'si'),
     ('3d_interfaz_camara', 'Interfaz fija + cámara + S doble', 'dos flex en una pieza: no fabricable en PCBWay', 'no'),
     ('3d_camara_horizontal', 'Cámara con imagen horizontal', 'dobla demasiado el flex de la cámara', 'no'),
     ('3d_camara_centrada', 'Cámara centrada, flex recto', 'imagen a 90°, flex de cámara sin doblar', 'si')])
-gallery('flex-galeria-3', [
+gallery('fig_galeria_3', [
     ('3d_pared_lateral', 'Pared lateral para la cámara', 'boceto del usuario: sube y se extiende en los 52 mm', 'si'),
     ('3d_led_a', 'LED A: placa LED + conector B2B', 'elegida: LED delante del flex de cámara, a la altura del lente', 'si'),
     ('3d_led_b', 'LED B: isla rigid-flex', 'segundo brazo de flex: no fabricable así', 'no'),
     ('3d_led_c', 'LED C: placa en el panel + FFC', 'suma cable y conectores', 'no')])
-print('figuras ok', TP)
+R = dict(L=D['L'], tol_L=0.25, Z=Z, A=A, carrera=D['travel'], Rint_min_carrera=D['Rmin'],
+         juego_min_nominal_cotas=D['gapmin'], peor_caso_por_largo=D['rl'],
+         Rint_peor_tolerancia=min(r['R'] for r in D['rl'] if abs(r['L'] - D['L']) <= 0.25 + 1e-9),
+         juego_peor_tolerancia=min(r['gap'] for r in D['rl'] if abs(r['L'] - D['L']) <= 0.25 + 1e-9),
+         dibujo=dict(R=G['R'], Rint=G['Rint'], ang=[G['t1'], G['t2'], G['t3']], rectas=[1.0, G['s1'], G['s2'], 1.0],
+                     largo=G['largo'], desvio_max=G['desvio'], juego_placa=G['gap_placa'],
+                     tangentes=[[round(a, 3), round(b, 3)] for a, b in TP]),
+         perfil_exacto=D['perfil'])
+json.dump(R, open(os.path.join(AQUI, 'resultados.json'), 'w'), indent=1, ensure_ascii=False)
+print('figuras ok; R peor', R['Rint_peor_tolerancia'], 'juego peor', R['juego_peor_tolerancia'])

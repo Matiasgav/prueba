@@ -1,11 +1,15 @@
 """Geometria simplificada para dibujar la S en CAD: 1 recto + 3 arcos del mismo radio + rectas + 1 recto.
 Mismo largo desarrollado (19,00), mismos extremos y tangentes que la forma simulada en nominal.
-Coordenadas de la S: s desde la pestaña (z_rel), y lateral hacia el panel; extremos (0,0) y (15,5; 5) rumbo 0."""
-import json, numpy as np
+Coordenadas de la S: s desde la pestaña (z_rel), y lateral hacia el panel; extremos (0,0) y (15,5; 5) rumbo 0.
+Datos: flex_omega/s_layout.json (forma simulada en nominal). Salida: geom_simple.json en esta carpeta."""
+import json, os, numpy as np
+AQUI = os.path.dirname(os.path.abspath(__file__)); FLEX = os.path.join(AQUI, '..', '..', '..', 'flex_omega')
 from scipy.optimize import least_squares
-D = json.load(open('s_layout.json')); Z, L, A = D['Z'], D['L'], D['A']
+D = json.load(open(os.path.join(FLEX, 's_layout.json'))); Z, L, A = D['Z'], D['L'], D['A']
 fr = D['seq']['ret_a_nom'][-1]
 zs = D['ZC'] + Z - np.array(fr['z']); ys = np.array(fr['x']) + A           # forma simulada en coords de la S
+
+def to_abs_(zr, yr): return D['ZC'] + Z - zr, yr - A
 
 def chain(R, t1, t3, s1, s2, n=400):
     """recto 1 / arco hacia atras t1 / recto s1 / arco hacia el panel t1+t3 / recto s2 / arco t3 / recto 1"""
@@ -36,16 +40,20 @@ for R in (3.0, 3.5, 4.0, 4.5):
     print(f"R={R}: t1={np.degrees(r.x[0]):.2f} t3={np.degrees(r.x[1]):.2f} s1={r.x[2]:.3f} s2={r.x[3]:.3f} desvio max={d:.2f} err={max(err):.1e}")
     if max(err) < 1e-3 and (best is None or d < best[1]): best = (R, d, r.x)
 R, d, (t1, t3, s1, s2) = best
-# redondeo para dibujar: angulos a 0,5 grados; se recalculan las rectas para cerrar extremos y largo
-t1r, = [np.radians(round(np.degrees(t1)*2)/2)]
+# redondeo para dibujar: t1 y t3 a 0,5 grados (t2 = t1 + t3 deja el extremo paralelo); las dos rectas
+# intermedias se recalculan para cerrar el extremo en (Z; A). El largo queda en 19,00 (+0,002).
+t1r, t3r = [np.radians(round(np.degrees(v)*2)/2) for v in (t1, t3)]
 def f2(v):
-    t3_, s1_, s2_ = v; P, segs = chain(R, t1r, t3_, s1_, s2_)
-    return [P[-1, 0] - Z, P[-1, 1] - A, sum(l for _, l in segs) - L]
-r2 = least_squares(f2, [t3, s1, s2], xtol=1e-12, ftol=1e-12)
-t3f, s1f, s2f = r2.x
-P, segs = chain(R, t1r, t3f, s1f, s2f)
-out = dict(R=R, Rint=R - 0.1, t1=float(np.degrees(t1r)), t2=float(np.degrees(t1r + t3f)), t3=float(np.degrees(t3f)),
-           s1=float(s1f), s2=float(s2f), desvio=float(dev(P).max()), largo=float(sum(l for _, l in segs)),
-           fin=[float(P[-1, 0]), float(P[-1, 1])], puntos=P.tolist())
-json.dump(out, open('informe/geom_simple.json', 'w'))
+    P, segs = chain(R, t1r, t3r, *v)
+    return [P[-1, 0] - Z, P[-1, 1] - A]
+s1f, s2f = least_squares(f2, [s1, s2], xtol=1e-12, ftol=1e-12).x
+P, segs = chain(R, t1r, t3r, s1f, s2f)
+# juego a la placa de camara (cara trasera en x = cam_pcb_x desde z = cam_pcb_z0), menos medio espesor del flex
+Pa = np.stack(to_abs_(P[:, 0], P[:, 1]), 1)
+m = Pa[:, 0] >= D['cam_pcb_z0']
+gap = float(np.min(D['cam_pcb_x'] - Pa[m, 1]) - 0.1)
+out = dict(R=R, Rint=R - 0.1, t1=float(np.degrees(t1r)), t2=float(np.degrees(t1r + t3r)), t3=float(np.degrees(t3r)),
+           s1=float(s1f), s2=float(s2f), largo=float(sum(l for _, l in segs)), desvio=float(dev(P).max()),
+           gap_placa=gap, ymin=float(P[:, 1].min()), puntos=P.tolist())
+json.dump(out, open(os.path.join(AQUI, 'geom_simple.json'), 'w'))
 print({k: (round(v, 3) if isinstance(v, float) else v) for k, v in out.items() if k != 'puntos'})
