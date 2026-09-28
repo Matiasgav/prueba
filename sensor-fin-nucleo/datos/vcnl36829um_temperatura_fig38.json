@@ -1,0 +1,59 @@
+{
+ "fuente": "Vishay nota de aplicacion 80581 (rev. 15-May-2025), Fig. 38 'Average Relative Proximity Counts vs. Ambient Temperature', PS_CURRENT = 8 mA, PS_IT = 180 us, PS_HG = 2x, PS_GAIN = 4x",
+ "metodo": "Curva vectorial extraida del PDF; relativa a 25 C.",
+ "incertidumbre": "+/-0,01 en relacion",
+ "temperatura_C_vs_relacion": [
+  [
+   -40,
+   0.848
+  ],
+  [
+   -30,
+   0.915
+  ],
+  [
+   -20,
+   0.968
+  ],
+  [
+   -10,
+   1.0
+  ],
+  [
+   0,
+   1.017
+  ],
+  [
+   10,
+   1.017
+  ],
+  [
+   25,
+   1.002
+  ],
+  [
+   35,
+   0.948
+  ],
+  [
+   45,
+   0.887
+  ],
+  [
+   55,
+   0.814
+  ],
+  [
+   65,
+   0.744
+  ],
+  [
+   75,
+   0.683
+  ],
+  [
+   85,
+   0.629
+  ]
+ ]
+}

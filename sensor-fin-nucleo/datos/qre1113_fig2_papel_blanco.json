@@ -1,0 +1,6 @@
+{
+  "fuente": "onsemi QRE1113/D Rev. 9 (dic. 2024), Figure 2 'Normalized Collector Current vs. Distance between Device and Reflector', curva continua 'White Paper (90% reflective)', IF = 10 mA, VCE = 5 V, TA = 25 °C",
+  "metodo": "Figura embebida como imagen raster. Digitalizada por barrido de píxeles a 250 ppp: x 0 mm -> px 313, 5 mm -> px 927; y 0 -> px 651, 1,0 -> px 209. Entre 3,5 y 5 mm el texto del rótulo tapa parcialmente la curva; esos puntos se leyeron a mano sobre la imagen.",
+  "incertidumbre": "±0,02 en valor normalizado y ±0,03 mm en distancia (grosor de trazo ≈ 3 px). Normalizada al pico propio de la curva: no da corriente absoluta.",
+  "distancia_mm_vs_IC_normalizada": [[0,0.126],[0.1,0.222],[0.2,0.481],[0.3,0.769],[0.4,0.941],[0.5,0.995],[0.6,0.994],[0.7,0.99],[0.8,0.963],[1.0,0.868],[1.25,0.755],[1.5,0.639],[1.75,0.525],[2.0,0.423],[2.25,0.354],[2.5,0.30],[2.75,0.258],[3.0,0.223],[3.5,0.172],[4.0,0.133],[4.5,0.107],[5.0,0.088]]
+}

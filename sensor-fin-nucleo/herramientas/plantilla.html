@@ -1,0 +1,1027 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sensor de fin de núcleo</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f2f4f3; --panel:#ffffff; --panel2:#f7f9f8; --ink:#16201e; --ink2:#43504d; --muted:#6a7774; --line:#d3dbd8; --grid:#e4e9e7;
+  --accent:#1d6680; --accent-ink:#ffffff;
+  --beam:#cf3f28; --ret:#2a78d6; --core:#b8c2bf; --lam:#8d9996; --floor:#c9b68e; --stain:#262626; --sensor:#16201e;
+  --good:#1d7a4c; --good-bg:#e3f3ea; --warn:#9a6300; --warn-bg:#fbf0d9; --crit:#b3261e; --crit-bg:#fbe5e3;
+  --t-fab:#1f5f99; --t-fab-bg:#e3eef9; --t-dig:#6a4bb0; --t-dig-bg:#eee8fa; --t-geo:#11756a; --t-geo-bg:#e0f3f0; --t-sup:#8a5a00; --t-sup-bg:#fbefd5; --t-calc:#43504d; --t-calc-bg:#e9edec;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a;
+  --r1:#b7d3f6; --r2:#86b6ef; --r3:#5598e7; --r4:#2a78d6; --r5:#1c5cab; --r6:#0d366b;
+  --mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Roboto, "Noto Sans", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#101514; --panel:#171e1d; --panel2:#1c2423; --ink:#e4ebe9; --ink2:#b4c0bd; --muted:#8a9794; --line:#2d3836; --grid:#232d2b;
+    --accent:#5eb2cf; --accent-ink:#0c1414;
+    --beam:#f0664b; --ret:#5598e7; --core:#4d5a57; --lam:#667471; --floor:#8a7a58; --stain:#050505; --sensor:#e4ebe9;
+    --good:#4cc088; --good-bg:#15301f; --warn:#e2a93f; --warn-bg:#33270e; --crit:#f0746a; --crit-bg:#3a1714;
+    --t-fab:#8cbcf0; --t-fab-bg:#18283a; --t-dig:#b9a4f0; --t-dig-bg:#251d3a; --t-geo:#6fd0c2; --t-geo-bg:#11302c; --t-sup:#e8b75a; --t-sup-bg:#33270e; --t-calc:#b4c0bd; --t-calc-bg:#232d2b;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+    --r1:#184f95; --r2:#1c5cab; --r3:#2a78d6; --r4:#5598e7; --r5:#86b6ef; --r6:#cde2fb;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#101514; --panel:#171e1d; --panel2:#1c2423; --ink:#e4ebe9; --ink2:#b4c0bd; --muted:#8a9794; --line:#2d3836; --grid:#232d2b;
+  --accent:#5eb2cf; --accent-ink:#0c1414;
+  --beam:#f0664b; --ret:#5598e7; --core:#4d5a57; --lam:#667471; --floor:#8a7a58; --stain:#050505; --sensor:#e4ebe9;
+  --good:#4cc088; --good-bg:#15301f; --warn:#e2a93f; --warn-bg:#33270e; --crit:#f0746a; --crit-bg:#3a1714;
+  --t-fab:#8cbcf0; --t-fab-bg:#18283a; --t-dig:#b9a4f0; --t-dig-bg:#251d3a; --t-geo:#6fd0c2; --t-geo-bg:#11302c; --t-sup:#e8b75a; --t-sup-bg:#33270e; --t-calc:#b4c0bd; --t-calc-bg:#232d2b;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+  --r1:#184f95; --r2:#1c5cab; --r3:#2a78d6; --r4:#5598e7; --r5:#86b6ef; --r6:#cde2fb;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--sans);-webkit-text-size-adjust:100%}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:clamp(16px,3vw,32px);padding-block:28px 64px}
+h1,h2,h3{text-wrap:balance;line-height:1.2;margin:0}
+h1{font-size:clamp(26px,3.6vw,36px);letter-spacing:-.01em;font-weight:700}
+h2{font-size:22px;font-weight:700;margin-bottom:12px}
+h3{font-size:16px;font-weight:650}
+p{margin:0}
+.prose{display:grid;gap:10px;max-width:72ch}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.eyebrow{font:600 12px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+header.top{display:grid;gap:12px;margin-bottom:22px}
+header.top .lede{max-width:78ch;color:var(--ink2)}
+section{margin-top:40px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{display:inline-block;font:600 11px/1.5 var(--mono);letter-spacing:.03em;padding:1px 7px;border-radius:4px;white-space:nowrap;vertical-align:1px}
+.tag.fab{color:var(--t-fab);background:var(--t-fab-bg)}
+.tag.dig{color:var(--t-dig);background:var(--t-dig-bg)}
+.tag.geo{color:var(--t-geo);background:var(--t-geo-bg)}
+.tag.sup{color:var(--t-sup);background:var(--t-sup-bg)}
+.tag.calc{color:var(--t-calc);background:var(--t-calc-bg)}
+.verdict{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:6px}
+.verdict article{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:6px;align-content:start}
+.verdict article h3{font-size:15px}
+.verdict article p{color:var(--ink2);font-size:14px}
+/* simulador */
+.sim{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start;margin-top:14px}
+@media (max-width:900px){.sim{grid-template-columns:minmax(0,1fr)}}
+.controls{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;display:grid;gap:14px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 10px);max-height:calc(100vh - 20px);overflow:auto}
+@media (max-width:900px){.controls{position:static;max-height:none}}
+fieldset{border:0;margin:0;padding:0;display:grid;gap:9px}
+legend{font:600 12px/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:0;margin-bottom:4px}
+.ctl{display:grid;gap:3px}
+.ctl label{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--ink2)}
+.ctl label output{font:600 12.5px/1.4 var(--mono);color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ctl .hint{font-size:11.5px;color:var(--muted);line-height:1.35}
+input[type=range]{width:100%;accent-color:var(--accent);margin:0}
+select{width:100%;font:inherit;font-size:13px;padding:5px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel2);color:var(--ink)}
+.check{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink2)}
+button{font:600 13px/1 var(--sans);border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:6px;padding:8px 10px;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button:hover{filter:brightness(1.05)}
+.btnrow{display:flex;flex-wrap:wrap;gap:6px}
+.scen{display:grid;gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:12px;min-width:0}
+.cardhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:6px;font:700 12.5px/1 var(--mono);letter-spacing:.04em;padding:6px 10px;border-radius:999px;text-transform:uppercase}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.pill.good{color:var(--good);background:var(--good-bg)}
+.pill.warn{color:var(--warn);background:var(--warn-bg)}
+.pill.crit{color:var(--crit);background:var(--crit-bg)}
+.pill.none{color:var(--muted);background:var(--panel2)}
+.statusline{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--ink2)}
+.figbox{position:relative;min-width:0}
+.figbox svg{display:block;width:100%;height:auto;overflow:visible}
+.poswrap{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center}
+.poswrap output{font:600 13px var(--mono);font-variant-numeric:tabular-nums;min-width:8ch;text-align:right}
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.ro{background:var(--panel2);border-radius:6px;padding:8px 10px;display:grid;gap:2px;align-content:start}
+.ro .k{font-size:11.5px;color:var(--muted)}
+.ro .v{font:600 14px/1.3 var(--mono);font-variant-numeric:tabular-nums}
+.ro .n{font-size:11px;color:var(--muted)}
+.tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:12px/1.4 var(--mono);color:var(--ink);box-shadow:0 4px 14px rgba(0,0,0,.12);white-space:nowrap;z-index:5}
+.note{font-size:12.5px;color:var(--muted);line-height:1.45}
+.warnbox{border-left:3px solid var(--warn);background:var(--warn-bg);padding:8px 12px;border-radius:0 6px 6px 0;font-size:13px;color:var(--ink)}
+.checks{display:grid;gap:6px;font-size:13px}
+.checks div{display:grid;grid-template-columns:22px minmax(0,1fr);gap:6px;align-items:start}
+.checks .ok{color:var(--good);font-weight:700}
+.checks .bad{color:var(--crit);font-weight:700}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:980px;font-size:13px}
+th,td{text-align:left;vertical-align:top;padding:9px 11px;border-bottom:1px solid var(--line)}
+th{font:600 11.5px/1.3 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--panel2);position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+td .tag{margin-left:2px}
+.qa{display:grid;gap:14px;counter-reset:q}
+.qa article{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:8px}
+.qa h3{display:flex;gap:10px}
+.qa h3 span.n{font:700 14px var(--mono);color:var(--accent)}
+.qa p,.qa li{color:var(--ink2);font-size:14px}
+ul,ol{margin:0;padding-left:20px;display:grid;gap:5px}
+.twocol{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:8px;align-content:start}
+.box li{font-size:14px;color:var(--ink2)}
+.src li{font-size:13.5px}
+code,.mono{font-family:var(--mono);font-size:.92em}
+.small{font-size:12.5px;color:var(--muted)}
+.legendrow{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--ink2)}
+.legendrow span{display:inline-flex;align-items:center;gap:5px}
+.sw{display:inline-block;width:14px;height:3px;border-radius:2px}
+.swb{display:inline-block;width:14px;height:10px;border-radius:2px;opacity:.35}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="eyebrow">Carro de inspección sobre estator · final de carrera sin contacto · 940 nm</div>
+  <h1>Sensor de fin de núcleo: VCNL36829UM, QRE1113 y ToF frente a un borde, una ranura y una mancha negra</h1>
+  <p class="lede">Simulación y análisis para elegir un sensor compacto que detecte dónde termina la cara del núcleo. Todo lo que aparece está clasificado según su origen; ninguna curva de este documento es una medición del montaje real.</p>
+  <div class="tags" aria-label="Clasificación de la información">
+    <span class="tag fab">DATO DEL FABRICANTE</span>
+    <span class="tag dig">DIGITALIZADO DE GRÁFICA</span>
+    <span class="tag geo">ESTIMACIÓN GEOMÉTRICA</span>
+    <span class="tag sup">SUPUESTO EDITABLE</span>
+    <span class="tag calc">RESULTADO CALCULADO</span>
+  </div>
+</header>
+
+<section id="resumen" style="margin-top:8px">
+  <h2>Conclusión técnica</h2>
+  <div class="prose">
+    <p>El VCNL36829UM puede ver un escalón de 10 mm como una caída fuerte de señal, pero no puede distinguirlo de una mancha oscura, de un cambio de pintura o de una ranura. Su lectura depende a la vez de la distancia y de la reflectividad a 940 nm, y con un solo número no se separan. Con las curvas publicadas por Vishay, la señal a 20 mm es aproximadamente 3,2 veces menor que a 10 mm sobre la misma tarjeta gris; cualquier zona de la cara superior que refleje 3,2 veces menos (o una superficie inferior que refleje 3,2 veces más) produce la misma lectura.</p>
+    <p>Un sensor que mida distancia (ToF, o triangulación con supresión de fondo) es mucho más robusto frente al color, porque la mancha cambia la intensidad del retorno y no su tiempo o su posición. Tampoco es inmune: con retorno débil aumenta el ruido y la lectura puede quedar marcada como inválida. Ninguna tecnología resuelve sola la ranura de 5 mm: si su profundidad es parecida al escalón final y el haz entra en ella, cualquier sensor "ve" un fin. Eso se resuelve con lógica: exigir que la condición de fin persista a lo largo de un recorrido mayor que el ancho de ranura, o usar dos sensores separados en la dirección de avance.</p>
+  </div>
+  <div class="verdict">
+    <article><span class="tag calc">RESPUESTA 1</span><h3>¿Detecta el VCNL36829UM una superficie 10 mm más abajo?</h3><p>Detecta la caída si la reflectividad del fondo y de la cara son conocidas y estables. No es fiable si cualquiera de las dos puede variar un factor ≈3 (a 10 mm de altura).</p></article>
+    <article><span class="tag calc">RESPUESTA 2</span><h3>¿La ranura de 5 mm da falsos fines?</h3><p>Sí, cuando la huella del haz en el fondo de la ranura es menor que 5 mm y la ranura es profunda. Con el VCNL a 10 mm la huella FWHM en el fondo es de ~3 mm.</p></article>
+    <article><span class="tag calc">RESPUESTA 5</span><h3>Mejor combinación</h3><p>Prototipo con un ToF VL53L4CD (distancia + estado + tasa de señal) o un sensor industrial BGS; el VCNL solo como segunda señal. Decidir con la prueba física descrita al final.</p></article>
+  </div>
+</section>
+
+<section id="simulador">
+  <h2>Simulación interactiva</h2>
+  <p class="note" style="max-width:90ch">Modelo 2D extruido: la geometría varía solo en la dirección de avance (x) y es uniforme a lo largo del borde (y). El haz se integra con una malla de rayos; cada rayo encuentra la primera superficie, y su retorno al receptor se pondera por las leyes de coseno y se anula si el borde lo tapa. Para el VCNL la ley con la distancia sale de la curva publicada por Vishay; para el ToF se usa 1/r² (ver supuestos). Posición x = 0: borde del núcleo (escenario A) o centro de la ranura (escenario B); x &gt; 0 es más allá del borde.</p>
+
+  <div class="sim">
+    <form class="controls" id="controls" onsubmit="return false" aria-label="Parámetros de la simulación">
+      <fieldset>
+        <legend>Sensor</legend>
+        <div class="ctl"><label for="tech">Tecnología</label>
+          <select id="tech">
+            <option value="vcnl">Vishay VCNL36829UM (reflectivo, intensidad)</option>
+            <option value="tof">ST VL53L4CD (ToF de referencia)</option>
+            <option value="qre">onsemi QRE1113 (solo curva vertical 0–5 mm)</option>
+          </select></div>
+        <div class="ctl" id="cfgWrap"><label for="cfg">Configuración VCNL (curva del datasheet)</label>
+          <select id="cfg"></select>
+          <span class="hint">Cada opción es una curva publicada (Fig. 10 / Fig. 11). No se interpolan configuraciones no publicadas.</span></div>
+        <div class="ctl" id="tofWrap" hidden>
+          <label for="tofDelta">Umbral ToF: fin si distancia &gt; altura + <output id="tofDeltaO"></output></label>
+          <input type="range" id="tofDelta" min="2" max="20" step="0.5" value="5">
+          <label for="tofSig">Repetibilidad 1σ supuesta <output id="tofSigO"></output></label>
+          <input type="range" id="tofSig" min="0.5" max="6" step="0.5" value="2">
+          <label for="weakF">Margen para «retorno débil» <output id="weakFO"></output></label>
+          <input type="range" id="weakF" min="1" max="100" step="1" value="10">
+          <span class="hint"><span class="tag sup">SUPUESTO</span> ST no publica repetibilidad ni ruido; el datasheet da exactitud ±6–7 mm (1–100 mm) que incluye offset y dispersión entre unidades.</span>
+        </div>
+        <div class="ctl"><label for="orient">Separación emisor → receptor</label>
+          <select id="orient">
+            <option value="y">Paralela al borde (y)</option>
+            <option value="px">Receptor hacia fuera del núcleo (+x)</option>
+            <option value="nx">Receptor hacia el núcleo (−x)</option>
+          </select>
+          <span class="hint">VCNL: 0,85 mm <span class="tag fab">AN 80581</span>. ToF: 2,5 mm <span class="tag sup">SUPUESTO</span>.</span></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Geometría</legend>
+        <div class="ctl"><label for="H">Altura sensor → cara superior <output id="HO"></output></label>
+          <input type="range" id="H" min="3" max="25" step="0.5" value="10">
+          <span class="hint"><span class="tag sup">SUPUESTO</span> 10 mm es solo un valor inicial de ejemplo.</span></div>
+        <div class="ctl"><label for="D">Profundidad de la superficie tras el borde <output id="DO"></output></label>
+          <input type="range" id="D" min="1" max="40" step="0.5" value="10">
+          <span class="hint">Valores pequeños (2–5 mm) representan un obstáculo o superficie intermedia poco retraída.</span></div>
+        <label class="check"><input type="checkbox" id="bottomOn" checked> Hay superficie inferior tras el borde</label>
+        <div class="ctl"><label for="slotW">Ancho de ranura <output id="slotWO"></output></label>
+          <input type="range" id="slotW" min="1" max="15" step="0.5" value="5"></div>
+        <div class="ctl"><label for="slotD">Profundidad de ranura <output id="slotDO"></output></label>
+          <input type="range" id="slotD" min="0.5" max="40" step="0.5" value="10">
+          <span class="hint"><span class="tag sup">SUPUESTO</span> 10 mm inicial; la profundidad real no está especificada.</span></div>
+        <div class="ctl"><label for="stainW">Ancho de la mancha oscura <output id="stainWO"></output></label>
+          <input type="range" id="stainW" min="0" max="20" step="0.5" value="6"></div>
+        <div class="ctl"><label for="stainX">Centro de la mancha (x) <output id="stainXO"></output></label>
+          <input type="range" id="stainX" min="-28" max="-4" step="0.5" value="-16">
+          <span class="hint">La mancha está a la misma altura que la cara superior, antes del borde y antes de la ranura.</span></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Reflectividad a 940 nm (hipotética)</legend>
+        <div class="ctl"><label for="rTop">Cara superior del núcleo <output id="rTopO"></output></label>
+          <input type="range" id="rTop" min="1" max="90" step="0.5" value="18"></div>
+        <div class="ctl"><label for="rBot">Fondo (tras el borde y en la ranura) <output id="rBotO"></output></label>
+          <input type="range" id="rBot" min="1" max="90" step="0.5" value="18"></div>
+        <div class="ctl"><label for="rStain">Mancha negra mate <output id="rStainO"></output></label>
+          <input type="range" id="rStain" min="0.5" max="40" step="0.5" value="4"></div>
+        <span class="hint"><span class="tag sup">SUPUESTO</span> No existen datos espectrales del núcleo, la pintura ni el residuo de aceite quemado. 18 % = reflectividad de la tarjeta gris Kodak que usa Vishay (≈18 % a 940 nm según AN 80581). Hay que medirla.</span>
+      </fieldset>
+
+      <fieldset id="detWrap">
+        <legend>Detección (VCNL)</legend>
+        <div class="ctl"><label for="thr">Umbral fijo <output id="thrO"></output></label>
+          <input type="range" id="thr" min="0" max="1000" step="1" value="500">
+          <div class="btnrow"><button type="button" id="calib">Fijar umbral = 50 % de la lectura actual sobre núcleo limpio</button></div>
+          <span class="hint">El umbral queda fijo en cuentas; no se recalcula al cambiar la altura. «Fijar» simula una calibración única al arrancar.</span></div>
+        <div class="ctl"><label for="temp">Temperatura del sensor <output id="tempO"></output></label>
+          <input type="range" id="temp" min="-40" max="85" step="1" value="25">
+          <span class="hint"><span class="tag dig">AN 80581 Fig. 38</span> 8 mA, IT 180 µs; se aplica como factor sobre la curva a 25 °C.</span></div>
+        <div class="ctl"><label for="offset">Offset por diafonía / ventana sucia <output id="offsetO"></output></label>
+          <input type="range" id="offset" min="0" max="3000" step="10" value="0">
+          <span class="hint">Las curvas se midieron sin ventana. Vishay muestra un ejemplo de ~784 cuentas de offset con ventana.</span></div>
+      </fieldset>
+    </form>
+
+    <div class="scen">
+      <div class="card" id="cardEdge">
+        <div class="cardhead"><h3>Escenario A · cruce del borde del núcleo</h3><span class="pill none" id="pillEdge">—</span></div>
+        <div class="figbox"><svg id="secEdge" role="img" aria-label="Sección transversal del borde con el sensor y el haz"></svg></div>
+        <div class="poswrap">
+          <button type="button" id="playEdge" class="primary" aria-label="Animar el avance del sensor sobre el borde">▶ Avanzar</button>
+          <input type="range" id="posEdge" min="-30" max="15" step="0.1" value="-6" aria-label="Posición del eje óptico respecto del borde">
+          <output id="posEdgeO"></output>
+        </div>
+        <div class="btnrow"><button type="button" data-set="edge:3">Eje 3 mm fuera del borde</button><button type="button" data-set="edge:-16">Sobre la mancha</button><button type="button" data-set="edge:-6">Sobre núcleo limpio</button></div>
+        <div class="figbox"><svg id="chEdge" role="img" aria-label="Lectura frente a la posición, escenario borde"></svg><div class="tip" id="tipEdge" hidden></div></div>
+        <div class="legendrow" id="legEdge"></div>
+        <div class="readouts" id="roEdge"></div>
+      </div>
+
+      <div class="card" id="cardSlot">
+        <div class="cardhead"><h3>Escenario B · cruce de la ranura</h3><span class="pill none" id="pillSlot">—</span></div>
+        <div class="figbox"><svg id="secSlot" role="img" aria-label="Sección transversal de la ranura con el sensor y el haz"></svg></div>
+        <div class="poswrap">
+          <button type="button" id="playSlot" class="primary" aria-label="Animar el avance del sensor sobre la ranura">▶ Avanzar</button>
+          <input type="range" id="posSlot" min="-30" max="15" step="0.1" value="0" aria-label="Posición del eje óptico respecto del centro de la ranura">
+          <output id="posSlotO"></output>
+        </div>
+        <div class="figbox"><svg id="chSlot" role="img" aria-label="Lectura frente a la posición, escenario ranura"></svg><div class="tip" id="tipSlot" hidden></div></div>
+        <div class="legendrow" id="legSlot"></div>
+        <div class="readouts" id="roSlot"></div>
+      </div>
+
+      <div class="card">
+        <div class="cardhead"><h3 id="sensTitle">Análisis de sensibilidad · lectura sobre superficie plana según reflectividad</h3></div>
+        <p class="note" id="sensNote"></p>
+        <div class="figbox"><svg id="chSens" role="img" aria-label="Lectura frente a distancia para varias reflectividades"></svg><div class="tip" id="tipSens" hidden></div></div>
+        <div class="legendrow" id="legSens"></div>
+      </div>
+
+      <div class="card">
+        <div class="cardhead"><h3>Verificaciones del modelo (se recalculan en vivo)</h3></div>
+        <div class="checks" id="checks"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tabla">
+  <h2>Tabla comparativa</h2>
+  <p class="note" style="margin-bottom:10px">Cada especificación lleva su fuente. «No publicado» significa que no aparece en el documento del fabricante revisado; no significa que el valor sea malo.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Sensor</th><th>Qué entrega</th><th>Tamaño</th><th>Distancia caracterizada y condición</th><th>Precisión / repetibilidad publicada</th><th>Óptica</th><th>Alimentación e interfaz</th><th>Formato comercial</th><th>Frente a color / mancha</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>Vishay VCNL36829UM</b><br><span class="small">reflectivo, VCSEL + fotodiodo + ASIC</span></td>
+        <td>Cuentas de proximidad (intensidad reflejada). No da mm. <a href="#s-vds">[1]</a></td>
+        <td>1,6 × 1,0 × 0,35 mm <a href="#s-vds">[1]</a></td>
+        <td>«50 mm» con tarjeta gris Kodak (~18 % a 940 nm), IT 200 µs, 18 mA, ≥960 cuentas delta, sin ventana <a href="#s-van">[2]</a>. Curvas 0,1–120 mm en Fig. 10/11 <a href="#s-vds">[1]</a></td>
+        <td>No publica ruido ni repetibilidad. Tolerancia «alrededor de ±20 %» <a href="#s-van">[2]</a>. ADC 16 bit; fondo de escala 14 bit (16 383) si IT ≤ 175 µs <a href="#s-van">[2]</a>. Temperatura: 0,63× a 85 °C respecto de 25 °C <a href="#s-van">[2]</a></td>
+        <td>Emisor ±4,5° (media intensidad), 940 nm (930–955); fotodiodo ±60°, pico 850 nm <a href="#s-vds">[1]</a></td>
+        <td>VDD 1,65–2,0 V; VCSEL 2,8–3,6 V aparte; I²C 1,08–3,6 V, dir. 0x60 / 0x51; INT open-drain; I<sub>VCSEL</sub> 8–18 mA <a href="#s-vds">[1]</a></td>
+        <td>SMT en cinta y carrete, MOQ 5000 <a href="#s-vds">[1]</a>. Placa de evaluación VCNL36829UM-SB <a href="#s-sb">[3]</a>. Requiere diseño de PCB, ventana y firmware</td>
+        <td>Débil: la lectura escala con la reflectividad. No separa mancha de escalón</td>
+      </tr>
+      <tr>
+        <td><b>onsemi QRE1113 / GR</b><br><span class="small">LED IR + fototransistor</span></td>
+        <td>Corriente analógica de colector; hay que convertirla con resistencia + ADC o comparador <a href="#s-qre">[4]</a></td>
+        <td>Encapsulado reflectivo de ~3,6 × 2,9 mm (ver plano del fabricante) <a href="#s-qre">[4]</a></td>
+        <td>Curva solo de 0 a 5 mm (papel blanco 90 % y espejo, I<sub>F</sub> 10 mA), normalizada a su propio pico en ~0,6 mm; a 5 mm queda ~9 % del pico <a href="#s-qre">[4]</a></td>
+        <td>I<sub>C(ON)</sub> 0,10–0,90 mA a 1 mm con espejo de aluminio, I<sub>F</sub> 20 mA <a href="#s-qre">[4]</a>. Sin datos de ruido ni de más de 5 mm</td>
+        <td>LED 940 nm; diagrama de radiación sin ángulo numérico en texto <a href="#s-qre">[4]</a></td>
+        <td>I<sub>F</sub> hasta 50 mA continuo; salida transistor, t<sub>r</sub>/t<sub>f</sub> 20 µs <a href="#s-qre">[4]</a></td>
+        <td>Componente THT o SMT (GR) <a href="#s-qre">[4]</a></td>
+        <td>Igual o peor que el VCNL: intensidad, y además fuera de su rango caracterizado para 3–25 mm</td>
+      </tr>
+      <tr>
+        <td><b>ST VL53L4CD</b><br><span class="small">tiempo de vuelo, SPAD</span></td>
+        <td>Distancia en mm + estado de validez + tasa de señal + sigma estimada <a href="#s-um">[6]</a></td>
+        <td>4,4 × 2,4 × 1 mm <a href="#s-tof">[5]</a></td>
+        <td>1–1300 mm; lineal desde 1 mm; máximo 450 mm con gris 17 % en interior (90 % de detección) <a href="#s-tof">[5]</a></td>
+        <td>Exactitud ±7 mm (blanco 88 %) y ±6 mm (gris 17 %) de 1 a 100 mm, 33 ms, interior; incluye offset, ruido y dispersión entre unidades, ≥90 % de valores <a href="#s-tof">[5]</a>. Repetibilidad: no publicada</td>
+        <td>FoV declarado 18°; volumen de detección 22° a 100 mm y 18° a 1000 mm (blanco 88 %); FoI 16° (1/e²) <a href="#s-tof">[5]</a></td>
+        <td>2,6–3,5 V; I²C hasta 1 MHz, dir. 0x52; hasta 100 Hz <a href="#s-tof">[5]</a></td>
+        <td>Componente SMT; existen placas de terceros con regulador (p. ej. Pololu 3692)</td>
+        <td>Mejor: la mancha reduce señal, no la distancia. Sin datos de ST para reflectividad &lt;17 %; puede dar estado inválido</td>
+      </tr>
+      <tr>
+        <td><b>Omron E3T-FL1□</b><br><span class="small">industrial, supresión de fondo (BGS)</span></td>
+        <td>Salida digital NPN o PNP (Light-ON / Dark-ON) <a href="#s-e3t">[7]</a></td>
+        <td>≈ 20,8 × 12 × 3,5 mm (leído del plano; verificar) <a href="#s-e3t">[7]</a></td>
+        <td>1–15 mm con papel blanco 50 × 50 mm (E3T-FL2□: 1–30 mm) <a href="#s-e3t">[7]</a></td>
+        <td>Histéresis 0,5 mm máx. (FL1), error blanco/negro 15 % máx. Repetibilidad: no publicada <a href="#s-e3t">[7]</a></td>
+        <td>LED rojo 650 nm (no es IR) <a href="#s-e3t">[7]</a></td>
+        <td>12–24 V c.c., 20 mA; respuesta 1 ms; IP67 <a href="#s-e3t">[7]</a></td>
+        <td>Sensor terminado, amplificador incorporado, cable 2 m</td>
+        <td>Buena por principio (triangulación), con error blanco/negro declarado</td>
+      </tr>
+      <tr>
+        <td><b>Panasonic HG-C1030</b><br><span class="small">industrial, triangulación láser CMOS</span></td>
+        <td>Salida analógica 0–5 V o 4–20 mA + salida de control; muestra mm <a href="#s-hgc">[8]</a></td>
+        <td>20 × 44 × 25 mm <a href="#s-hgc">[8]</a></td>
+        <td>30 ± 5 mm (25–35 mm) <a href="#s-hgc">[8]</a></td>
+        <td>Repetibilidad 10 µm; linealidad ±0,1 % F.S.; condición: cerámica blanca, 20 °C, 10 ms <a href="#s-hgc">[8]</a></td>
+        <td>Láser rojo 655 nm clase 2, punto Ø50 µm <a href="#s-hgc">[8]</a></td>
+        <td>12–24 V c.c.; −10 a +45 °C <a href="#s-hgc">[8]</a></td>
+        <td>Sensor terminado</td>
+        <td>Buena por principio; grande y con rango ±5 mm que obliga a montarlo a ~30 mm</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="preguntas">
+  <h2>Respuestas</h2>
+  <div class="qa">
+    <article><h3><span class="n">1</span>¿Puede el VCNL36829UM detectar de forma fiable una superficie 10 mm más abajo?</h3>
+      <p>Detecta el cambio, pero la fiabilidad depende de datos que hoy no existen. Con la curva de Vishay (Fig. 11, 8 mA, tarjeta gris) la lectura baja de ≈8 490 cuentas a 10 mm a ≈2 680 cuentas a 20 mm: un factor ≈3,2 <span class="tag dig">DIGITALIZADO</span>. A 5 mm de altura el factor sería ≈5,8 (a 15 mm) y a 20 mm de altura ≈2,2. Montar el sensor más cerca del núcleo mejora el contraste.</p>
+      <p>Para que un umbral fijo funcione sin ambigüedad hace falta que, en todo el recorrido, la cara más oscura del núcleo dé más señal que el fondo más claro 10 mm más abajo, con margen para ±20 % entre unidades y hasta −37 % por temperatura (85 °C). A 10 mm de altura eso significa ρ<sub>cara,mín</sub> &gt; ≈3,2 × ρ<sub>fondo,máx</sub> × márgenes. Si el fondo es brillante (una chapa pulida, un rodillo metálico) y la cara es oscura, el VCNL no sirve. Si no hay superficie inferior, la caída es total y la detección es clara.</p></article>
+    <article><h3><span class="n">2</span>¿Una ranura de 5 mm puede producir una falsa detección de fin?</h3>
+      <p>Sí. La huella FWHM del emisor en el fondo de la ranura es 2(H + p)·tan 4,5°: con H = 10 mm y p = 10 mm son 3,1 mm, menor que 5 mm, así que durante ~2–3 mm de avance casi todo el haz cae dentro y la lectura baja como en el borde <span class="tag geo">GEOMÉTRICO</span>. La ranura se confunde con el fin si su profundidad es parecida a la del escalón final. Si es poco profunda (p. ej. una cuña a 2–3 mm) la caída es pequeña. Con más altura del sensor la huella crece y la caída es menos profunda, pero también baja el contraste del borde real.</p>
+      <p>El ToF tampoco se salva: a H = 10 mm su FoI (16°, 1/e²) mide ≈5,6 mm a 20 mm y, en el centro de una ranura de 5 mm, el modelo manda ≈92 % de la potencia al fondo; informa ≈20 mm, igual que tras el borde <span class="tag calc">CALCULADO</span>. Con el sensor más alto la huella supera el ancho de ranura y la distancia informada sube menos, pero no se puede confiar en ese efecto. La solución fiable está en la lógica: fin solo si la condición persiste durante un avance mayor que el ancho de ranura más la huella, o dos sensores separados en x más que ese valor.</p></article>
+    <article><h3><span class="n">3</span>¿Qué detecta el sensor con su eje 3 mm fuera del borde y una superficie 10 mm más abajo?</h3>
+      <p>Con H = 10 mm, un rayo del VCNL necesita desviarse más de 8,5° para tocar el lateral del núcleo y más de 16,7° para tocar la cara superior. Con ±4,5° de media intensidad, esos rayos llevan ≈1 % y ≈0 % de la potencia, y el lateral devuelve poco hacia arriba por incidencia rasante. El sensor mide el fondo: la lectura queda en ρ<sub>fondo</sub>/0,18 × K(20 mm), ≈2 680 cuentas con fondo gris 18 % en Fig. 11 / 8 mA <span class="tag calc">CALCULADO</span>. El retorno desde el fondo no queda tapado por el canto salvo que el receptor esté del lado del núcleo y el sensor muy cerca del borde. Sin fondo, la lectura cae prácticamente al offset.</p>
+      <p>El ToF, con un FoI de 16° más ancho, tiene a 20 mm una huella de ≈5,6 mm que roza el lateral con ~2 % de la potencia; la distancia informada queda en ≈20 mm. Mueva el control «Eje 3 mm fuera del borde» para verlo.</p></article>
+    <article><h3><span class="n">4</span>¿Cuánto afecta una cara o mancha negra mate? ¿Qué no se puede deducir sin medir?</h3>
+      <p>En un sensor de intensidad el efecto es proporcional: una mancha de reflectividad ρ<sub>m</sub> sobre una cara ρ<sub>c</sub> multiplica la lectura por ρ<sub>m</sub>/ρ<sub>c</sub>. Si ese cociente es menor que ≈1/3,2 (a 10 mm de altura) la mancha cruza el mismo umbral que el borde y parece un fin. Una superficie más reflectante pero más lejana puede dar la misma lectura: ρ = 18 % a 20 mm lee lo mismo que ρ ≈ 5,7 % a 10 mm.</p>
+      <p>No se puede deducir sin medir: la reflectividad difusa a 940 nm del núcleo, de su barniz o pintura, del residuo de aceite quemado y del fondo; si alguno tiene componente especular (aceite brillante) que cambie con el ángulo; ni la dispersión real de esos valores a lo largo del estator. El color visible no sirve: muchos negros visibles son claros en el infrarrojo cercano y a la inversa.</p>
+      <p>Una calibración al arranque solo corrige la ganancia de esa unidad y la reflectividad del punto donde se calibró. Deja de valer al pasar sobre manchas, pintura distinta, aceite o polvo, y se degrada con la temperatura y la suciedad de la ventana. Un umbral relativo que siga lentamente la línea base (p. ej. fin si la lectura cae por debajo de una fracción de la media móvil de los últimos centímetros y la caída es brusca) ayuda contra cambios graduales, pero no distingue una mancha brusca de un borde.</p></article>
+    <article><h3><span class="n">5</span>¿Qué tecnología ofrece la mejor combinación?</h3>
+      <ul>
+        <li><b>Tamaño:</b> gana el VCNL36829UM (1,6 × 1,0 × 0,35 mm), después el VL53L4CD (4,4 × 2,4 × 1 mm).</li>
+        <li><b>Robustez al color:</b> ganan el ToF y la triangulación (E3T-FL, HG-C). El VCNL y el QRE1113 dependen de la reflectividad.</li>
+        <li><b>Sensibilidad al escalón:</b> el ToF lo informa como +10 mm directo. Con exactitud publicada ±6–7 mm conviene comparar contra la línea base del mismo sensor, no contra un valor absoluto.</li>
+        <li><b>Integración:</b> los industriales (Omron E3T-FL1, 12–24 V, salida PNP/NPN) se conectan directo a un PLC; VCNL y VL53L4CD requieren PCB, microcontrolador y firmware.</li>
+      </ul>
+      <p>Recomendación: prototipar con VL53L4CD usando distancia, estado y tasa de señal (una mancha baja la señal y deja la distancia igual; un escalón sube la distancia). Tratar «sin retorno válido» como fin por seguridad. Mantener el VCNL como opción solo si las mediciones de reflectividad dan un margen amplio. Si el espacio admite ~21 × 12 × 3,5 mm y hay 12–24 V, el E3T-FL1 es la opción más directa.</p></article>
+    <article><h3><span class="n">6</span>Prueba física mínima antes de elegir</h3>
+      <p>Medir con los sensores candidatos, en placas de evaluación, las cuatro muestras descritas en el procedimiento de ensayo: curva de lectura frente a altura, barrido lateral sobre un escalón de 10 mm, barrido sobre una ranura de 5 mm y lecturas sobre la superficie negra/aceitada. Registrar ruido (desviación típica sobre 200 lecturas), no solo la media. Es la única forma de conocer la reflectividad real a 940 nm.</p></article>
+  </div>
+</section>
+
+<section id="supuestos">
+  <h2>Supuestos y limitaciones de la simulación</h2>
+  <div class="twocol">
+    <div class="box"><h3>Supuestos</h3>
+      <ul>
+        <li><span class="tag sup">SUPUESTO</span> Geometría 2D: borde recto e infinito en y; superficies planas, horizontales o verticales.</li>
+        <li><span class="tag sup">SUPUESTO</span> Superficies lambertianas (difusas ideales). Aceite brillante o chapa pulida no cumplen esto.</li>
+        <li><span class="tag sup">SUPUESTO</span> El lateral del núcleo y el fondo de la ranura tienen la reflectividad elegida para la cara y el fondo respectivamente.</li>
+        <li><span class="tag sup">SUPUESTO</span> Perfil angular del VCSEL gaussiano con media intensidad a 4,5°; truncado en ±18°. El dato del fabricante es solo el ángulo de media intensidad; ±4,5° no es un límite rígido.</li>
+        <li><span class="tag sup">SUPUESTO</span> Sensibilidad del fotodiodo ∝ cos φ (cae a la mitad a 60°, como el dato publicado).</li>
+        <li><span class="tag sup">SUPUESTO</span> La lectura del VCNL es lineal con la reflectividad, y la ley con la distancia de la curva de Vishay vale para cada rayo según su distancia de retorno.</li>
+        <li><span class="tag sup">SUPUESTO</span> ToF: FoI gaussiano 1/e² a ±8°, receptor sensible hasta 11° y nulo a 12,5°; señal ∝ ρ/r²; distancia informada = media ponderada por señal de los caminos. ST no documenta cómo combina retornos mezclados en el VL53L4CD.</li>
+        <li><span class="tag sup">SUPUESTO</span> ToF inválido si la señal es menor que la de una superficie gris 17 % a 450 mm (máximo alcance publicado, interior, 90 % de detección) extrapolada con 1/r².</li>
+      </ul></div>
+    <div class="box"><h3>Limitaciones</h3>
+      <ul>
+        <li>Las curvas del VCNL son típicas, de una muestra, sin ventana, a 25 °C. Por debajo del codo de saturación el modelo extrapola con la pendiente local y lo avisa.</li>
+        <li>No se modela ruido del VCNL porque Vishay no lo publica. La banda mostrada es la tolerancia «±20 %» de la nota de aplicación.</li>
+        <li>No se modelan luz ambiente, reflexiones múltiples, polvo en suspensión, velocidad del carro ni tiempo de integración.</li>
+        <li>QRE1113: solo existe una curva de 0 a 5 mm normalizada a su pico; no hay datos para simular el cruce de borde ni ranura.</li>
+        <li>La placa de circuito, la ventana y la carcasa del carro pueden recortar el haz o sumar diafonía: se representa solo con el control de offset.</li>
+        <li>Cambiar la altura, la reflectividad o el umbral puede invertir las conclusiones: por eso todas están expuestas como parámetros.</li>
+      </ul></div>
+  </div>
+</section>
+
+<section id="ensayo">
+  <h2>Procedimiento de ensayo con muestras reales</h2>
+  <div class="twocol">
+    <div class="box"><h3>Muestras y montaje</h3>
+      <ol>
+        <li><b>M1 · Superficie mate clara:</b> recorte de chapa del núcleo o probeta con el mismo barniz, limpia.</li>
+        <li><b>M2 · Superficie negra / aceitada:</b> la misma probeta con residuo real de aceite quemado y polvo; si no hay, pintura negra mate y una zona con aceite.</li>
+        <li><b>M3 · Ranura de 5 mm:</b> dos probetas M1 separadas 5 mm, con fondo regulable a 3, 5, 10 mm y sin fondo.</li>
+        <li><b>M4 · Escalón de 10 mm:</b> probeta M1 con una superficie inferior 10 mm más baja (y otra de 3 mm como obstáculo intermedio), con al menos dos materiales de fondo: el real del equipo y uno claro.</li>
+        <li>Referencias: tarjeta gris 18 % y blanca 90 % para comparar contra las curvas del fabricante.</li>
+        <li>Montar cada sensor en placa de evaluación (VCNL36829UM-SB, VL53L4CD en placa con regulador, E3T-FL1 si se evalúa) sobre un carro lineal con tornillo micrométrico o regla, perpendicular a la muestra.</li>
+      </ol></div>
+    <div class="box"><h3>Mediciones</h3>
+      <ol>
+        <li><b>Curva vertical:</b> sobre M1, M2 y tarjetas, alturas de 3 a 25 mm cada 1 mm; 200 lecturas por punto; guardar media y desviación típica. En el ToF, guardar también estado y tasa de señal.</li>
+        <li><b>Reflectividad efectiva:</b> cociente M2/M1 y M1/tarjeta 18 % a la misma altura. Ese cociente es el dato que falta en toda la simulación.</li>
+        <li><b>Barrido de borde (M4):</b> H = 5, 10 y 15 mm; avanzar de −20 a +15 mm cada 0,5 mm; con y sin superficie inferior.</li>
+        <li><b>Barrido de ranura (M3):</b> mismas alturas y paso; para cada profundidad.</li>
+        <li><b>Mancha:</b> barrido de M1 → M2 → M1 a la altura elegida.</li>
+        <li><b>Condiciones:</b> repetir un punto a la temperatura de trabajo del estator; con la ventana del sensor limpia y con una capa del polvo real.</li>
+        <li><b>Criterio de aceptación:</b> existe un umbral (y, si hace falta, una lógica de persistencia) tal que ningún punto de M1, M2 o ranura da «fin» y todos los puntos de escalón a más de X mm del borde dan «fin», con margen ≥ 3 desviaciones típicas.</li>
+      </ol></div>
+  </div>
+</section>
+
+<section id="fuentes">
+  <h2>Fuentes</h2>
+  <ol class="src">
+    <li id="s-vds">Vishay, <i>VCNL36829UM – Proximity Sensor With VCSEL in Ultra Thin Small Package</i>, doc. 80580, Rev. 1.1, 01-Jul-2026. <a href="https://www.vishay.com/docs/80580/vcnl36829um.pdf">vishay.com/docs/80580/vcnl36829um.pdf</a>. Curvas: Fig. 10 y 11 (extraídas del vector del PDF).</li>
+    <li id="s-van">Vishay, <i>Designing the VCNL36829UM Into an Application</i>, doc. 80581, rev. 15-May-2025. <a href="https://www.vishay.com/docs/80581/designing_vcnl36829um_into_an_application.pdf">vishay.com/docs/80581/…</a>. Sección 6.2 (tarjeta gris ≈18 % a 940 nm, 960 cuentas, ±20 %), Tabla 10 (14/16 bit), Fig. 38 (temperatura), sección 8 (x = 0,85 mm).</li>
+    <li id="s-sb">Vishay, <i>Sensor Board Guide for the VCNL36829UM</i>. <a href="https://www.vishay.com/docs/80625/sensorboardguidevcnl36829um.pdf">vishay.com/docs/80625/…</a></li>
+    <li id="s-qre">onsemi, <i>QRE1113, QRE1113GR, QRE1114GR – Miniature Reflective Object Sensor</i>, Rev. 9, dic. 2024. <a href="https://www.onsemi.com/download/data-sheet/pdf/qre1113-d.pdf">onsemi.com/…/qre1113-d.pdf</a>. Figure 2 (digitalizada de imagen).</li>
+    <li id="s-tof">STMicroelectronics, <i>VL53L4CD – Time-of-Flight high accuracy proximity sensor</i>, DS13812 Rev. 3, ene. 2022. <a href="https://www.st.com/resource/en/datasheet/vl53l4cd.pdf">st.com/resource/en/datasheet/vl53l4cd.pdf</a>. Tablas 14–16, secciones 5.1–5.5 y 7.</li>
+    <li id="s-um">STMicroelectronics, <i>UM2931 – A guide to using the VL53L4CD ultra lite driver</i>, Rev. 1, sep. 2021. <a href="https://www.st.com/resource/en/user_manual/um2931-a-guide-to-using-the-vl53l4cd-ultra-lite-driver-uld-stmicroelectronics.pdf">st.com/…/um2931…pdf</a>. Tabla 7 (estados). La sección 3.3 asigna los códigos 1 y 2 al revés que la Tabla 7.</li>
+    <li id="s-e3t">OMRON, <i>E3T Ultracompact, Ultrathin Photoelectric Sensor</i>, Cat. No. E407-E1-06. <a href="https://files.omron.eu/downloads/latest/datasheet/en/e407_e3t_miniature_square_photoelectric_sensor,_plastic_housing_datasheet_en.pdf">files.omron.eu/…/e407_e3t…pdf</a></li>
+    <li id="s-hgc">Panasonic, <i>CMOS type Micro Laser Distance Sensor HG-C</i>, CE-HGC-4-10, oct. 2019. <a href="https://industry.panasonic.eu/storage/download-files/import/ds_hgc_enjp.pdf">industry.panasonic.eu/…/ds_hgc_enjp.pdf</a></li>
+  </ol>
+</section>
+
+</div>
+
+<script>
+"use strict";
+/* ---------- datos digitalizados (ver sensor-fin-nucleo/datos) ---------- */
+const VCNL = /*__VCNL__*/null;
+const QRE = /*__QRE__*/null;
+const TEMP = /*__TEMP__*/null;
+
+const CFG = {
+  F11_8mA:{t:"IT 200 µs · 8 mA · 16 bit (Fig. 11)", fs:65535},
+  F11_12mA:{t:"IT 200 µs · 12 mA · 16 bit (Fig. 11)", fs:65535},
+  F11_hi:{t:"IT 200 µs · rotulada «20 mA» · 16 bit (Fig. 11)", fs:65535},
+  F10_8mA:{t:"IT 50 µs · 8 mA · 14 bit (Fig. 10)", fs:16383},
+  F10_12mA:{t:"IT 50 µs · 12 mA · 14 bit (Fig. 10)", fs:16383},
+  F10_hi:{t:"IT 50 µs · 18 mA · 14 bit (Fig. 10)", fs:16383}
+};
+const D2R = Math.PI/180;
+const $ = id => document.getElementById(id);
+const fmt = (v,d=0) => Number.isFinite(v) ? v.toLocaleString("es-AR",{minimumFractionDigits:d,maximumFractionDigits:d}) : "—";
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+/* ---------- curva del VCNL ---------- */
+function prepCurve(key){
+  const fs = CFG[key].fs, pts = VCNL[key];
+  const L = pts.map(([d,c]) => [Math.log(d), Math.log(c)]);
+  let i0 = pts.findIndex(p => p[1] < 0.97*fs);
+  if (i0 < 0) i0 = 0;
+  const n = L.length;
+  const sN = (L[i0+2][1]-L[i0][1])/(L[i0+2][0]-L[i0][0]);
+  const sF = (L[n-1][1]-L[n-4][1])/(L[n-1][0]-L[n-4][0]);
+  return {key, fs, L, i0, n, sN, sF, dMin:pts[i0][0], dMax:pts[n-1][0]};
+}
+const CURV = {}; for (const k in CFG) CURV[k] = prepCurve(k);
+/* cuentas para tarjeta 18 % a distancia r, sin recorte; ext = extrapolado */
+function Kc(cv, r){
+  const x = Math.log(r), L = cv.L;
+  if (r < cv.dMin) return {v:Math.exp(L[cv.i0][1] + cv.sN*(x-L[cv.i0][0])), ext:true};
+  if (r > cv.dMax) return {v:Math.exp(L[cv.n-1][1] + cv.sF*(x-L[cv.n-1][0])), ext:true};
+  let lo = cv.i0, hi = cv.n-1;
+  while (hi-lo > 1){ const m=(lo+hi)>>1; if (L[m][0] <= x) lo=m; else hi=m; }
+  const a=L[lo], b=L[hi], t = b[0]===a[0] ? 0 : (x-a[0])/(b[0]-a[0]);
+  return {v:Math.exp(a[1]+t*(b[1]-a[1])), ext:false};
+}
+function interp(tab, x){
+  if (x <= tab[0][0]) return tab[0][1];
+  for (let i=1;i<tab.length;i++) if (x <= tab[i][0]){ const a=tab[i-1], b=tab[i]; return a[1]+(b[1]-a[1])*(x-a[0])/(b[0]-a[0]); }
+  return tab[tab.length-1][1];
+}
+
+/* ---------- malla de rayos ---------- */
+function makeGrid(tech){
+  const g = []; let sw = 0;
+  const vc = tech !== "tof";
+  const lim = vc ? 18 : 16, nx = vc ? 73 : 57, ny = 11;
+  const f = vc ? th => Math.exp(-Math.LN2*(th/4.5)**2) : th => Math.exp(-2*(th/8)**2);
+  for (let i=0;i<nx;i++){ const ax = -lim + 2*lim*i/(nx-1);
+    for (let j=0;j<ny;j++){ const ay = -lim + 2*lim*j/(ny-1);
+      const s = Math.tan(ax*D2R), q = Math.tan(ay*D2R);
+      const th = Math.atan(Math.hypot(s,q))/D2R, w = f(th);
+      g.push({s,q,w,ax,ay}); sw += w; } }
+  g.forEach(r => r.w /= sw);
+  return g;
+}
+const GRID = {vcnl:makeGrid("vcnl"), tof:makeGrid("tof")};
+
+/* ---------- escena ---------- */
+const hs = (x1,x2,z,rho,id) => ({h:true,x1,x2,z,rho,id});
+const vs = (x,z1,z2,nx,rho,id) => ({h:false,x,z1,z2,nx,rho,id});
+const BIG = 4000;
+function buildScene(kind, P){
+  const S = [];
+  const top = (x1,x2) => {
+    const a = P.stainX - P.stainW/2, b = P.stainX + P.stainW/2;
+    if (P.stainW > 0 && b > x1 && a < x2){
+      const ca = Math.max(a,x1), cb = Math.min(b,x2);
+      if (ca > x1) S.push(hs(x1,ca,0,P.rTop,"top"));
+      S.push(hs(ca,cb,0,P.rStain,"stain"));
+      if (cb < x2) S.push(hs(cb,x2,0,P.rTop,"top"));
+    } else S.push(hs(x1,x2,0,P.rTop,"top"));
+  };
+  if (kind === "edge"){
+    top(-BIG,0);
+    S.push(vs(0, P.bottomOn ? -P.D : -BIG, 0, +1, P.rTop, "wall"));
+    if (P.bottomOn) S.push(hs(0,BIG,-P.D,P.rBot,"bottom"));
+  } else if (kind === "slot"){
+    const w = P.slotW/2;
+    top(-BIG,-w);
+    S.push(vs(-w,-P.slotD,0,+1,P.rTop,"wall"));
+    S.push(hs(-w,w,-P.slotD,P.rBot,"bottom"));
+    S.push(vs(w,-P.slotD,0,-1,P.rTop,"wall"));
+    top(w,BIG);
+  } else { S.push(hs(-BIG,BIG,0,P.rFlat,"top")); }
+  return S;
+}
+function hitRay(S, x0, H, s){
+  let best = null, bt = Infinity;
+  for (const g of S){
+    if (g.h){ const t = H - g.z; if (t > 0 && t < bt){ const x = x0 + s*t; if (x >= g.x1 && x <= g.x2){ bt=t; best=g; } } }
+    else if (s*g.nx < 0){ const t = (g.x - x0)/s; if (t > 0 && t < bt){ const z = H - t; if (z >= g.z1 && z <= g.z2){ bt=t; best=g; } } }
+  }
+  return best ? {g:best, t:bt} : null;
+}
+function blocked(S, hg, xh, zh, xr, zr){
+  for (const g of S){
+    if (g === hg) continue;
+    if (g.h){ if (g.z > zh+1e-9 && g.z < zr-1e-9){ const x = xh + (xr-xh)*(g.z-zh)/(zr-zh); if (x > g.x1 && x < g.x2) return true; } }
+    else { const lo=Math.min(xh,xr), hi=Math.max(xh,xr); if (g.x > lo+1e-9 && g.x < hi-1e-9){ const z = zh + (zr-zh)*(g.x-xh)/(xr-xh); if (z > g.z1 && z < g.z2) return true; } }
+  }
+  return false;
+}
+function recvOffset(P, tech){
+  const b = tech === "tof" ? 2.5 : 0.85;
+  return P.orient === "px" ? [b,0] : P.orient === "nx" ? [-b,0] : [0,b];
+}
+/* evalúa un sensor en la posición x0 */
+function evalAt(S, x0, P, tech, keep){
+  const H = P.H, G = GRID[tech === "tof" ? "tof" : "vcnl"], cv = CURV[P.cfg];
+  const [bx,by] = recvOffset(P, tech), xr = x0+bx, yr = by;
+  let sum = 0, sd = 0, extW = 0, blk = 0;
+  const fr = {top:0,stain:0,wall:0,bottom:0,none:0};
+  const rays = keep ? [] : null;
+  for (const r of G){
+    const h = hitRay(S, x0, H, r.s);
+    if (!h){ fr.none += r.w; if (keep && r.ay === 0) rays.push({r, none:true}); continue; }
+    const g = h.g, t = h.t; fr[g.id] += r.w;
+    const xh = x0 + r.s*t, yh = r.q*t, zh = H - t;
+    const L = Math.sqrt(1 + r.s*r.s + r.q*r.q);
+    const vx = xr-xh, vy = yr-yh, vz = H-zh, d = Math.sqrt(vx*vx+vy*vy+vz*vz);
+    let ci, ce;
+    if (g.h){ ci = 1/L; ce = vz/d; } else { ci = Math.abs(r.s)/L; ce = g.nx*vx/d; }
+    let isB = false, c = 0;
+    if (ce > 0){
+      isB = blocked(S, g, xh, zh, xr, H);
+      if (isB) blk += r.w;
+      else {
+        const cphi = vz/d;
+        let Sr;
+        if (tech === "tof"){ const phi = Math.acos(Math.min(1,cphi))/D2R; Sr = phi <= 11 ? 1 : (phi >= 12.5 ? 0 : (12.5-phi)/1.5); }
+        else Sr = Math.max(0,cphi);
+        const geo = r.w * g.rho * ci * ce * Sr;
+        if (tech === "tof"){ c = geo/(d*d); sum += c; sd += c*(t*L + d)/2; }
+        else { const k = Kc(cv, d); c = geo*k.v/0.18; sum += c; if (k.ext) extW += c; }
+      }
+    }
+    if (keep && r.ay === 0) rays.push({r, xh, zh, g, isB, c});
+  }
+  return {sum, dist: sum > 0 ? sd/sum : NaN, fr, ext: sum > 0 && extW/sum > 0.05, blk, rays, xr};
+}
+/* referencia de validez ToF: gris 17 % a 450 mm (DS13812 Tabla 14) */
+const TOF_REF = evalAt(buildScene("flat",{rFlat:0.17}), 0, {H:450, orient:"y", cfg:"F11_8mA"}, "tof").sum;
+
+/* ---------- lectura y estado ---------- */
+function tempF(T){ return interp(TEMP, T) / interp(TEMP, 25); }
+function vcnlRead(ev, P){
+  const fs = CFG[P.cfg].fs, nom = ev.sum * tempF(P.temp);
+  const clip = v => Math.min(fs, v + P.offset);
+  return {v:clip(nom), lo:clip(nom*0.8), hi:clip(nom*1.2), sat: nom + P.offset >= fs, ext: ev.ext};
+}
+function tofRead(ev, P){
+  const m = ev.sum / TOF_REF;
+  if (!(m >= 1)) return {valid:false, m};
+  return {valid:true, m, d:ev.dist, weak: m < P.weakF};
+}
+function classify(P, rd){
+  if (P.tech === "vcnl"){
+    if (rd.v >= P.thr){ return rd.lo < P.thr ? {k:"good", t:"Núcleo · ambiguo por tolerancia", s:"core"} : {k:"good", t:"Núcleo detectado", s:"core"}; }
+    return rd.hi >= P.thr ? {k:"warn", t:"Fin de núcleo · ambiguo por tolerancia", s:"end"} : {k:"warn", t:"Fin de núcleo (señal baja)", s:"end"};
+  }
+  if (P.tech === "tof"){
+    if (!rd.valid) return {k:"crit", t:"Inválido · sin retorno", s:"inv"};
+    const end = rd.d > P.H + P.tofDelta;
+    const w = rd.weak ? " · retorno débil" : "";
+    return end ? {k:"warn", t:"Fin de núcleo (distancia)"+w, s:"end"} : {k:"good", t:"Núcleo detectado"+w, s:"core"};
+  }
+  return {k:"none", t:"No modelable", s:"na"};
+}
+
+/* ---------- parámetros ---------- */
+const P = {};
+function thrFromSlider(v){ const fs = CFG[P.cfg].fs; return Math.round(Math.pow(10, Math.log10(fs) * v/1000)); }
+function sliderFromThr(t){ const fs = CFG[P.cfg].fs; return Math.round(1000*Math.log10(Math.max(1,t))/Math.log10(fs)); }
+function readParams(){
+  P.tech = $("tech").value; P.cfg = $("cfg").value; P.orient = $("orient").value;
+  P.H = +$("H").value; P.D = +$("D").value; P.bottomOn = $("bottomOn").checked;
+  P.slotW = +$("slotW").value; P.slotD = +$("slotD").value;
+  P.stainW = +$("stainW").value; P.stainX = +$("stainX").value;
+  P.rTop = +$("rTop").value/100; P.rBot = +$("rBot").value/100; P.rStain = +$("rStain").value/100;
+  P.temp = +$("temp").value; P.offset = +$("offset").value;
+  P.tofDelta = +$("tofDelta").value; P.tofSig = +$("tofSig").value; P.weakF = +$("weakF").value;
+  P.thr = thrFromSlider(+$("thr").value);
+  P.posEdge = +$("posEdge").value; P.posSlot = +$("posSlot").value;
+}
+function writeOutputs(){
+  $("HO").value = fmt(P.H,1)+" mm"; $("DO").value = fmt(P.D,1)+" mm";
+  $("slotWO").value = fmt(P.slotW,1)+" mm"; $("slotDO").value = fmt(P.slotD,1)+" mm";
+  $("stainWO").value = P.stainW > 0 ? fmt(P.stainW,1)+" mm" : "sin mancha"; $("stainXO").value = fmt(P.stainX,1)+" mm";
+  $("rTopO").value = fmt(P.rTop*100,1)+" %"; $("rBotO").value = fmt(P.rBot*100,1)+" %"; $("rStainO").value = fmt(P.rStain*100,1)+" %";
+  $("tempO").value = P.temp+" °C (×"+fmt(tempF(P.temp),2)+")"; $("offsetO").value = fmt(P.offset)+" cuentas";
+  $("tofDeltaO").value = fmt(P.tofDelta,1)+" mm"; $("tofSigO").value = fmt(P.tofSig,1)+" mm"; $("weakFO").value = "×"+P.weakF;
+  $("thrO").value = fmt(P.thr)+" cuentas";
+  $("posEdgeO").value = (P.posEdge>0?"+":"")+fmt(P.posEdge,1)+" mm"; $("posSlotO").value = (P.posSlot>0?"+":"")+fmt(P.posSlot,1)+" mm";
+  $("cfgWrap").hidden = P.tech !== "vcnl"; $("detWrap").hidden = P.tech !== "vcnl"; $("tofWrap").hidden = P.tech !== "tof";
+  $("bottomOn").closest("label").style.opacity = 1;
+}
+
+/* ---------- utilidades de gráfico ---------- */
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent, text){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function niceTicks(lo, hi, n){
+  const span = hi - lo || 1, step0 = span/n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const err = step0/mag, step = (err >= 7.5 ? 10 : err >= 3.5 ? 5 : err >= 1.5 ? 2 : 1) * mag;
+  const out = []; for (let v = Math.ceil(lo/step)*step; v <= hi + step*1e-6; v += step) out.push(+v.toPrecision(12));
+  return out;
+}
+function logTicks(lo, hi){
+  const out = []; for (let e = Math.floor(Math.log10(lo)); e <= Math.ceil(Math.log10(hi)); e++){
+    for (const m of [1,2,5]){ const v = m*Math.pow(10,e); if (v >= lo*0.999 && v <= hi*1.001) out.push(v); } }
+  return out;
+}
+function tickLabel(v){ return Math.abs(v) >= 1000 ? fmt(v) : (Math.abs(v) < 1 && v !== 0 ? fmt(v, v < 0.1 ? 3 : 2) : fmt(v, Number.isInteger(v)?0:1)); }
+/* gráfico de líneas genérico con bandas, umbrales, franja de estados y cursor */
+function lineChart(svg, tip, o){
+  const W = Math.max(300, svg.parentNode.clientWidth), Hh = o.height || Math.round(Math.min(300, Math.max(220, W*0.42)));
+  const m = {l:62, r:14, t:14, b: o.strip ? 58 : 42};
+  svg.setAttribute("viewBox", `0 0 ${W} ${Hh}`); svg.setAttribute("width", W); svg.setAttribute("height", Hh);
+  svg.innerHTML = "";
+  const pw = W - m.l - m.r, ph = Hh - m.t - m.b;
+  let vals = [];
+  for (const s of o.series) for (const v of s.y) if (Number.isFinite(v) && (!o.logy || v > 0)) vals.push(v);
+  for (const b of (o.bands||[])) for (const arr of [b.lo,b.hi]) for (const v of arr) if (Number.isFinite(v) && (!o.logy || v > 0)) vals.push(v);
+  for (const h of (o.hlines||[])) if (Number.isFinite(h.y) && (!o.logy || h.y > 0)) vals.push(h.y);
+  if (!vals.length) vals = o.logy ? [1,10] : [0,1];
+  let y0 = Math.min(...vals), y1 = Math.max(...vals);
+  let yT, ys;
+  if (o.logy){
+    y0 = Math.pow(10, Math.log10(y0) - 0.08); y1 = Math.pow(10, Math.log10(y1) + 0.08);
+    yT = logTicks(y0, y1); const a = Math.log10(y0), b = Math.log10(y1);
+    ys = v => m.t + ph - (Math.log10(Math.max(v, y0)) - a)/(b - a)*ph;
+  } else {
+    if (o.yzero) y0 = Math.min(0, y0);
+    const pad = (y1 - y0 || Math.abs(y1) || 1)*0.08; y1 += pad; if (!o.yzero) y0 -= pad;
+    yT = niceTicks(y0, y1, 5); ys = v => m.t + ph - (v - y0)/(y1 - y0)*ph;
+  }
+  const [x0, x1] = o.xdomain;
+  const xs = o.logx ? v => m.l + (Math.log10(v) - Math.log10(x0))/(Math.log10(x1) - Math.log10(x0))*pw : v => m.l + (v - x0)/(x1 - x0)*pw;
+  const xT = o.logx ? logTicks(x0, x1) : niceTicks(x0, x1, Math.max(4, Math.round(pw/80)));
+  const gGrid = el("g", {}, svg);
+  for (const t of yT){ const y = ys(t); if (y < m.t-1 || y > m.t+ph+1) continue;
+    el("line",{x1:m.l,x2:m.l+pw,y1:y,y2:y,stroke:css("--grid"),"stroke-width":1},gGrid);
+    el("text",{x:m.l-7,y:y+4,"text-anchor":"end","font-size":11,fill:css("--muted"),style:"font-family:var(--mono)"},gGrid,tickLabel(t)); }
+  for (const t of xT){ const x = xs(t);
+    el("line",{x1:x,x2:x,y1:m.t,y2:m.t+ph,stroke:css("--grid"),"stroke-width":1},gGrid);
+    el("text",{x:x,y:m.t+ph+15,"text-anchor":"middle","font-size":11,fill:css("--muted"),style:"font-family:var(--mono)"},gGrid,tickLabel(t)); }
+  el("line",{x1:m.l,x2:m.l+pw,y1:m.t+ph,y2:m.t+ph,stroke:css("--line"),"stroke-width":1},svg);
+  el("text",{x:m.l+pw/2,y:Hh-6,"text-anchor":"middle","font-size":12,fill:css("--ink2")},svg,o.xlabel);
+  el("text",{x:14,y:m.t+ph/2,"text-anchor":"middle","font-size":12,fill:css("--ink2"),transform:`rotate(-90 14 ${m.t+ph/2})`},svg,o.ylabel);
+  const X = o.x;
+  const clipId = "c"+Math.random().toString(36).slice(2);
+  const cp = el("clipPath",{id:clipId},el("defs",{},svg)); el("rect",{x:m.l,y:m.t-2,width:pw,height:ph+4},cp);
+  const gP = el("g",{"clip-path":`url(#${clipId})`},svg);
+  for (const b of (o.bands||[])){
+    let d = "", seg = [];
+    const flush = () => { if (seg.length > 1){ d += "M" + seg.map(i => xs(X[i]).toFixed(1)+","+ys(b.hi[i]).toFixed(1)).join("L") + "L" + seg.slice().reverse().map(i => xs(X[i]).toFixed(1)+","+ys(b.lo[i]).toFixed(1)).join("L") + "Z"; } seg = []; };
+    for (let i=0;i<X.length;i++){ if (Number.isFinite(b.lo[i]) && Number.isFinite(b.hi[i]) && (!o.logy || b.lo[i] > 0)) seg.push(i); else flush(); }
+    flush();
+    if (d) el("path",{d,fill:b.color,opacity:b.opacity||0.18,stroke:"none"},gP);
+  }
+  for (const h of (o.hlines||[])){ const y = ys(h.y);
+    el("line",{x1:m.l,x2:m.l+pw,y1:y,y2:y,stroke:h.color,"stroke-width":1.5,"stroke-dasharray":h.dash||"6 4"},gP);
+    if (h.label) el("text",{x:m.l+pw-4,y:y-5,"text-anchor":"end","font-size":11,fill:css("--ink2")},gP,h.label); }
+  for (const s of o.series){
+    const xx = s.x || X; let d = "", pen = false;
+    for (let i=0;i<xx.length;i++){ const v = s.y[i];
+      if (Number.isFinite(v) && (!o.logy || v > 0)){ d += (pen ? "L" : "M") + xs(xx[i]).toFixed(1) + "," + ys(v).toFixed(1); pen = true; } else pen = false; }
+    el("path",{d,fill:"none",stroke:s.color,"stroke-width":s.width||2,"stroke-dasharray":s.dash||"none","stroke-linejoin":"round","stroke-linecap":"round"},gP);
+    if (s.dots) for (const [dx,dy] of s.dots) el("circle",{cx:xs(dx),cy:ys(dy),r:2.6,fill:css("--panel"),stroke:s.color,"stroke-width":1.4},gP);
+  }
+  for (const v of (o.vlines||[])){ const x = xs(v.x);
+    el("line",{x1:x,x2:x,y1:m.t,y2:m.t+ph,stroke:v.color,"stroke-width":v.width||1.5,"stroke-dasharray":v.dash||"none"},svg);
+    if (v.label) el("text",{x:x+4,y:m.t+11,"font-size":11,fill:css("--ink2")},svg,v.label); }
+  if (o.marks) for (const mk of o.marks){ if (Number.isFinite(mk.y)) el("circle",{cx:xs(mk.x),cy:ys(mk.y),r:5,fill:mk.color,stroke:css("--panel"),"stroke-width":2},svg); }
+  if (o.strip){
+    const y = m.t + ph + 22, cols = {core:css("--good"), end:css("--warn"), inv:css("--crit"), na:css("--line")};
+    for (let i=0;i<X.length-1;i++){ const st = o.strip[i];
+      el("rect",{x:xs(X[i]),y,width:Math.max(0.5, xs(X[i+1])-xs(X[i])+0.3),height:7,fill:cols[st]||cols.na},svg); }
+  }
+  /* cursor */
+  const guide = el("line",{x1:0,x2:0,y1:m.t,y2:m.t+ph,stroke:css("--ink2"),"stroke-width":1,opacity:0},svg);
+  const hit = el("rect",{x:m.l,y:m.t,width:pw,height:ph + (o.strip?30:0),fill:"transparent"},svg);
+  const move = ev => {
+    const bb = svg.getBoundingClientRect(), px = (ev.clientX - bb.left) * W / bb.width;
+    let best = 0, bd = Infinity; for (let i=0;i<X.length;i++){ const dd = Math.abs(xs(X[i]) - px); if (dd < bd){ bd = dd; best = i; } }
+    const gx = xs(X[best]); guide.setAttribute("x1",gx); guide.setAttribute("x2",gx); guide.setAttribute("opacity",0.5);
+    tip.innerHTML = o.tooltip(best); tip.hidden = false;
+    const tw = tip.offsetWidth, left = gx*bb.width/W; tip.style.left = Math.max(0, Math.min(bb.width - tw, left + 12)) + "px"; tip.style.top = "8px";
+  };
+  hit.addEventListener("pointermove", move); hit.addEventListener("pointerdown", move);
+  hit.addEventListener("pointerleave", () => { tip.hidden = true; guide.setAttribute("opacity",0); });
+  return {xs, ys};
+}
+
+/* ---------- sección transversal ---------- */
+function drawSection(svg, kind, S, x0, P, tech, ev){
+  const W = Math.max(300, svg.parentNode.clientWidth);
+  const depth = kind === "edge" ? (P.bottomOn ? P.D : P.D) : P.slotD;
+  const zTop = P.H + 4, zBot = -depth - 4;
+  let xr0 = kind === "edge" ? -18 : -16, xr1 = kind === "edge" ? 16 : 16;
+  const zspan = zTop - zBot; let xspan = xr1 - xr0;
+  if (zspan/xspan > 0.72){ const nx = zspan/0.72, c = (xr0+xr1)/2; xr0 = c - nx/2; xr1 = c + nx/2; xspan = nx; }
+  const sc = Math.min((W - 20)/xspan, 330/zspan);
+  { const nx = (W - 20)/sc, c = (xr0+xr1)/2; xr0 = c - nx/2; xr1 = c + nx/2; xspan = nx; }
+  const Hh = Math.round(zspan*sc + 34);
+  svg.setAttribute("viewBox",`0 0 ${W} ${Hh}`); svg.setAttribute("width",W); svg.setAttribute("height",Hh); svg.innerHTML = "";
+  const X = x => 10 + (x - xr0)*sc, Z = z => 10 + (zTop - z)*sc;
+  const defs = el("defs",{},svg);
+  const pat = el("pattern",{id:"lam"+kind,width:Math.max(3,sc*0.9),height:10,patternUnits:"userSpaceOnUse"},defs);
+  el("rect",{width:Math.max(3,sc*0.9),height:10,fill:css("--core")},pat);
+  el("line",{x1:0.5,y1:0,x2:0.5,y2:10,stroke:css("--lam"),"stroke-width":0.8},pat);
+  const zb = zBot;
+  /* sólidos */
+  if (kind === "edge"){
+    el("path",{d:`M${X(xr0)},${Z(0)}L${X(0)},${Z(0)}L${X(0)},${Z(zb)}L${X(xr0)},${Z(zb)}Z`,fill:`url(#lam${kind})`,stroke:css("--ink2"),"stroke-width":1},svg);
+    if (P.bottomOn){ el("rect",{x:X(0),y:Z(-P.D),width:X(xr1)-X(0),height:Z(zb)-Z(-P.D),fill:css("--floor"),opacity:0.55},svg);
+      el("line",{x1:X(0),x2:X(xr1),y1:Z(-P.D),y2:Z(-P.D),stroke:css("--ink2"),"stroke-width":1.5},svg);
+      el("text",{x:X(xr1)-6,y:Z(-P.D)+15,"text-anchor":"end","font-size":11,fill:css("--ink2")},svg,`fondo · ρ ${fmt(P.rBot*100,1)} %`);
+    } else el("text",{x:X(xr1)-6,y:Z(zb)-8,"text-anchor":"end","font-size":11,fill:css("--ink2")},svg,"sin superficie que devuelva luz");
+  } else {
+    const w = P.slotW/2;
+    el("path",{d:`M${X(xr0)},${Z(0)}L${X(-w)},${Z(0)}L${X(-w)},${Z(-P.slotD)}L${X(w)},${Z(-P.slotD)}L${X(w)},${Z(0)}L${X(xr1)},${Z(0)}L${X(xr1)},${Z(zb)}L${X(xr0)},${Z(zb)}Z`,fill:`url(#lam${kind})`,stroke:css("--ink2"),"stroke-width":1},svg);
+    el("line",{x1:X(-w),x2:X(w),y1:Z(-P.slotD),y2:Z(-P.slotD),stroke:css("--floor"),"stroke-width":3},svg);
+  }
+  el("text",{x:14,y:Z(0)+15,"font-size":11,fill:css("--ink2")},svg,`núcleo · chapas (esquemático) · ρ ${fmt(P.rTop*100,1)} %`);
+  if (P.stainW > 0){ const a = Math.max(xr0, P.stainX-P.stainW/2), b = Math.min(xr1, P.stainX+P.stainW/2);
+    if (b > a){ el("rect",{x:X(a),y:Z(0)-3,width:X(b)-X(a),height:5,fill:css("--stain"),stroke:css("--ink2"),"stroke-width":0.6},svg);
+      el("text",{x:(X(a)+X(b))/2,y:Z(0)-8,"text-anchor":"middle","font-size":11,fill:css("--ink2")},svg,`mancha ρ ${fmt(P.rStain*100,1)} %`); } }
+  /* haz y retornos (fila central de la malla) */
+  if (ev && ev.rays){
+    const wmax = Math.max(...ev.rays.map(q => q.r.w));
+    const gB = el("g",{},svg);
+    ev.rays.forEach((q,i) => { if (i % 3) return;
+      const op = Math.min(0.85, 0.06 + 0.8*q.r.w/wmax);
+      if (q.none){ const t = zspan*2; el("line",{x1:X(x0),y1:Z(P.H),x2:X(x0+q.r.s*t),y2:Z(P.H-t),stroke:css("--beam"),"stroke-width":1,opacity:op*0.5},gB); return; }
+      el("line",{x1:X(x0),y1:Z(P.H),x2:X(q.xh),y2:Z(q.zh),stroke:css("--beam"),"stroke-width":1.1,opacity:op},gB);
+      if (q.r.w/wmax > 0.08) el("circle",{cx:X(q.xh),cy:Z(q.zh),r:2.2,fill:css("--beam"),opacity:Math.min(1,op+0.2)},gB);
+    });
+    /* retorno: punto medio ponderado por superficie */
+    const groups = {};
+    for (const q of ev.rays){ if (q.none) continue; const k = q.g.id + (q.isB ? "B" : ""); (groups[k] = groups[k] || {w:0,x:0,z:0,b:q.isB}); const gg = groups[k]; gg.w += q.r.w; gg.x += q.xh*q.r.w; gg.z += q.zh*q.r.w; }
+    for (const k in groups){ const gg = groups[k]; if (gg.w/wmax < 0.2) continue;
+      el("line",{x1:X(gg.x/gg.w),y1:Z(gg.z/gg.w),x2:X(ev.xr),y2:Z(P.H),stroke:gg.b ? css("--crit") : css("--ret"),"stroke-width":1.6,"stroke-dasharray":"5 4"},svg); }
+    /* bordes de media intensidad / FoI */
+    const hw = tech === "tof" ? 8 : 4.5;
+    for (const sgn of [-1,1]){ const s = Math.tan(sgn*hw*D2R), h = hitRay(S, x0, P.H, s), t = h ? h.t : zspan*1.5;
+      el("line",{x1:X(x0),y1:Z(P.H),x2:X(x0+s*t),y2:Z(P.H-t),stroke:css("--ink2"),"stroke-width":1,"stroke-dasharray":"3 3"},svg); }
+  }
+  /* sensor */
+  const pw = tech === "tof" ? 4.4 : (tech === "qre" ? 3.6 : 1.6), pt = tech === "tof" ? 1 : 0.35;
+  el("rect",{x:X(x0-pw/2),y:Z(P.H+pt),width:pw*sc,height:Math.max(3,pt*sc),fill:css("--sensor")},svg);
+  if (ev) el("circle",{cx:X(ev.xr),cy:Z(P.H)-1,r:3,fill:css("--ret")},svg);
+  /* cotas */
+  const cx = X(x0) - 0.6*sc - 14;
+  const ar = (x, za, zb2, lab) => { el("line",{x1:x,x2:x,y1:Z(za),y2:Z(zb2),stroke:css("--ink2"),"stroke-width":1},svg);
+    for (const zz of [za,zb2]) el("line",{x1:x-4,x2:x+4,y1:Z(zz),y2:Z(zz),stroke:css("--ink2"),"stroke-width":1},svg);
+    el("text",{x:x-6,y:(Z(za)+Z(zb2))/2+4,"text-anchor":"end","font-size":11,fill:css("--ink"),style:"font-family:var(--mono)"},svg,lab); };
+  ar(Math.max(60, cx), P.H, 0, `H ${fmt(P.H,1)}`);
+  if (kind === "edge" && P.bottomOn) ar(X(0) + 0.35*(X(xr1)-X(0)), 0, -P.D, `${fmt(P.D,1)}`);
+  if (kind === "slot"){ const w = P.slotW/2; el("text",{x:X(0),y:Z(-P.slotD)+15,"text-anchor":"middle","font-size":11,fill:css("--ink"),style:"font-family:var(--mono)"},svg,`${fmt(P.slotW,1)} × ${fmt(P.slotD,1)}`); }
+  el("text",{x:W-10,y:Hh-8,"text-anchor":"end","font-size":11,fill:css("--muted")},svg,"escala 1:1 en x y z · rojo claro: rayos emitidos · gris rayado: " + (tech==="tof" ? "FoI ±8° (1/e²)" : "media intensidad ±4,5°") + " · azul: retorno · rojo oscuro: retorno tapado");
+}
+
+/* ---------- escenarios ---------- */
+const RANGE = {edge:[-30,15], slot:[-30,15]};
+const NPOS = 181;
+function scenario(kind){
+  const S = buildScene(kind, P), [a,b] = RANGE[kind];
+  const x0 = kind === "edge" ? P.posEdge : P.posSlot;
+  const sfx = kind === "edge" ? "Edge" : "Slot";
+  const svgSec = $("sec"+sfx), svgCh = $("ch"+sfx), tip = $("tip"+sfx), pill = $("pill"+sfx), ro = $("ro"+sfx), leg = $("leg"+sfx);
+  const tech = P.tech;
+  const evNow = tech === "qre" ? null : evalAt(S, x0, P, tech, true);
+  drawSection(svgSec, kind, S, x0, P, tech, evNow);
+  const X = []; for (let i=0;i<NPOS;i++) X.push(a + (b-a)*i/(NPOS-1));
+  const R = (tech === "qre" ? 1.0 : 1);
+  if (tech === "qre"){
+    svgCh.innerHTML = ""; const W = Math.max(300, svgCh.parentNode.clientWidth); svgCh.setAttribute("viewBox",`0 0 ${W} 120`); svgCh.setAttribute("width",W); svgCh.setAttribute("height",120);
+    el("rect",{x:0,y:0,width:W,height:120,fill:css("--panel2"),rx:6},svgCh);
+    el("text",{x:W/2,y:52,"text-anchor":"middle","font-size":13,fill:css("--ink")},svgCh,"QRE1113: sin datos del fabricante para simular el cruce.");
+    el("text",{x:W/2,y:74,"text-anchor":"middle","font-size":12,fill:css("--muted")},svgCh,"Solo hay una curva vertical de 0 a 5 mm sobre blanco 90 %. Ver el análisis de sensibilidad.");
+    pill.className = "pill none"; pill.textContent = "No modelable"; leg.innerHTML = ""; ro.innerHTML = "";
+    return null;
+  }
+  const evs = X.map(x => evalAt(S, x, P, tech, false));
+  const [bx] = recvOffset(P, tech);
+  const truth = X.map(x => { const h = hitRay(S, x, P.H, 0); return h ? h.t : NaN; });
+  let st, rdNow;
+  if (tech === "vcnl"){
+    const rds = evs.map(e => vcnlRead(e, P)); rdNow = vcnlRead(evNow, P);
+    st = rds.map(r => classify(P, r).s);
+    lineChart(svgCh, tip, {x:X, xdomain:[a,b], yzero:true,
+      xlabel: kind === "edge" ? "posición del eje respecto del borde (mm) · + = fuera del núcleo" : "posición del eje respecto del centro de la ranura (mm)",
+      ylabel:"cuentas VCNL",
+      bands:[{lo:rds.map(r=>r.lo), hi:rds.map(r=>r.hi), color:css("--s1"), opacity:0.16}],
+      series:[{y:rds.map(r=>r.v), color:css("--s1"), width:2.2}],
+      hlines:[{y:P.thr, color:css("--warn"), label:"umbral "+fmt(P.thr)}, ...(Math.max(...rds.map(r=>r.hi)) > 0.5*CFG[P.cfg].fs ? [{y:CFG[P.cfg].fs, color:css("--muted"), dash:"2 3", label:"fondo de escala "+fmt(CFG[P.cfg].fs)}] : [])],
+      vlines:[{x:x0, color:css("--ink")}, ...(kind==="edge"?[{x:0,color:css("--muted"),dash:"3 3",label:"borde"}]:[{x:-P.slotW/2,color:css("--muted"),dash:"3 3"},{x:P.slotW/2,color:css("--muted"),dash:"3 3"}])],
+      marks:[{x:x0, y:rdNow.v, color:css("--s1")}],
+      strip: st,
+      tooltip: i => `x = ${fmt(X[i],1)} mm<br>lectura ${fmt(rds[i].v)} cuentas<br>banda ±20 %: ${fmt(rds[i].lo)}–${fmt(rds[i].hi)}<br>${classify(P, rds[i]).t}${rds[i].ext?"<br>⚠ extrapolado":""}`
+    });
+    leg.innerHTML = `<span><i class="sw" style="background:var(--s1)"></i>lectura nominal <span class="tag calc">CALCULADO</span></span><span><i class="swb" style="background:var(--s1)"></i>±20 % tolerancia (AN 80581)</span><span><i class="sw" style="background:var(--warn)"></i>umbral fijo</span><span><i class="sw" style="background:var(--good)"></i>/<i class="sw" style="background:var(--warn)"></i> franja inferior: estado por posición</span>`;
+  } else {
+    const rds = evs.map(e => tofRead(e, P)); rdNow = tofRead(evNow, P);
+    st = rds.map(r => classify(P, r).s);
+    const d = rds.map(r => r.valid ? r.d : NaN);
+    lineChart(svgCh, tip, {x:X, xdomain:[a,b],
+      xlabel: kind === "edge" ? "posición del eje respecto del borde (mm) · + = fuera del núcleo" : "posición del eje respecto del centro de la ranura (mm)",
+      ylabel:"distancia informada (mm)",
+      bands:[{lo:d.map(v=>v-7), hi:d.map(v=>v+7), color:css("--s1"), opacity:0.1},{lo:d.map(v=>v-2*P.tofSig), hi:d.map(v=>v+2*P.tofSig), color:css("--s1"), opacity:0.22}],
+      series:[{y:truth, color:css("--muted"), width:1.5, dash:"4 4"},{y:d, color:css("--s1"), width:2.2}],
+      hlines:[{y:P.H + P.tofDelta, color:css("--warn"), label:"umbral H + "+fmt(P.tofDelta,1)+" mm"}],
+      vlines:[{x:x0, color:css("--ink")}, ...(kind==="edge"?[{x:0,color:css("--muted"),dash:"3 3",label:"borde"}]:[{x:-P.slotW/2,color:css("--muted"),dash:"3 3"},{x:P.slotW/2,color:css("--muted"),dash:"3 3"}])],
+      marks:[{x:x0, y:rdNow.valid ? rdNow.d : NaN, color:css("--s1")}],
+      strip: st,
+      tooltip: i => `x = ${fmt(X[i],1)} mm<br>${rds[i].valid ? "distancia "+fmt(rds[i].d,1)+" mm" : "INVÁLIDO: sin distancia"}<br>superficie en el eje: ${Number.isFinite(truth[i]) ? fmt(truth[i],1)+" mm" : "ninguna"}<br>margen de señal ×${fmt(rds[i].m, rds[i].m<10?2:0)}<br>${classify(P, rds[i]).t}`
+    });
+    leg.innerHTML = `<span><i class="sw" style="background:var(--s1)"></i>distancia informada <span class="tag calc">CALCULADO</span></span><span><i class="sw" style="background:var(--muted)"></i>superficie bajo el eje (geometría)</span><span><i class="swb" style="background:var(--s1)"></i>±7 mm exactitud ST / ±2σ supuesto</span><span><i class="sw" style="background:var(--crit)"></i>franja roja: inválido (sin distancia)</span>`;
+  }
+  /* estado y lecturas */
+  const c = classify(P, rdNow);
+  pill.className = "pill " + c.k; pill.textContent = c.t;
+  const fr = evNow.fr, pct = v => fmt(v*100, v < 0.01 && v > 0 ? 2 : 1) + " %";
+  const Rtop = P.H, fp = tech === "tof" ? 8 : 4.5;
+  const htr = hitRay(S, x0, P.H, 0), Rax = htr ? htr.t : NaN;
+  const cells = [];
+  if (tech === "vcnl") cells.push(["Lectura", fmt(rdNow.v)+" cuentas", (rdNow.sat?"saturada · ":"") + (rdNow.ext?"⚠ extrapolada fuera de la curva":"dentro de la curva publicada")]);
+  else cells.push(["Distancia informada", rdNow.valid ? fmt(rdNow.d,1)+" mm" : "inválida", "margen de señal ×"+fmt(rdNow.m, rdNow.m<10?2:0)]);
+  cells.push(["Superficie en el eje", Number.isFinite(Rax) ? fmt(Rax,1)+" mm" : "ninguna", "distancia geométrica a lo largo del eje"]);
+  cells.push(["Huella en la cara superior", fmt(2*Rtop*Math.tan(fp*D2R),2)+" mm", (tech==="tof"?"FoI 1/e² ":"FWHM ")+"2·H·tan "+fmt(fp,1)+"° · estimación"]);
+  if (Number.isFinite(Rax) && Rax > Rtop + 0.01) cells.push(["Huella a "+fmt(Rax,1)+" mm", fmt(2*Rax*Math.tan(fp*D2R),2)+" mm", "misma fórmula en la superficie bajo el eje"]);
+  if (tech === "tof") cells.push(["Volumen de detección", fmt(2*Rtop*Math.tan(11*D2R),2)+" mm", "22° a 100 mm, blanco 88 % (ST Tabla 16)"]);
+  cells.push(["Potencia incidente", `cara ${pct(fr.top)} · mancha ${pct(fr.stain)}`, `lateral ${pct(fr.wall)} · fondo ${pct(fr.bottom)} · nada ${pct(fr.none)}`]);
+  cells.push(["Retorno tapado por el canto", pct(evNow.blk), "fracción de la potencia emitida cuyo retorno no llega al receptor"]);
+  ro.innerHTML = cells.map(([k,v,n]) => `<div class="ro"><span class="k">${k}</span><span class="v">${v}</span><span class="n">${n}</span></div>`).join("");
+  return {S, evs, X};
+}
+
+/* ---------- sensibilidad ---------- */
+function sensitivity(){
+  const svg = $("chSens"), tip = $("tipSens"), leg = $("legSens");
+  const cols = ["--r1","--r2","--r3","--r4","--r5","--r6"].map(css);
+  const RHO = [0.02,0.05,0.10,0.18,0.40,0.80];
+  if (P.tech === "vcnl"){
+    $("sensTitle").textContent = "Análisis de sensibilidad · VCNL36829UM sobre superficie plana según reflectividad";
+    $("sensNote").innerHTML = `Curva de 18 % = dato digitalizado de Vishay (${CFG[P.cfg].t}); los círculos son los vértices extraídos del PDF. Las demás reflectividades son <span class="tag sup">SUPUESTOS</span> escalados linealmente. Líneas verticales: cara superior (H) y superficie inferior (H + profundidad). Temperatura y offset aplicados. Tramo rayado: extrapolado bajo el codo de saturación.`;
+    const X = []; for (let i=0;i<=160;i++) X.push(Math.pow(10, Math.log10(1.5) + (Math.log10(100)-Math.log10(1.5))*i/160));
+    const cv = CURV[P.cfg], fs = CFG[P.cfg].fs, tf = tempF(P.temp);
+    const val = (rho, d) => Math.min(fs, rho/0.18*Kc(cv,d).v*tf + P.offset);
+    const series = [];
+    RHO.forEach((rho,j) => {
+      const y = X.map(d => d >= cv.dMin ? val(rho,d) : NaN), ye = X.map(d => d <= cv.dMin*1.02 ? val(rho,d) : NaN);
+      series.push({y, color:cols[j], width: rho === 0.18 ? 2.6 : 1.8, dots: rho === 0.18 ? VCNL[P.cfg].filter(p => p[0] >= 1.5 && p[0] <= 100).map(p => [p[0], Math.min(fs, p[1]*tf + P.offset)]) : null});
+      series.push({y:ye, color:cols[j], width:1.4, dash:"3 3"});
+    });
+    lineChart(svg, tip, {x:X, xdomain:[1.5,100], logx:true, logy:true, height:320,
+      xlabel:"distancia a la superficie (mm, log)", ylabel:"cuentas (log)", series,
+      hlines:[{y:P.thr, color:css("--warn"), label:"umbral "+fmt(P.thr)}],
+      vlines:[{x:P.H, color:css("--ink"), label:"H"}, ...(P.H+P.D <= 100 ? [{x:P.H+P.D, color:css("--ink"), dash:"4 3", label:"H+prof."}] : [])],
+      marks:[{x:P.H, y:val(P.rTop,P.H), color:css("--s2")}, {x:P.H, y:val(P.rStain,P.H), color:css("--stain")}, ...(P.bottomOn?[{x:P.H+P.D, y:val(P.rBot,P.H+P.D), color:css("--s3")}]:[])],
+      tooltip: i => `d = ${fmt(X[i],1)} mm<br>` + RHO.map(r => `ρ ${fmt(r*100,0)} %: ${fmt(val(r,X[i]))}`).join("<br>")
+    });
+    leg.innerHTML = RHO.map((r,j) => `<span><i class="sw" style="background:${cols[j]}"></i>ρ ${fmt(r*100,0)} %${r===0.18?" (dato)":""}</span>`).join("") +
+      `<span><i class="sw" style="background:var(--s2);height:8px;width:8px;border-radius:50%"></i>cara a H</span><span><i class="sw" style="background:var(--stain);height:8px;width:8px;border-radius:50%"></i>mancha a H</span><span><i class="sw" style="background:var(--s3);height:8px;width:8px;border-radius:50%"></i>fondo a H+prof.</span>`;
+  } else if (P.tech === "tof"){
+    $("sensTitle").textContent = "Análisis de sensibilidad · margen de señal del ToF según reflectividad";
+    $("sensNote").innerHTML = `Margen = señal / señal de un gris 17 % a 450 mm (máximo alcance publicado por ST, interior). Ley 1/r² <span class="tag sup">SUPUESTO</span>: sirve para ver tendencias; ST no publica la tasa de señal frente a la distancia ni datos por debajo de 17 %. Margen &lt; 1: inválido.`;
+    const X = []; for (let i=0;i<=160;i++) X.push(Math.pow(10, Math.log10(1.5) + (Math.log10(1000)-Math.log10(1.5))*i/160));
+    const mg = (rho,d) => rho/0.17*(450/d)**2;
+    lineChart(svg, tip, {x:X, xdomain:[1.5,1000], logx:true, logy:true, height:320,
+      xlabel:"distancia (mm, log)", ylabel:"margen de señal (log)",
+      series: RHO.map((r,j) => ({y:X.map(d => mg(r,d)), color:cols[j], width: 2})),
+      hlines:[{y:1, color:css("--crit"), label:"límite de validez"},{y:P.weakF, color:css("--warn"), label:"retorno débil ×"+P.weakF}],
+      vlines:[{x:P.H, color:css("--ink"), label:"H"},{x:P.H+P.D, color:css("--ink"), dash:"4 3"}],
+      tooltip: i => `d = ${fmt(X[i],0)} mm<br>` + RHO.map(r => `ρ ${fmt(r*100,0)} %: ×${fmt(mg(r,X[i]), mg(r,X[i])<10?2:0)}`).join("<br>")
+    });
+    leg.innerHTML = RHO.map((r,j) => `<span><i class="sw" style="background:${cols[j]}"></i>ρ ${fmt(r*100,0)} %</span>`).join("");
+  } else {
+    $("sensTitle").textContent = "QRE1113 · única curva publicada: corriente normalizada frente a distancia";
+    $("sensNote").innerHTML = `<span class="tag dig">DIGITALIZADO</span> onsemi Figure 2, papel blanco 90 %, I<sub>F</sub> 10 mA, V<sub>CE</sub> 5 V, 25 °C. Normalizada a su propio pico (≈0,6 mm): no da corriente absoluta. Incertidumbre de lectura ±0,02. Más allá de 5 mm no hay datos, así que no se dibuja nada. Altura elegida: ${fmt(P.H,1)} mm${P.H > 5 ? " → fuera del rango caracterizado" : ""}.`;
+    const X = QRE.map(p => p[0]);
+    lineChart(svg, tip, {x:X, xdomain:[0,5], height:280, yzero:true,
+      xlabel:"distancia al reflector (mm)", ylabel:"I_C normalizada",
+      series:[{y:QRE.map(p => p[1]), color:css("--s1"), width:2.4, dots:QRE}],
+      vlines: P.H <= 5 ? [{x:P.H, color:css("--ink"), label:"H"}] : [],
+      tooltip: i => `d = ${fmt(X[i],2)} mm<br>I_C/I_C,pico = ${fmt(QRE[i][1],3)}`
+    });
+    leg.innerHTML = `<span><i class="sw" style="background:var(--s1)"></i>papel blanco 90 % (dato)</span>`;
+  }
+}
+
+/* ---------- verificaciones ---------- */
+function checks(){
+  const out = [];
+  const ok = (b, t) => out.push(`<div><span class="${b?"ok":"bad"}">${b?"✓":"✗"}</span><span>${t}</span></div>`);
+  if (P.tech === "qre"){ $("checks").innerHTML = `<div><span class="ok">·</span><span>El QRE1113 no se simula en los escenarios; no hay verificaciones de modelo.</span></div>`; return; }
+  const tech = P.tech;
+  const flat = r => evalAt(buildScene("flat",{rFlat:r}), 0, P, tech, false);
+  if (tech === "vcnl"){
+    const m = flat(0.18).sum, ref = Kc(CURV[P.cfg], P.H).v;
+    ok(Math.abs(m/ref - 1) < 0.05, `Plano gris 18 % a H = ${fmt(P.H,1)} mm: modelo ${fmt(m)} cuentas frente a curva de Vishay ${fmt(ref)} (${fmt((m/ref-1)*100,1)} %).`);
+    const a = flat(P.rTop).sum, Pb = Object.assign({}, P, {H:P.H+1}), b = evalAt(buildScene("flat",{rFlat:P.rTop}), 0, Pb, tech, false).sum;
+    ok(Math.abs(a-b) > 1, `La lectura cambia con la altura: ${fmt(a)} → ${fmt(b)} cuentas al subir 1 mm.`);
+  } else {
+    const a = flat(P.rTop).dist, Pb = Object.assign({}, P, {H:P.H+1}), b = evalAt(buildScene("flat",{rFlat:P.rTop}), 0, Pb, tech, false).dist;
+    ok(Math.abs(b-a-1) < 0.3, `Plano a H y H+1 mm: ${fmt(a,2)} → ${fmt(b,2)} mm.`);
+  }
+  const E = buildScene("edge", P), Sl = buildScene("slot", P);
+  const rd = (S,x) => { const e = evalAt(S, x, P, tech, false); return tech === "vcnl" ? vcnlRead(e,P).v : (tofRead(e,P).valid ? tofRead(e,P).d : NaN); };
+  const u = tech === "vcnl" ? " cuentas" : " mm";
+  const e1 = rd(E,-8), e2 = rd(E,8);
+  ok(!(Math.abs(e1-e2) < 1e-6), `Cruce de borde: ${fmt(e1, tech==="vcnl"?0:1)}${u} en x = −8 mm frente a ${Number.isFinite(e2) ? fmt(e2, tech==="vcnl"?0:1)+u : "inválido"} en x = +8 mm.`);
+  const s1 = rd(Sl,-10), s2 = rd(Sl,0);
+  ok(!(Math.abs(s1-s2) < 1e-6), `Ranura: ${fmt(s1, tech==="vcnl"?0:1)}${u} fuera frente a ${Number.isFinite(s2) ? fmt(s2, tech==="vcnl"?0:1)+u : "inválido"} en el centro.`);
+  if (P.stainW > 0){ const m1 = rd(E, P.stainX), m0 = rd(E, P.stainX - P.stainW/2 - 6);
+    ok(true, `Mancha (informativo): ${fmt(m0, tech==="vcnl"?0:1)}${u} sobre cara limpia frente a ${fmt(m1, tech==="vcnl"?0:1)}${u} en el centro de la mancha.`); }
+  $("checks").innerHTML = out.join("");
+}
+
+/* ---------- ciclo de actualización ---------- */
+let pending = false;
+function render(){
+  pending = false; readParams(); writeOutputs();
+  scenario("edge"); scenario("slot"); sensitivity(); checks();
+}
+function schedule(){ if (!pending){ pending = true; requestAnimationFrame(render); } }
+
+function init(){
+  const sel = $("cfg"); for (const k in CFG){ const o = document.createElement("option"); o.value = k; o.textContent = CFG[k].t; sel.appendChild(o); }
+  sel.value = "F11_8mA";
+  readParams();
+  /* umbral inicial: media geométrica entre núcleo limpio a H y fondo a H+D (se fija una vez) */
+  const top = Kc(CURV[P.cfg], P.H).v*P.rTop/0.18, bot = Kc(CURV[P.cfg], P.H+P.D).v*P.rBot/0.18;
+  $("thr").value = sliderFromThr(Math.sqrt(top*bot));
+  document.querySelectorAll("#controls input, #controls select, #posEdge, #posSlot").forEach(i => i.addEventListener("input", schedule));
+  $("cfg").addEventListener("change", () => { const t = P.thr; readParams(); $("thr").value = sliderFromThr(Math.min(t, CFG[P.cfg].fs)); schedule(); });
+  $("calib").addEventListener("click", () => {
+    const e = evalAt(buildScene("flat",{rFlat:P.rTop}), 0, P, "vcnl", false);
+    $("thr").value = sliderFromThr(0.5*vcnlRead(e,P).v); schedule();
+  });
+  document.querySelectorAll("[data-set]").forEach(b => b.addEventListener("click", () => { const [k,v] = b.dataset.set.split(":"); $(k === "edge" ? "posEdge" : "posSlot").value = v; schedule(); }));
+  for (const [btn, inp] of [["playEdge","posEdge"],["playSlot","posSlot"]]){
+    let anim = null;
+    $(btn).addEventListener("click", () => {
+      if (anim){ cancelAnimationFrame(anim); anim = null; $(btn).textContent = "▶ Avanzar"; return; }
+      const el2 = $(inp), lo = +el2.min, hi = +el2.max; let x = +el2.value >= hi - 0.2 ? lo : +el2.value, last = performance.now();
+      $(btn).textContent = "❚❚ Pausa";
+      const step = now => { x += (now - last)/1000*6; last = now; if (x >= hi){ x = hi; el2.value = x; schedule(); anim = null; $(btn).textContent = "▶ Avanzar"; return; }
+        el2.value = x.toFixed(1); schedule(); anim = requestAnimationFrame(step); };
+      anim = requestAnimationFrame(step);
+    });
+  }
+  let rw = 0; new ResizeObserver(() => { const w = document.querySelector(".scen").clientWidth; if (Math.abs(w - rw) > 4){ rw = w; schedule(); } }).observe(document.querySelector(".scen"));
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", schedule);
+  new MutationObserver(schedule).observe(document.documentElement, {attributes:true, attributeFilter:["data-theme"]});
+  render();
+}
+init();
+</script>
+</body>
+</html>
