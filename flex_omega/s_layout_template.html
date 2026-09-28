@@ -1,0 +1,117 @@
+<title>S del conector · layout 27/9</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--paper:#f3f5f8;--sheet:#fff;--ink:#18223a;--muted:#5b6780;--grid:#e3e8f0;--line:#c9d1de;--dim:#d4145a;--ok:#1b8a4b;--warn:#c17a00;--bad:#d4145a;--pcb:#1f7a3d;--pcbfill:#cfe8d6;--kapton:#c9761a;--cam:#2b2f38;--camfill:#d9dce3}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark;--paper:#0f1522;--sheet:#151d2e;--ink:#e4e9f3;--muted:#9aa6bd;--grid:#1f2a40;--line:#2b3852;--dim:#ff5c93;--ok:#4cc987;--warn:#f0b43c;--bad:#ff5c93;--pcb:#4cc987;--pcbfill:#173826;--kapton:#e89a45;--cam:#c9cfdb;--camfill:#2a3345}}
+:root[data-theme="dark"]{color-scheme:dark;--paper:#0f1522;--sheet:#151d2e;--ink:#e4e9f3;--muted:#9aa6bd;--grid:#1f2a40;--line:#2b3852;--dim:#ff5c93;--ok:#4cc987;--warn:#f0b43c;--bad:#ff5c93;--pcb:#4cc987;--pcbfill:#173826;--kapton:#e89a45;--cam:#c9cfdb;--camfill:#2a3345}
+body{background:var(--paper);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,sans-serif;padding-inline:16px;padding-block:24px 48px}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+h1,h2{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:600;margin:0;text-wrap:balance}h1{font-size:38px;line-height:1.05}h2{font-size:25px}
+p{margin:0;max-width:72ch}.lede{color:var(--muted)}.mono{font-family:"IBM Plex Mono",monospace}
+.answer{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.cell{background:var(--sheet);border:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.cell .k{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.cell .v{font-family:"IBM Plex Mono",monospace;font-size:26px}.cell .s{font-size:13px;color:var(--muted)}.cell.main .v{color:var(--dim)}
+.sim{background:var(--sheet);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:12px}
+.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line)}.seg button{background:transparent;color:var(--ink);border:0;padding:7px 12px;font:inherit;font-size:14px;cursor:pointer}.seg button[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--dim);outline-offset:2px}
+.play{background:var(--dim);color:#fff;border:0;padding:8px 16px;font:inherit;font-weight:600;cursor:pointer}
+.slider{display:flex;align-items:center;gap:10px;flex:1 1 240px}.slider input{flex:1;accent-color:var(--dim)}
+canvas{width:100%;display:block;background:var(--sheet)}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.ro{border-top:2px solid var(--line);padding-top:6px}.ro .k{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.ro .v{font-family:"IBM Plex Mono",monospace;font-size:20px}
+.ro.good{border-color:var(--ok)}.ro.bad{border-color:var(--bad)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}.legend i{display:inline-block;width:22px;height:4px;vertical-align:middle;margin-right:6px}
+.tw{overflow-x:auto}ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;max-width:74ch}
+@media (prefers-reduced-motion: reduce){.play{display:none}}
+</style>
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <h1>S del conector en tu layout</h1>
+    <p class="lede">Planta como en Solid Edge, con el panel abajo. La placa del conector está a la izquierda y la pestaña fija 5 mm detrás, a 15,5 mm. La placa de la cámara está 2,5 mm detrás de la línea del conector y la S tiene que pasar por detrás sin tocarla.</p>
+  </header>
+  <div class="answer">
+    <div class="cell main"><span class="k">Largo del flex</span><span class="v">19,0 mm</span><span class="s">± 0,25, entre cantos rígidos, con 1 mm recto en cada extremo.</span></div>
+    <div class="cell"><span class="k">Juego a la placa de cámara</span><span class="v">≥ 1,43 mm</span><span class="s">en toda la carrera, con tolerancias. Con dimensiones nominales, ≥ 2,25.</span></div>
+    <div class="cell"><span class="k">R interior mínimo</span><span class="v">≥ 2,79 mm</span><span class="s">exigido ≥ 2,5; ida y vuelta, conector ±0,35, carrera 12 y 12,5.</span></div>
+    <div class="cell"><span class="k">No acortar</span><span class="v">&lt; 18,5 ✗</span><span class="s">con menos largo la S apoya sobre la placa de cámara o se quiebra.</span></div>
+  </div>
+  <div class="sim">
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Sentido"><button id="s0" aria-pressed="true">Retraído → nominal</button><button id="s1" aria-pressed="false">Nominal → retraído</button></div>
+      <button class="play" id="play">Pausa</button>
+      <label class="slider"><span class="mono" style="font-size:13px">carrera</span><input id="t" type="range" min="0" max="1000" value="0"></label>
+    </div>
+    <canvas id="cv" height="440" aria-label="Planta de la S durante la carrera"></canvas>
+    <div class="legend"><span><i style="background:var(--ok)"></i>R ≥ 3,0</span><span><i style="background:var(--warn)"></i>2,5 ≤ R &lt; 3,0</span><span><i style="background:var(--bad)"></i>R &lt; 2,5</span><span><i style="background:var(--pcb)"></i>placas</span><span><i style="background:var(--cam)"></i>módulo de cámara</span></div>
+    <div class="readout">
+      <div class="ro"><div class="k">Retracción</div><div class="v" id="v1">–</div></div>
+      <div class="ro"><div class="k">R interior ahora</div><div class="v" id="v2">–</div></div>
+      <div class="ro"><div class="k">Juego a la placa de cámara</div><div class="v" id="v3">–</div></div>
+      <div class="ro"><div class="k">R mín. del recorrido</div><div class="v" id="v4">–</div></div>
+    </div>
+  </div>
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <h2>Plano (A3)</h2>
+    <p>Planta 4:1 con tus cotas, desarrollo de la tira, tabla de puntos de tangencia y notas. El PDF y el DXF están en <span class="mono">flex_omega/planos/</span>.</p>
+    <div class="tw" style="background:#fff;border:1px solid var(--line)"><img src="data:image/png;base64,__PLANO__" alt="Plano A3 de la S en el layout del 27/9" style="width:100%;min-width:900px;display:block"></div>
+  </section>
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <h2>Cómo lo interpreté</h2>
+    <ul>
+      <li>x = 0 es la línea del flex sobre la cara delantera de la placa del conector; x crece hacia el panel.</li>
+      <li>Pestaña fija 5,0 detrás; placa de cámara con su cara trasera 2,5 detrás, desde z ≈ 22 hacia la derecha (5,5 desde el canto del conector).</li>
+      <li>Módulo de cámara desde z = 21,16 (4,66 del canto del conector), 8,5 de ancho.</li>
+      <li>Juego exigido a la placa de cámara: 0,3 mm como mínimo; el resultado da bastante más.</li>
+    </ul>
+  </section>
+</div>
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const f2 = v => (Math.round(v * 100) / 100).toFixed(2).replace('.', ',');
+let dir = 'ret_a_nom', u = 0, playing = !matchMedia('(prefers-reduced-motion: reduce)').matches, last = null, hold = 0;
+const T = document.getElementById('t'), pb = document.getElementById('play');
+function fit(c){ const r = c.getBoundingClientRect(), dpr = devicePixelRatio || 1, h = +(c.dataset.h ||= c.getAttribute('height'));
+  c.width = r.width * dpr; c.height = h * dpr; c.style.height = h + 'px'; const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); return [g, r.width, h]; }
+const colR = R => R < 2.5 ? css('--bad') : R < 3 ? css('--warn') : css('--ok');
+function draw(){
+  const seq = D.seq[dir], fr = seq[Math.round(u * (seq.length - 1))];
+  const [g, w, h] = fit(document.getElementById('cv'));
+  const zmin = -1, zmax = 48, xmin = -14, xmax = 6;
+  const sc = Math.min((w - 30) / (zmax - zmin), (h - 30) / (xmax - xmin));
+  const oz = 15 + (w - 30 - sc * (zmax - zmin)) / 2, oy = 15;
+  const P = (z, x) => [oz + (z - zmin) * sc, oy + (x - xmin) * sc];   // x hacia el panel = abajo
+  const rect = (z0, z1, x0, x1, s, f) => { const [a, b] = P(z0, x0), [c, d] = P(z1, x1); g.fillStyle = f; g.fillRect(a, b, c - a, d - b); g.strokeStyle = s; g.lineWidth = 1; g.strokeRect(a, b, c - a, d - b); };
+  g.strokeStyle = css('--grid'); g.lineWidth = 1;
+  for (let z = 0; z <= 48; z++){ g.globalAlpha = z % 5 ? .5 : 1; g.beginPath(); g.moveTo(...P(z, xmin)); g.lineTo(...P(z, xmax)); g.stroke(); }
+  for (let x = xmin; x <= xmax; x++){ g.globalAlpha = x % 5 ? .5 : 1; g.beginPath(); g.moveTo(...P(zmin, x)); g.lineTo(...P(zmax, x)); g.stroke(); }
+  g.globalAlpha = 1; g.font = '11px "IBM Plex Mono", monospace';
+  rect(D.mod_z0, D.mod_z1, D.cam_pcb_x + 2.12, D.cam_pcb_x + 2.12 + 5.05, css('--cam'), css('--camfill'));
+  rect(D.cam_pcb_z0, 46, D.cam_pcb_x, D.cam_pcb_x + 1, css('--pcb'), css('--pcbfill'));
+  rect(D.ZC + D.Z, D.ZC + D.Z + 14, -D.A - 0.9, -D.A + 0.1, css('--pcb'), css('--pcbfill'));
+  const X = -fr.ret; rect(0, D.ZC, X - 0.9, X + 0.1, css('--pcb'), css('--pcbfill'));
+  g.fillStyle = css('--muted'); g.fillText('placa del conector', ...P(0.5, X + 1.9)); g.fillText('pestaña fija', ...P(D.ZC + D.Z + 0.5, -D.A - 1.5));
+  g.fillText('placa de cámara', ...P(36, D.cam_pcb_x + 2.3)); g.fillText('módulo cámara', ...P(D.mod_z0 + 0.4, D.cam_pcb_x + 4.6));
+  const zs = fr.z, xs = fr.x, k = fr.k; g.lineWidth = 4;
+  for (let i = 0; i < zs.length - 1; i++){ const ki = Math.max(k[Math.max(0, i - 1)] || 0, k[Math.min(k.length - 1, i)] || 0), R = ki > 0 ? 1 / ki - 0.1 : 99;
+    g.strokeStyle = (i === 0 || i === zs.length - 2) ? css('--kapton') : colR(R); g.beginPath(); g.moveTo(...P(zs[i], xs[i])); g.lineTo(...P(zs[i + 1], xs[i + 1])); g.stroke(); }
+  document.getElementById('v1').textContent = f2(fr.ret) + ' mm'; document.getElementById('v2').textContent = f2(fr.R) + ' mm';
+  document.getElementById('v3').textContent = f2(fr.gap) + ' mm'; document.getElementById('v4').textContent = f2(D.Rmin) + ' mm';
+  document.getElementById('v2').parentElement.className = 'ro ' + (fr.R < 2.5 ? 'bad' : 'good');
+  document.getElementById('v3').parentElement.className = 'ro ' + (fr.gap < 0.3 ? 'bad' : 'good');
+  document.getElementById('v4').parentElement.className = 'ro ' + (D.Rmin < 2.5 ? 'bad' : 'good');
+}
+function setDir(d){ dir = d; ['s0', 's1'].forEach((id, i) => document.getElementById(id).setAttribute('aria-pressed', (i === 0) === (d === 'ret_a_nom'))); draw(); }
+document.getElementById('s0').onclick = () => setDir('ret_a_nom'); document.getElementById('s1').onclick = () => setDir('nom_a_ret');
+pb.onclick = () => { playing = !playing; pb.textContent = playing ? 'Pausa' : 'Reproducir'; last = null; if (playing) requestAnimationFrame(tick); };
+if (!playing) pb.textContent = 'Reproducir';
+T.oninput = () => { u = T.value / 1000; playing = false; pb.textContent = 'Reproducir'; draw(); };
+function tick(ts){ if (!playing) return;
+  if (last != null){ const dt = (ts - last) / 1000; if (hold > 0) hold -= dt; else { u += dt / 5; if (u >= 1){ u = 1; hold = 1.2; } } }
+  if (u >= 1 && hold <= 0){ u = 0; setDir(dir === 'ret_a_nom' ? 'nom_a_ret' : 'ret_a_nom'); }
+  last = ts; T.value = Math.round(u * 1000); draw(); requestAnimationFrame(tick); }
+addEventListener('resize', draw); matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+draw(); if (playing) requestAnimationFrame(tick);
+</script>

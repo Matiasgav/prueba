@@ -1,0 +1,379 @@
+<title>Flex 3D: opciones</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#f3f5f8; --sheet:#ffffff; --ink:#18223a; --muted:#5b6780; --line:#c9d1de;
+  --dim:#d4145a; --ok:#1b8a4b; --warn:#c17a00; --bad:#d4145a; --scene:#eef2f7;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  color-scheme:dark; --paper:#0f1522; --sheet:#151d2e; --ink:#e4e9f3; --muted:#9aa6bd; --line:#2b3852;
+  --dim:#ff5c93; --ok:#4cc987; --warn:#f0b43c; --bad:#ff5c93; --scene:#111a2a;}}
+:root[data-theme="dark"]{
+  color-scheme:dark; --paper:#0f1522; --sheet:#151d2e; --ink:#e4e9f3; --muted:#9aa6bd; --line:#2b3852;
+  --dim:#ff5c93; --ok:#4cc987; --warn:#f0b43c; --bad:#ff5c93; --scene:#111a2a;}
+body{background:var(--paper);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,sans-serif;padding-inline:16px;padding-block:24px 48px}
+.wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+h1,h2,h3{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:600;margin:0;text-wrap:balance}
+h1{font-size:38px;line-height:1.05} h2{font-size:26px} h3{font-size:21px}
+p{margin:0;max-width:70ch}
+.lede{color:var(--muted)}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.sim{background:var(--sheet);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:12px}
+.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line)}
+.seg button{background:transparent;color:var(--ink);border:0;padding:7px 12px;font:inherit;font-size:14px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--dim);outline-offset:2px}
+.play{background:var(--dim);color:#fff;border:0;padding:8px 16px;font:inherit;font-weight:600;cursor:pointer}
+.slider{display:flex;align-items:center;gap:10px;flex:1 1 240px}
+.slider input{flex:1;accent-color:var(--dim)}
+#view{width:100%;height:520px;display:block;background:var(--scene);touch-action:none}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.ro{border-top:2px solid var(--line);padding-top:6px}
+.ro .k{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.ro .v{font-family:"IBM Plex Mono",monospace;font-size:20px;font-variant-numeric:tabular-nums}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:14px;vertical-align:-2px;margin-right:6px;border-radius:2px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.card{background:var(--sheet);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:8px}
+.card.sel{border-color:var(--ink)}
+.card dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0;font-size:14px}
+.card dt{color:var(--muted)} .card dd{margin:0;font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.hint{font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion: reduce){.play{display:none}}
+</style>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <h1>Flex del conector: opciones en 3D</h1>
+    <p class="lede">Tres formas de absorber los 12 mm de retracción del conector. El color del flex indica el radio interior local. x es la carrera hacia el panel, y la altura (límite 10,5 mm) y z la dirección lateral.</p>
+  </header>
+
+  <div class="sim">
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Opción">
+        <button id="o0" aria-pressed="true">1 · Placa en el piso</button>
+        <button id="o1" aria-pressed="false">2 · S lateral de canto</button>
+        <button id="o2" aria-pressed="false">3 · U rodante de canto</button>
+        <button id="o3" aria-pressed="false">4 · Interfaz + cámara</button>
+        <button id="o4" aria-pressed="false">5 · Cámara centrada</button>
+        <button id="o5" aria-pressed="false">6 · Cámara horizontal</button>
+        <button id="o6" aria-pressed="false">7 · Pared lateral</button>
+        <button id="o7" aria-pressed="false">LED A · B2B</button>
+        <button id="o8" aria-pressed="false">LED B · isla</button>
+        <button id="o9" aria-pressed="false">LED C · FFC</button>
+        <button id="o10" aria-pressed="false">Sujeción</button>
+      </div>
+      <div class="seg" role="group" aria-label="Vista">
+        <button id="v0" aria-pressed="true">Isométrica</button>
+        <button id="v1" aria-pressed="false">Arriba</button>
+        <button id="v2" aria-pressed="false">Lateral</button>
+      </div>
+      <button class="play" id="play">Pausa</button>
+      <label class="slider"><span class="mono" style="font-size:13px">retracción</span><input id="t" type="range" min="0" max="1000" value="0"></label>
+    </div>
+    <canvas id="view" aria-label="Vista 3D del flex"></canvas>
+    <p class="hint">Arrastrá para girar, rueda o pellizco para acercar, botón derecho para desplazar.</p>
+    <div class="legend">
+      <span><i style="background:#1f7a3d"></i>placas rígidas (FR4)</span>
+      <span><i style="background:#c9761a"></i>flex de poliimida (Kapton)</span>
+      <span><i style="background:#cfc58a"></i>rigidizador de la cámara</span>
+      <span><i style="background:#7d8799"></i>conectores y guías</span>
+      <span><i style="background:#2b2f38"></i>cámara MIPI</span>
+      <span><i style="background:#b9c0cc"></i>rosca 12 mm y lente</span>
+      <span><i style="background:#ffe08a"></i>LED 3 × 3 × 3</span>
+      <span><i style="background:#fff4c2"></i>guía de luz</span>
+      <span><i style="background:#d9d4c7"></i>cable plano FFC</span>
+      <span><i style="background:#aab2c0"></i>chasis (bujes, nervios, guías)</span>
+      <span><i style="background:#8a939f"></i>tornillo</span>
+      <span><i style="background:#c9a227"></i>separador</span>
+      <span><i style="background:#e38fb0"></i>espuma</span>
+      <span><i style="background:#d4145a;opacity:.35"></i>techo y línea nominal</span>
+      <label style="display:inline-flex;gap:6px;align-items:center;color:var(--ink)"><input type="checkbox" id="showr"> colorear el flex por radio (azul ≥ 1,17 × mín., ámbar cerca, rojo por debajo)</label>
+    </div>
+    <div class="readout">
+      <div class="ro"><div class="k">Retracción</div><div class="v" id="r1">–</div></div>
+      <div class="ro"><div class="k">R interior mín. ahora</div><div class="v" id="r2">–</div></div>
+      <div class="ro"><div class="k">W (mainboard → nominal)</div><div class="v" id="r3">–</div></div>
+      <div class="ro"><div class="k">R mín. en toda la carrera</div><div class="v" id="r4">–</div></div>
+    </div>
+  </div>
+
+  <div class="cards">
+    <article class="card sel" id="c0">
+      <h3>1 · Placa del conector en el piso</h3>
+      <dl><dt>W</dt><dd>24 mm (mín. 23)</dd><dt>Largo del flex</dt><dd>30 mm</dd><dt>R mín.</dt><dd>3,16 mm</dd><dt>Espacio lateral</dt><dd>solo el ancho del flex</dd></dl>
+      <ul>
+        <li>Todo en un plano; simple de fabricar y montar.</li>
+        <li>Placa del conector de 5 mm de alto como máximo.</li>
+        <li>El bucle sube a ~14 mm solo mientras está retraído.</li>
+      </ul>
+    </article>
+    <article class="card" id="c1">
+      <h3>2 · S lateral con el flex de canto</h3>
+      <dl><dt>W</dt><dd>≈ 13 mm</dd><dt>Tramo en S</dt><dd>14 mm en z (flex 15,7)</dd><dt>R mín.</dt><dd>3,73 mm (ida y vuelta)</dd><dt>Espacio lateral</dt><dd>~20 mm (S + pestaña)</dd></dl>
+      <ul>
+        <li>El flex sale por el canto lateral de la placa del conector, ya de canto.</li>
+        <li>En la mainboard necesita una pestaña rígida vertical fijada con un soporte.</li>
+        <li>Armado con la S desplazada 6 mm: trabaja ±6 mm y nunca queda recto.</li>
+        <li>El flex parado mide lo que su ancho: ≤ 10 mm de ancho.</li>
+      </ul>
+    </article>
+    <article class="card" id="c2">
+      <h3>3 · U rodante de canto, en canal</h3>
+      <dl><dt>W</dt><dd>≈ 13 mm</dd><dt>Canal</dt><dd>7,6 mm entre caras</dd><dt>R mín.</dt><dd>3,0 mm, constante</dd><dt>Espacio lateral</dt><dd>~25 mm; la U pasa ~6 mm la línea nominal</dd></dl>
+      <ul>
+        <li>La U avanza la mitad de la carrera y el radio no cambia: la opción con menos fatiga.</li>
+        <li>Necesita un canal con dos paredes: sin él, la punta se cierra (con 6,4 mm entre caras el radio baja a 2,5).</li>
+        <li>Dos dobleces extra de 90° y una pestaña rígida en la mainboard.</li>
+        <li>La punta se dibuja como semicírculo; el canal está calculado con la forma elástica real.</li>
+      </ul>
+    </article>
+    <article class="card" id="c3">
+      <h3>4 · Placa de interfaz fija + cámara + S doble</h3>
+      <dl><dt>Ancho lateral</dt><dd>51 mm de 52: interfaz 21 + S 16 + placa del conector 14</dd><dt>W</dt><dd>≈ 13 mm</dd><dt>S</dt><dd>16 mm en z, flex 19,2 mm, desplazada +3,2 / −8,8</dd><dt>R mín.</dt><dd>3,61 mm (ida y vuelta)</dd></dl>
+      <ul>
+        <li>La pestaña crece y pasa a ser una placa de interfaz fija: recibe el flex de la mainboard (48 V, Gigabit y MIPI) y el conector de la cámara.</li>
+        <li>La cámara va fija contra la ventana del panel y su flex de fábrica se enchufa en la placa de interfaz. No se mueve.</li>
+        <li>Gigabit con 48 V no entra en una tira de 10 mm de alto: van dos tiras en S, que son dos capas de flex independientes del rigid-flex, separadas ~1 mm.</li>
+        <li>Supone 4 mm de cuerpo de conector entre la placa y el panel; eso fija el desplazamiento de la S.</li>
+        <li>La rosca de 12 mm de diámetro no entra bajo 10,5: en el dibujo sobresale 0,75 mm arriba y abajo.</li>
+      </ul>
+    </article>
+    <article class="card" id="c4">
+      <h3>5 · Cámara centrada, S por detrás, LED con guía de luz</h3>
+      <dl><dt>Ancho lateral</dt><dd>52 mm: interfaz 0–16, S 16–33, placa del conector 33–52</dd><dt>Cámara</dt><dd>girada 90°, flex recto, lente en z = 26 sobre el piso</dd><dt>S</dt><dd>17 mm en z, flex 22 mm, tira de 11 mm (48 V en 1 oz)</dd><dt>R mín.</dt><dd>3,50 mm (ida y vuelta)</dd></dl>
+      <ul>
+        <li>Geometría de la cámara del STEP: módulo de 5,05 mm, cola de 19 mm y conector AXT a 11,8 mm de la lente, enchufado en la cara delantera de la interfaz.</li>
+        <li>LED en la interfaz, antes de la cola. Una guía de luz en L pasa por delante de la cola y sale al panel a la altura de la lente, a ~7 mm, del lado contrario al conector.</li>
+        <li>La S pasa por detrás de la cámara, contenida por una pared de 0,5 mm.</li>
+        <li>El flex de la mainboard entra por la muesca inferior de la interfaz: 11,4 mm disponibles.</li>
+      </ul>
+    </article>
+    <article class="card" id="c5">
+      <h3>6 · Cámara horizontal invertida + M12 acodado</h3>
+      <dl><dt>Imagen</dt><dd>horizontal; el sensor corrige con flip + espejo</dd><dt>W</dt><dd>28 mm (mín. 26,7), flex del conector 38 mm</dd><dt>R mín.</dt><dd>3,14 mm (ida y vuelta)</dd><dt>Altura</dt><dd>11,3 mm en nominal; ~14,5 mm retraído</dd></dl>
+      <ul>
+        <li>El conector va en una placa horizontal con un M12 acodado. Su flex hace un arco hacia arriba del lado del conector: nada pasa por detrás de la cámara.</li>
+        <li>La cámara va al revés, apoyada en el piso. La cola sube y se dobla 90° hacia atrás (R 1,5, dentro de 12 × 0,12 mm) y se enchufa en una placa de cámara horizontal bajo el techo.</li>
+        <li>La placa de cámara recibe el flex de la mainboard con dos curvas de R 3.</li>
+        <li>LED del lado contrario al conector, a ~9 mm de la lente, en una islita rígida que baja con una bisagra de flex (R 2,5) desde la placa de cámara.</li>
+        <li>Justo: el rigidizador de la cámara queda a 11,77 mm (techo 11,9). Retraído, el arco del conector supera los 12 mm del chasis: montaje sin tapa.</li>
+      </ul>
+    </article>
+    <article class="card" id="c6">
+      <h3>7 · Pared de flex desde el canto lateral (tu propuesta)</h3>
+      <dl><dt>Recorrido</dt><dd>canto izquierdo de la mainboard → sube 90° (R 3) → esquina 90° (R 3) → pared paralela al panel</dd><dt>Por la esquina</dt><dd>7 mm de alto: MIPI, LED y alimentación de cámara</dd><dt>48 V + Gigabit</dt><dd>segundo tramo desde el canto delantero de la mainboard, 8,4 mm</dd><dt>R mín. S</dt><dd>3,50 mm (ida y vuelta)</dd></dl>
+      <ul>
+        <li>La sección de cámara es un tramo rígido de la misma pared; recibe los dos tramos de flex y el conector de la cámara.</li>
+        <li>La mainboard llega hasta ~4 mm de la pared frente a la cámara y se recorta hacia atrás donde barren la S y la placa del conector.</li>
+        <li>En la esquina las pistas van horizontales y solo se usa la altura por encima del primer doblez: por eso no entra todo por ahí.</li>
+        <li>La S, el LED con guía de luz y la placa del conector son iguales a la opción 5.</li>
+        <li>En la esquina, los dos dobleces perpendiculares necesitan un corte de alivio en el flex, como en tu boceto.</li>
+      </ul>
+    </article>
+    <article class="card" id="c7">
+      <h3>LED A · placa del LED con conector board-to-board</h3>
+      <dl><dt>LED</dt><dd>a la altura de la lente, z 17,8–20,8 (~7 mm de la lente)</dd><dt>Placa del LED</dt><dd>0,6 mm, z 6–21,5, delante de la cola de la cámara</dd><dt>Conector</dt><dd>B2B apilable de 2,0 mm apareado, en z 6,5–9,5</dd><dt>Juego a la cola</dt><dd>~0,5 mm al rigidizador de la cámara</dd></dl>
+      <ul>
+        <li>El B2B se enchufa en la sección de cámara donde la cola de la cámara ya terminó (z &lt; 11,25).</li>
+        <li>Montaje: con la cámara ya enchufada, la placa del LED baja 1 mm adelantada y se presiona hacia atrás para enchufar.</li>
+        <li>Estándar y desmontable. Ejemplos a verificar: Hirose DF40, Molex SlimStack, Panasonic A35S.</li>
+      </ul>
+    </article>
+    <article class="card" id="c8">
+      <h3>LED B · isla del mismo rigid-flex</h3>
+      <dl><dt>LED</dt><dd>z 17,9–20,9, a la altura de la lente</dd><dt>Isla</dt><dd>rígida de 0,8 mm, a ~0,4 mm del flex de la cámara</dd><dt>Brazo</dt><dd>flex de 1,7 mm por arriba de la cola, S de R 2,6</dd><dt>Extra</dt><dd>ninguna pieza nueva</dd></dl>
+      <ul>
+        <li>El brazo sale del canto superior de la sección de cámara y pasa por encima del rigidizador (0,1 mm de juego vertical: ajustado).</li>
+        <li>La S del conector ya no molesta: arranca desde su pestaña, mucho más atrás.</li>
+        <li>Montaje delicado: la isla baja entre la cola de la cámara y el panel.</li>
+      </ul>
+    </article>
+    <article class="card" id="c9">
+      <h3>LED C · placa pegada al panel + cable plano (FFC)</h3>
+      <dl><dt>LED</dt><dd>z 17,8–20,8, apoyado contra la ventana del panel</dd><dt>Placa del LED</dt><dd>0,8 mm, pegada o clipeada al panel</dd><dt>Cable</dt><dd>FFC de 2–3 vías (1,7 mm) por arriba de la cola</dd><dt>Conectores</dt><dd>ZIF en la sección de cámara y en la placa del LED</dd></dl>
+      <ul>
+        <li>El LED queda alineado con su ventana sin depender de las tolerancias de la plaqueta.</li>
+        <li>El cable pasa por arriba del rigidizador de la cámara y absorbe el juego.</li>
+        <li>Montaje simple: se enchufa el cable después de instalar la plaqueta.</li>
+      </ul>
+    </article>
+    <article class="card" id="c10">
+      <h3>Sujeción del conjunto (con LED A)</h3>
+      <dl><dt>Apilado</dt><dd>1 tornillo M1.6 × 6 + separador 2,0 + buje en el panel</dd><dt>Cámara</dt><dd>pegada a la ventana; su cola apretada por espuma</dd><dt>Pestaña de la S</dt><dd>ranura en dos postes del chasis + tapa</dd><dt>Conector M12</dt><dd>tuerca en el panel</dd></dl>
+      <ul>
+        <li>El tornillo del apilado pasa por la sección de cámara, el separador (misma altura que el B2B) y la placa del LED, y rosca en un buje del panel. Fija la sección de cámara y la placa del LED de una vez.</li>
+        <li>La espuma (~0,8 mm libre, ~0,5 apretada) va entre la placa del LED y el rigidizador de la cámara: mantiene enchufada la cámara y absorbe tolerancias.</li>
+        <li>Un nervio del panel apoya la punta de la placa del LED y hace de barrera de luz entre el LED y la cámara.</li>
+        <li>La pestaña fija de la S baja en una ranura vertical entre dos postes del chasis; la tapa la frena desde arriba.</li>
+        <li>La mainboard va con la cinta de 0,25 y sus tornillos. La placa del conector queda tomada por la tuerca del M12 en nominal.</li>
+      </ul>
+    </article>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const canvas = document.getElementById('view');
+const renderer = new THREE.WebGLRenderer({canvas, antialias: true});
+renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1));
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true;
+scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(30, 60, 40); scene.add(sun);
+const fill = new THREE.DirectionalLight(0xffffff, 0.3); fill.position.set(-40, 20, -30); scene.add(fill);
+
+const MAT = {
+  mainboard: new THREE.MeshStandardMaterial({color: 0x1f7a3d, roughness: .55}),
+  placa: new THREE.MeshStandardMaterial({color: 0x1f7a3d, roughness: .55}),
+  pestana: new THREE.MeshStandardMaterial({color: 0x1f7a3d, roughness: .55}),
+  rigidizador: new THREE.MeshStandardMaterial({color: 0xcfc58a, roughness: .7}),
+  conector: new THREE.MeshStandardMaterial({color: 0x7d8799, roughness: .5, metalness: .3}),
+  guia: new THREE.MeshStandardMaterial({color: 0x7d8799, roughness: .6, transparent: true, opacity: .35}),
+  camara: new THREE.MeshStandardMaterial({color: 0x2b2f38, roughness: .4, metalness: .2}),
+  rosca: new THREE.MeshStandardMaterial({color: 0xb9c0cc, roughness: .35, metalness: .6}),
+  guia_luz: new THREE.MeshStandardMaterial({color: 0xfff4c2, emissive: 0xffe08a, emissiveIntensity: .25, roughness: .1, transparent: true, opacity: .55}),
+  chasis: new THREE.MeshStandardMaterial({color: 0xaab2c0, roughness: .8, transparent: true, opacity: .75}),
+  tornillo: new THREE.MeshStandardMaterial({color: 0x8a939f, roughness: .3, metalness: .8}),
+  separador: new THREE.MeshStandardMaterial({color: 0xc9a227, roughness: .35, metalness: .7}),
+  espuma: new THREE.MeshStandardMaterial({color: 0xe38fb0, roughness: .95}),
+  tuerca: new THREE.MeshStandardMaterial({color: 0x9aa3ad, roughness: .35, metalness: .7, transparent: true, opacity: .6}),
+  led: new THREE.MeshStandardMaterial({color: 0xffe08a, emissive: 0xffc93c, emissiveIntensity: .6, roughness: .3}),
+  panel: new THREE.MeshStandardMaterial({color: 0x9aa3b2, roughness: .8, transparent: true, opacity: .18, depthWrite: false}),
+};
+const flexMat = new THREE.MeshStandardMaterial({vertexColors: true, side: THREE.DoubleSide, roughness: .35, metalness: .05});
+const ok = new THREE.Color(0x2f5fd0), warn = new THREE.Color(0xe0a800), bad = new THREE.Color(0xd4145a), kapton = new THREE.Color(0xc9761a);
+let showR = false;
+const colR = (R, req) => !showR ? kapton : R < req - 1e-3 ? bad : R < req * 1.17 ? warn : ok;
+
+let oi = 0, u = 0, playing = !matchMedia('(prefers-reduced-motion: reduce)').matches, last = null, hold = 0, dirv = 1;
+let dyn = new THREE.Group(); scene.add(dyn);
+let stat = new THREE.Group(); scene.add(stat);
+
+function ribbonMesh(r){
+  const n = r.p.length, pos = new Float32Array(n * 2 * 3), col = new Float32Array(n * 2 * 3), idx = [];
+  const hw = r.w / 2;
+  for (let i = 0; i < n; i++){
+    const p = r.p[i], c = r.col && !showR ? new THREE.Color(r.col) : colR(r.R[i], r.rreq || 3);
+    for (let s = 0; s < 2; s++){
+      const k = (i * 2 + s) * 3, sg = s ? 1 : -1;
+      pos[k] = p[0] + sg * r.b[0] * hw; pos[k + 1] = p[1] + sg * r.b[1] * hw; pos[k + 2] = p[2] + sg * r.b[2] * hw;
+      col[k] = c.r; col[k + 1] = c.g; col[k + 2] = c.b;
+    }
+    if (i < n - 1){ const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  g.setIndex(idx); g.computeVertexNormals();
+  return new THREE.Mesh(g, flexMat);
+}
+function boxMesh(b){
+  if (b.cyl){
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(b.r, b.r, b.len, 32), MAT[b.kind]);
+    m.rotation.z = Math.PI / 2; m.position.set(b.x0 + b.len / 2, b.y, b.z); return m;
+  }
+  const s = [b.max[0] - b.min[0], b.max[1] - b.min[1], b.max[2] - b.min[2]];
+  const m = new THREE.Mesh(new THREE.BoxGeometry(...s), MAT[b.kind]);
+  m.position.set((b.max[0] + b.min[0]) / 2, (b.max[1] + b.min[1]) / 2, (b.max[2] + b.min[2]) / 2);
+  const e = new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry), new THREE.LineBasicMaterial({color: 0x18223a, transparent: true, opacity: .35}));
+  m.add(e); return m;
+}
+function clear(g){ g.children.slice().forEach(ch => { g.remove(ch); ch.traverse(o => { if (o.geometry) o.geometry.dispose(); }); }); }
+
+function frameBounds(o){
+  const mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
+  for (const f of [o.frames[0], o.frames[o.frames.length - 1]]){
+    for (const r of f.ribbons) for (const p of r.p) for (let k = 0; k < 3; k++){ mn[k] = Math.min(mn[k], p[k]); mx[k] = Math.max(mx[k], p[k]); }
+    for (const b of f.boxes){ if (b.cyl || b.kind === 'panel') continue; for (let k = 0; k < 3; k++){ mn[k] = Math.min(mn[k], b.min[k]); mx[k] = Math.max(mx[k], b.max[k]); } }
+  }
+  return {mn, mx};
+}
+
+function buildStatic(){
+  clear(stat);
+  const o = D[oi], {mn, mx} = frameBounds(o);
+  const dim = new THREE.Color(css('--dim') || '#d4145a');
+  const pm = new THREE.MeshBasicMaterial({color: dim, transparent: true, opacity: .08, side: THREE.DoubleSide, depthWrite: false});
+  const ceil = new THREE.Mesh(new THREE.PlaneGeometry(mx[0] - mn[0] + 6, mx[2] - mn[2] + 6), pm);
+  const HH = o.H || 10.5;
+  ceil.rotation.x = -Math.PI / 2; ceil.position.set((mx[0] + mn[0]) / 2, HH, (mx[2] + mn[2]) / 2); stat.add(ceil);
+  const nom = new THREE.Mesh(new THREE.PlaneGeometry(mx[2] - mn[2] + 6, HH), pm);
+  nom.rotation.y = Math.PI / 2; nom.position.set(o.W, HH / 2, (mx[2] + mn[2]) / 2); stat.add(nom);
+  const lm = new THREE.LineBasicMaterial({color: dim});
+  const edge = (a, b) => stat.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...a), new THREE.Vector3(...b)]), lm));
+  edge([mn[0] - 3, HH, mn[2] - 3], [mx[0] + 3, HH, mn[2] - 3]);
+  edge([o.W, 0, mn[2] - 3], [o.W, HH, mn[2] - 3]); edge([o.W, 0, mx[2] + 3], [o.W, HH, mx[2] + 3]);
+  edge([0, 0, mn[2] - 3], [0, HH, mn[2] - 3]);
+  if (o.env){ for (const z of o.env){ edge([mn[0] - 3, 0, z], [mx[0] + 12, 0, z]); edge([mn[0] - 3, HH, z], [mx[0] + 12, HH, z]); } }
+  const grid = new THREE.GridHelper(Math.max(mx[0] - mn[0], mx[2] - mn[2]) + 20, Math.round((Math.max(mx[0] - mn[0], mx[2] - mn[2]) + 20) / 2), 0x8892a6, 0xc0c8d6);
+  grid.material.transparent = true; grid.material.opacity = .35;
+  grid.position.set((mx[0] + mn[0]) / 2, 0, (mx[2] + mn[2]) / 2); stat.add(grid);
+  document.getElementById('r3').textContent = String(o.W).replace('.', ',') + ' mm';
+  document.getElementById('r4').textContent = o.Rmin.toFixed(2).replace('.', ',') + ' mm';
+}
+
+function setView(v){
+  const o = D[oi], {mn, mx} = frameBounds(o);
+  const cx = (mx[0] + mn[0]) / 2, cz = (mx[2] + mn[2]) / 2, span = Math.max(mx[0] - mn[0], mx[2] - mn[2], 12);
+  controls.target.set(cx, 4, cz);
+  const d = span * 1.25;
+  if (v === 0 && o.focus){ controls.target.set(...o.focus.target); camera.position.set(...o.focus.pos); camera.lookAt(controls.target); controls.update(); ['v0', 'v1', 'v2'].forEach((id, i) => document.getElementById(id).setAttribute('aria-pressed', i === v)); return; }
+  if (v === 0) camera.position.set(cx + d * .55, 4 + d * .6, cz + d * .75);
+  if (v === 1) camera.position.set(cx, 4 + d * 1.1, cz + .01);
+  if (v === 2) camera.position.set(cx, 5, cz + d * 1.05);
+  camera.lookAt(controls.target); controls.update();
+  ['v0', 'v1', 'v2'].forEach((id, i) => document.getElementById(id).setAttribute('aria-pressed', i === v));
+}
+
+function show(){
+  const o = D[oi], n = o.frames.length, f = o.frames[Math.round(u * (n - 1))];
+  clear(dyn);
+  let rmin = 99;
+  for (const r of f.ribbons){ dyn.add(ribbonMesh(r)); if (!r.rreq || r.rreq === 3) rmin = Math.min(rmin, ...r.R); }
+  for (const b of f.boxes) dyn.add(boxMesh(b));
+  document.getElementById('r1').textContent = f.ret.toFixed(1).replace('.', ',') + ' mm';
+  document.getElementById('r2').textContent = rmin.toFixed(2).replace('.', ',') + ' mm';
+}
+
+function resize(){
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+function bg(){ renderer.setClearColor(new THREE.Color(css('--scene') || '#eef2f7')); buildStatic(); }
+
+const T = document.getElementById('t'), pb = document.getElementById('play');
+document.getElementById('showr').onchange = e => { showR = e.target.checked; show(); };
+function selectOption(i){
+  oi = i; ['o0', 'o1', 'o2', 'o3', 'o4', 'o5', 'o6', 'o7', 'o8', 'o9', 'o10'].forEach((id, k) => document.getElementById(id).setAttribute('aria-pressed', k === i));
+  ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10'].forEach((id, k) => document.getElementById(id).classList.toggle('sel', k === i));
+  buildStatic(); setView(0); show();
+}
+['o0', 'o1', 'o2', 'o3', 'o4', 'o5', 'o6', 'o7', 'o8', 'o9', 'o10'].forEach((id, i) => document.getElementById(id).onclick = () => selectOption(i));
+['v0', 'v1', 'v2'].forEach((id, i) => document.getElementById(id).onclick = () => setView(i));
+pb.onclick = () => { playing = !playing; pb.textContent = playing ? 'Pausa' : 'Reproducir'; last = null; };
+if (!playing) pb.textContent = 'Reproducir';
+// el slider va de retraído (0) a nominal (1000)
+T.oninput = () => { u = T.value / 1000; playing = false; pb.textContent = 'Reproducir'; show(); };
+
+function loop(ts){
+  if (playing && last != null){
+    const dt = (ts - last) / 1000;
+    if (hold > 0) hold -= dt;
+    else { u += dirv * dt / 4; if (u >= 1 || u <= 0){ u = Math.min(1, Math.max(0, u)); dirv = -dirv; hold = 1; } }
+    T.value = Math.round(u * 1000); show();
+  }
+  last = ts; controls.update(); renderer.render(scene, camera); requestAnimationFrame(loop);
+}
+addEventListener('resize', resize);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', bg);
+new MutationObserver(bg).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+resize(); bg(); selectOption(0); requestAnimationFrame(loop);
+</script>
