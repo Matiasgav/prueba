@@ -1,0 +1,130 @@
+{
+  "actuadores": {
+    "06L HL 64:1": {
+      "F_continua_N": 15,
+      "margen_vs_50N": 0.3,
+      "par_motor_50N_mNm": 0.254,
+      "par_motor_Fc_mNm": 0.076,
+      "rpm_motor_v_cont": 12288,
+      "t_8mm_cont_s": 5.0,
+      "t_8mm_pico_s": 3.8
+    },
+    "06L HL 256:1": {
+      "F_continua_N": 20,
+      "margen_vs_50N": 0.4,
+      "par_motor_50N_mNm": 0.074,
+      "par_motor_Fc_mNm": 0.03,
+      "rpm_motor_v_cont": 12288,
+      "t_8mm_cont_s": 20.0,
+      "t_8mm_pico_s": 16.0
+    },
+    "06L HL 1024:1": {
+      "F_continua_N": 25,
+      "margen_vs_50N": 0.5,
+      "par_motor_50N_mNm": 0.02,
+      "par_motor_Fc_mNm": 0.01,
+      "rpm_motor_v_cont": 12288,
+      "t_8mm_cont_s": 80.0,
+      "t_8mm_pico_s": 80.0
+    },
+    "10L SL 64:1": {
+      "F_continua_N": 15,
+      "margen_vs_50N": 0.3,
+      "par_motor_50N_mNm": 0.254,
+      "par_motor_Fc_mNm": 0.076,
+      "rpm_motor_v_cont": 12288,
+      "t_8mm_cont_s": 5.0,
+      "t_8mm_pico_s": 3.8
+    },
+    "10L SL 1024:1": {
+      "F_continua_N": 40,
+      "margen_vs_50N": 0.8,
+      "par_motor_50N_mNm": 0.02,
+      "par_motor_Fc_mNm": 0.016,
+      "rpm_motor_v_cont": 12288,
+      "t_8mm_cont_s": 80.0,
+      "t_8mm_pico_s": 80.0
+    },
+    "10L HL 64:1": {
+      "F_continua_N": 100,
+      "margen_vs_50N": 2.0,
+      "par_motor_50N_mNm": 0.254,
+      "par_motor_Fc_mNm": 0.508,
+      "rpm_motor_v_cont": 7680,
+      "t_8mm_cont_s": 8.0,
+      "t_8mm_pico_s": 3.8
+    },
+    "10L HL 256:1": {
+      "F_continua_N": 150,
+      "margen_vs_50N": 3.0,
+      "par_motor_50N_mNm": 0.074,
+      "par_motor_Fc_mNm": 0.222,
+      "rpm_motor_v_cont": 9216,
+      "t_8mm_cont_s": 26.7,
+      "t_8mm_pico_s": 16.0
+    },
+    "10L HL 1024:1": {
+      "F_continua_N": 200,
+      "margen_vs_50N": 4.0,
+      "par_motor_50N_mNm": 0.02,
+      "par_motor_Fc_mNm": 0.081,
+      "rpm_motor_v_cont": 8602,
+      "t_8mm_cont_s": 114.3,
+      "t_8mm_pico_s": 80.0
+    }
+  },
+  "am1020_10L_HL_64": {
+    "v_cont_1mm_s": {
+      "rpm": 7680,
+      "par_disp_2p5x_mNm": 0.88,
+      "par_disp_5x_mNm": 1.19
+    },
+    "v_pico_2p1mm_s": {
+      "rpm": 16128,
+      "par_disp_2p5x_mNm": 0.09,
+      "par_disp_5x_mNm": 0.75
+    },
+    "par_req_50N_mNm": 0.254,
+    "par_req_100N_mNm": 0.508,
+    "F_max_con_par_retencion_N": 315
+  },
+  "dm0620_06L_HL_64_par_15N_mNm": 0.076,
+  "dm0620_par_retencion_mNm": 0.25,
+  "maxon_GPX10_3et": {
+    "T_cont_Nm": 0.1,
+    "empuje_teorico_N": 440,
+    "carga_axial_admisible_N": 5.0
+  },
+  "leva": {
+    "e_mm": 4.0,
+    "carrera_mm": 8.0,
+    "par_max_50N_Nm": 0.2,
+    "GPX10_T_cont_max_Nm": 0.15
+  },
+  "piezo": {
+    "LL10": {
+      "F_N": 6.5,
+      "LxHxD_mm": [
+        22,
+        19.3,
+        10.8
+      ]
+    },
+    "LT20": {
+      "F_N": 20,
+      "LxHxD_mm": [
+        22,
+        21.8,
+        10.8
+      ]
+    },
+    "LT40": {
+      "F_N": 40,
+      "LxHxD_mm": [
+        32.1,
+        24.2,
+        23.1
+      ]
+    }
+  }
+}

@@ -7,9 +7,11 @@
 %-----------------------------------------------------------------------
 %  CÓMO USARLA (en 3 pasos)
 %
-%   1. Copiá este archivo con el código de la nota:
-%         memoria/notas/02489-00-MC007.tex
+%   1. Copiá este archivo con el código de la nota, en su propia carpeta:
+%         memoria/notas/02489-00-MC007/02489-00-MC007.tex
 %      El número (###) es correlativo: mirá la última nota y sumá uno.
+%      Las figuras van en memoria/notas/02489-00-MC007/figuras/ y el PDF
+%      final se copia a memoria/pdf/.
 %
 %   2. Completá los cuatro datos del bloque «DATOS DE LA NOTA».
 %
@@ -18,11 +20,11 @@
 %          ahora que antes no se sabía. Frases cortas, con números.
 %        · El resto es libre. Usá los títulos que te sirvan, o ninguno.
 %
-%   Compilar:  pdflatex 02489-00-MC007.tex
+%   Compilar desde la carpeta de la nota:  pdflatex 02489-00-MC007.tex
 %   En Overleaf: subí el .tex y logo-gris.pdf.
 %
 %  LOGO: se usa «logo-gris.pdf» (GRIS-LOGO-003, reducido) de esta carpeta
-%  o de ../plantilla/. Si falta, se escribe «GRIS» como marcador.
+%  o de ../../plantilla/. Si falta, se escribe «GRIS» como marcador.
 %=======================================================================
 \documentclass[11pt,a4paper]{article}
 
@@ -65,12 +67,12 @@
             colorlinks=true, linkcolor=tinta, urlcolor=tinta}
 
 % --- logo ---------------------------------------------------------------
-\graphicspath{{./}{../plantilla/}{plantilla/}}
+\graphicspath{{./}{figuras/}{../../plantilla/}}
 \newcommand{\logogris}{%
   \IfFileExists{logo-gris.pdf}
     {\includegraphics[height=16pt]{logo-gris.pdf}}
-    {\IfFileExists{../plantilla/logo-gris.pdf}
-      {\includegraphics[height=16pt]{../plantilla/logo-gris.pdf}}
+    {\IfFileExists{../../plantilla/logo-gris.pdf}
+      {\includegraphics[height=16pt]{../../plantilla/logo-gris.pdf}}
       {{\fontsize{18}{18}\selectfont\bfseries\sffamily\color{gris-naranja}GRIS}}}}
 
 % --- tipografía del cliente (código documental) --------------------------

@@ -1,0 +1,561 @@
+% !TeX program = pdflatex
+% !TeX encoding = UTF-8
+%=======================================================================
+%  GRIS-NOT-001  ·  Plantilla de notas rápidas para la memoria
+%  Proyecto 00503 - Generator inspection robotic system · Mecanalisis
+%  Identidad: GRIS-IDENTIDAD-001 v1.4
+%-----------------------------------------------------------------------
+%  CÓMO USARLA (en 3 pasos)
+%
+%   1. Copiá este archivo con el código de la nota:
+%         memoria/notas/02489-00-MC007.tex
+%      El número (###) es correlativo: mirá la última nota y sumá uno.
+%
+%   2. Completá los cuatro datos del bloque «DATOS DE LA NOTA».
+%
+%   3. Escribí:
+%        · Resultados (obligatorio, siempre primero): lo que se sabe
+%          ahora que antes no se sabía. Frases cortas, con números.
+%        · El resto es libre. Usá los títulos que te sirvan, o ninguno.
+%
+%   Compilar:  pdflatex 02489-00-MC007.tex
+%   En Overleaf: subí el .tex y logo-gris.pdf.
+%
+%  LOGO: se usa «logo-gris.pdf» (GRIS-LOGO-003, reducido) de esta carpeta
+%  o de ../plantilla/. Si falta, se escribe «GRIS» como marcador.
+%=======================================================================
+\documentclass[11pt,a4paper]{article}
+
+%=======================================================================
+%  DATOS DE LA NOTA  ← lo único que hay que tocar arriba
+%=======================================================================
+\newcommand{\codigo}{02489-00-MC007}          % 02489-00-MC###
+\newcommand{\titulo}{Selección del LED OSLON SSL 80}
+\newcommand{\autor}{Matías Gaviño}
+\newcommand{\fecha}{28/09/2026}                    % o p. ej. {24/09/2026}
+
+%=======================================================================
+%  ESTILO  (no hace falta tocar nada de aquí hasta \begin{document})
+%=======================================================================
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-noshorthands,es-tabla]{babel}
+\usepackage{lmodern}
+\usepackage[a4paper,top=3.0cm,bottom=2.4cm,left=2.4cm,right=2.4cm,
+            headheight=20pt,headsep=1.2cm,footskip=1.1cm]{geometry}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{amsmath,amssymb}
+\usepackage{float}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+
+% --- colores -----------------------------------------------------------
+\definecolor{gris-naranja}{HTML}{FF7A00}   % naranja institucional
+\definecolor{tinta}{HTML}{1E2328}
+\definecolor{gris-medio}{HTML}{6B7280}
+\definecolor{gris-linea}{HTML}{DADDE1}
+\color{tinta}
+
+\hypersetup{pdftitle={\codigo\ -- \titulo}, pdfauthor={\autor},
+            colorlinks=true, linkcolor=tinta, urlcolor=tinta}
+
+% --- logo ---------------------------------------------------------------
+\graphicspath{{./}{../../plantilla/}{figuras/}}
+\newcommand{\logogris}{%
+  \IfFileExists{logo-gris.pdf}
+    {\includegraphics[height=16pt]{logo-gris.pdf}}
+    {\IfFileExists{../../plantilla/logo-gris.pdf}
+      {\includegraphics[height=16pt]{../../plantilla/logo-gris.pdf}}
+      {{\fontsize{18}{18}\selectfont\bfseries\sffamily\color{gris-naranja}GRIS}}}}
+
+% --- tipografía del cliente (código documental) --------------------------
+% Geogrotesque no es libre; se usa Roboto Condensed Bold, que viene con
+% TeX Live y Overleaf y tiene el mismo aire que el logo.
+\newcommand{\fuentecliente}{\fontfamily{Roboto-TLF}\fontseries{bc}\selectfont}
+
+% --- encabezado y pie ---------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\vspace{3pt}{\color{gris-linea}\hrule height \headrulewidth}}
+\fancyhead[L]{\logogris}
+\fancyhead[R]{{\fuentecliente\fontsize{12}{12}\selectfont\color{gris-medio}\codigo}}
+\fancyfoot[R]{\footnotesize\color{gris-medio}\thepage}
+
+% --- títulos numerados ----------------------------------------------------
+\setcounter{secnumdepth}{2}
+\titleformat{\section}{\large\bfseries}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.8em}{}
+\titlespacing*{\section}{0pt}{16pt}{5pt}
+\titlespacing*{\subsection}{0pt}{11pt}{3pt}
+
+% --- texto ------------------------------------------------------------------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\linespread{1.05}
+\setlist{topsep=2pt, itemsep=2pt, parsep=0pt, leftmargin=1.2em}
+\setlist[itemize]{label={\raisebox{0.15ex}{\small$\bullet$}}}
+\captionsetup{font={small,color=gris-medio}, labelfont=bf, skip=5pt}
+\renewcommand{\arraystretch}{1.25}
+
+% --- cabecera de la nota ------------------------------------------------------
+\newcommand{\cabecera}{%
+  \thispagestyle{fancy}%
+  {\fontsize{20}{24}\selectfont\bfseries\titulo\par}%
+  \vspace{5pt}%
+  {\small\color{gris-medio}\fecha\quad·\quad\autor\par}%
+  \vspace{6pt}}
+
+% --- ayudas opcionales --------------------------------------------------------
+% \figura{archivo}{ancho}{pie}
+\newcommand{\figura}[3]{%
+  \begin{figure}[htbp]\centering
+    \includegraphics[width=#2\linewidth]{#1}\caption{#3}
+  \end{figure}}
+
+
+%=======================================================================
+\newcommand{\hoja}[2]{\fbox{\includegraphics[width=#1\linewidth]{#2}}}
+\setlength{\fboxrule}{0.3pt}\setlength{\fboxsep}{0pt}
+\newcommand{\dsref}{ams OSRAM, datasheet GW CS8PM1.PM v1.10 (2026-03-05)}
+
+\begin{document}
+\cabecera
+
+%-----------------------------------------------------------------------
+\section{Resultados}
+\textbf{LED elegido:} ams OSRAM \textbf{OSLON SSL 80, GW CS8PM1.PM-LUMQ-XX53-1} (5000~K, bin LUMQ;
+alternativa aprobada: LUMQ-A333-1), a \textbf{350~mA con fuente de corriente constante}. Los números salen de
+\texttt{02489-00-MC007/calculo.py}: curvas tomadas de los trazos vectoriales del datasheet y Monte Carlo del
+conducto.
+
+\begin{table}[H]\centering\small
+\begin{tabular}{l l l}
+\toprule
+Magnitud & Valor & Origen\\
+\midrule
+Flujo del LED a 350~mA (bin LUMQ)     & 164--210~lm (medio 187~lm) & datasheet, p.~3 y 6\\
+Potencia eléctrica                   & $\approx$1,0~W (0,35~A $\times$ 2,85~V) & datasheet, p.~5\\
+Luz directa en la ventana            & 19,4\,\% del flujo: 32--41~lm & cálculo, sección~\ref{sec:directa}\\
+Salida, pared difusa, difusor 75--90\,\% & 41--83~lm & Monte Carlo, $R_w$ 0,55--0,92\\
+Salida, pared especular, difusor 75--90\,\% & 79--153~lm & Monte Carlo, $R_w$ 0,55--0,92\\
+Costo por unidad (carrete de 600)    & 0,593~EUR & Mouser Europa, 27/09/2026\\
+\bottomrule
+\end{tabular}
+\caption{Resumen de la selección.}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{El OSLON SSL 80 es el LED adecuado para la geometría:} en un encapsulado de 3,0$\times$3,0~mm su
+        cono de 80° entrega directo a la ventana el \textbf{19,4\,\%} del flujo, contra 11,3\,\% de un LED
+        lambertiano de 120° y 8,7\,\% de uno de 150° ($\times$1,7 y $\times$2,2).
+  \item \textbf{Solo con luz directa no se llega a 100~lm:} llegan 32--41~lm antes del difusor. El 80\,\% del flujo
+        toca la pared antes de poder salir, así que \textbf{la pared del conducto pesa más que el bin del LED}.
+  \item \textbf{Los 100~lm son alcanzables si la pared conserva reflexión especular:} hace falta
+        $R_w \geq 0{,}59$ con difusor de 90\,\% o $R_w \geq 0{,}73$ con difusor de 75\,\%. Con pared mate
+        (difusa) la salida queda en \textbf{41--83~lm} y no llega en ningún caso a 350~mA.
+  \item \textbf{Térmicamente sobra margen en el LED:} con $R_\mathrm{thJS}=3{,}7$~K/W la juntura queda
+        \textbf{$\approx$4~K} sobre el punto de soldadura. El límite real es el camino del calor de la placa al
+        cuerpo de aluminio.
+  \item \textbf{Subir a 500~mA} da +36\,\% de flujo (curva del datasheet) con 1,47~W: una pared difusa de
+        $R_w=0{,}85$ con difusor de 90\,\% pasa de 74 a 100~lm. Solo si el ensayo térmico lo permite.
+  \item \textbf{Discrepancias con el material de partida:} la altura del encapsulado es \textbf{2,13--2,30~mm}
+        según el plano (no 2,21--2,30~mm). El datasheet no dice a qué temperatura se refiere el bin; si fuera a
+        25~°C, en régimen (85~°C) el flujo medio sería 170~lm y no 187~lm.
+  \item \textbf{Siguiente paso:} prototipo con conducto tal como sale de máquina y con la pared tratada (pulido o
+        inserto reflectivo), medir flujo de salida con esfera integradora y temperatura en el punto de
+        soldadura en ensayo 24/7 (sección~\ref{sec:prototipo}). Confirmar con ams OSRAM la temperatura de
+        referencia del bin.
+\end{itemize}
+
+%-----------------------------------------------------------------------
+\section{Requisitos}
+El módulo ilumina el interior del robot de almacenamiento de medicamentos para observación, cámara o detección.
+La mecánica fija las condiciones:
+\begin{itemize}
+  \item LED SMD de potencia dentro de un alojamiento mecanizado.
+  \item Distancia LED--ventana $d \approx 7$~mm; ventana circular con difusor de $\varnothing$5~mm.
+  \item Conducto de \textbf{aluminio fresado}, con buena terminación pero \textbf{no pulido}.
+  \item Salida buscada: del orden de \textbf{100~lm útiles}.
+\end{itemize}
+
+\figura{fig_geometria.pdf}{0.8}{Geometría del módulo (esquema del autor). El cono verde es la luz que llega a la
+ventana sin tocar la pared; las líneas punteadas marcan la media intensidad del LED (±40°).}
+
+\begin{table}[H]\centering\small
+\begin{tabular}{p{4.6cm} p{5.6cm} l}
+\toprule
+Requisito & OSLON SSL 80, LUMQ 5000~K & Cumple\\
+\midrule
+LED SMD compacto & 3,0$\times$3,0~mm, alto 2,13--2,30~mm, cerámico & sí\\
+Cono estrecho hacia $\varnothing$5 a 7~mm & $2\varphi = 80$° al 50\,\% de intensidad & sí\\
+Flujo muy por encima de 100~lm & 164--210~lm a 350~mA & sí\\
+100~lm útiles a la salida & 41--153~lm según pared y difusor & \textbf{a verificar}\\
+Operación 24/7 & $R_\mathrm{thJS}$ 3,7~K/W; $-40$ a $+125$~°C & sí, con diseño térmico\\
+Alimentación simple & corriente constante 350~mA; $V_F$ 2,70--3,20~V & sí\\
+Luz blanca para visión & 5000~K, CRI 70 mín. & sí (no colorimetría)\\
+Montaje automático & SMD, carrete de 600, MSL~2 & sí\\
+Compra & stock en Mouser Europa & sí, importado\\
+\bottomrule
+\end{tabular}
+\caption{Requisitos del sistema frente al LED seleccionado.}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{Pared crítica:} un aluminio fresado sin pulir no es un espejo. Puede conservar parte de la
+        reflexión especular, pero la rugosidad, las marcas de fresa, la oxidación y la limpieza bajan la
+        eficiencia óptica. Por eso se calculan dos escenarios (sección~\ref{sec:conducto}).
+\end{itemize}
+
+%-----------------------------------------------------------------------
+\section{LED seleccionado y alternativas}
+\begin{table}[H]\centering\small
+\begin{tabular}{l l}
+\toprule
+Campo & Valor\\
+\midrule
+Fabricante / familia & ams OSRAM / OSRAM OSLON SSL 80\\
+Tipo base & GW CS8PM1.PM\\
+Variante preferida & \textbf{GW CS8PM1.PM-LUMQ-XX53-1} (Q65113A9964)\\
+Alternativa aprobada & GW CS8PM1.PM-LUMQ-A333-1 (Q65113A9963)\\
+Código en distribución & GW CS8PM1.PM-LUMQ-XX53-1-350-R18 (carrete de 600)\\
+Temperatura de color / flujo & 5000~K / 164--210~lm a 350~mA (grupos LU, MP, MQ)\\
+Estado & \emph{Full production} (página oficial del producto)\\
+\bottomrule
+\end{tabular}
+\caption{Identificación del componente.}
+\end{table}
+
+El bin \textbf{LUMQ} es el de mayor flujo para 5000~K en la versión vigente del datasheet. XX53 y A333 comparten
+flujo y temperatura de color; difieren en la agrupación cromática del pedido.
+
+\begin{figure}[H]\centering
+  \hoja{0.62}{ds_pedido.png}
+  \caption{Tabla de pedido; resaltadas las variantes LUMQ de 5000~K. Fuente: \dsref, p.~3.}
+\end{figure}
+
+\subsection{Alternativas}
+\begin{itemize}
+  \item \textbf{LED de 120° a 150°} (lo más común): descartado. Desperdicia más luz contra la pared; en
+        $\alpha=19{,}65$° captura 11,3\,\% y 8,7\,\% del flujo.
+  \item \textbf{LED u óptica muy cerrados (30--60°):} descartado. Mete más luz directa, pero concentra un
+        \textbf{punto caliente} en el difusor, depende de la \textbf{alineación} LED--conducto y suma una óptica
+        que no entra en el alojamiento.
+  \item \textbf{LEDs genéricos plásticos} (PLCC, 2835, 5050): descartados para 24/7. Sin paquete cerámico, sin
+        curvas de derating completas ni agrupación de flujo, tensión y color, sin trazabilidad de lote.
+  \item \textbf{OSLON SSL 80:} elegido. Compromiso entre tamaño, flujo, disponibilidad industrial y cono
+        preenfocado.
+\end{itemize}
+
+\figura{fig_captura.pdf}{0.85}{Fracción del flujo total dentro de cada semiángulo, modelo $I_0\cos^m\theta$
+ajustado a la media intensidad de cada LED (cálculo propio; $2\varphi$ del OSLON SSL 80 según el datasheet).}
+
+%-----------------------------------------------------------------------
+\section{Características}
+Valores a $I_F=350$~mA y $T_j=85$~°C, salvo indicación. Fuente: \dsref.
+
+\begin{table}[H]\centering\small
+\begin{tabular}{l l l l}
+\toprule
+ & Parámetro & Valor & Nota\\
+\midrule
+Eléctrico & Tensión directa $V_F$ & 2,70 / \textbf{2,85} / 3,20~V & mín./típ./máx.; grupos K2--M2\\
+          & Corriente directa & 100--1300~mA & diseño: 350~mA\\
+          & Corriente de pico & 2000~mA & $t \leq 10~\mu$s, $D = 0{,}005$\\
+          & Tensión inversa & 1,2~V máx. & no polarizar en inversa\\
+          & ESD & 8~kV HBM, clase 3B & diodo de protección interno\\
+Óptico    & Ángulo $2\varphi$ & 80° al 50\,\% de $I_V$ & semiángulo 40°\\
+          & Flujo, bin LUMQ & 164--210~lm & tolerancia de medición ±7\,\%\\
+          & CRI / R9 & 70 mín., 72 típ. / $-40$ mín. & \\
+Térmico   & $R_\mathrm{thJS}$ eléctrica & 3,7~K/W típ. & con $\eta_e = 30$\,\%\\
+          & $T_j$ máx. & 135~°C (160~°C absoluta) & \\
+          & Operación & $-40$ a $+125$~°C & \\
+Mecánico  & Cuerpo / alto & 3,0$\times$3,0~mm / 2,13--2,30~mm & plano, p.~16\\
+          & Peso & 22,3~mg & \\
+Proceso   & MSL / reflow & MSL~2; pico 245--250~°C & J-STD-020E\\
+          & Embalaje & carrete $\varnothing$180~mm, 600~u. & \\
+\bottomrule
+\end{tabular}
+\caption{Características eléctricas, ópticas, térmicas y mecánicas.}
+\end{table}
+
+\begin{figure}[H]\centering
+  \hoja{0.48}{ds_caracteristicas.png}\hfill\hoja{0.48}{ds_maximos.png}
+  \caption{Características a 350~mA y 85~°C, y valores máximos. Fuente: \dsref, p.~5 y 4.}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{«80 grados»} no significa que toda la luz salga en un cono de 80°: a ±40° la intensidad cae al
+        50\,\% del eje. Con el modelo de la sección~\ref{sec:directa}, dentro de ±40° sale el \textbf{62\,\%}
+        del flujo; el 38\,\% restante sale más abierto y en este módulo termina en la pared.
+  \item \textbf{CRI 70} alcanza para forma, presencia, bordes, contraste y lectura. Si la cámara tuviera que medir
+        color con precisión, habría que evaluar una variante de CRI 80--90.
+\end{itemize}
+
+%-----------------------------------------------------------------------
+\section{Alimentación y térmica}
+El LED se alimenta con \textbf{corriente constante, nunca con tensión fija}: $V_F$ varía entre unidades
+(2,70--3,20~V) y baja con la temperatura, así que con tensión fija la corriente queda descontrolada.
+
+\begin{table}[H]\centering\small
+\begin{tabular}{p{3.2cm} p{5.2cm} p{5.6cm}}
+\toprule
+Parámetro del driver & Recomendación & Motivo\\
+\midrule
+Tipo & Corriente constante, preferentemente conmutado (\emph{buck}) & regula con independencia del $V_F$\\
+Corriente & \textbf{350~mA} & punto en que se especifican flujo, $V_F$ y CRI\\
+Tensión de salida & $\geq$3,5~V más el margen del driver & $V_F$ máx. 3,20~V a 85~°C, +0,3~V a $-40$~°C (curva $\Delta V_F$)\\
+Entrada & bus de 12 o 24~V del robot & un lineal desde 5~V disiparía 0,75~W\\
+Brillo & PWM sobre \emph{enable}, pulso de 350~mA & el datasheet prohíbe CC $<$100~mA\\
+Frecuencia PWM & alta frente a la exposición o sincronizada con la cámara & evita bandas entre cuadros\\
+Protecciones & circuito abierto, cortocircuito, NTC con reducción de corriente & operación 24/7 sin supervisión\\
+\bottomrule
+\end{tabular}
+\caption{Driver recomendado.}
+\end{table}
+
+Curvas del datasheet leídas de sus trazos vectoriales (controles: 1,000 a 350~mA, 2,85~V y 1,000 a 85~°C):
+
+\begin{table}[H]\centering\small
+\begin{tabular}{l r l}
+\toprule
+Punto & Valor & Consecuencia\\
+\midrule
+Flujo relativo a 500~mA & 1,36 & +36\,\% de flujo\\
+Flujo relativo a 700~mA & 1,79 & +79\,\% de flujo\\
+$V_F$ típica a 500~mA & 2,94~V & $P = 1{,}47$~W\\
+Flujo relativo a $T_j = 25$~°C & 1,10 & +10\,\% respecto de 85~°C\\
+Flujo relativo a $T_j = 120$~°C & 0,90 & $-10$\,\% respecto de 85~°C\\
+\bottomrule
+\end{tabular}
+\caption{Valores tomados de las curvas del datasheet, p.~13 y 14.}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{Salto juntura--soldadura:} $\Delta T_{JS} = R_\mathrm{thJS} P = 3{,}7 \times 1{,}0 = 3{,}7$~K a
+        350~mA y 5,4~K a 500~mA. El LED no es el cuello de botella.
+  \item \textbf{Placa:} MCPCB o PCB con vías térmicas bajo el pad central (sin conexión eléctrica según el plano),
+        acoplada al cuerpo de aluminio con interfaz térmica.
+  \item \textbf{Margen:} apuntar a $T_S \leq 85$~°C en régimen, que es además la temperatura a la que se
+        especifica el flujo. El derating admite 1300~mA hasta $T_S = 100$~°C.
+  \item \textbf{Si se sube la corriente} hay que recalcular disipación, derating y vida, y medir.
+\end{itemize}
+
+\begin{figure}[H]\centering
+  \hoja{0.62}{ds_corriente.png}\hfill\hoja{0.33}{ds_derating.png}
+  \caption{$I_F(V_F)$ y flujo relativo vs $I_F$ a 85~°C; corriente admisible vs $T_S$. Fuente: \dsref, p.~13 y
+  15.}
+\end{figure}
+
+%-----------------------------------------------------------------------
+\section{Cálculo óptico}
+\subsection{Captura directa}\label{sec:directa}
+Con $r = 2{,}5$~mm y $d = 7$~mm:
+\begin{equation}
+  \alpha = \arctan\frac{r}{d} = \arctan\frac{2{,}5}{7} = 19{,}65^\circ
+\end{equation}
+Modelo angular $I(\theta) = I_0\cos^m\theta$; con media intensidad a 40°:
+\begin{equation}
+  m = \frac{\ln 0{,}5}{\ln \cos 40^\circ} = 2{,}60, \qquad
+  F(\alpha) = 1 - \cos^{m+1}\alpha = 1 - \cos^{3{,}60} 19{,}65^\circ = 0{,}194
+\end{equation}
+
+\begin{table}[H]\centering\small
+\begin{tabular}{l r}
+\toprule
+Flujo del LED & Luz directa en la ventana\\
+\midrule
+164~lm (mínimo del bin) & 32~lm\\
+187~lm (medio, usado en los cálculos) & 36~lm\\
+210~lm (máximo del bin) & 41~lm\\
+\bottomrule
+\end{tabular}
+\caption{Luz directa antes del difusor.}
+\end{table}
+
+\subsection{Conducto de aluminio fresado}\label{sec:conducto}
+El conducto se trata como una guía de luz imperfecta. Monte Carlo con 400\,000 rayos: fuente puntual
+$\cos^{2,6}$ en el centro del fondo de un cilindro de $\varnothing$5$\times$7~mm, \textbf{fondo absorbente
+(supuesto)}, salida por toda la boca. Dos modelos de pared que acotan el caso real:
+
+\begin{itemize}
+  \item \textbf{Difusa (conservador):} cada rebote reparte la luz en todas direcciones y parte vuelve al fondo.
+  \item \textbf{Especular (optimista):} aluminio limpio con marcas finas; conserva la componente axial.
+\end{itemize}
+
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{4pt}
+\begin{tabular}{r | r r r r | r r r r}
+\toprule
+ & \multicolumn{4}{c|}{Pared difusa} & \multicolumn{4}{c}{Pared especular}\\
+$R_w$ & $\eta$ & sin dif. & dif. 75\,\% & dif. 90\,\% & $\eta$ & sin dif. & dif. 75\,\% & dif. 90\,\%\\
+\midrule
+0,55 & 0,29 & 55 & 41 & 50 & 0,56 & 105 & 79 & 95\\
+0,65 & 0,33 & 62 & 46 & 55 & 0,65 & 121 & 91 & 109\\
+0,75 & 0,37 & 70 & 53 & 63 & 0,74 & 138 & 103 & 124\\
+0,85 & 0,44 & 82 & 61 & 74 & 0,83 & 156 & 117 & 140\\
+0,92 & 0,50 & 93 & 69 & 83 & 0,91 & 170 & 127 & 153\\
+\bottomrule
+\end{tabular}
+\caption{Eficiencia del conducto $\eta$ y flujo en lm para 187~lm del LED.}
+\end{table}
+
+\figura{fig_sensibilidad.pdf}{0.85}{Flujo a la salida vs reflectividad de la pared. Cada banda va del difusor de
+75\,\% (borde inferior) al de 90\,\% (borde superior).}
+
+\subsection{Condiciones para 100~lm}
+Con 187~lm hace falta una eficiencia total $\geq$0,535: conducto $\geq$0,59 con difusor de 90\,\% o $\geq$0,71 con
+difusor de 75\,\%.
+
+\begin{table}[H]\centering\small
+\begin{tabular}{l r l}
+\toprule
+Situación & Salida a 350~mA & ¿100~lm?\\
+\midrule
+Pared difusa, difusor 75--90\,\% & 41--83~lm & no\\
+Pared especular, $R_w \geq 0{,}59$, difusor 90\,\% & 100--153~lm & sí\\
+Pared especular, $R_w \geq 0{,}73$, difusor 75\,\% & 100--127~lm & sí, justo\\
+Bin mínimo (164~lm), especular $R_w=0{,}75$, difusor 85\,\% & 103~lm & justo\\
+Pared difusa $R_w=0{,}85$, difusor 90\,\%, a 500~mA & 100~lm & sí, con 1,47~W\\
+\bottomrule
+\end{tabular}
+\caption{Rango estimado de flujo real.}
+\end{table}
+
+Palancas para \textbf{garantizar} los 100~lm, en orden:
+\begin{enumerate}
+  \item \textbf{Mejorar la pared:} pulido, inserto o film especular, recubrimiento blanco de alta reflectancia
+        ($>$0,95) o reflector metalizado. Actúa sobre el 80\,\% del flujo.
+  \item \textbf{Difusor de alta transmisión} (85--90\,\%), con la difusión justa para el punto caliente.
+  \item \textbf{Más corriente}, solo si el ensayo térmico lo permite.
+  \item \textbf{Geometría:} acortar $d$ o agrandar la ventana aumenta $\alpha$ y la captura directa.
+\end{enumerate}
+
+Limitaciones del cálculo:
+\begin{itemize}
+  \item \textbf{Fuente puntual:} la lente mide $\approx$2,5~mm. Con un emisor de $\varnothing$2,4~mm la eficiencia
+        cambia menos de 0,015.
+  \item \textbf{Fondo absorbente:} con fondo difuso de reflectividad 0,5 la pared difusa gana 0,01--0,07
+        ($\eta$ 0,305 y 0,569 en $R_w$ 0,55 y 0,92); la especular no cambia.
+  \item \textbf{Difusor:} factor constante, sin la luz que devuelve al conducto.
+  \item \textbf{Pared real:} ni difusa ni especular pura. Dónde queda entre los dos modelos solo lo dice una
+        medición.
+\end{itemize}
+
+%-----------------------------------------------------------------------
+\section{Riesgos}
+\begin{itemize}
+  \item \textbf{Uso médico o de seguridad:} el datasheet aclara que el componente no está desarrollado, construido
+        ni ensayado como componente de seguridad ni para dispositivos médicos, ni calificado a nivel módulo o
+        sistema. En el robot es válido como componente de iluminación; si su función afecta la seguridad o la
+        dispensación (p.~ej. una cámara que verifica el medicamento), el sistema completo se evalúa según la
+        normativa aplicable y el fabricante pide que se le informe.
+\end{itemize}
+
+\begin{table}[H]\centering\footnotesize
+\begin{tabular}{p{3.6cm} p{5.0cm} p{5.4cm}}
+\toprule
+Riesgo & Efecto & Mitigación\\
+\midrule
+Reflectividad del aluminio fresado & salida entre 41 y 153~lm & medir en prototipo; tratamiento de pared previsto\\
+Dispersión del bin & ±12\,\% sobre 187~lm & diseñar con 164~lm; especificar LUMQ en la compra\\
+Referencia térmica del bin & portada: 155~lm típ. a 85~°C; bin medido con pulso de 10~ms. Si fuera a 25~°C: 170~lm en régimen & consultar a ams OSRAM; medir en régimen estable\\
+Temperatura & $-10$\,\% de flujo a $T_j = 120$~°C & camino térmico, NTC, reducción de corriente\\
+Lente de silicona & pérdida de flujo y corrimiento de color por contaminación & evitar volátiles (adhesivos, juntas) en el conducto cerrado\\
+Materiales con plata & decoloración ante azufre y agentes agresivos & revisar productos de limpieza de la farmacia; sellar el módulo\\
+CRI 70 & reproducción de color limitada & variante CRI 80--90 si se mide color\\
+Deslumbramiento & IEC 62471: grupo de riesgo moderado (0,25~s) & el difusor baja la luminancia; no mirar de frente en mantenimiento\\
+Subvariantes & la tabla de pedido cambió en 2025 y 2026 & aprobar XX53 y A333; evitar bins viejos (LSLU)\\
+\bottomrule
+\end{tabular}
+\caption{Riesgos y mitigación.}
+\end{table}
+
+
+%-----------------------------------------------------------------------
+\section{Compra}
+Relevamiento del 27/09/2026 (dato del material de partida, no revisado en esta nota). Precios sin impuestos ni
+envío.
+
+\begin{table}[H]\centering\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{p{2.1cm} p{3.3cm} p{2.4cm} p{4.2cm} p{2.4cm}}
+\toprule
+Fuente & Parte & Stock & Precio & Comentario\\
+\midrule
+ams OSRAM & LUMQ-A333-1 / XX53-1 & producción plena & no publica & fuente técnica\\
+Mouser Europa & LUMQ-XX53-1-350-R18 & 1\,669~u. & 1~u.: 1,33~EUR; 10: 0,937; 100: 0,698; 600: 0,593~EUR & costo real\\
+Mouser Brasil & LUMQ-XX53-1-350-R18 & 1\,669~u. & 1~u.: USD~1,55; 100: 0,812; 600: 0,689 & referencia regional\\
+DigiKey & LUMQ-XX53-1-350-R18 & activo, sin stock habitual & a cotizar & confirma datos\\
+Mouser Argentina & variante LTMP 6500~K & sin stock, mín. 600 & ARS~1\,128,58 c/u a 600 & no confirma LUMQ local\\
+TME Argentina & categoría ams OSRAM & a verificar & no confirmado & canal alternativo\\
+\bottomrule
+\end{tabular}
+\caption{Precio, stock y disponibilidad.}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{Comprar LUMQ 5000~K} (XX53-1; A333-1 como alternativa). No comprar LSLU salvo para prototipo.
+  \item \textbf{Importar} por Mouser, DigiKey o TME; no se encontró stock local de la parte exacta.
+  \item Confirmar pedido mínimo, carrete de 600 y plazos antes de congelar la lista de materiales.
+\end{itemize}
+
+%-----------------------------------------------------------------------
+\section{Prototipo}\label{sec:prototipo}
+\begin{enumerate}
+  \item \textbf{Flujo de salida} con esfera integradora o sensor calibrado, a 350~mA y en régimen térmico
+        estable. Es la medición que cierra la incógnita de esta nota.
+  \item \textbf{Temperatura} en el punto de soldadura en ensayo 24/7 a la máxima temperatura ambiente.
+  \item \textbf{Conductos:} tal como sale de máquina, pulido, con inserto o film reflectivo y con recubrimiento
+        blanco. Con los resultados se ajusta el modelo de la sección~\ref{sec:conducto}.
+  \item \textbf{Difusores} de transmisión conocida (75, 85 y 90\,\%): flujo y uniformidad.
+  \item \textbf{Con la cámara real:} contraste, uniformidad, parpadeo con el PWM elegido, estabilidad del color.
+  \item \textbf{Tolerancias:} centrado del LED y distancia real LED--ventana (alto del encapsulado 2,13--2,30~mm).
+\end{enumerate}
+
+Criterio de aceptación sugerido: $\geq$100~lm medidos con LED LUMQ a 350~mA; $T_S \leq 85$~°C en la peor
+condición durante 72~h continuas; uniformidad aceptada por visión artificial; sin decoloración de la lente tras
+los agentes de limpieza previstos.
+
+%-----------------------------------------------------------------------
+\section{Fuentes}
+\begin{itemize}
+  \item ams OSRAM, página de producto OSLON SSL 80 GW CS8PM1.PM:
+        \url{https://ams-osram.com/products/leds/white-leds/osram-oslon-ssl-80-gw-cs8pm1-pm}
+  \item \dsref\ (copia en la carpeta \texttt{fuentes/} de la nota):
+        \url{https://look.ams-osram.com/m/16996c4989af2a7d/original/GW-CS8PM1-PM.pdf}
+  \item Mouser Europa: \url{https://www.mouser.de/ProductDetail/ams-OSRAM/GW-CS8PM1.PM-LUMQ-XX53-1-350-R18}
+  \item Mouser Brasil: \url{https://br.mouser.com/ProductDetail/ams-OSRAM/GW-CS8PM1.PM-LUMQ-XX53-1-350-R18}
+  \item DigiKey: \url{https://www.digikey.com/en/products/detail/ams-osram-ag/GW-CS8PM1-PM-LUMQ-XX53-1-350-R18/26248732}
+  \item Mouser Argentina: \url{https://ar.mouser.com/ProductDetail/ams-OSRAM/GW-CS8PM1.PMLTMPXX51}
+  \item TME Argentina: \url{https://www.tme.com/ar/es/katalog/leds-de-potencia-blancos_113364/p%2Cams-osram_114/}
+\end{itemize}
+
+%-----------------------------------------------------------------------
+\section{Anexo: hojas del datasheet}
+Fuente de todas las figuras de esta sección: \dsref.
+
+\begin{figure}[H]\centering
+  \hoja{0.48}{ds_portada.png}\hfill\hoja{0.48}{ds_grupos.png}
+  \caption{Resumen del componente (p.~2) y grupos de flujo y de $V_F$; resaltados LU, MP y MQ (p.~6).}
+\end{figure}
+\begin{figure}[H]\centering
+  \hoja{0.40}{ds_radiacion.png}\hfill\hoja{0.56}{ds_temperatura.png}
+  \caption{Diagrama de radiación (p.~12) y variación de $V_F$ y flujo con $T_j$ (p.~14).}
+\end{figure}
+\begin{figure}[H]\centering
+  \hoja{0.62}{ds_dimensiones.png}\hfill\hoja{0.34}{ds_reflow.png}
+  \caption{Plano dimensional (p.~16) y perfil de reflow, MSL~2 (p.~18).}
+\end{figure}
+\begin{figure}[H]\centering
+  \hoja{0.7}{ds_footprint.png}
+  \caption{Pads de soldadura recomendados (p.~17).}
+\end{figure}
+
+\end{document}

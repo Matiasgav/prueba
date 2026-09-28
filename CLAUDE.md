@@ -6,7 +6,7 @@ Todo informe que se pida («haceme un informe de…», «analizá…») se entre
 nota de la memoria, con la plantilla GRIS-NOT-001:
 
 1. Copiar `memoria/plantilla/02489-00-MC000.tex` a
-   `memoria/notas/02489-00-MC###.tex`, con `###` = siguiente correlativo libre
+   `memoria/notas/02489-00-MC###/02489-00-MC###.tex` (una carpeta por nota), con `###` = siguiente correlativo libre
    en **todas las ramas del repositorio**, no solo en la local (hay sesiones en
    paralelo): usar `.claude/skills/informe-memoria/scripts/codigos.py`.
 2. Completar código, título, autor (Matías Gaviño, salvo que se indique otro) y
@@ -15,10 +15,13 @@ nota de la memoria, con la plantilla GRIS-NOT-001:
    El resto de las secciones es libre.
 4. Cálculos reproducibles: el script que los genera va junto a la nota
    (`memoria/notas/02489-00-MC###/`) y las figuras se guardan ahí mismo.
-5. Compilar con `pdflatex` (dos veces) desde `memoria/notas/`, revisar el PDF
-   renderizado y subir `.tex` + `.pdf` + script. No subir `.aux`, `.log`, `.out`.
+5. Compilar con `pdflatex` (dos veces) desde la carpeta de la nota, revisar el PDF
+   renderizado y dejar el PDF final en `memoria/pdf/`, donde van todos juntos.
+   Subir `.tex` + `.pdf` + script. No subir `.aux`, `.log`, `.out`.
 6. Agregar la nota al «Índice de notas» de `memoria/README.md`.
-7. No modificar la plantilla salvo que se pida explícitamente.
+7. Llevar la nota a `main` (carpeta de la nota + PDF + fila del índice): todas las
+   notas tienen que estar juntas en `main`.
+8. No modificar la plantilla salvo que se pida explícitamente.
 
 El procedimiento completo está en la habilidad `.claude/skills/informe-memoria/`
 (`/informe-memoria`): usarla para todo informe.

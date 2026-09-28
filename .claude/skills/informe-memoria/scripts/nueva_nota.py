@@ -26,8 +26,8 @@ def siguiente_codigo():
     MC003 (dos sesiones usaron el mismo código en ramas distintas)."""
     codigos.fetch()
     usados = codigos.codigos_en_ramas()
-    locales = [m.group(1) for p in NOTAS.glob('02489-00-MC*.tex')
-               if (m := re.match(r'(02489-00-MC\d{3})\.tex$', p.name))]
+    locales = [p.name for p in NOTAS.glob('02489-00-MC*')
+               if re.fullmatch(r'02489-00-MC\d{3}', p.name)]
     return codigos.siguiente(usados, locales)
 
 
@@ -40,7 +40,8 @@ def main():
     a = ap.parse_args()
 
     codigo = a.codigo or siguiente_codigo()
-    destino = NOTAS / f'{codigo}.tex'
+    carpeta = NOTAS / codigo
+    destino = carpeta / f'{codigo}.tex'
     if destino.exists():
         sys.exit(f'Ya existe {destino}; editá esa nota.')
 
@@ -52,14 +53,12 @@ def main():
     s = s.replace(r'\newcommand{\fecha}{\today}', rf'\newcommand{{\fecha}}{{{a.fecha}}}')
     s = s.replace(r'\usepackage[hidelinks]{hyperref}',
                   '\\usepackage{amsmath,amssymb}\n\\usepackage{float}\n\\usepackage[hidelinks]{hyperref}')
-    s = s.replace(r'\graphicspath{{./}{../plantilla/}{plantilla/}}',
-                  rf'\graphicspath{{{{./}}{{../plantilla/}}{{plantilla/}}{{{codigo}/figuras/}}}}')
-    for clave in (codigo, a.titulo, 'amssymb', f'{codigo}/figuras/'):
+    for clave in (codigo, a.titulo, 'amssymb', '{figuras/}'):
         if clave not in s:
             sys.exit(f'No se pudo completar «{clave}»: ¿cambió la plantilla?')
 
+    (carpeta / 'figuras').mkdir(parents=True, exist_ok=True)
     destino.write_text(s, encoding='utf-8')
-    (NOTAS / codigo / 'figuras').mkdir(parents=True, exist_ok=True)
     print(destino.relative_to(RAIZ))
     print('Reservá el código ya: commit + push del esqueleto (ver SKILL.md, paso 2).')
 
