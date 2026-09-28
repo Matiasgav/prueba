@@ -205,6 +205,5 @@ gallery('flex-galeria-3', [
     ('3d_pared_lateral', 'Pared lateral para la cámara', 'boceto del usuario: sube y se extiende en los 52 mm', 'si'),
     ('3d_led_a', 'LED A: placa LED + conector B2B', 'elegida: LED delante del flex de cámara, a la altura del lente', 'si'),
     ('3d_led_b', 'LED B: isla rigid-flex', 'segundo brazo de flex: no fabricable así', 'no'),
-    ('3d_led_c', 'LED C: placa en el panel + FFC', 'suma cable y conectores', 'no'),
-    ('3d_sujecion', 'Sujeción del stack', 'tornillo M1,6, separador y espuma', 'si')])
+    ('3d_led_c', 'LED C: placa en el panel + FFC', 'suma cable y conectores', 'no')])
 print('figuras ok', TP)

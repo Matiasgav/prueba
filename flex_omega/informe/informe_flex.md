@@ -82,9 +82,8 @@ Cada paso respondió a una limitación del anterior. W es el ancho total que ocu
 | 6 | Integrar la cámara: imagen horizontal | Dobla demasiado el flex de la cámara | Cámara centrada con el flex recto (imagen a 90°) y pared lateral |
 | 7 | Cámara + S doble, islas de flex | Dos brazos de flex en una pieza | No fabricable: **un solo flex** |
 | 8 | LED junto al lente, sin guía de luz | Tres variantes (A, B, C) | Placa LED con conector B2B delante del flex de cámara |
-| 9 | Sujeción del conjunto | Tornillo M1,6 × 6, separador 2,0 y espuma 0,8 | Todo queda firme en nominal |
-| 10 | Dimensionar la S | Z 15,5 con R 3, luego Z 14 con R 2,5; pestaña 5 mm atrás | Base del layout final |
-| 11 | **Layout del 27/9**, con la placa de cámara como obstáculo | Z = 15,5; L = 19,0 ± 0,25 | **Solución de este informe** |
+| 9 | Dimensionar la S | Z 15,5 con R 3, luego Z 14 con R 2,5; pestaña 5 mm atrás | Base del layout final |
+| 10 | **Layout del 27/9**, con la placa de cámara como obstáculo | Z = 15,5; L = 19,0 ± 0,25 | **Solución de este informe** |
 
 La galería de la sección 7 muestra cada alternativa en una imagen.
 
@@ -204,7 +203,7 @@ Cada imagen es una de las propuestas que se simularon o modelaron en el camino. 
 ::: fig flex-galeria-2 | Figura 7 — Segundo grupo: arquitecturas en 3D e integración de la cámara. | Capturas del visor 3D de opciones.
 :::
 
-::: fig flex-galeria-3 | Figura 8 — Tercer grupo: cámara en la pared lateral, variantes del LED y sujeción. | Capturas del visor 3D de opciones.
+::: fig flex-galeria-3 | Figura 8 — Tercer grupo: cámara en la pared lateral y variantes del LED. | Capturas del visor 3D de opciones.
 :::
 
 # Anexo — Archivos
