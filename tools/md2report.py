@@ -23,7 +23,7 @@ import sys
 import unicodedata
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ASSETS = os.path.join(ROOT, 'assets')
+ASSETS = os.environ.get('REPORT_ASSETS', os.path.join(ROOT, 'assets'))
 
 # =========================================================================
 # 1. Parseo
@@ -895,7 +895,7 @@ def render_dir_tex(meta, body, out):
         n = max(1, len(rows))
         out.append(r'\begin{center}\setlength{\tabcolsep}{4pt}')
         colspec = ('>{\\raggedright\\arraybackslash}p{%.3f\\linewidth}'
-                   % (0.94 / n)) * n
+                   % (0.92 / n)) * n
         out.append(r'\begin{tabular}{%s}' % colspec)
         cells = []
         for r in rows:
@@ -903,8 +903,8 @@ def render_dir_tex(meta, body, out):
             val = inline_tex(c[0]) if c else ''
             lab = inline_tex(c[1]) if len(c) > 1 else ''
             note = inline_tex(c[2]) if len(c) > 2 else ''
-            cells.append(r'{\color{navy}\Large\bfseries %s}\\[2pt]'
-                         r'{\small %s}\\[1pt]{\footnotesize\color{gray2} %s}'
+            cells.append(r'{\color{navy}\Large\bfseries %s}\par\vspace{2pt}'
+                         r'{\small %s}\par\vspace{1pt}{\footnotesize\color{gray2} %s}'
                          % (val, lab, note))
         out.append(' & '.join(cells) + r' \\')
         out.append(r'\end{tabular}\end{center}')
@@ -1049,6 +1049,8 @@ def render_tex(meta, blocks):
                .replace('<<SUBTITULO>>', inline_tex(meta.get('subtitulo', '')))
                .replace('<<EDICION>>', inline_tex(meta.get('edicion', '')))
                .replace('<<FECHA>>', inline_tex(meta.get('fecha', '')))
+               .replace('<<ENCABEZADO>>', inline_tex(meta.get('encabezado', meta.get('titulo', ''))))
+               .replace('<<NOTA_PORTADA>>', inline_tex(meta.get('nota_portada', '')))
                .replace('<<BODY>>', '\n'.join(out)))
 
 
@@ -1128,8 +1130,7 @@ TEX = r"""% !TeX program = pdflatex
 \pagestyle{fancy}
 \fancyhf{}
 \renewcommand{\headrulewidth}{0.4pt}
-\fancyhead[L]{\sffamily\footnotesize\color{gray2}Oportunidades de robótica de
-  inspección industrial para generación y utilities}
+\fancyhead[L]{\sffamily\footnotesize\color{gray2}<<ENCABEZADO>>}
 \fancyfoot[C]{\sffamily\footnotesize\thepage}
 
 % --- distintivos ------------------------------------------------------
@@ -1203,9 +1204,7 @@ TEX = r"""% !TeX program = pdflatex
 \vspace{12pt}
 {\normalsize <<FECHA>>\par}
 \vfill
-{\sffamily\footnotesize\color{gray2}Documento de trabajo para decisión de
-inversión. Las hipótesis y las fuentes recopiladas no constituyen conclusiones
-de investigación mientras no estén verificadas.\par}
+{\sffamily\footnotesize\color{gray2}<<NOTA_PORTADA>>\par}
 \end{titlepage}
 \setcounter{page}{2}
 
