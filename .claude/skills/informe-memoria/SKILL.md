@@ -19,20 +19,31 @@ Todo informe del proyecto se entrega como **nota de la memoria**:
   que haga falta (fuentes, datos, planos).
 - **PDF final:** `memoria/pdf/02489-00-MC###.pdf`. Todos los PDF van juntos ahí.
 - **Todas las notas terminan en `main`** (paso 8).
-Las reglas base están en `CLAUDE.md` y `memoria/README.md`; esta habilidad agrega el
-procedimiento completo y los errores ya cometidos.
+Las reglas base están en `CLAUDE.md` y `memoria/README.md` del repo; esta habilidad
+agrega el procedimiento completo y los errores ya cometidos.
+
+**`$SKILL`** es la carpeta de esta habilidad: la que figura como directorio base al
+cargarla (en el repo, `.claude/skills/informe-memoria`). Los scripts trabajan sobre el
+repo de la carpeta actual, no sobre el de la habilidad; correrlos desde la raíz del
+repo del proyecto.
 
 ## 1. Preparar el entorno
 
 ```bash
-bash .claude/skills/informe-memoria/scripts/preparar_entorno.sh
+bash $SKILL/scripts/preparar_entorno.sh
 ```
 
 Instala `pdflatex`, Roboto (encabezado; sin ella el código sale en otra letra),
 `pymupdf` para leer PDFs y extraer imágenes, y `numpy`/`scipy`/`matplotlib`.
 
-Si la carpeta `memoria/` no está en la rama actual, traerla de `main` con
-`git merge origin/main`, no copiando archivos a mano.
+**Ubicar la memoria antes de escribir:**
+
+1. Si la rama actual tiene `memoria/`, seguir.
+2. Si no la tiene pero `origin/main` sí (`git ls-tree -d origin/main memoria`), traerla
+   con `git merge origin/main`, no copiando archivos a mano.
+3. Si el repo no tiene memoria en ninguna rama, **preguntar al usuario** antes de crearla:
+   puede ser otro repo. Si confirma, `nueva_nota.py ... --crear-memoria` la arma con la
+   plantilla que trae la habilidad (`$SKILL/assets/`).
 
 ## 2. Elegir el código, crear la nota y reservarla
 
@@ -42,8 +53,8 @@ rama actual hizo que dos notas distintas salieran como `MC003` (resorte de torsi
 `claude/jolly-maxwell-wagfg8` y selección del actuador en otra rama).
 
 ```bash
-python3 .claude/skills/informe-memoria/scripts/codigos.py      # códigos usados en todas las ramas
-python3 .claude/skills/informe-memoria/scripts/nueva_nota.py "Título corto" [--autor "Matías Gaviño"] [--fecha 24/09/2026]
+python3 $SKILL/scripts/codigos.py      # códigos usados en todas las ramas
+python3 $SKILL/scripts/nueva_nota.py "Título corto" [--autor "Matías Gaviño"] [--fecha 24/09/2026]
 ```
 
 `codigos.py` hace `git fetch --all` y lista cada código con su título y las ramas donde
@@ -65,7 +76,7 @@ guion, acortarlo.
 
 - **PDF adjunto:** leer todo el texto con pymupdf y **extraer sus imágenes**:
   ```bash
-  python3 .claude/skills/informe-memoria/scripts/extraer_pdf.py <archivo.pdf> <carpeta_salida>
+  python3 $SKILL/scripts/extraer_pdf.py <archivo.pdf> <carpeta_salida>
   ```
   Las **fotos del informe original van en la nota** (ensayo, probeta, instrumento,
   montaje). Pasar las fotos a JPG; los gráficos quedan en PNG.
@@ -105,7 +116,7 @@ Dato / Valor / Origen, marcando **supuesto**) → método con ecuaciones → sen
   con rótulos (a), (b), (c) dentro de una sola figura.
 - Tablas con `booktabs`; tablas largas en dos bloques de columnas lado a lado.
 - Limitaciones al final de cada análisis, en viñetas con el término en negrita.
-- Citas de Shigley con ecuación, tabla o figura (ver `CLAUDE.md`).
+- Citas de Shigley (*Diseño en ingeniería mecánica*, 8.ª ed.) con ecuación, tabla o figura.
 - El naranja `#FF7A00` solo en el logo.
 
 ## 6. Cálculo reproducible
@@ -122,7 +133,7 @@ Distinguir con «≈» lo estimado de lo tomado del modelo o de la figura.
 ## 7. Compilar y revisar
 
 ```bash
-bash .claude/skills/informe-memoria/scripts/compilar.sh 02489-00-MC###
+bash $SKILL/scripts/compilar.sh 02489-00-MC###
 ```
 
 Compila dos veces desde la carpeta de la nota, deja el PDF en `memoria/pdf/`, muestra errores, *overfull boxes* y avisos
@@ -136,7 +147,7 @@ en Roboto.
 1. **Verificar el código otra vez** justo antes del push (otra sesión pudo haberlo
    tomado mientras se escribía):
    ```bash
-   python3 .claude/skills/informe-memoria/scripts/codigos.py --verificar MC###
+   python3 $SKILL/scripts/codigos.py --verificar MC###
    ```
    Si hay colisión: renumerar la nota propia al siguiente libre (`git mv` de la
    carpeta, del `.tex` dentro de ella y del `.pdf` en `memoria/pdf/`; reemplazar el código dentro del `.tex` y del script; recompilar),

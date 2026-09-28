@@ -2,22 +2,44 @@
 # -*- coding: utf-8 -*-
 """Crea una nota nueva de la memoria GRIS a partir de la plantilla.
 
-Uso (desde la raíz del repo):
-    python3 .claude/skills/informe-memoria/scripts/nueva_nota.py "Título" \
-        [--autor "Matías Gaviño"] [--fecha 24/09/2026] [--codigo 02489-00-MC007]
+Uso (desde cualquier carpeta del repo del proyecto):
+    python3 <habilidad>/scripts/nueva_nota.py "Título" \
+        [--autor "Matías Gaviño"] [--fecha 24/09/2026] [--codigo 02489-00-MC007] \
+        [--crear-memoria]
+
+El repo es el de la carpeta actual (git rev-parse --show-toplevel), no el de la
+habilidad: así funciona igual instalada en el repo o como habilidad de la cuenta.
+Si el repo no tiene memoria/, sale con error; --crear-memoria la crea con la
+plantilla que trae la habilidad (solo si el usuario lo confirmó).
 """
 import argparse
 import datetime
 import pathlib
 import re
+import shutil
+import subprocess
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import codigos  # noqa: E402
 
-RAIZ = pathlib.Path(__file__).resolve().parents[4]
-PLANTILLA = RAIZ / 'memoria/plantilla/02489-00-MC000.tex'
-NOTAS = RAIZ / 'memoria/notas'
+HABILIDAD = pathlib.Path(__file__).resolve().parents[1]
+RAIZ = pathlib.Path(subprocess.run(['git', 'rev-parse', '--show-toplevel'], capture_output=True,
+                                   text=True, check=True).stdout.strip())
+MEMORIA = RAIZ / 'memoria'
+PLANTILLA = MEMORIA / 'plantilla/02489-00-MC000.tex'
+NOTAS = MEMORIA / 'notas'
+
+
+def crear_memoria():
+    """memoria/ con la plantilla y el README que trae la habilidad."""
+    shutil.copytree(HABILIDAD / 'assets/plantilla', MEMORIA / 'plantilla')
+    shutil.copy(HABILIDAD / 'assets/README_memoria.md', MEMORIA / 'README.md')
+    for d in ('notas', 'pdf'):
+        (MEMORIA / d).mkdir(parents=True, exist_ok=True)
+    (NOTAS / '.gitkeep').touch()
+    (MEMORIA / '.gitignore').write_text('*.aux\n*.log\n*.out\n*.synctex.gz\n__pycache__/\n')
+    print(f'Creada {MEMORIA.relative_to(RAIZ)}/ con la plantilla de la habilidad.')
 
 
 def siguiente_codigo():
@@ -37,7 +59,15 @@ def main():
     ap.add_argument('--autor', default='Matías Gaviño')
     ap.add_argument('--fecha', default=datetime.date.today().strftime('%d/%m/%Y'))
     ap.add_argument('--codigo')
+    ap.add_argument('--crear-memoria', action='store_true')
     a = ap.parse_args()
+
+    if not PLANTILLA.exists():
+        if not a.crear_memoria:
+            sys.exit(f'{RAIZ.name} no tiene memoria/plantilla/. Traela de main '
+                     '(git merge origin/main) o, si el usuario confirma que este repo lleva '
+                     'memoria, repetí con --crear-memoria.')
+        crear_memoria()
 
     codigo = a.codigo or siguiente_codigo()
     carpeta = NOTAS / codigo
