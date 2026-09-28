@@ -1,0 +1,427 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-tabla,es-nodecimaldot,es-noshorthands]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[a4paper,top=2.4cm,bottom=2.4cm,left=2.3cm,right=2.3cm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[output-decimal-marker={,}]{siunitx}
+\usepackage{booktabs,array,tabularx}
+\usepackage{graphicx,float}
+\usepackage[font=small,labelfont=bf,labelsep=period]{caption}
+\usepackage[table]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{fancyhdr,lastpage}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{needspace,etoolbox}
+\pretocmd{\section}{\needspace{10\baselineskip}}{}{}
+\pretocmd{\subsection}{\needspace{6\baselineskip}}{}{}
+\usepackage[hidelinks]{hyperref}
+\definecolor{azul}{HTML}{1C5CAB}
+\definecolor{gris}{HTML}{52514E}
+\titleformat{\section}{\Large\bfseries\color{azul}}{\thesection}{0.8em}{}[\vspace{-0.6ex}\color{azul!40}\rule{\linewidth}{0.6pt}]
+\titleformat{\subsection}{\large\bfseries\color{azul}}{\thesubsection}{0.8em}{}
+\setlength{\parskip}{0.45em}\setlength{\parindent}{0pt}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small\color{gris}Engranajes cónicos para rueda --- Torque admisible según Shigley}
+\fancyhead[R]{\small\color{gris}Informe técnico}
+\fancyfoot[C]{\small\color{gris}Página \thepage\ de \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\newtcolorbox{caja}[2][azul]{colback=#1!5,colframe=#1,boxrule=0.6pt,arc=1mm,left=2mm,right=2mm,top=1mm,bottom=1mm,fonttitle=\bfseries,title={#2}}
+\setlist{itemsep=0.2em,topsep=0.3em}
+\graphicspath{{./}}
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{2.2cm}
+{\color{azul}\rule{\linewidth}{1.2pt}}\\[0.8cm]
+{\Huge\bfseries Torque admisible de engranajes\\[0.25cm] cónicos a 90$^\circ$ para la rueda de un carro\par}
+\vspace{0.6cm}
+{\Large Mitras KG m\,0,5, RS PRO m\,0,8 y mitra carburizada a medida\\ Análisis según Shigley (método AGMA para engranajes cónicos)\par}
+\vspace{0.6cm}
+{\color{azul}\rule{\linewidth}{1.2pt}}\\[1.4cm]
+\begin{tabular}{rl}
+\textbf{Diseños:} & KG M50S20 (S45C), KG M50B20 (latón), KG M50S25 (S45C),\\
+ & RS PRO 521-5780 (m\,0,8 $\times$ 16), a medida m\,0,6 $\times$ 21 SCM415 carburizado\\
+\textbf{Envolvente:} & diámetro exterior $d_a\le14$ mm, relación 1:1, ejes a 90$^\circ$\\
+\textbf{Velocidades:} & 0, 0,5, 50 y 100 rpm\\
+\textbf{Confiabilidad:} & 95\,\%\\
+\textbf{Servicio:} & torque en ambos sentidos, normal bajo y picos de 10 s\\
+\textbf{Método:} & Budynas y Nisbett, \textit{Diseño en ingeniería mecánica de Shigley}, cap. 15\\
+\end{tabular}
+\vfill
+{\large Informe técnico\\ Septiembre de 2026\par}
+\end{titlepage}
+
+\section*{Resumen ejecutivo}
+\addcontentsline{toc}{section}{Resumen ejecutivo}
+Se determinó el torque admisible de cinco pares de engranajes cónicos 1:1 a 90$^\circ$ con diámetro exterior de hasta 14 mm,
+para la transmisión de la rueda de un carro. Se usaron las ecuaciones AGMA para engranajes cónicos del capítulo~15 de Shigley,
+con confiabilidad del 95\,\% y flexión alternada (torque en ambos sentidos). El servicio combina un torque normal bajo
+durante toda la vida con picos ocasionales de 10~s.
+
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{4.5pt}
+\caption{Torque admisible por engranaje, en N\,m ($R=0{,}95$, carga en ambos sentidos, 10 años, grasa).}\label{tab:resumen}
+\begin{tabular}{l r ccc cccc}
+\toprule
+ & & \multicolumn{3}{c}{Torque normal (toda la vida)} & \multicolumn{4}{c}{Torque de pico (10 s, ocasional)}\\
+\cmidrule(lr){3-5}\cmidrule(lr){6-9}
+Diseño & $d_a$ [mm] & 0,5 rpm & 50 rpm & 100 rpm & 0 rpm & 0,5 rpm & 50 rpm & 100 rpm\\
+\midrule
+KG M50S20 (S45C) & 10,7 & 0,129 & 0,083 & 0,076 & 0,195 & 0,194 & 0,147 & 0,133 \\
+KG M50B20 (latón) & 10,7 & 0,063 & 0,040 & 0,039 & 0,094 & 0,094 & 0,071 & 0,065 \\
+KG M50S25 (S45C) & 13,2 & 0,218 & 0,140 & 0,135 & 0,328 & 0,327 & 0,246 & 0,224 \\
+RS PRO 521-5780 & 13,9 & 0,294 & 0,164 & 0,148 & 0,407 & 0,405 & 0,332 & 0,302 \\
+A medida carburizada & 13,4 & 0,778 & 0,499 & 0,481 & 1,171 & 1,167 & 0,878 & 0,798 \\
+\bottomrule\end{tabular}\end{table}
+
+
+\begin{caja}{Conclusiones principales}
+\begin{enumerate}[leftmargin=1.2em]
+\item \textbf{KG M50S20 (actual)}: 0,076~N\,m en servicio normal y 0,133~N\,m en picos a 100~rpm.
+El dato del catálogo KG (1,5~W a 100~rpm $=$ 0,143~N\,m) supera en un 88\,\% esa capacidad y no debe usarse.
+\item \textbf{KG M50S25}, de stock y del mismo proveedor: $\times$1,8 (0,135~N\,m normal; 0,328~N\,m de pico a rueda detenida).
+\item \textbf{RS PRO 521-5780}: $\times$2,0 (0,148~N\,m normal; 0,407~N\,m de pico). Hay que confirmar el ancho de diente.
+\item \textbf{Mitra a medida carburizada}: $\times$6,3 (0,481~N\,m normal; 1,171~N\,m de pico). Exige eje de 5~mm con arrastre positivo.
+\item El latón (M50B20) admite la mitad que el S45C. La lubricación con grasa EP es condición de todos los valores.
+\end{enumerate}
+\end{caja}
+
+\tableofcontents
+\newpage
+
+\section{Objeto y datos de partida}
+\subsection{Aplicación}
+El par de engranajes transmite el giro de un motor BLDC a la rueda de un carro, con ejes a 90$^\circ$ y relación 1:1.
+El compartimiento está engrasado y la temperatura de trabajo es de 30 a 40\,$^\circ$C. El motor sigue un perfil
+trapezoidal suave y el equipo se usa 20~h seguidas una vez por mes. El diámetro exterior disponible es de 14~mm.
+
+\subsection{Ciclo de carga de la rueda}
+\begin{itemize}
+\item \textbf{Torque en ambos sentidos} (marcha adelante y atrás, aceleración y frenado). Cada diente se flexiona hacia uno y otro lado,
+así que se usa el 70\,\% de la resistencia a flexión.
+\item \textbf{Servicio normal} con torque bajo durante toda la vida: $n_{normal}=n\cdot60\cdot20\cdot12\cdot10$ ciclos por diente.
+\item \textbf{Picos} de 10~s. Se supuso \textbf{un pico por hora de uso}: 2400 eventos en 10 años, con $\max(1;\,n\cdot10/60)$ ciclos por diente cada uno.
+\item \textbf{Combinación por la regla de Miner.} Cada régimen consume la mitad del daño admisible:
+\begin{equation}
+\frac{n_{normal}}{N_{normal}}+\frac{n_{pico}}{N_{pico}}=0{,}5+0{,}5=1
+\quad\Rightarrow\quad N_{eval}=2\,n .
+\end{equation}
+\end{itemize}
+
+\begin{table}[H]\centering\small
+\caption{Datos, supuestos y su origen.}
+\begin{tabularx}{\linewidth}{l X l}
+\toprule
+Dato & Valor & Origen\\\midrule
+Par & Engranajes cónicos rectos iguales, 1:1, $\Sigma=90^\circ$, $d_a\le14$ mm & pedido\\
+Velocidades & 0, 0,5, 50 y 100 rpm & pedido\\
+Confiabilidad & $R=0{,}95$ & pedido\\
+Uso & 20 h por mes; vida de diseño 10 años (2400 h) & pedido / \textbf{supuesto}\\
+Picos & 10 s, 1 por hora de uso (2400 en la vida) & pedido / \textbf{supuesto}\\
+Carga & BLDC, perfil trapezoidal suave, torque en ambos sentidos & pedido\\
+Lubricación & Grasa en compartimiento cerrado & pedido\\
+Temperatura & 30--40\,$^\circ$C & pedido\\
+Montaje & Ambos engranajes en voladizo & \textbf{supuesto} conservador\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Diseños analizados}
+\begin{table}[H]\centering\scriptsize\setlength{\tabcolsep}{3.5pt}
+\caption{Diseños analizados: geometría y factores de geometría de Shigley.}\label{tab:disenos}
+\begin{tabular}{l l r r r r r r r r r r}
+\toprule
+Diseño & Material & $m$ & $z$ & $d_e$ & $d_a$ & $R_e$ & $b$ & $b_{ef}$ & $Y_J$ & $Z_I$ & Agujero\\
+ & & mm & & mm & mm & mm & mm & mm & & & mm\\
+\midrule
+KG M50S20 (S45C) & S45C & 0,5 & 20 & 10,0 & 10,71 & 7,07 & 2,50 & 2,12 & 0,200 & 0,062 & 3 \\
+KG M50B20 (latón) & Latón C3604B & 0,5 & 20 & 10,0 & 10,71 & 7,07 & 2,50 & 2,12 & 0,200 & 0,062 & 3 \\
+KG M50S25 (S45C) & S45C & 0,5 & 25 & 12,5 & 13,21 & 8,84 & 3,00 & 2,65 & 0,216 & 0,065 & 4 \\
+RS PRO 521-5780 & S45C & 0,8 & 16 & 12,8 & 13,93 & 9,05 & 2,72 & 2,72 & 0,185 & 0,058 & 4 \\
+A medida carburizada & SCM415 carb. & 0,6 & 21 & 12,6 & 13,45 & 8,91 & 2,67 & 2,67 & 0,200 & 0,062 & 5 \\
+\bottomrule\end{tabular}\end{table}
+
+\begin{itemize}
+\item \textbf{KG M50S20 y M50B20}: la mitra actual en S45C y en latón (catálogo KG4001).
+\item \textbf{KG M50S25}: m\,0,5 con 25 dientes, $b=3$ mm, agujero de 4 mm. $Y_J$ y $Z_I$ corresponden al Ejemplo 15-1 de Shigley (mitras de 25 dientes).
+\item \textbf{RS PRO 521-5780}: acero S45C (RS indica temple por inducción y resistencia mínima de 569 MPa), m\,0,8, 16 dientes, sistema Gleason, DIN 3971.
+RS no publica el ancho de diente, así que se tomó $b=0{,}3R_e$. Como no se pudo confirmar que el flanco esté templado, se calculó sin temple (lado seguro).
+$Y_J$ y $Z_I$ se extrapolaron a 16 dientes.
+\item \textbf{A medida carburizada}: m\,0,6 (módulo normalizado) con 21 dientes, el mayor tamaño que entra en 14 mm, de SCM415 cementado y templado a 58--62 HRC.
+Shigley, acero carburizado grado~1: $\sigma_{F\,\lim}=206{,}8$ MPa (30 kpsi) y $\sigma_{H\,\lim}=1379$ MPa (200 kpsi).
+\end{itemize}
+\begin{figure}[H]\centering\includegraphics[width=0.95\linewidth]{capturas/kg_codigo_producto.png}\caption{Código de producto de las mitras KG (S = S45C, B = latón). \textit{Fuente: KG, catálogo KG4001, p. 233.}}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[width=\linewidth]{capturas/kg_s45c_datos.png}\caption{Mitras S45C M50S20 y M50S25: JIS B1704 grado 3, sin tratamiento térmico; $b=2{,}5$ y $3{,}0$ mm; agujeros de 3 y 4 mm. \textit{Fuente: KG, catálogo KG4001, p. 260.}}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[width=\linewidth]{capturas/kg_s45c_potencia.png}\caption{Potencia admisible KG a flexión: M50S20 1,5 W y M50S25 2,5 W a 100 rpm. La resistencia superficial no se publica («--»). \textit{Fuente: KG, catálogo KG4001, p. 261.}}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[width=0.9\linewidth]{capturas/kg_laton_datos.png}\caption{Mitra de latón C3604B M50B20: JIS B1704 grado 4, sin tabla de potencia. \textit{Fuente: KG, catálogo KG4001, p. 272.}}\end{figure}
+
+
+\section{Alcance del dato de capacidad de KG}
+\begin{figure}[H]\centering\includegraphics[width=\linewidth]{capturas/kg_condiciones_conicos.png}\caption{Condiciones de las tablas de KG para cónicos: JGMA 403-01/404-01; $\geq10^7$ ciclos; choque moderado ($K_O=1{,}25$); baño de aceite de 100 cSt; ambos engranajes en voladizo; con carga en ambos sentidos, 2/3 del valor de tabla. \textit{Fuente: KG, KG5001, p. 18.}}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[width=0.48\linewidth]{capturas/kg_jgma403_alcance.png}\caption{Alcance de JGMA 403-01/404-01: módulo exterior de 1,5 a 25 mm. \textit{Fuente: KG, Technical Data, cap. 10.2, p. 137.}}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[width=\linewidth]{capturas/kg_conversion_potencia.png}\caption{Conversión de potencia a torque: $T\,[\mathrm{N\,m}]=9549{,}7\,P\,[\mathrm{kW}]/n$. \textit{Fuente: KG, KG5001, p. 20.}}\end{figure}
+
+\begin{caja}[orange!80!black]{Limitaciones del dato del fabricante}
+\begin{enumerate}[leftmargin=1.2em]
+\item Solo publica flexión. Para m\,0,5 no hay resistencia superficial (picado).
+\item Usa JGMA 403/404, cuyo alcance empieza en $m=1{,}5$ mm.
+\item Supone carga en un sentido, baño de aceite y $\geq10^7$ ciclos, condiciones distintas a las de una rueda.
+\item M50S25: 2,5~W a 100~rpm $=$ 0,239~N\,m, frente a 0,135~N\,m calculados aquí para el servicio normal.
+\end{enumerate}
+\end{caja}
+
+\section{Geometría}
+\begin{minipage}[c]{0.46\linewidth}\centering
+\includegraphics[width=\linewidth]{figuras/fig_geometria.pdf}
+\captionof{figure}{Corte axial esquemático de KG M50S20.}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.5\linewidth}\small
+Relaciones usadas para todos los diseños ($\delta=45^\circ$):
+\begin{align*}
+d_e&=m\,z, & R_e&=\frac{d_e}{2\sin\delta},\\
+d_a&=d_e+2m\cos\delta, & z_v&=\frac{z}{\cos\delta},\\
+b_{ef}&=\min\left(b;\,0{,}3R_e\right).
+\end{align*}
+Shigley limita el ancho útil al 30\,\% de la distancia de cono. En las mitras KG el ancho de catálogo supera ese valor,
+así que solo se acredita $0{,}3R_e$.
+\end{minipage}
+
+\section{Método de cálculo (Shigley, capítulo 15)}
+Shigley presenta las ecuaciones de ANSI/AGMA 2003 para engranajes cónicos rectos. En unidades SI, con $W^t$ la fuerza
+tangencial en el diámetro primitivo exterior:
+
+\paragraph{Esfuerzo de contacto (picado).}
+\begin{equation}
+\sigma_H = Z_E\left(\frac{W^t}{b\,d_{e1}\,Z_I}\,K_A K_v K_{H\beta} Z_x Z_{xc}\right)^{1/2}
+\le \sigma_{HP}=\frac{\sigma_{H\,\lim}\,Z_{NT}\,Z_W}{S_H\,K_\theta\,Z_Z}
+\label{eq:contacto}
+\end{equation}
+
+\paragraph{Esfuerzo de flexión.}
+\begin{equation}
+\sigma_F = \frac{W^t}{b}\,\frac{K_A K_v}{m_{et}}\,\frac{Y_x K_{H\beta}}{Y_\beta\,Y_J}
+\le \sigma_{FP}=\frac{0{,}70\,\sigma_{F\,\lim}\,Y_{NT}}{S_F\,K_\theta\,Y_Z}
+\label{eq:flexion}
+\end{equation}
+El factor $0{,}70$ corresponde a la carga en ambos sentidos.
+
+\paragraph{Torque admisible.} Se despeja $W^t$ de \eqref{eq:contacto} y \eqref{eq:flexion}, con $T=W^t d_e/2$:
+\begin{align}
+T_F &= \frac{d_e}{2}\;\frac{\sigma_{FP}\;b\;m_{et}\;Y_\beta\,Y_J}{K_A\,K_v\,Y_x\,K_{H\beta}}\\[4pt]
+T_H &= \frac{d_e}{2}\left(\frac{\sigma_{HP}}{Z_E}\right)^{2}\frac{b\;d_e\;Z_I}{K_A\,K_v\,K_{H\beta}\,Z_x\,Z_{xc}}\\[4pt]
+T_{adm} &= \min\left(T_F,\;T_H\right)
+\end{align}
+Los esfuerzos AGMA no son tensiones reales: se comparan solo con los admisibles del mismo método.
+
+\section{Factores adoptados}
+\begin{table}[H]\centering\small
+\caption{Factores de Shigley (notación US / SI) y su justificación.}
+\begin{tabularx}{\linewidth}{l c X}
+\toprule
+Factor & Valor & Justificación\\\midrule
+Sobrecarga $K_o$ / $K_A$ & 1,00 & Motor uniforme (BLDC, perfil suave) y carga suave. Si la rueda recibe golpes por obstáculos, usar 1,25 (figura~\ref{fig:sens}).\\
+Dinámico $K_v$ & $\approx1{,}04$ & $K_v=\left[(A+\sqrt{200\,v_{et}})/A\right]^B$, $B=0{,}25(12-Q_v)^{2/3}$, $A=50+56(1-B)$, $Q_v=6$\\
+Tamaño $K_s$ / $Y_x$ & 0,5 & $m_{et}<1{,}6$ mm\\
+Tamaño $C_s$ / $Z_x$ & 0,5 & $b<12{,}7$ mm\\
+Distribución $K_m$ / $K_{H\beta}$ & 1,25 & $K_{mb}+5{,}6\times10^{-6}b^2$, $K_{mb}=1{,}25$ (ambos en voladizo)\\
+Coronamiento $C_{xc}$ / $Z_{xc}$ & 2,0 & Dientes sin coronamiento garantizado\\
+Curvatura $K_x$ / $Y_\beta$ & 1 & Dientes rectos\\
+Geometría $J$ / $Y_J$, $I$ / $Z_I$ & tabla~\ref{tab:disenos} & Figs.~15-7 y 15-6 de Shigley\\
+Ciclos $K_L$ / $Y_{NT}$ & ec. & Fig.~15-9: $2{,}7$ ($<10^3$); $6{,}1514N^{-0{,}1192}$ ($10^3$--$3\times10^6$); $1{,}6831N^{-0{,}0323}$\\
+Ciclos $C_L$ / $Z_{NT}$ & ec. & Fig.~15-8: $2{,}0$ ($<10^4$); $3{,}4822N^{-0{,}0602}$\\
+Confiabilidad $K_R$ / $Y_Z$ & 0,895 & $R=0{,}95$: $Y_Z=0{,}70-0{,}15\log(1-R)$\\
+Confiabilidad $C_R$ / $Z_Z$ & 0,946 & $Z_Z=\sqrt{Y_Z}$\\
+Temperatura $K_T$ / $K_\theta$ & 1 & $t\le120\,^\circ$C\\
+Dureza $C_H$ / $Z_W$ & 1 & Mismo material en piñón y corona\\
+Seguridad $S_F$, $S_H$ & 1 & Capacidad nominal; el margen lo dan $R$ y los supuestos\\
+Carga alternada & 0,70 & Flexión con torque en ambos sentidos\\
+\bottomrule
+\end{tabularx}
+\end{table}
+\begin{figure}[H]\centering\includegraphics[width=0.95\linewidth]{figuras/fig_ciclos.pdf}\caption{Factores de ciclos de Shigley (Figs. 15-8 y 15-9, graficados desde sus ecuaciones) y puntos de trabajo. \textit{Fuente: ecuaciones de Shigley, cap. 15.}}\end{figure}
+
+
+\section{Resistencia de los materiales}
+El S45C sin tratamiento entra en Shigley como acero templado total grado~1; se toma 170~HB, el extremo inferior de JIS G4051:
+\begin{equation}
+\sigma_{F\,\lim}=0{,}30\,\mathrm{HB}+14{,}48=65{,}5\ \text{MPa},\qquad
+\sigma_{H\,\lim}=2{,}35\,\mathrm{HB}+162{,}89=562{,}4\ \text{MPa}
+\end{equation}
+El latón no figura en Shigley. Se escala desde el S45C por la relación de límites de fatiga (138/285) a flexión y por la dureza
+Brinell (100/170) a picado. El SCM415 carburizado toma los valores tabulados por Shigley para acero carburizado grado~1.
+\begin{equation}
+Z_E=\left[\pi\left(\frac{1-\nu_1^2}{E_1}+\frac{1-\nu_2^2}{E_2}\right)\right]^{-1/2}
+\end{equation}
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{4pt}
+\caption{Propiedades y resistencias de referencia.}\label{tab:mat}
+\begin{tabular}{l r r r r p{3.6cm} r p{3.2cm}}
+\toprule
+Material & $E$ & $\nu$ & $Z_E$ & $\sigma_{F\,\lim}$ & Base & $\sigma_{H\,\lim}$ & Base\\
+ & GPa & & $\sqrt{\text{MPa}}$ & MPa & & MPa & \\
+\midrule
+S45C & 205 & 0,30 & 189,4 & 65,5 & Shigley Fig. 15-13, grado 1, 170 HB & 562 & Shigley Fig. 15-12, grado 1, 170 HB \\
+Latón C3604B & 100 & 0,34 & 134,1 & 31,7 & fatiga 138/285 MPa $\times$ S45C & 331 & dureza 100/170 $\times$ S45C \\
+SCM415 carburizado & 205 & 0,30 & 189,4 & 206,8 & Shigley, carburizado grado 1 (30 kpsi), 58-62 HRC & 1379 & Shigley, carburizado grado 1 (200 kpsi) \\
+\bottomrule\end{tabular}\end{table}
+
+
+\section{Cálculo paso a paso: KG M50S20, servicio normal a 100 rpm}
+\begin{align*}
+N_L &= 2\times(100\cdot60\cdot20\cdot12\cdot10) = 2{,}88\times10^{7}\\
+v_{et} &= \pi\,d_e\,n/60\,000 = 0{,}0524\ \text{m/s} \;\Rightarrow\; K_v=1{,}0445\\
+K_{H\beta} &= 1{,}25+5{,}6\times10^{-6}\,(2{,}121)^2=1{,}2500\\
+Y_{NT} &= 1{,}6831\,N_L^{-0{,}0323}=0{,}9664,\qquad Z_{NT}=3{,}4822\,N_L^{-0{,}0602}=1{,}2382\\
+\sigma_{FP} &= \frac{0{,}70\times65{,}48\times0{,}9664}{1\times1\times0{,}8952}=49{,}49\ \text{MPa}\\
+\sigma_{HP} &= \frac{562{,}4\times1{,}2382}{1\times1\times0{,}9461}=736{,}0\ \text{MPa}\\
+W_F &= \frac{49{,}49\times2{,}121\times0{,}5\times0{,}20}{1\times1{,}0445\times0{,}5\times1{,}2500}=16{,}08\ \text{N}
+&&\Rightarrow\; T_F=0{,}0804\ \text{N\,m}\\
+W_H &= \left(\frac{736{,}0}{189{,}4}\right)^2\frac{2{,}121\times10\times0{,}062}{1\times1{,}0445\times1{,}2500\times0{,}5\times2{,}0}=15{,}22\ \text{N}
+&&\Rightarrow\; T_H=0{,}0761\ \text{N\,m}\\
+T_{adm} &= \min(0{,}0804;\,0{,}0761)=\mathbf{0{,}0761\ \textbf{N\,m}}\quad\text{(picado)}
+\end{align*}
+Para los picos de 10~s a 100~rpm: $N_L=2\times2400\times16{,}7=8{,}00\times10^{4}$, $Y_{NT}=1{,}601$,
+$Z_{NT}=1{,}765$ y $T_{adm}=0{,}1332$~N\,m (flexión). Los demás diseños siguen el mismo procedimiento con su
+geometría y su material (tablas~\ref{tab:disenos} y \ref{tab:mat}).
+
+\section{Resultados}
+\begin{table}[H]\centering\scriptsize\setlength{\tabcolsep}{2.8pt}\caption{Servicio normal: ciclos de toda la vida (evaluados al doble, regla de Miner).}\begin{tabular}{l r r c c c r r r r r r r l}
+\toprule
+Diseño & rpm & $N_L$ & $K_v$ & $Y_{NT}$ & $Z_{NT}$ & $\sigma_{FP}$ & $\sigma_{HP}$ & $W_F$ & $W_H$ & $T_F$ & $T_H$ & $T_{adm}$ & Limita\\
+ & & & & & & MPa & MPa & N & N & N\,m & N\,m & N\,m & \\
+\midrule
+KG M50S20 (S45C) & 0,5 & $1{,}44\times10^{5}$ & 1,003 & 1,493 & 1,703 & 76,5 & 1013 & 25,9 & 30,0 & 0,129 & 0,150 & \textbf{0,129} & flexión \\
+ & 50 & $1{,}44\times10^{7}$ & 1,031 & 0,988 & 1,291 & 50,6 & 767 & 16,7 & 16,8 & 0,083 & 0,084 & \textbf{0,083} & flexión \\
+ & 100 & $2{,}88\times10^{7}$ & 1,044 & 0,966 & 1,238 & 49,5 & 736 & 16,1 & 15,2 & 0,080 & 0,076 & \textbf{0,076} & picado \\
+\addlinespace[2pt]
+KG M50B20 (latón) & 0,5 & $1{,}44\times10^{5}$ & 1,003 & 1,493 & 1,703 & 37,0 & 596 & 12,5 & 20,7 & 0,063 & 0,103 & \textbf{0,063} & flexión \\
+ & 50 & $1{,}44\times10^{7}$ & 1,031 & 0,988 & 1,291 & 24,5 & 451 & 8,1 & 11,5 & 0,040 & 0,058 & \textbf{0,040} & flexión \\
+ & 100 & $2{,}88\times10^{7}$ & 1,044 & 0,966 & 1,238 & 24,0 & 433 & 7,8 & 10,5 & 0,039 & 0,052 & \textbf{0,039} & flexión \\
+\addlinespace[2pt]
+KG M50S25 (S45C) & 0,5 & $1{,}44\times10^{5}$ & 1,004 & 1,493 & 1,703 & 76,5 & 1013 & 34,9 & 49,1 & 0,218 & 0,307 & \textbf{0,218} & flexión \\
+ & 50 & $1{,}44\times10^{7}$ & 1,035 & 0,988 & 1,291 & 50,6 & 767 & 22,4 & 27,3 & 0,140 & 0,171 & \textbf{0,140} & flexión \\
+ & 100 & $2{,}88\times10^{7}$ & 1,050 & 0,966 & 1,238 & 49,5 & 736 & 21,6 & 24,8 & 0,135 & 0,155 & \textbf{0,135} & flexión \\
+\addlinespace[2pt]
+RS PRO 521-5780 & 0,5 & $1{,}44\times10^{5}$ & 1,004 & 1,493 & 1,703 & 76,5 & 1013 & 49,0 & 45,9 & 0,313 & 0,294 & \textbf{0,294} & picado \\
+ & 50 & $1{,}44\times10^{7}$ & 1,036 & 0,988 & 1,291 & 50,6 & 767 & 31,4 & 25,6 & 0,201 & 0,164 & \textbf{0,164} & picado \\
+ & 100 & $2{,}88\times10^{7}$ & 1,050 & 0,966 & 1,238 & 49,5 & 736 & 30,3 & 23,2 & 0,194 & 0,148 & \textbf{0,148} & picado \\
+\addlinespace[2pt]
+A medida carburizada & 0,5 & $1{,}44\times10^{5}$ & 1,004 & 1,493 & 1,703 & 241,5 & 2483 & 123,5 & 286,2 & 0,778 & 1,803 & \textbf{0,778} & flexión \\
+ & 50 & $1{,}44\times10^{7}$ & 1,035 & 0,988 & 1,291 & 159,8 & 1882 & 79,2 & 159,3 & 0,499 & 1,004 & \textbf{0,499} & flexión \\
+ & 100 & $2{,}88\times10^{7}$ & 1,050 & 0,966 & 1,238 & 156,3 & 1805 & 76,4 & 144,5 & 0,481 & 0,911 & \textbf{0,481} & flexión \\
+\addlinespace[2pt]
+\bottomrule\end{tabular}\end{table}
+
+\begin{table}[H]\centering\scriptsize\setlength{\tabcolsep}{2.8pt}\caption{Picos de 10 s: ciclos de los picos (evaluados al doble, regla de Miner).}\begin{tabular}{l r r c c c r r r r r r r l}
+\toprule
+Diseño & rpm & $N_L$ & $K_v$ & $Y_{NT}$ & $Z_{NT}$ & $\sigma_{FP}$ & $\sigma_{HP}$ & $W_F$ & $W_H$ & $T_F$ & $T_H$ & $T_{adm}$ & Limita\\
+ & & & & & & MPa & MPa & N & N & N\,m & N\,m & N\,m & \\
+\midrule
+KG M50S20 (S45C) & 0 & $4{,}80\times10^{3}$ & 1,000 & 2,240 & 2,000 & 114,7 & 1189 & 38,9 & 41,5 & 0,195 & 0,207 & \textbf{0,195} & flexión \\
+ & 0,5 & $4{,}80\times10^{3}$ & 1,003 & 2,240 & 2,000 & 114,7 & 1189 & 38,8 & 41,3 & 0,194 & 0,207 & \textbf{0,194} & flexión \\
+ & 50 & $4{,}00\times10^{4}$ & 1,031 & 1,739 & 1,840 & 89,1 & 1094 & 29,3 & 34,0 & 0,147 & 0,170 & \textbf{0,147} & flexión \\
+ & 100 & $8{,}00\times10^{4}$ & 1,044 & 1,601 & 1,765 & 82,0 & 1049 & 26,6 & 30,9 & 0,133 & 0,155 & \textbf{0,133} & flexión \\
+\addlinespace[2pt]
+KG M50B20 (latón) & 0 & $4{,}80\times10^{3}$ & 1,000 & 2,240 & 2,000 & 55,5 & 699 & 18,8 & 28,6 & 0,094 & 0,143 & \textbf{0,094} & flexión \\
+ & 0,5 & $4{,}80\times10^{3}$ & 1,003 & 2,240 & 2,000 & 55,5 & 699 & 18,8 & 28,5 & 0,094 & 0,143 & \textbf{0,094} & flexión \\
+ & 50 & $4{,}00\times10^{4}$ & 1,031 & 1,739 & 1,840 & 43,1 & 643 & 14,2 & 23,5 & 0,071 & 0,117 & \textbf{0,071} & flexión \\
+ & 100 & $8{,}00\times10^{4}$ & 1,044 & 1,601 & 1,765 & 39,7 & 617 & 12,9 & 21,3 & 0,065 & 0,107 & \textbf{0,065} & flexión \\
+\addlinespace[2pt]
+KG M50S25 (S45C) & 0 & $4{,}80\times10^{3}$ & 1,000 & 2,240 & 2,000 & 114,7 & 1189 & 52,5 & 67,9 & 0,328 & 0,425 & \textbf{0,328} & flexión \\
+ & 0,5 & $4{,}80\times10^{3}$ & 1,004 & 2,240 & 2,000 & 114,7 & 1189 & 52,4 & 67,7 & 0,327 & 0,423 & \textbf{0,327} & flexión \\
+ & 50 & $4{,}00\times10^{4}$ & 1,035 & 1,739 & 1,840 & 89,1 & 1094 & 39,4 & 55,5 & 0,246 & 0,347 & \textbf{0,246} & flexión \\
+ & 100 & $8{,}00\times10^{4}$ & 1,050 & 1,601 & 1,765 & 82,0 & 1049 & 35,8 & 50,4 & 0,224 & 0,315 & \textbf{0,224} & flexión \\
+\addlinespace[2pt]
+RS PRO 521-5780 & 0 & $4{,}80\times10^{3}$ & 1,000 & 2,240 & 2,000 & 114,7 & 1189 & 73,7 & 63,6 & 0,472 & 0,407 & \textbf{0,407} & picado \\
+ & 0,5 & $4{,}80\times10^{3}$ & 1,004 & 2,240 & 2,000 & 114,7 & 1189 & 73,5 & 63,3 & 0,470 & 0,405 & \textbf{0,405} & picado \\
+ & 50 & $4{,}00\times10^{4}$ & 1,036 & 1,739 & 1,840 & 89,1 & 1094 & 55,3 & 52,0 & 0,354 & 0,332 & \textbf{0,332} & picado \\
+ & 100 & $8{,}00\times10^{4}$ & 1,050 & 1,601 & 1,765 & 82,0 & 1049 & 50,2 & 47,1 & 0,321 & 0,302 & \textbf{0,302} & picado \\
+\addlinespace[2pt]
+A medida carburizada & 0 & $4{,}80\times10^{3}$ & 1,000 & 2,240 & 2,000 & 362,2 & 2915 & 185,9 & 395,9 & 1,171 & 2,494 & \textbf{1,171} & flexión \\
+ & 0,5 & $4{,}80\times10^{3}$ & 1,004 & 2,240 & 2,000 & 362,2 & 2915 & 185,2 & 394,5 & 1,167 & 2,485 & \textbf{1,167} & flexión \\
+ & 50 & $4{,}00\times10^{4}$ & 1,035 & 1,739 & 1,840 & 281,3 & 2682 & 139,4 & 323,6 & 0,878 & 2,039 & \textbf{0,878} & flexión \\
+ & 100 & $8{,}00\times10^{4}$ & 1,050 & 1,601 & 1,765 & 259,0 & 2572 & 126,6 & 293,6 & 0,798 & 1,850 & \textbf{0,798} & flexión \\
+\addlinespace[2pt]
+\bottomrule\end{tabular}\end{table}
+
+\begin{figure}[H]\centering\includegraphics[width=\linewidth]{figuras/fig_resumen.pdf}\caption{Torque admisible de cada diseño: servicio normal y picos de 10 s. \textit{Fuente: cálculo propio.}}\label{fig:resumen}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[width=\linewidth]{figuras/fig_modos.pdf}\caption{Servicio normal a 100 rpm: capacidad a flexión alternada y a picado de cada diseño (escala logarítmica). \textit{Fuente: cálculo propio.}}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[width=\linewidth]{figuras/fig_rpm.pdf}\caption{Torque admisible en función de la velocidad de la rueda (escala logarítmica). \textit{Fuente: cálculo propio.}}\end{figure}
+
+En todos los casos $\sigma_{FP}<S_y$, así que ningún pico produce fluencia estática del diente.
+
+\section{Sensibilidad}
+\begin{figure}[H]\centering\includegraphics[width=\linewidth]{figuras/fig_sensibilidad.pdf}\caption{Sensibilidad del torque normal de KG M50S20 a 100 rpm a cada supuesto. \textit{Fuente: cálculo propio.}}\label{fig:sens}\end{figure}
+
+\begin{figure}[H]\centering\includegraphics[width=\linewidth]{figuras/fig_picos.pdf}\caption{Pico admisible a 100 rpm en función de la frecuencia de picos. \textit{Fuente: cálculo propio.}}\end{figure}
+
+Para el latón, si en lugar de escalar por dureza se toma la resistencia a picado del bronce al estaño de Shigley (tabla 14-7),
+el torque normal baja de 0,039 a 0,019~N\,m a 100~rpm.
+
+\section{Fijación al eje}
+Con más capacidad en los dientes, la unión al eje puede pasar a ser el límite. Prisioneros según Shigley tabla 7-4
+(n.º 2 $\approx$ M2,5: 85~lbf; n.º 4 $\approx$ M3: 160~lbf), con factor 2; eje de acero.
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{4pt}
+\caption{Fijación al eje y torsión del eje frente al mayor pico (0 rpm).}\label{tab:fij}
+\begin{tabular}{l r l r r l r}
+\toprule
+Diseño & Eje & Fijación & Pico 0 rpm & Prisioneros ($n=2$) & ¿Alcanza? & $\tau$ eje\\
+ & mm & & N\,m & N\,m & & MPa\\
+\midrule
+KG M50S20 (S45C) & 3 & 2 prisioneros M2,5 & 0,195 & 0,28 & sí & 37 \\
+KG M50B20 (latón) & 3 & 2 prisioneros M2,5 & 0,094 & 0,28 & sí & 18 \\
+KG M50S25 (S45C) & 4 & 2 prisioneros M3 & 0,328 & 0,71 & sí & 26 \\
+RS PRO 521-5780 & 4 & prisionero (a confirmar) & 0,407 & 0,71 & sí & 32 \\
+A medida carburizada & 5 & pasador o chaveta (propuesta) & 1,171 & -- & arrastre positivo & 48 \\
+\bottomrule\end{tabular}\end{table}
+
+La mitra carburizada supera la capacidad de los prisioneros. Requiere eje de 5~mm con pasador, chaveta o plano de arrastre, y hay que
+verificar también rodamientos y carcasa para ese torque.
+
+\section{Lubricación}\label{sec:lub}
+\textbf{Es imprescindible.}
+\begin{enumerate}[leftmargin=1.2em]
+\item \textbf{El método la supone.} Las capacidades AGMA de Shigley y las tablas de KG (baño de aceite de 100~cSt) valen para engranajes lubricados.
+En seco los valores de este informe no son válidos: domina el desgaste adhesivo.
+\item \textbf{Régimen de lubricación límite.} A $v_{et}\approx0{,}03$--$0{,}07$ m/s no se forma película elastohidrodinámica. El modo de falla a largo plazo es
+el \textbf{desgaste}, que AGMA no calcula. Se requiere grasa con aditivos de extrema presión (EP) y antidesgaste, o con MoS$_2$.
+\item \textbf{Materiales.} El S45C sin tratamiento se oxida (una rueda puede recibir humedad). El latón se desgasta más rápido. El carburizado es
+el más resistente al desgaste, pero también necesita grasa EP.
+\item \textbf{Recomendación práctica.} Grasa semifluida NLGI 00--0 de complejo de litio con EP, compartimiento cerrado contra polvo y arena,
+reengrase en cada mantenimiento y control del juego tras las primeras campañas.
+\end{enumerate}
+
+\section{Conclusiones y recomendación}
+\begin{enumerate}[leftmargin=1.2em]
+\item Con Shigley ($R=0{,}95$, carga alternada, 10 años), el torque admisible a 100~rpm es:
+KG M50S20 0,076~N\,m (pico 0,133);
+KG M50B20 0,039 (0,065);
+KG M50S25 0,135 (0,224);
+RS PRO 521-5780 0,148 (0,302);
+a medida carburizada 0,481 (0,798).
+\item \textbf{Recomendación inmediata: KG M50S25.} Es de stock y del mismo proveedor, entra en 14~mm, casi duplica la capacidad y mantiene la fijación por prisioneros.
+\item El RS PRO rinde algo más, pero depende de datos no publicados (ancho de diente y temple). Si RS confirma temple por inducción del flanco, su capacidad sube.
+\item Para más del doble de la capacidad del M50S25, la única vía dentro de 14~mm es la mitra carburizada a medida, con eje de 5~mm y arrastre positivo.
+\item La lubricación con grasa EP es condición necesaria de todos los valores.
+\end{enumerate}
+
+\section*{Referencias}
+\addcontentsline{toc}{section}{Referencias}
+\begin{enumerate}[label={[\arabic*]},leftmargin=2em]
+\item Budynas, R.\,G. y Nisbett, J.\,K. \textit{Diseño en ingeniería mecánica de Shigley}, 10.ª ed. McGraw-Hill. Caps. 6, 7 (tabla 7-4), 14 (tabla 14-7) y 15.
+\item KG (Kyoiku Gear Mfg.). Catálogo KG4001, sección de mitras, pp. 233--276. \url{https://www.kggear.co.jp/wp-content/uploads/2022/11/KG4001WEB-7.pdf}
+\item KG. Material de referencia KG5001, pp. 18 y 20. \url{https://www.kggear.co.jp/wp-content/uploads/2024/06/KG5001JP_reference.pdf}
+\item KG. \textit{Technical Data Note}, cap. 10.2. \url{https://www.kggear.co.jp/en/wp-content/themes/bizvektor-global-edition/pdf/TechnicalData_KGSTOCKGEARS.pdf}
+\item RS Components. RS PRO Steel Mitre Gear, 0,8 Module, 16 Teeth, 521-5780. \url{https://int.rsdelivers.com/product/rs-pro/rs-pro-steel-mitre-gear-4mm-bore-16-teeth-08/5215780}
+\item Copper Development Association. C36000 Free-Cutting Brass. \url{https://www.copper.org/applications/rodbar/alloy360/free_cutting.html}
+\end{enumerate}
+\end{document}

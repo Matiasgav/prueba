@@ -1,0 +1,35 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-tabla,es-nodecimaldot,es-noshorthands]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[a4paper,top=2.4cm,bottom=2.4cm,left=2.3cm,right=2.3cm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[output-decimal-marker={,}]{siunitx}
+\usepackage{booktabs,array,tabularx}
+\usepackage{graphicx,float}
+\usepackage[font=small,labelfont=bf,labelsep=period]{caption}
+\usepackage[table]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{fancyhdr,lastpage}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{needspace,etoolbox}
+\pretocmd{\section}{\needspace{10\baselineskip}}{}{}
+\pretocmd{\subsection}{\needspace{6\baselineskip}}{}{}
+\usepackage[hidelinks]{hyperref}
+\definecolor{azul}{HTML}{1C5CAB}
+\definecolor{gris}{HTML}{52514E}
+\titleformat{\section}{\Large\bfseries\color{azul}}{\thesection}{0.8em}{}[\vspace{-0.6ex}\color{azul!40}\rule{\linewidth}{0.6pt}]
+\titleformat{\subsection}{\large\bfseries\color{azul}}{\thesubsection}{0.8em}{}
+\setlength{\parskip}{0.45em}\setlength{\parindent}{0pt}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small\color{gris}Engranajes cónicos para rueda --- Torque admisible según Shigley}
+\fancyhead[R]{\small\color{gris}Informe técnico}
+\fancyfoot[C]{\small\color{gris}Página \thepage\ de \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\newtcolorbox{caja}[2][azul]{colback=#1!5,colframe=#1,boxrule=0.6pt,arc=1mm,left=2mm,right=2mm,top=1mm,bottom=1mm,fonttitle=\bfseries,title={#2}}
+\setlist{itemsep=0.2em,topsep=0.3em}
+\graphicspath{{./}}
+\begin{document}
