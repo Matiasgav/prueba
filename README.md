@@ -1,6 +1,23 @@
-# Informe — Oportunidades de robótica de inspección industrial
+# Proyecto GRIS · repositorio de trabajo
 
-> Este repositorio también contiene [`engranajes/`](engranajes/README.md): el análisis del torque admisible de un par de mitras KG m0,5 × 20 según Shigley.
+## Contenido
+
+| Carpeta | Qué hay |
+|---|---|
+| [`memoria/`](memoria/README.md) | **Memoria del proyecto**: una carpeta por nota (`notas/02489-00-MC###/`) y todos los PDF finales juntos en `memoria/pdf/`. |
+| [`flex_omega/`](flex_omega/) | Flex rigid-flex del conector M12: simulación de la elástica, planos y visores 2D/3D de las alternativas. Informe: MC006. |
+| [`engranajes/`](engranajes/README.md) | Torque admisible de las mitras KG m0,5 × 20 según Shigley. Informe: MC001. |
+| [`paralelogramo/`](paralelogramo/README.md) | Dimensionamiento del paralelogramo elevador; en `simulacion/`, la simulación web con resorte. |
+| [`impacto_wtd/`](impacto_wtd/README.md) | Módulo de impacto para el Wedge Tightness Test: modelo, estudios, tests e informe. |
+| [`tubo_316L/`](tubo_316L/) | Plano ISO A3 del tubo AISI 316L con ventana biselada. |
+| `source/`, `tools/`, `assets/` | Informe de oportunidades de robótica de inspección (abajo). |
+
+Cada sesión de Claude trabaja en su rama `claude/…`; al terminar, lo útil se trae a `main`
+y la rama se borra. Los informes siguen la habilidad `.claude/skills/informe-memoria/`.
+
+---
+
+# Informe — Oportunidades de robótica de inspección industrial
 
 Informe profesional en dos formatos, generados desde una única fuente.
 
