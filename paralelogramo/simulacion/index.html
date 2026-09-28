@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paralelogramo articulado con resorte</title>
+<style>
+  :root{
+    --paper:#E7EBE9;
+    --panel:#F3F6F4;
+    --ink:#16211F;
+    --steel:#2E4A55;
+    --spring:#A8432B;
+    --react:#1F6F4A;
+    --handle:#0F6E8C;
+    --guide:#98A5A2;
+    --hair:#C3CCC9;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:14px 14px 28px;
+  }
+  .wrap{max-width:560px;margin:0 auto}
+  h1{font-size:19px;font-weight:600;letter-spacing:-0.01em;margin:0 0 4px}
+  .sub{margin:0 0 10px;font-size:13.5px;line-height:1.45;color:#4A5B58;max-width:46em}
+  .stage{
+    background:var(--panel);
+    border:1px solid var(--hair);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  svg{display:block;width:100%;height:auto;touch-action:none;user-select:none}
+  .readout{
+    display:flex;flex-wrap:wrap;gap:2px 18px;
+    margin:10px 0 6px;
+    font:500 12.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    color:#3C4C49;
+  }
+  .readout b{font-weight:600;color:var(--ink)}
+  .readout .sw{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:baseline}
+  .sw.s{background:var(--spring)}
+  .sw.n{background:var(--react)}
+  .specs{
+    margin:0 0 14px;font-size:12px;line-height:1.5;color:#66756F;
+  }
+  .controls{display:grid;gap:11px}
+  .row{display:grid;grid-template-columns:104px 1fr 62px;align-items:center;gap:10px;font-size:13px}
+  .row span:last-child{font:500 12px/1 ui-monospace,Menlo,monospace;text-align:right;color:#3C4C49}
+  input[type=range]{width:100%;accent-color:var(--handle);height:22px}
+  .foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:2px}
+  label.chk{display:flex;align-items:center;gap:7px;font-size:13px}
+  input[type=checkbox]{width:17px;height:17px;accent-color:var(--handle)}
+  button{
+    font:500 13px/1 inherit;color:#F3F6F4;background:var(--steel);
+    border:0;border-radius:3px;padding:9px 15px;cursor:pointer;
+  }
+  button:active{background:#16211F}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--handle);outline-offset:2px}
+  .note{margin:16px 0 0;font-size:12.5px;line-height:1.55;color:#4A5B58;border-top:1px solid var(--hair);padding-top:11px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Paralelogramo articulado con resorte</h1>
+  <p class="sub">La barra de abajo está fija: el vínculo izquierdo está empotrado y el derecho corre por una guía vertical que movés con un slider. El resorte sale de la articulación móvil derecha y su largo natural es la mitad del eslabón corto. Arriba y abajo hay un techo y un piso contra los que los eslabones pueden chocar. Arrastrá el círculo azul y el mecanismo se mueve hasta encontrar su equilibrio.</p>
+
+  <div class="stage">
+    <svg id="scene" viewBox="0 0 440 400" aria-label="Simulación del mecanismo">
+      <defs>
+        <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="7" stroke="#7C8B88" stroke-width="1.1"/>
+        </pattern>
+        <marker id="arrS" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--spring)"/>
+        </marker>
+        <marker id="arrN" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--react)"/>
+        </marker>
+      </defs>
+
+      <!-- trayectoria del anclaje del resorte -->
+      <circle id="path" fill="none" stroke="var(--guide)" stroke-width="1" stroke-dasharray="2 5" opacity="0.75"/>
+      <!-- guía vínculo derecho - mango -->
+      <line id="guide" stroke="var(--guide)" stroke-width="1" stroke-dasharray="4 5" opacity="0.7"/>
+
+      <!-- piso y techo -->
+      <g id="walls">
+        <rect id="floorHatch" fill="url(#hatch)" stroke="none"/>
+        <line id="floorLine" stroke="var(--ink)" stroke-width="2"/>
+        <rect id="ceilHatch" fill="url(#hatch)" stroke="none"/>
+        <line id="ceilLine" stroke="var(--ink)" stroke-width="2"/>
+      </g>
+
+      <!-- apoyo fijo izquierdo -->
+      <g id="ground"></g>
+      <!-- corredera vertical del vínculo derecho -->
+      <line id="slide" stroke="var(--ink)" stroke-width="1.2" stroke-dasharray="3 4" opacity="0.65"/>
+      <rect id="slideBlock" width="22" height="16" rx="2" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.8"/>
+
+      <!-- barras (el ancho lo fija el espesor real del eslabón) -->
+      <line id="base" stroke="var(--steel)" stroke-linecap="round"/>
+      <line id="crankA" stroke="var(--steel)" stroke-linecap="round"/>
+      <line id="crankB" stroke="var(--steel)" stroke-linecap="round"/>
+      <line id="coupler" stroke="var(--steel)" stroke-linecap="round"/>
+
+      <!-- resorte -->
+      <polyline id="spring" fill="none" stroke="var(--spring)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+
+      <!-- fuerzas -->
+      <line id="fSpring" stroke="var(--spring)" stroke-width="2.6" marker-end="url(#arrS)" opacity="0"/>
+      <line id="fReact" stroke="var(--react)" stroke-width="2.6" marker-end="url(#arrN)" opacity="0"/>
+
+      <!-- articulaciones -->
+      <circle id="jA" r="5" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>
+      <circle id="jB" r="5" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>
+      <circle id="jC" r="5" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>
+      <circle id="jD" r="5" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>
+      <circle id="jM" r="3.2" fill="var(--ink)" opacity="0"/>
+
+      <!-- mango -->
+      <circle id="grab" r="22" fill="transparent"/>
+      <circle id="handle" r="7" fill="var(--handle)" fill-opacity="0.18" stroke="var(--handle)" stroke-width="2.4"/>
+    </svg>
+  </div>
+
+  <div class="readout">
+    <div>ángulo <b id="rTheta">90.0°</b></div>
+    <div>resorte <b id="rLen">17.5</b> / <span id="rL0">17.5</span> mm</div>
+    <div>deformación <b id="rDef">0.0 mm</b></div>
+    <div><span class="sw s"></span>F resorte <b id="rF">0.00 N</b></div>
+    <div><span class="sw n"></span>reacción <b id="rN">0.00 N</b></div>
+  </div>
+  <p class="specs" id="specs"></p>
+
+  <div class="controls">
+    <div class="row"><span>Rigidez k</span><input id="sK" type="range" min="2" max="200" step="1" value="25"><span id="vK">25 N/m</span></div>
+    <div class="row"><span>Amortiguación</span><input id="sZ" type="range" min="0.05" max="1.5" step="0.05" value="0.55"><span id="vZ">0.55</span></div>
+    <div class="row"><span>Piso</span><input id="sF" type="range" min="12" max="55" step="0.5" value="26"><span id="vF">26 mm</span></div>
+    <div class="row"><span>Techo</span><input id="sC" type="range" min="4" max="55" step="0.5" value="50"><span id="vC">50 mm</span></div>
+    <div class="row"><span>Vínculo der.</span><input id="sB" type="range" min="-22" max="22" step="0.5" value="0"><span id="vB">0 mm</span></div>
+    <div class="foot">
+      <label class="chk"><input id="cG" type="checkbox"> Peso propio de los eslabones</label>
+      <button id="btnReset">Reiniciar</button>
+    </div>
+  </div>
+
+  <p class="note">La articulación de la que sale el resorte gira sobre el círculo punteado, centrado en el vínculo derecho. Con el resorte suelto, el mecanismo se queda quieto cuando el resorte vuelve a su largo natural: eso ocurre mientras el mango esté a una distancia de ese centro de entre medio y un eslabón corto y medio, y hay dos posiciones simétricas posibles. Si lo alejás más, el resorte queda estirado y el equilibrio pasa a ser aquel en que se alinea con los eslabones cortos apuntando al mango; si lo acercás demasiado al centro, queda comprimido y el equilibrio es el opuesto.</p>
+  <p class="note" style="border:0;padding-top:0">El acoplador se mantiene paralelo a la barra fija, así que si movés el vínculo derecho queda inclinado y contra cada pared apoya por una sola esquina: la más baja contra el piso, la más alta contra el techo (la flecha verde arranca ahí). Con el vínculo en cero apoya de plano. El choque es un tope rígido sin rebote. La flecha roja es la fuerza que el resorte hace sobre la articulación derecha. Ninguno de los dos vínculos fijos puede cruzar una pared, así que al acercar una pared el slider del vínculo se recorta solo.</p>
+  <p class="note" style="border:0;padding-top:0">El peso propio incluye los dos eslabones cortos, que rotan alrededor de sus vínculos, y el acoplador, que se traslada. Con eso la inercia respecto del ángulo es <code>2·m<sub>c</sub>·r²/3 + m<sub>L</sub>·r²</code> y el torque del peso es <code>(m<sub>L</sub> + m<sub>c</sub>)·g·r·cos θ</code>.</p>
+</div>
+
+<script>
+(function(){
+  // ---- geometría y material (mm, kg, N) ----
+  const L = 60;                  // eslabón largo (barra fija y acoplador)
+  const r = 35;                  // eslabón corto
+  const L0 = r/2;                // largo natural del resorte
+  const TH = 5;                  // espesor del eslabón en el plano del dibujo
+  const BAR = TH/2;              // media espesor, para el contacto
+  const RHO = 7.87e-6;           // densidad del hierro, kg/mm³
+  const g = 9.81;                // m/s²
+  const mCrank = RHO*60*10*5;    // eslabón corto: prisma de hierro 60x10x5
+  const mLong  = RHO*L*10*5;     // acoplador: mismo material y sección, 60 mm
+  const rm = r/1000;             // radio en metros
+  // inercia generalizada: dos cortos rotando + acoplador trasladándose
+  const Igen = 2*mCrank*rm*rm/3 + mLong*rm*rm;
+  const Wgen = (mLong + mCrank)*g*rm;   // factor del torque del peso
+
+  // ---- dibujo ----
+  const S = 3.2;                 // px por mm
+  const OX = 220, OY = 200;      // vínculo izquierdo en pantalla
+  const VW = 440, VH = 400;      // viewBox
+  const YB_MAX = 22;             // recorrido vertical del vínculo derecho
+
+  const A = {x:-L/2, y:0}, B = {x:L/2, y:0};   // B.y lo mueve el slider
+  const sx = x => OX + x*S, sy = y => OY - y*S;
+  const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+
+  let theta = Math.PI/2, omega = 0;
+  let P = {x:L/2 + L0, y:r};     // mango a la derecha del anclaje, resorte suelto
+  let hFloor = 26;               // distancia del piso al vínculo izquierdo, mm
+  let hCeil = 50;                // distancia del techo al vínculo izquierdo, mm
+  let contact = 0;               // 0 libre, +1 apoyado en el piso, -1 contra el techo
+  let dragging = false;
+
+  const $ = id => document.getElementById(id);
+  const svg = $('scene');
+
+  $('rL0').textContent = L0.toFixed(1);
+  $('specs').textContent =
+    'eslabón largo ' + L + ' mm · corto ' + r + ' mm · sección 10×5 mm · hierro 7,87 g/cm³ · ' +
+    (mCrank*1000).toFixed(1) + ' g por eslabón (' + (mCrank*g).toFixed(2) + ' N de peso c/u) · ' +
+    'largo natural del resorte ' + L0.toFixed(1) + ' mm';
+
+  // barras con el espesor real
+  ['base','crankA','crankB','coupler'].forEach(id => $(id).setAttribute('stroke-width', TH*S));
+
+  // apoyo fijo del vínculo izquierdo
+  (function ground(){
+    const gr = $('ground');
+    const x = sx(A.x), y = sy(A.y);
+    const tri = document.createElementNS('http://www.w3.org/2000/svg','path');
+    tri.setAttribute('d', `M ${x} ${y} L ${x-15} ${y+22} L ${x+15} ${y+22} Z`);
+    tri.setAttribute('fill','var(--panel)');
+    tri.setAttribute('stroke','var(--ink)');
+    tri.setAttribute('stroke-width','2');
+    gr.appendChild(tri);
+    const bar = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    bar.setAttribute('x', x-22); bar.setAttribute('y', y+22);
+    bar.setAttribute('width', 44); bar.setAttribute('height', 9);
+    bar.setAttribute('fill','url(#hatch)');
+    bar.setAttribute('stroke','var(--ink)');
+    bar.setAttribute('stroke-width','1.4');
+    gr.appendChild(bar);
+    $('path').setAttribute('r', r*S);
+  })();
+
+  // corredera vertical del vínculo derecho
+  function drawSlide(){
+    const lo = Math.max(-YB_MAX, -hFloor + 3), hi = Math.min(YB_MAX, hCeil - 3);
+    const e = $('slide');
+    e.setAttribute('x1', sx(B.x)); e.setAttribute('y1', sy(lo));
+    e.setAttribute('x2', sx(B.x)); e.setAttribute('y2', sy(hi));
+    const b = $('slideBlock');
+    b.setAttribute('x', sx(B.x)-11); b.setAttribute('y', sy(B.y)-8);
+  }
+
+  function springPath(M, Q){
+    const dx = Q.x-M.x, dy = Q.y-M.y;
+    const d = Math.hypot(dx,dy) || 1e-6;
+    const ux = dx/d, uy = dy/d, nx = -uy, ny = ux;
+    const lead = Math.min(4, d*0.22);
+    const zig = Math.max(0, d - 2*lead);
+    const N = 9;
+    let amp = 3.4*Math.sqrt(L0/Math.max(d,0.5));
+    amp = clamp(amp, 1.2, 4.6);
+    const pts = [[M.x,M.y],[M.x+ux*lead, M.y+uy*lead]];
+    for(let i=1;i<N;i++){
+      const s = lead + (i/N)*zig, off = (i%2 ? 1 : -1)*amp;
+      pts.push([M.x+ux*s+nx*off, M.y+uy*s+ny*off]);
+    }
+    pts.push([M.x+ux*(lead+zig), M.y+uy*(lead+zig)]);
+    pts.push([Q.x,Q.y]);
+    return pts.map(p => sx(p[0]).toFixed(1)+','+sy(p[1]).toFixed(1)).join(' ');
+  }
+
+  // articulación móvil derecha: de acá sale el resorte
+  function anchor(){ return {x: B.x + r*Math.cos(theta), y: B.y + r*Math.sin(theta)}; }
+  // centro del acoplador (donde actúa su peso)
+  function couplerMid(){ return {x: B.x/2 + r*Math.cos(theta), y: B.y/2 + r*Math.sin(theta)}; }
+
+  // Las dos articulaciones móviles están a la misma altura salvo el desnivel B.y,
+  // así que la esquina que toca cada pared es la más baja / la más alta de las dos.
+  const lowJoint  = () => Math.min(0, B.y);
+  const highJoint = () => Math.max(0, B.y);
+  // senos límite; fuera de [-1,1] => esa pared queda fuera del alcance
+  const sinLow  = () => (-hFloor + BAR - lowJoint())/r;
+  const sinHigh = () => (hCeil - BAR - highJoint())/r;
+
+  // fuerza del resorte sobre la articulación derecha (N) y torque generalizado (N·m)
+  function loads(k, grav){
+    const D = anchor();
+    const vx = P.x-D.x, vy = P.y-D.y;
+    const d = Math.hypot(vx,vy);
+    let f = 0, Fx = 0, Fy = 0;
+    if(d > 1e-6){
+      f = k*(d - L0)/1000;       // k en N/m, deformación en mm; >0 estirado
+      Fx = f*vx/d; Fy = f*vy/d;
+    }
+    // dD/dtheta = r(-sin, cos), igual que para cualquier punto del acoplador
+    let Q = Fx*(-rm*Math.sin(theta)) + Fy*(rm*Math.cos(theta));
+    if(grav) Q -= Wgen*Math.cos(theta);
+    return {Q, f, d};
+  }
+
+  // proyecta theta al borde más cercano de una zona prohibida [lo,hi] (en 0..2pi)
+  function snapOut(lo, hi){
+    const T = 2*Math.PI;
+    const t = ((theta % T) + T) % T;
+    const edge = (t - lo) < (hi - t) ? lo : hi;
+    theta += edge - t;
+    omega = 0;                                 // choque sin rebote
+  }
+
+  // topes rígidos: devuelve +1 si tocó el piso, -1 el techo, 0 si está libre
+  function resolveWalls(){
+    const s = Math.sin(theta), sL = sinLow(), sH = sinHigh();
+    if(sL > -1 && s < sL){                     // penetró el piso
+      const phi = Math.asin(Math.min(1, -sL));
+      snapOut(Math.PI + phi, 2*Math.PI - phi);
+      return 1;
+    }
+    if(sH < 1 && s > sH){                      // penetró el techo
+      const psi = Math.asin(Math.max(-1, sH));
+      snapOut(psi, Math.PI - psi);
+      return -1;
+    }
+    return 0;
+  }
+
+  function step(h, k, zeta, grav){
+    const {Q} = loads(k, grav);
+    const c = 2*zeta*rm*Math.sqrt(Igen*k);     // amortiguación relativa a la crítica
+    const alpha = (Q - c*omega)/Igen;
+    omega += alpha*h;
+    theta += omega*h;
+    const hit = resolveWalls();
+    if(hit) contact = hit;
+  }
+
+  // reacción normal de la pared necesaria para mantener el contacto
+  function reaction(k, grav){
+    if(!contact) return 0;
+    const ct = Math.cos(theta);
+    if(Math.abs(ct) < 1e-3) return 0;          // contacto tangente: indeterminado
+    const {Q} = loads(k, grav);
+    return Math.max(0, -contact*Q/(rm*ct));
+  }
+
+  function drawWalls(){
+    const yF = sy(-hFloor);
+    $('floorLine').setAttribute('x1', 0);  $('floorLine').setAttribute('y1', yF);
+    $('floorLine').setAttribute('x2', VW); $('floorLine').setAttribute('y2', yF);
+    const hf = $('floorHatch');
+    hf.setAttribute('x', 0); hf.setAttribute('y', yF);
+    hf.setAttribute('width', VW); hf.setAttribute('height', Math.max(0, Math.min(11, VH - yF)));
+
+    const yC = sy(hCeil);
+    $('ceilLine').setAttribute('x1', 0);  $('ceilLine').setAttribute('y1', yC);
+    $('ceilLine').setAttribute('x2', VW); $('ceilLine').setAttribute('y2', yC);
+    const hc = $('ceilHatch');
+    const th = Math.max(0, Math.min(11, yC));
+    hc.setAttribute('x', 0); hc.setAttribute('y', yC - th);
+    hc.setAttribute('width', VW); hc.setAttribute('height', th);
+  }
+
+  function arrow(id, from, ux, uy, len){
+    const e = $(id);
+    if(len < 0.5){ e.setAttribute('opacity', 0); return; }
+    e.setAttribute('opacity', 1);
+    e.setAttribute('x1', sx(from.x));            e.setAttribute('y1', sy(from.y));
+    e.setAttribute('x2', sx(from.x + ux*len));   e.setAttribute('y2', sy(from.y + uy*len));
+  }
+  // largo de flecha en mm a partir de una fuerza en N
+  const arrowLen = F => (Math.abs(F) < 0.01 ? 0 : Math.min(24, 3 + Math.abs(F)*10));
+
+  function draw(k, grav){
+    const c = Math.cos(theta), s = Math.sin(theta);
+    const C = {x:A.x + r*c, y:A.y + r*s};
+    const D = anchor();
+
+    drawWalls(); drawSlide();
+
+    const seg = (id,p,q) => { const e=$(id);
+      e.setAttribute('x1',sx(p.x)); e.setAttribute('y1',sy(p.y));
+      e.setAttribute('x2',sx(q.x)); e.setAttribute('y2',sy(q.y)); };
+    seg('base',A,B); seg('crankA',A,C); seg('crankB',B,D); seg('coupler',C,D);
+    seg('guide',B,P);
+
+    const dot = (id,p) => { const e=$(id); e.setAttribute('cx',sx(p.x)); e.setAttribute('cy',sy(p.y)); };
+    dot('jA',A); dot('jB',B); dot('jC',C); dot('jD',D);
+    dot('handle',P); dot('grab',P);
+    $('jM').setAttribute('opacity', grav ? 1 : 0);
+    if(grav) dot('jM', couplerMid());
+
+    // la trayectoria del anclaje es un círculo alrededor del vínculo derecho
+    $('path').setAttribute('cx', sx(B.x)); $('path').setAttribute('cy', sy(B.y));
+
+    $('spring').setAttribute('points', springPath(D,P));
+
+    const {f, d} = loads(k, grav);
+    const N = reaction(k, grav);
+
+    // flecha de la fuerza del resorte: aplicada en la articulación derecha, corrida
+    // en perpendicular para que no se confunda con el dibujo del resorte
+    if(d > 1e-6 && Math.abs(f) >= 0.01){
+      const sgn = f >= 0 ? 1 : -1;
+      const ux = sgn*(P.x-D.x)/d, uy = sgn*(P.y-D.y)/d;
+      const off = 2.8;
+      arrow('fSpring', {x: D.x - uy*off, y: D.y + ux*off}, ux, uy, arrowLen(f));
+    } else $('fSpring').setAttribute('opacity', 0);
+
+    // flecha de la reacción, en la esquina que está tocando la pared
+    if(contact){
+      const touchC = contact > 0 ? (B.y > 0) : (B.y < 0);   // ¿toca la esquina izquierda?
+      const xt = touchC ? C.x : D.x;
+      arrow('fReact', {x: xt, y: contact > 0 ? -hFloor : hCeil}, 0, contact, arrowLen(N));
+    } else $('fReact').setAttribute('opacity', 0);
+
+    const def = d - L0;
+    let deg = (theta*180/Math.PI) % 360; if(deg < 0) deg += 360;
+    $('rTheta').textContent = deg.toFixed(1)+'°';
+    $('rLen').textContent = d.toFixed(1);
+    const flat = Math.abs(def) < 0.05;
+    $('rDef').textContent = (flat ? '' : (def > 0 ? '+' : '−')) + Math.abs(def).toFixed(1) + ' mm';
+    $('rDef').style.color = Math.abs(def) < 0.2 ? 'var(--ink)' : 'var(--spring)';
+    $('rF').textContent = Math.abs(f).toFixed(2) + ' N ' + (Math.abs(f) < 0.01 ? '' : (f > 0 ? '(tracción)' : '(compresión)'));
+    $('rN').textContent = N.toFixed(2) + ' N' + (N > 0.005 ? (contact > 0 ? ' (piso)' : ' (techo)') : '');
+    $('rN').style.color = N > 0.005 ? 'var(--react)' : 'var(--ink)';
+  }
+
+  // ---- interacción ----
+  function clampHandle(){
+    P.x = clamp(P.x, (-OX+10)/S, (VW-OX-10)/S);
+    P.y = clamp(P.y, -hFloor+4, hCeil-4);
+  }
+  // el vínculo derecho tampoco puede atravesar las paredes
+  function clampSlide(){
+    const v = clamp(+$('sB').value, -hFloor+3, hCeil-3);
+    B.y = clamp(v, -YB_MAX, YB_MAX);
+    if(+$('sB').value !== B.y) $('sB').value = B.y;
+    $('vB').textContent = B.y.toFixed(1) + ' mm';
+  }
+  function toLocal(evt){
+    const pt = svg.createSVGPoint();
+    pt.x = evt.clientX; pt.y = evt.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    return {x: (p.x - OX)/S, y: (OY - p.y)/S};
+  }
+  svg.addEventListener('pointerdown', e => {
+    const p = toLocal(e);
+    if(Math.hypot(p.x-P.x, p.y-P.y) < 22/S){
+      dragging = true;
+      svg.setPointerCapture(e.pointerId);
+      $('handle').setAttribute('fill-opacity','0.36');
+      e.preventDefault();
+    }
+  });
+  svg.addEventListener('pointermove', e => {
+    if(!dragging) return;
+    const p = toLocal(e);
+    P.x = p.x; P.y = p.y; clampHandle();
+    e.preventDefault();
+  });
+  const stop = () => { dragging = false; $('handle').setAttribute('fill-opacity','0.18'); };
+  svg.addEventListener('pointerup', stop);
+  svg.addEventListener('pointercancel', stop);
+
+  $('btnReset').addEventListener('click', () => {
+    theta = Math.PI/2; omega = 0; P = {x:B.x + L0, y:B.y + r};
+    clampHandle(); resolveWalls();
+  });
+  const bind = (sl,out,fmt) => { const f = () => $(out).textContent = fmt(+$(sl).value); $(sl).addEventListener('input',f); f(); };
+  bind('sK','vK', v => v.toFixed(0) + ' N/m');
+  bind('sZ','vZ', v => v.toFixed(2));
+  bind('sF','vF', v => v.toFixed(1) + ' mm');
+  bind('sC','vC', v => v.toFixed(1) + ' mm');
+  const readInputs = () => { hFloor = +$('sF').value; hCeil = +$('sC').value; clampSlide(); };
+  ['sF','sC','sB'].forEach(id => $(id).addEventListener('input', () => { readInputs(); clampHandle(); }));
+
+  // ---- bucle ----
+  let last = performance.now();
+  function loop(now){
+    let dt = Math.min((now-last)/1000, 0.05); last = now;
+    const k = +$('sK').value, zeta = +$('sZ').value, grav = $('cG').checked;
+    readInputs();
+    contact = 0;
+    const n = 40, h = dt/n;                    // el mecanismo es chico y rápido
+    for(let i=0;i<n;i++) step(h, k, zeta, grav);
+    if(Math.abs(omega) < 1e-4) omega = 0;
+    draw(k, grav);
+    requestAnimationFrame(loop);
+  }
+  readInputs(); clampHandle();
+  draw(+$('sK').value, false);
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
