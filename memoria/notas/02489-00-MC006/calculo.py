@@ -1,6 +1,7 @@
 """02489-00-MC006 · Forma y largo del flex del conector M12.
 Genera las figuras y resultados.json de la nota a partir de:
-  - flex_omega/s_layout.json: modelo final (elástica) con el layout del 27/9, calculado por flex_omega/s_layout.py;
+  - datos/s_layout.json: modelo final (elástica) con el layout del 27/9, copia de la salida de flex_omega/s_layout.py
+    (rama claude/lucid-archimedes-8fei36);
   - geom_simple.json: geometría simplificada para dibujar (3 arcos R 3,5), calculada por geom_simple.py;
   - capturas/*.jpg: capturas de las páginas 2D y del visor 3D de alternativas (flex_omega/*.html).
 Planta como en Solid Edge: panel abajo; z hacia la derecha, x hacia el panel (hacia abajo en la figura).
@@ -12,7 +13,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, Arc
 from PIL import Image
 
-AQUI = os.path.dirname(os.path.abspath(__file__)); FLEX = os.path.join(AQUI, '..', '..', '..', 'flex_omega')
+AQUI = os.path.dirname(os.path.abspath(__file__)); FLEX = os.path.join(AQUI, 'datos')
 OUT = os.path.join(AQUI, 'figuras'); os.makedirs(OUT, exist_ok=True)
 CAP = os.path.join(AQUI, 'capturas')
 D = json.load(open(os.path.join(FLEX, 's_layout.json'))); G = json.load(open(os.path.join(AQUI, 'geom_simple.json')))

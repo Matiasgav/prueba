@@ -1,9 +1,9 @@
 """Geometria simplificada para dibujar la S en CAD: 1 recto + 3 arcos del mismo radio + rectas + 1 recto.
 Mismo largo desarrollado (19,00), mismos extremos y tangentes que la forma simulada en nominal.
 Coordenadas de la S: s desde la pestaña (z_rel), y lateral hacia el panel; extremos (0,0) y (15,5; 5) rumbo 0.
-Datos: flex_omega/s_layout.json (forma simulada en nominal). Salida: geom_simple.json en esta carpeta."""
+Datos: datos/s_layout.json (forma simulada en nominal; copia de flex_omega/s_layout.json). Salida: geom_simple.json en esta carpeta."""
 import json, os, numpy as np
-AQUI = os.path.dirname(os.path.abspath(__file__)); FLEX = os.path.join(AQUI, '..', '..', '..', 'flex_omega')
+AQUI = os.path.dirname(os.path.abspath(__file__)); FLEX = os.path.join(AQUI, 'datos')
 from scipy.optimize import least_squares
 D = json.load(open(os.path.join(FLEX, 's_layout.json'))); Z, L, A = D['Z'], D['L'], D['A']
 fr = D['seq']['ret_a_nom'][-1]

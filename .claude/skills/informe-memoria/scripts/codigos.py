@@ -16,7 +16,9 @@ import re
 import subprocess
 import sys
 
-PATRON = re.compile(r'^memoria/notas/(02489-00-MC(\d{3}))\.tex$')
+# Estructura actual: memoria/notas/<codigo>/<codigo>.tex. Se acepta también la
+# anterior (memoria/notas/<codigo>.tex) para las ramas que no se migraron.
+PATRON = re.compile(r'^memoria/notas/(?:(02489-00-MC\d{3})/)?(02489-00-MC\d{3})\.tex$')
 
 
 def git(*args):
@@ -29,7 +31,8 @@ def fetch():
 
 
 def titulo(ref, codigo):
-    tex = git('show', f'{ref}:memoria/notas/{codigo}.tex')
+    tex = (git('show', f'{ref}:memoria/notas/{codigo}/{codigo}.tex')
+           or git('show', f'{ref}:memoria/notas/{codigo}.tex'))
     m = re.search(r'\\newcommand\{\\titulo\}\{(.*)\}', tex)
     return m.group(1).strip() if m else '?'
 
@@ -44,8 +47,8 @@ def codigos_en_ramas():
             continue
         for ruta in git('ls-tree', '-r', '--name-only', ref, 'memoria/notas/').split():
             m = PATRON.match(ruta)
-            if m:
-                cod = m.group(1)
+            if m and m.group(1) in (None, m.group(2)):
+                cod = m.group(2)
                 usados.setdefault(cod, {}).setdefault(titulo(ref, cod), []).append(ref)
     return usados
 
@@ -67,6 +70,12 @@ def main():
     if a.verificar:
         cod = a.verificar if a.verificar.startswith('02489') else f'02489-00-{a.verificar}'
         propio = titulo('HEAD', cod)
+        if propio == '?':
+            import pathlib
+            local = pathlib.Path('memoria/notas') / cod / f'{cod}.tex'
+            if local.exists():
+                m = re.search(r'\\newcommand\{\\titulo\}\{(.*)\}', local.read_text(encoding='utf-8'))
+                propio = m.group(1).strip() if m else '?'
         ajenos = {t: r for t, r in usados.get(cod, {}).items() if t != propio}
         if ajenos:
             print(f'COLISIÓN: {cod} ya existe con otro título:')

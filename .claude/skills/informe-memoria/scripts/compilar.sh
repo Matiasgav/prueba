@@ -1,20 +1,22 @@
 #!/usr/bin/env bash
-# Compila una nota de la memoria y renderiza sus páginas para revisarlas.
+# Compila una nota de la memoria, copia el PDF final a memoria/pdf/ y renderiza
+# sus páginas para revisarlas.
 # Uso (desde la raíz del repo): bash compilar.sh 02489-00-MC###
 set -u
 NOTA=$1
 RAIZ=$(git rev-parse --show-toplevel)
 OUT=${CLAUDE_SCRATCH:-${TMPDIR:-/tmp}}/revision-$NOTA
-cd "$RAIZ/memoria/notas"
+cd "$RAIZ/memoria/notas/$NOTA" || exit 1
 for i in 1 2; do pdflatex -interaction=nonstopmode "$NOTA.tex" >/dev/null; done
 echo "--- problemas (vacío = ninguno)"
 grep -E -A2 "^!|Overfull|Font Warning|undefined" "$NOTA.log" | head -30
 rm -f "$NOTA".aux "$NOTA".log "$NOTA".out "$NOTA".synctex.gz
-mkdir -p "$OUT"
-python3 - "$NOTA.pdf" "$OUT" <<'PY'
+mkdir -p "$RAIZ/memoria/pdf" "$OUT"
+mv -f "$NOTA.pdf" "$RAIZ/memoria/pdf/$NOTA.pdf"
+python3 - "$RAIZ/memoria/pdf/$NOTA.pdf" "$OUT" <<'PY'
 import sys, pymupdf
 d = pymupdf.open(sys.argv[1])
 for i, p in enumerate(d, 1):
     p.get_pixmap(dpi=80).save(f'{sys.argv[2]}/pagina{i}.png')
-print(f'{d.page_count} páginas renderizadas en {sys.argv[2]}/pagina*.png')
+print(f'{sys.argv[1]}: {d.page_count} páginas renderizadas en {sys.argv[2]}/pagina*.png')
 PY

@@ -1,0 +1,230 @@
+{
+ "supuestos": {
+  "fraccion_carrera": 0.6,
+  "masa_punta_g": 1.0,
+  "masa_estimada_g": {
+   "Takaha CA0422": 2.0,
+   "Takaha CA0422 (S = 3)": 2.0,
+   "Transmotec K0420S": 1.0
+  }
+ },
+ "validacion": {
+  "Takaha CA0422 24 W (6% ED) a 3 mm": {
+   "publicado": 2.0,
+   "extraido": 2.073
+  },
+  "Takaha CA0425 24 W (6% ED) a 3 mm": {
+   "publicado": 2.5,
+   "extraido": 2.521
+  },
+  "Takaha CA0422 1.5 W (100% ED) a 3 mm": {
+   "publicado": 0.18,
+   "extraido": 0.17
+  },
+  "Ledex B12 25% curva vs tabla": [
+   {
+    "x_mm": 0.254,
+    "tabla": 2.502,
+    "curva": 2.288
+   },
+   {
+    "x_mm": 0.508,
+    "tabla": 1.807,
+    "curva": 1.815
+   },
+   {
+    "x_mm": 0.762,
+    "tabla": 1.473,
+    "curva": 1.476
+   },
+   {
+    "x_mm": 1.016,
+    "tabla": 1.112,
+    "curva": 1.207
+   },
+   {
+    "x_mm": 1.27,
+    "tabla": 1.001,
+    "curva": 0.985
+   },
+   {
+    "x_mm": 1.524,
+    "tabla": 0.834,
+    "curva": 0.802
+   },
+   {
+    "x_mm": 2.032,
+    "tabla": 0.5,
+    "curva": 0.532
+   },
+   {
+    "x_mm": 2.54,
+    "tabla": 0.361,
+    "curva": 0.373
+   }
+  ]
+ },
+ "candidatos": [
+  {
+   "modelo": "Ledex B12",
+   "curva": "13 W (10% ED)",
+   "etiqueta": "Ledex B12P",
+   "tipo": "push (B12P) / pull (B12)",
+   "resorte": "no",
+   "carrera_mm": 4.0,
+   "x_imp_mm": 1.6,
+   "recorrido_mm": 2.4,
+   "dato_hasta_mm": 5.07,
+   "extrapolado": false,
+   "W_mJ": 2.32,
+   "F_ini_N": 0.45,
+   "F_imp_N": 1.74,
+   "F_media_N": 0.97,
+   "relacion_F": 3.83,
+   "dispersion_F": 133.0,
+   "S_01": 7.5,
+   "masa_g": 1.4,
+   "masa_estimada": false,
+   "v_max": 1.39,
+   "v_4mJ": 1.83
+  },
+  {
+   "modelo": "Takaha CA0422",
+   "curva": "24 W (6% ED)",
+   "etiqueta": "Takaha CA0422",
+   "tipo": "pull",
+   "resorte": "no",
+   "carrera_mm": 4.0,
+   "x_imp_mm": 1.6,
+   "recorrido_mm": 2.4,
+   "dato_hasta_mm": 3.01,
+   "extrapolado": true,
+   "W_mJ": 5.07,
+   "F_ini_N": 1.89,
+   "F_imp_N": 2.34,
+   "F_media_N": 2.11,
+   "relacion_F": 1.24,
+   "dispersion_F": 21.0,
+   "S_01": 4.6,
+   "masa_g": 2.0,
+   "masa_estimada": true,
+   "v_max": 1.84,
+   "v_4mJ": 1.63
+  },
+  {
+   "modelo": "NSF SDO-0421L",
+   "curva": "11 W (10% ED)",
+   "etiqueta": "NSF SDO-0421L",
+   "tipo": "pull",
+   "resorte": "no",
+   "carrera_mm": 4.0,
+   "x_imp_mm": 1.6,
+   "recorrido_mm": 2.4,
+   "dato_hasta_mm": 5.99,
+   "extrapolado": false,
+   "W_mJ": 1.74,
+   "F_ini_N": 0.34,
+   "F_imp_N": 1.39,
+   "F_media_N": 0.73,
+   "relacion_F": 4.04,
+   "dispersion_F": 144.0,
+   "S_01": 8.0,
+   "masa_g": 1.9,
+   "masa_estimada": false,
+   "v_max": 1.1,
+   "v_4mJ": 1.66
+  },
+  {
+   "modelo": "Geeplus RD-A420",
+   "curva": "11 W (10% ED)",
+   "etiqueta": "Geeplus RD-A420",
+   "tipo": "pull",
+   "resorte": "no",
+   "carrera_mm": 4.0,
+   "x_imp_mm": 1.6,
+   "recorrido_mm": 2.4,
+   "dato_hasta_mm": 7.02,
+   "extrapolado": false,
+   "W_mJ": 2.31,
+   "F_ini_N": 0.5,
+   "F_imp_N": 1.7,
+   "F_media_N": 0.96,
+   "relacion_F": 3.38,
+   "dispersion_F": 124.0,
+   "S_01": 7.4,
+   "masa_g": 2.0,
+   "masa_estimada": false,
+   "v_max": 1.24,
+   "v_4mJ": 1.63
+  },
+  {
+   "modelo": "Transmotec K0420S",
+   "curva": "10 W (10% ED)",
+   "etiqueta": "Transmotec K0420S",
+   "tipo": "push, enclavamiento",
+   "resorte": "sí (18 gf a 3 mm)",
+   "carrera_mm": 4.0,
+   "x_imp_mm": 1.6,
+   "recorrido_mm": 2.4,
+   "dato_hasta_mm": 5.5,
+   "extrapolado": false,
+   "W_mJ": 3.43,
+   "F_ini_N": 0.8,
+   "F_imp_N": 1.77,
+   "F_media_N": 1.43,
+   "relacion_F": 2.21,
+   "dispersion_F": 68.0,
+   "S_01": 5.1,
+   "masa_g": 1.0,
+   "masa_estimada": true,
+   "v_max": 1.85,
+   "v_4mJ": 2.0
+  },
+  {
+   "modelo": "Ledex B12",
+   "curva": "5.2 W (25% ED)",
+   "etiqueta": "Ledex B12P-255 (25 %)",
+   "tipo": "push",
+   "resorte": "no",
+   "carrera_mm": 4.0,
+   "x_imp_mm": 1.6,
+   "recorrido_mm": 2.4,
+   "dato_hasta_mm": 5.07,
+   "extrapolado": false,
+   "W_mJ": 0.86,
+   "F_ini_N": 0.14,
+   "F_imp_N": 0.75,
+   "F_media_N": 0.36,
+   "relacion_F": 5.22,
+   "dispersion_F": 170.0,
+   "S_01": 8.8,
+   "masa_g": 1.4,
+   "masa_estimada": false,
+   "v_max": 0.85,
+   "v_4mJ": 1.83
+  },
+  {
+   "modelo": "Takaha CA0422",
+   "curva": "24 W (6% ED)",
+   "etiqueta": "Takaha CA0422 (S = 3)",
+   "tipo": "pull",
+   "resorte": "no",
+   "carrera_mm": 3.0,
+   "x_imp_mm": 1.2,
+   "recorrido_mm": 1.8,
+   "dato_hasta_mm": 3.01,
+   "extrapolado": false,
+   "W_mJ": 4.05,
+   "F_ini_N": 2.07,
+   "F_imp_N": 2.47,
+   "F_media_N": 2.25,
+   "relacion_F": 1.19,
+   "dispersion_F": 18.0,
+   "S_01": 6.1,
+   "masa_g": 2.0,
+   "masa_estimada": true,
+   "v_max": 1.64,
+   "v_4mJ": 1.63
+  }
+ ]
+}

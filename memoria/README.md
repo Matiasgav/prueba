@@ -10,29 +10,38 @@ memoria/
 │   ├── 02489-00-MC000.pdf   ← cómo se ve
 │   ├── logo-gris.pdf        ← logo reducido GRIS (GRIS-LOGO-003)
 │   └── logo-gris.svg        ← el mismo logo, fuente vectorial
-└── notas/                   ← una nota por archivo: 02489-00-MC###.tex
-    └── 02489-00-MC###/      ← script de cálculo y figuras de esa nota
+├── notas/
+│   └── 02489-00-MC###/      ← una carpeta por nota: fuentes de ese informe
+│       ├── 02489-00-MC###.tex
+│       ├── calculo.py, resultados.json
+│       └── figuras/ (y fuentes/, datos/… si hace falta)
+└── pdf/                     ← todos los PDF finales juntos: 02489-00-MC###.pdf
 ```
 
 ## Índice de notas
 
 | Código | Título | Fecha |
 |---|---|---|
-| [02489-00-MC001](notas/02489-00-MC001.pdf) | Torque admisible de los engranajes cónicos de la rueda | 24/09/2026 |
-| [02489-00-MC002](notas/02489-00-MC002.pdf) | Caracterización de los imanes D20×4 | 24/09/2026 |
-| [02489-00-MC003](notas/02489-00-MC003.pdf) | Resorte de torsión de cuerda de piano Ø0,50 para eje Ø3 (con plano) | 24/09/2026 |
-| [02489-00-MC004](notas/02489-00-MC004.pdf) | Selección del actuador del paralelogramo | 24/09/2026 |
-| [02489-00-MC006](notas/02489-00-MC006.pdf) | Forma y largo del flex del conector M12 | 28/09/2026 |
+| [02489-00-MC001](pdf/02489-00-MC001.pdf) | Torque admisible de los engranajes cónicos de la rueda | 24/09/2026 |
+| [02489-00-MC002](pdf/02489-00-MC002.pdf) | Caracterización de los imanes D20×4 | 24/09/2026 |
+| [02489-00-MC003](pdf/02489-00-MC003.pdf) | Resorte de torsión de cuerda de piano Ø0,50 para eje Ø3 (con plano) | 24/09/2026 |
+| [02489-00-MC004](pdf/02489-00-MC004.pdf) | Selección del actuador del paralelogramo | 24/09/2026 |
+| [02489-00-MC005](pdf/02489-00-MC005.pdf) | Selección del solenoide del impactador | 24/09/2026 |
+| [02489-00-MC006](pdf/02489-00-MC006.pdf) | Forma y largo del flex del conector M12 | 28/09/2026 |
+| [02489-00-MC007](pdf/02489-00-MC007.pdf) | Selección del LED OSLON SSL 80 | 28/09/2026 |
 
 ## Escribir una nota nueva
 
-1. **Copiá la plantilla** a `notas/` con el siguiente número libre:
-   `notas/02489-00-MC007.tex`. El `###` es correlativo: mirá la última nota y sumá uno.
+1. **Copiá la plantilla** a una carpeta nueva con el siguiente número libre:
+   `notas/02489-00-MC008/02489-00-MC008.tex`. El `###` es correlativo: mirá la última
+   nota y sumá uno (o usá `python3 .claude/skills/informe-memoria/scripts/codigos.py`).
 2. **Completá los 4 datos** del principio del archivo: código, título, autor y fecha.
 3. **Escribí los resultados primero**, en la sección `Resultados`.
 4. **El resto es libre.** Contexto y Desarrollo son sugerencias:
    borralos, renombralos o agregá los tuyos. Media página es una nota válida.
-5. **Compilá** dos veces desde `notas/`: `pdflatex 02489-00-MC007.tex` (o en Overleaf).
+5. **Compilá** dos veces desde la carpeta de la nota: `pdflatex 02489-00-MC008.tex`
+   (o en Overleaf), y copiá el PDF a `pdf/`. El script
+   `.claude/skills/informe-memoria/scripts/compilar.sh 02489-00-MC008` hace las dos cosas.
 
 ## Cómo escribir los resultados
 
@@ -68,5 +77,6 @@ leyendo solo esa sección.
   Geogrotesque Bold, la letra del logo. Geogrotesque no es libre y el SVG del logo
   no trae sus números. Roboto viene con TeX Live y Overleaf.
 - Logo: `plantilla/logo-gris.pdf`, recortado a su contorno para que no quede margen
-  vacío en el encabezado. Si compilás desde `notas/`, se toma de `../plantilla/`.
+  vacío en el encabezado. Si compilás desde la carpeta de la nota, se toma de
+  `../../plantilla/`.
   En Overleaf, subilo junto al `.tex`.

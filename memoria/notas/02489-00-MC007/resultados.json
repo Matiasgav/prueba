@@ -1,0 +1,127 @@
+{
+  "m": 2.601,
+  "alfa_grados": 19.65,
+  "captura_directa": 0.1944,
+  "captura_120": 0.1131,
+  "captura_150": 0.0868,
+  "fraccion_dentro_40": 0.617,
+  "directa_lm": {
+    "min": 31.9,
+    "medio": 36.3,
+    "max": 40.8
+  },
+  "tabla_conducto": {
+    "difusa": [
+      {
+        "Rw": 0.55,
+        "eta": 0.295,
+        "antes_difusor_lm": 55.1,
+        "difusor_75_lm": 41.3,
+        "difusor_90_lm": 49.6
+      },
+      {
+        "Rw": 0.65,
+        "eta": 0.329,
+        "antes_difusor_lm": 61.6,
+        "difusor_75_lm": 46.2,
+        "difusor_90_lm": 55.4
+      },
+      {
+        "Rw": 0.75,
+        "eta": 0.375,
+        "antes_difusor_lm": 70.1,
+        "difusor_75_lm": 52.6,
+        "difusor_90_lm": 63.1
+      },
+      {
+        "Rw": 0.85,
+        "eta": 0.437,
+        "antes_difusor_lm": 81.7,
+        "difusor_75_lm": 61.3,
+        "difusor_90_lm": 73.5
+      },
+      {
+        "Rw": 0.92,
+        "eta": 0.495,
+        "antes_difusor_lm": 92.6,
+        "difusor_75_lm": 69.4,
+        "difusor_90_lm": 83.3
+      }
+    ],
+    "especular": [
+      {
+        "Rw": 0.55,
+        "eta": 0.562,
+        "antes_difusor_lm": 105.1,
+        "difusor_75_lm": 78.8,
+        "difusor_90_lm": 94.6
+      },
+      {
+        "Rw": 0.65,
+        "eta": 0.645,
+        "antes_difusor_lm": 120.7,
+        "difusor_75_lm": 90.5,
+        "difusor_90_lm": 108.6
+      },
+      {
+        "Rw": 0.75,
+        "eta": 0.736,
+        "antes_difusor_lm": 137.6,
+        "difusor_75_lm": 103.2,
+        "difusor_90_lm": 123.9
+      },
+      {
+        "Rw": 0.85,
+        "eta": 0.834,
+        "antes_difusor_lm": 156.0,
+        "difusor_75_lm": 117.0,
+        "difusor_90_lm": 140.4
+      },
+      {
+        "Rw": 0.92,
+        "eta": 0.909,
+        "antes_difusor_lm": 169.9,
+        "difusor_75_lm": 127.4,
+        "difusor_90_lm": 152.9
+      }
+    ]
+  },
+  "eficiencia_con_fondo_0_5": {
+    "difusa": {
+      "0.55": 0.305,
+      "0.92": 0.569
+    },
+    "especular": {
+      "0.55": 0.562,
+      "0.92": 0.909
+    }
+  },
+  "para_100lm": {
+    "eta_total_min": 0.535,
+    "eta_conducto_min_T90": 0.594,
+    "eta_conducto_min_T75": 0.713,
+    "Rw_especular_T90": 0.59,
+    "Rw_especular_T75": 0.726,
+    "Rw_difusa_T90": null,
+    "bin_min_especular_075_T85_lm": 102.6
+  },
+  "curvas_datasheet": {
+    "flujo_rel_350mA_control": 1.0,
+    "flujo_rel_500mA": 1.36,
+    "flujo_rel_700mA": 1.791,
+    "vf_tip_350mA_control": 2.85,
+    "vf_tip_500mA": 2.94,
+    "flujo_rel_25C": 1.099,
+    "flujo_rel_85C_control": 1.0,
+    "flujo_rel_120C": 0.901
+  },
+  "electrico": {
+    "P_350mA_W": 0.997,
+    "P_500mA_W": 1.47,
+    "dT_JS_350mA_K": 3.69,
+    "dT_JS_500mA_K": 5.44,
+    "P_regulador_lineal_5V_W": 0.75,
+    "difusa_085_T90_a_500mA_lm": 99.9
+  },
+  "flujo_medio_a_85C_si_bin_referido_a_25C_lm": 170.1
+}

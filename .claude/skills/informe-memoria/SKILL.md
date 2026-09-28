@@ -12,9 +12,13 @@ cálculos de diseño, comparaciones, relevamientos, estudios de mercado o técni
 figuras versionados, y una fila en el índice de `memoria/README.md`. Nada se entrega
 solo por el chat.
 
-Todo informe del proyecto se entrega como **nota de la memoria** en
-`memoria/notas/02489-00-MC###.tex` + `.pdf`, con su carpeta
-`memoria/notas/02489-00-MC###/` (script de cálculo, `resultados.json`, `figuras/`).
+Todo informe del proyecto se entrega como **nota de la memoria**:
+
+- **Fuentes:** una carpeta por nota, `memoria/notas/02489-00-MC###/`, con el `.tex`
+  (`02489-00-MC###.tex`), el script de cálculo, `resultados.json`, `figuras/` y lo
+  que haga falta (fuentes, datos, planos).
+- **PDF final:** `memoria/pdf/02489-00-MC###.pdf`. Todos los PDF van juntos ahí.
+- **Todas las notas terminan en `main`** (paso 8).
 Las reglas base están en `CLAUDE.md` y `memoria/README.md`; esta habilidad agrega el
 procedimiento completo y los errores ya cometidos.
 
@@ -27,9 +31,8 @@ bash .claude/skills/informe-memoria/scripts/preparar_entorno.sh
 Instala `pdflatex`, Roboto (encabezado; sin ella el código sale en otra letra),
 `pymupdf` para leer PDFs y extraer imágenes, y `numpy`/`scipy`/`matplotlib`.
 
-Si la carpeta `memoria/` no está en la rama actual, buscarla en las ramas remotas
-(`git ls-tree -r --name-only <rama> | grep ^memoria/`) y traerla con `git merge`
-de esa rama, no copiando archivos a mano.
+Si la carpeta `memoria/` no está en la rama actual, traerla de `main` con
+`git merge origin/main`, no copiando archivos a mano.
 
 ## 2. Elegir el código, crear la nota y reservarla
 
@@ -122,7 +125,7 @@ Distinguir con «≈» lo estimado de lo tomado del modelo o de la figura.
 bash .claude/skills/informe-memoria/scripts/compilar.sh 02489-00-MC###
 ```
 
-Compila dos veces desde `memoria/notas/`, muestra errores, *overfull boxes* y avisos
+Compila dos veces desde la carpeta de la nota, deja el PDF en `memoria/pdf/`, muestra errores, *overfull boxes* y avisos
 de fuente, borra `.aux/.log/.out` y renderiza cada página a PNG en el scratchpad.
 **Mirar todas las páginas**: título en una línea, figuras legibles, sin huecos grandes
 (achicar figuras si un `[H]` deja media página vacía), encabezado con logo y código
@@ -135,12 +138,25 @@ en Roboto.
    ```bash
    python3 .claude/skills/informe-memoria/scripts/codigos.py --verificar MC###
    ```
-   Si hay colisión: renumerar la nota propia al siguiente libre (`git mv` del `.tex`,
-   `.pdf` y carpeta; reemplazar el código dentro del `.tex` y del script; recompilar),
+   Si hay colisión: renumerar la nota propia al siguiente libre (`git mv` de la
+   carpeta, del `.tex` dentro de ella y del `.pdf` en `memoria/pdf/`; reemplazar el código dentro del `.tex` y del script; recompilar),
    traer con `git merge` la rama que tiene la otra nota y resolver el índice dejando
    las dos filas en orden. Nunca renumerar la nota de otra sesión.
 2. Actualizar la fila en «Índice de notas» de `memoria/README.md`.
-3. `git add` de `.tex`, `.pdf`, carpeta de la nota y README; commit y push a la rama
-   de trabajo.
-4. Enviar el PDF al usuario y resumir: estructura, de dónde sale cada número y
+3. `git add` de la carpeta de la nota, su PDF en `memoria/pdf/` y el README; commit y
+   push a la rama de trabajo.
+4. **Llevar la nota a `main`.** Todas las notas tienen que quedar juntas en `main`.
+   Traer solo los archivos de la nota, no el resto de la rama de trabajo:
+   ```bash
+   git fetch origin main
+   git worktree add /tmp/wt-main origin/main -B main
+   cd /tmp/wt-main
+   git checkout <rama-de-trabajo> -- memoria/notas/02489-00-MC###/ memoria/pdf/02489-00-MC###.pdf
+   # agregar la fila de la nota al índice de memoria/README.md (en orden de código)
+   git add memoria && git commit -m "02489-00-MC###: <título>" && git push origin main
+   cd - && git worktree remove /tmp/wt-main
+   ```
+   Si la nota depende de archivos de fuera de `memoria/` (datos de otra carpeta del
+   repo), copiarlos antes a la carpeta de la nota, para que en `main` compile sola.
+5. Enviar el PDF al usuario y resumir: estructura, de dónde sale cada número y
    cualquier discrepancia encontrada.
