@@ -28,6 +28,7 @@ Cada nota se escribe en su rama de trabajo; en `main` quedan la plantilla y la h
 | 02489-00-MC004 | Selección del actuador del paralelogramo | 24/09/2026 | `claude/vibrant-dirac-km9mq4` |
 | 02489-00-MC005 | Selección del solenoide del impactador | 24/09/2026 | `claude/zen-mccarthy-56mipp` |
 | 02489-00-MC006 | Forma y largo del flex del conector M12 | 28/09/2026 | `claude/lucid-archimedes-8fei36` |
+| 02489-00-MC007 | Selección del LED OSLON SSL 80 | 28/09/2026 | `claude/wonderful-curie-u7ka20` |
 
 ## Escribir una nota nueva
 
