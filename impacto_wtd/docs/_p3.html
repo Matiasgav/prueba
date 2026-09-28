@@ -1,0 +1,296 @@
+<section id="p5">
+<div class="eyebrow">05 · Desempeño</div>
+<h2>Cuánto separa, y con qué margen</h2>
+
+<div class="prose">
+<p>Que las firmas se vean distintas en una simulación limpia no alcanza. Lo que decide si el
+ensayo sirve es cuánto se solapan las distribuciones cuando entran las variaciones reales: la
+precarga no es la misma de cuña a cuña, el ripple tampoco, el golpe no cae siempre en el mismo
+punto y la energía varía tiro a tiro.</p>
+<p>Se corrieron 24 repeticiones por estado con esas variaciones sorteadas —precarga ±10 %,
+rigidez del ripple ±20 %, rigidez de contacto del hombro ±30 %, ancho de apoyo ±10 %, posición
+del golpe ±6 % del vano, energía ±3 %— y se midió la separación con <b>d′</b>, la diferencia de
+medias dividida por la desviación combinada.</p>
+</div>
+
+<div class="callout">
+<h4>Qué significa un d′</h4>
+<p style="font-size:.92rem;margin:0">Es la separación en unidades de la dispersión. Con el umbral
+óptimo entre dos clases: d′ = 1 clasifica bien el 69 % de las veces, d′ = 2 el 84 %, d′ = 3 el
+93 %, d′ = 4 el 98 %. Debajo de d′ ≈ 1,5 las dos clases se confunden con demasiada frecuencia
+para un ensayo de campo.</p>
+</div>
+
+<div class="tw" id="sep-table"></div>
+
+<h3>Separación entre estados vecinos</h3>
+<div class="tool" id="tool-adj">
+<div class="tool-head"><h4>d′ entre cada par consecutivo de la escalera</h4>
+<span class="hint">la barra gris es el umbral de utilidad práctica, d′ = 2</span></div>
+<div class="tool-body"><div id="adj-chart"></div><div class="chart-legend" id="adj-legend"></div></div>
+</div>
+
+<div class="finding" id="sep-finding">
+<span class="tag">Lectura</span>
+<p id="sep-text">—</p>
+</div>
+
+<h3>El espacio de características</h3>
+<div class="prose">
+<p>Cada punto es una simulación con sus tolerancias sorteadas. Lo que hay que mirar es si las
+nubes se separan, y en qué par de ejes se separan mejor.</p>
+</div>
+<div class="tool" id="tool-feature">
+<div class="tool-head"><h4>Nube de clases</h4>
+<span class="hint">elegí los dos ejes</span></div>
+<div class="tool-body split">
+  <div class="ctrls">
+    <div class="ctrl"><label>Eje horizontal</label><div class="seg" id="fx"></div></div>
+    <div class="ctrl"><label>Eje vertical</label><div class="seg" id="fy"></div></div>
+  </div>
+  <div><div id="feat-chart"></div><div class="chart-legend" id="feat-legend"></div></div>
+</div>
+</div>
+
+<h3>Cuánta energía hace falta</h3>
+<div class="prose">
+<p>La pregunta operativa es si el voice coil directo alcanza, o si hace falta un acumulador. Se
+barrió la energía en todo el rango que el LAH04 entrega sin acumulador.</p>
+</div>
+<div class="tw" id="energy-table"></div>
+<div class="finding">
+<span class="tag">El actuador no es el limitante — pero hay techo</span>
+<p>La discriminación se sostiene en todo el rango que el voice coil entrega directo, así que el
+actuador no es lo que limita el ensayo. Lo que separa las clases no es la energía absoluta sino
+la <i>proporción</i> de energía que la cuña se queda.</p>
+<p>Pero esa proporción no es independiente de la energía, y ahí está el resultado incómodo del
+nivel 5 (§2): <b>a 60 mJ el índice Leeb deja de ordenar la escalera</b>. Con el golpe fuerte la
+cuña ajustada también despega, la disipación de junta —que tiene un máximo a precarga
+intermedia— pasa a dominar sobre la transferencia elástica, y la curva se pliega: el estado del
+25 % de precarga rebota <i>menos</i> que el totalmente flojo. Fuera del voice coil directo, subir
+la energía no mejora el ensayo: lo rompe.</p>
+<p>Por abajo el límite es el umbral de despegue: si la cuña ajustada no llega a despegar del
+hombro se pierde el discriminante no lineal, el que hace que la firma dependa de la energía. La
+ventana útil queda entre esos dos límites, y los 5 mJ caen adentro con margen a los dos lados.</p>
+</div>
+</section>
+
+
+<section id="p6">
+<div class="eyebrow">06 · Sensado</div>
+<h2>Desempeño de cada canal</h2>
+
+<h3>El sensor inductivo sobre la maza</h3>
+<div class="prose">
+<p>Midiendo la posición de la maza en el tramo libre se obtiene todo lo que tiene que ver con el
+martillo: velocidad de entrada, de salida, energía entregada y —derivando dos veces— la historia
+de fuerza de contacto, de donde sale t_c.</p>
+<p>La doble derivada amplifica el ruido con el cuadrado de la banda: <code>σ_a = σ_x · (2π)² · B² / √5</code>.
+Eso decide si es viable.</p>
+</div>
+<div class="tw" id="dd-table"></div>
+<div class="finding">
+<span class="tag">Veredicto del canal inductivo</span>
+<p><b>Para la maza, sí y con margen.</b> Durante el contacto la maza tiene del orden de 18 000 g
+(F_pico dividido su masa), y con 0,5 µm de resolución y filtro a 30 kHz el ruido queda en el 4,5 %.
+De ahí salen t_c, la fuerza pico y la restitución sin ningún sensor adicional.</p>
+<p><b>Para la cuña, no.</b> A 3 000 g habría que bajar el filtro a 10 kHz y ahí se pierde el
+contenido que discrimina. Este canal no reemplaza al acelerómetro.</p>
+<p>Requisito que sale de acá: <b>muestrear a 1 MSPS o más</b>, no por la energía sino por t_c —
+resolver un contacto de 40 µs con forma reconocible pide del orden de 1 µs. Vale la aclaración:
+t_c se mide bien, lo que no sirve es <i>para clasificar</i> — no ordena la escalera (§2, nivel 5).
+Sigue siendo útil como verificación de que el golpe salió como se esperaba.</p>
+</div>
+
+<h3>El palpador sobre la cuña</h3>
+<div class="prose">
+<p>Acá estuvo la sorpresa del estudio. Un acelerómetro apoyado sobre la cuña no es un sensor
+ideal: es una masa contra una rigidez de contacto, y eso mete dos límites que no son de ruido
+sino de física.</p>
+</div>
+
+<figure>
+<div class="figframe">
+<svg class="dg" viewBox="0 0 940 240" role="img" aria-label="Los dos límites del palpador: su resonancia de contacto, que debe quedar por encima de la banda de la señal, y el despegue cuando la aceleración supera precarga dividido masa.">
+  <text x="16" y="18" font-weight="700" font-size="12">1 · Resonancia de contacto</text>
+  <rect x="40" y="40" width="120" height="26" class="body2"/>
+  <text x="100" y="57" text-anchor="middle" class="mono" font-size="10">MEMS m</text>
+  <path d="M100 66 l0 12 M88 78 l24 0 M92 78 l-6 10 M100 78 l-6 10 M108 78 l-6 10 M116 78 l-6 10" class="ln"/>
+  <text x="126" y="86" class="mono" font-size="10">k_contacto</text>
+  <path d="M60 100 L160 100" class="mat" stroke-width="2"/>
+  <rect x="40" y="100" width="140" height="18" class="mat"/>
+  <text x="110" y="113" text-anchor="middle" class="mono" font-size="9" fill="var(--material)">cuña</text>
+  <text x="40" y="142" class="mono" font-size="11">f₀ = √(k/m) / 2π</text>
+  <text x="40" y="160" class="sm">tiene que quedar MUY por encima de la banda de la señal</text>
+  <text x="40" y="176" class="sm">con 0,05 g y 3 N: f₀ = 38,8 kHz  ✓</text>
+  <text x="40" y="192" class="sm" fill="var(--crit)">con 2 g y 5 N: f₀ = 6,0 kHz, encima del modo de la cuña  ✗</text>
+
+  <line x1="470" y1="30" x2="470" y2="220" class="thin"/>
+
+  <text x="500" y="18" font-weight="700" font-size="12">2 · Despegue</text>
+  <rect x="530" y="40" width="120" height="26" class="body2"/>
+  <text x="590" y="57" text-anchor="middle" class="mono" font-size="10">MEMS m</text>
+  <line x1="590" y1="30" x2="590" y2="40" class="acc" stroke-width="2.4" marker-end="url(#ra)"/>
+  <text x="600" y="34" class="mono" font-size="10" fill="var(--accent)">F precarga</text>
+  <rect x="530" y="96" width="140" height="18" class="mat"/>
+  <path d="M560 96 q20 -18 40 0 q20 18 40 0" class="crit"/>
+  <text x="500" y="142" class="mono" font-size="11">a_despegue = F / m</text>
+  <text x="500" y="160" class="sm">si la cuña acelera más que eso, el palpador queda en el aire</text>
+  <text x="500" y="176" class="sm" fill="var(--crit)">con 0,05 g y 0,5 N: 1020 g, contra 3100 g de señal → despega  ✗</text>
+  <text x="500" y="192" class="sm">con 0,05 g y 3 N: 6118 g, con el doble de margen  ✓</text>
+  <defs><marker id="ra" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <polygon points="0,1 9,5 0,9" fill="var(--accent)"/></marker></defs>
+</svg>
+</div>
+<figcaption><b>Los dos límites empujan en el mismo sentido.</b> Subir la precarga sube el umbral de
+despegue y también la rigidez de contacto, así que mejora las dos cosas; bajar la masa también
+mejora las dos. Por eso un MEMS casi desnudo es la elección correcta y un piezo con vástago no lo
+es — pero la masa chica sola no alcanza, porque lo que decide el despegue es el cociente F/m.</figcaption>
+</figure>
+
+<div class="tw" id="palp-table"></div>
+
+<div class="finding crit">
+<span class="tag">Corrección: la precarga de 0,5 N no alcanza</span>
+<p>El palpador propuesto —MEMS de 0,05 g con 0,5 N de precarga— tiene la masa correcta pero
+<b>le falta precarga</b>. Con esos números el umbral de despegue queda en 1020 g y la señal sobre
+la cuña a 10 mm del golpe llega a 3100 g: el palpador se va al aire en los estados de señal
+fuerte, la curtosis pierde la monotonía y el rango cae a ×9,1.</p>
+<p>Lo que decide el despegue no es la masa sino el cociente <b>F/m</b>. Manteniendo los 0,05 g, la
+escalera de precarga muestra dónde está el umbral: 1 N → ×16,1 y sigue rompiéndose; 2 N → ×20,3,
+todavía roto; <b>3 N → ×29,6 y monótona</b>; 5 N → ×45,3. La recomendación es
+<b>0,05 g con 3 N de precarga como mínimo, y 5 N si el crawler los puede dar</b>, que es donde el
+umbral queda en 10 200 g, más de tres veces la señal máxima.</p>
+<p>Es una corrección barata: es un resorte, no un rediseño. Y el margen se puede verificar en el
+banco midiendo el umbral al que la firma deja de escalar linealmente con la energía.</p>
+</div>
+
+<div class="finding">
+<span class="tag">Veredicto del canal acelerómetro</span>
+<p><b>La amplitud sobra y el ruido no es el problema.</b> A 10 mm del golpe con 5 mJ hay entre
+1900 y 3100 g de pico. Contra el ruido de banda ancha de un piezo de choque eso da del orden de
+75 dB de relación señal-ruido. El problema es de <b>rango</b>: hay que ir a un sensor de choque o
+a un MEMS de alto rango, porque un IEPE de ±500 g satura.</p>
+<p><b>Lo que decide es el cociente F/m del palpador, no la masa sola.</b> Un sensor ideal sin masa
+da ×44,2 de rango en curtosis a lo largo de la escalera; los palpadores reales de 0,8 a 2 g caen
+a ×8–10 y pierden la monotonía, porque meten su propia impulsividad y tapan la de la cuña. Bajar
+a 0,05 g no arregla nada por sí solo: con los 0,5 N previstos el rango queda en ×9,1, igual de
+roto. Recién con 3 N sobre esos 0,05 g se recupera la monotonía (×29,6), y con 5 N el palpador
+supera al sensor ideal (×45,3) — porque a esa precarga la rigidez de contacto ya empuja la
+resonancia a 42 kHz y el conjunto sigue la cuña mejor que un sensor sin masa apoyado flojo.</p>
+</div>
+</section>
+
+
+<section id="p7">
+<div class="eyebrow">07 · Robustez</div>
+<h2>Repetibilidad, daño y confiabilidad</h2>
+
+<h3>Repetibilidad del golpe</h3>
+<div class="prose">
+<p>El accionamiento directo por voice coil no tiene traba ni acumulador, así que las fuentes de
+dispersión son pocas: la corriente, la fricción de la guía, la temperatura y la componente de
+gravedad según la posición horaria del crawler.</p>
+<p>Y hay algo que cambia la naturaleza del requisito: <b>la energía se mide tiro a tiro</b>. La
+dispersión del actuador deja de ser un requisito de fabricación y pasa a ser uno de resolución del
+sensor.</p>
+</div>
+<div class="tw" id="rep-table"></div>
+
+<h3>Daño en la cuña</h3>
+<div class="prose">
+<p>El golpe no puede marcar la cuña del cliente. El anclaje es empírico: la bola de acero de ⌀8 mm
+desde 70 mm da 1,45 mJ y 900 MPa de presión hertziana pico, y se sabe que no deja marca.</p>
+<p>La presión escala como <code>p ∝ E<sup>0,2</sup> · R<sup>−0,6</sup></code>: el exponente del
+radio es tres veces el de la energía, y ahí está toda la palanca de diseño.</p>
+</div>
+<div class="tw" id="damage-table"></div>
+<div class="finding">
+<span class="tag">Por qué la punta va con R = 12 mm y no la bola de ⌀8</span>
+<p>Con la bola de ⌀8 mm (R = 4 mm) el golpe de 5 mJ da 1153 MPa, por encima del límite de
+shakedown de 1024 MPa: acumula huella de a poco. Con una calota de R = 12 mm da 596 MPa, elástico
+puro, sin acumulación posible. Es una calota casi plana sobre la maza, trivial de mecanizar, y
+además <b>mejora la separación entre clases</b>.</p>
+<p>El material de la punta casi no importa para la mecánica —el G11 es diez veces más blando y
+domina el contacto, de acero a carburo de tungsteno E* sube 5,6 %— pero sí importa para el
+desgaste: el G11 lleva fibra de vidrio y redondea una punta de acero. Va de WC o Si₃N₄, y el
+propio t_c medido sirve de testigo de que el radio no derivó.</p>
+</div>
+
+<h3>Reacción sobre el crawler</h3>
+<div class="prose">
+<p>Con martillo rígido el lazo de fuerza del impacto se cierra contra el chasis. El pico de
+contacto a 5 mJ vale 371 N, pero <b>eso no es lo que el imán tiene que aguantar</b>: durante los
+40 µs de contacto el crawler no tiene tiempo de moverse y la reacción se absorbe inercialmente.
+Lo que el imán tiene que arrestar es el impulso, que son 4,6 mN·s.</p>
+</div>
+<div class="tw" id="recoil-table"></div>
+<div class="prose">
+<p>Con un crawler de 2 kg eso son 2,3 mm/s de retroceso, que un imán de 50 N frena en 92 µs con un
+desplazamiento de 0,1 µm. <b>El pico de 371 N es una carga estructural para el módulo y su
+montaje, no un riesgo de despegue.</b></p>
+</div>
+</section>
+
+
+<section id="p8">
+<div class="eyebrow">08 · Límites</div>
+<h2>Dónde deja de funcionar</h2>
+
+<div class="prose">
+<p>Un informe de desempeño que sólo dice dónde funciona no sirve. Estos son los bordes.</p>
+</div>
+
+<div class="tw" id="limits-table"></div>
+
+<div class="finding crit">
+<span class="tag">El límite que domina todo</span>
+<p id="dom-limit">—</p>
+</div>
+
+<h3>Lo que hay que medir antes de confiar en estos números</h3>
+<div class="tw" id="todo-table"></div>
+</section>
+
+
+<section id="p9">
+<div class="eyebrow">09 · Descartado</div>
+<h2>Por qué no hay acumulador</h2>
+
+<div class="prose">
+<p>El estudio arrancó explorando acumuladores elásticos, que en un envolvente de 10 × 10 × 60 mm
+llegan a energías mucho mayores. Se descartaron por una razón que apareció tarde y que vale la
+pena dejar escrita.</p>
+</div>
+
+<div class="tw" id="charger-table"></div>
+
+<div class="finding crit">
+<span class="tag">El error que costó la arquitectura</span>
+<p>Se dimensionó cuánta energía entra en el acumulador, y no la máquina que lo carga ni el
+volumen que esa máquina ocupa. Una barra de torsión plegada de 192 mJ pide 80 N en el cigüeñal,
+o sea 43 veces la fuerza pico del voice coil. El tren motor + reductor + husillo más chico que da
+esa fuerza ocupa unos 40 mm de los 60 disponibles — y con los 20 mm que quedan, la misma barra da
+7 mJ en vez de 192.</p>
+<p>O sea que el acumulador termina entregando lo mismo que el voice coil directo, con diez veces
+más mecanismo, una pieza que fatiga y 800 ms por tiro. <b>El accionamiento directo gana porque no
+necesita cargador</b>: los 5 mJ salen de una sola carrera, que es el 70 % del trabajo que el
+actuador entrega de por sí.</p>
+</div>
+
+<div class="prose">
+<p>Las otras alternativas evaluadas, con el criterio de si el actuador disponible las puede
+accionar y si entran en el envolvente:</p>
+</div>
+<div class="tw" id="alt-table"></div>
+
+<div class="callout">
+<h4>La única alternativa que quedó abierta</h4>
+<p style="font-size:.92rem">Un <b>resonador excitado por el propio voice coil</b>: la amplitud
+crece sola en resonancia y el factor Q multiplica la energía sin ninguna pieza que deslice bajo
+carga. Para 20 mJ hacen falta 1,00 N con Q = 20 y unos 100 ms de establecimiento, y el LAH04 da
+1,89 N. Lo que no está resuelto es el mecanismo de liberación: el proyectil tiene que salir en el
+paso por cero, que es donde el resonador pasa en cada ciclo durante el establecimiento. Queda
+como línea a explorar, no como solución.</p>
+</div>
+</section>

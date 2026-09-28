@@ -1,0 +1,281 @@
+{
+ "filas": [
+  {
+   "caso": "Cinemática: E=5 mJ, m=4 g → v",
+   "obtenido": 1.5811388300841898,
+   "objetivo": 1.5811,
+   "unidad": "m/s",
+   "error_pct": 0.002455890468016665,
+   "ok": true
+  },
+  {
+   "caso": "Cinemática: → p",
+   "obtenido": 6.324555320336759,
+   "objetivo": 6.3246,
+   "unidad": "mN·s",
+   "error_pct": -0.0007064425140115756,
+   "ok": true
+  },
+  {
+   "caso": "Euler-Bernoulli f1, vano 50 mm",
+   "obtenido": 11690.63429792194,
+   "objetivo": 11691.0,
+   "unidad": "Hz",
+   "error_pct": -0.0031280649906702375,
+   "ok": 1.0
+  },
+  {
+   "caso": "Euler-Bernoulli f1, vano 100 mm",
+   "obtenido": 2922.658568224534,
+   "objetivo": 2922.7,
+   "unidad": "Hz",
+   "error_pct": -0.0014175856388186664,
+   "ok": 1.0
+  },
+  {
+   "caso": "Rigidez estática 192EI/L³ (50 mm)",
+   "obtenido": 47.18592000142358,
+   "objetivo": 47.19,
+   "unidad": "MN/m",
+   "error_pct": -0.008645896538282004,
+   "ok": 1.0
+  },
+  {
+   "caso": "Masa modal EB / masa total",
+   "obtenido": 0.3964779067240419,
+   "objetivo": 0.39648,
+   "unidad": "-",
+   "error_pct": -0.0005279650822553543,
+   "ok": true
+  },
+  {
+   "caso": "Timoshenko f1, vano 50 mm",
+   "obtenido": 9375.756584418763,
+   "objetivo": 9376.0,
+   "unidad": "Hz",
+   "error_pct": -0.0025961559432280193,
+   "ok": 1.0
+  },
+  {
+   "caso": "Timoshenko m_eff, vano 50 mm",
+   "obtenido": 9.769017480516462,
+   "objetivo": 9.77,
+   "unidad": "g",
+   "error_pct": -0.010056494202022093,
+   "ok": true
+  },
+  {
+   "caso": "Timoshenko k_eff, vano 50 mm",
+   "obtenido": 33.901840053194874,
+   "objetivo": 33.9,
+   "unidad": "MN/m",
+   "error_pct": 0.005427885530606724,
+   "ok": true
+  },
+  {
+   "caso": "Timoshenko f1, vano 100 mm",
+   "obtenido": 2737.958289667282,
+   "objetivo": 2738.0,
+   "unidad": "Hz",
+   "error_pct": -0.0015233868779451936,
+   "ok": 1.0
+  },
+  {
+   "caso": "Timoshenko m_eff, vano 100 mm",
+   "obtenido": 18.559970721874432,
+   "objetivo": 18.56,
+   "unidad": "g",
+   "error_pct": -0.00015774852137195107,
+   "ok": true
+  },
+  {
+   "caso": "Timoshenko k_eff, vano 100 mm",
+   "obtenido": 5.492760703274753,
+   "objetivo": 5.493,
+   "unidad": "MN/m",
+   "error_pct": -0.004356394051476136,
+   "ok": true
+  },
+  {
+   "caso": "Trabajo EM, ventana 3.0 mm",
+   "obtenido": 5.389749975,
+   "objetivo": 5.39,
+   "unidad": "mJ",
+   "error_pct": -0.004638682745820214,
+   "ok": true
+  },
+  {
+   "caso": "Trabajo EM, ventana 3.5 mm",
+   "obtenido": 6.155499907812501,
+   "objetivo": 6.16,
+   "unidad": "mJ",
+   "error_pct": -0.07305344460226595,
+   "ok": true
+  },
+  {
+   "caso": "Trabajo EM, ventana 4.0 mm",
+   "obtenido": 6.848,
+   "objetivo": 6.85,
+   "unidad": "mJ",
+   "error_pct": -0.02919708029196759,
+   "ok": true
+  },
+  {
+   "caso": "K_F desde constante de actuador",
+   "obtenido": 1.896987084826884,
+   "objetivo": 1.897,
+   "unidad": "N/A",
+   "error_pct": -0.0006808209338998028,
+   "ok": true
+  },
+  {
+   "caso": "Bola ⌀8 mm: masa",
+   "obtenido": 2.1044481988846826,
+   "objetivo": 2.105,
+   "unidad": "g",
+   "error_pct": -0.026213829706289084,
+   "ok": true
+  },
+  {
+   "caso": "Bola ⌀8 mm: v desde 70 mm",
+   "obtenido": 1.1717213832648101,
+   "objetivo": 1.172,
+   "unidad": "m/s",
+   "error_pct": -0.023772758975239526,
+   "ok": true
+  },
+  {
+   "caso": "Bola ⌀8 mm: energía",
+   "obtenido": 1.4446310850714734,
+   "objetivo": 1.45,
+   "unidad": "mJ",
+   "error_pct": -0.3702699950707956,
+   "ok": true
+  },
+  {
+   "caso": "Bola ⌀8 mm: impulso",
+   "obtenido": 2.4658269546062983,
+   "objetivo": 2.47,
+   "unidad": "mN·s",
+   "error_pct": -0.1689492062227486,
+   "ok": true
+  },
+  {
+   "caso": "Bola ⌀8 mm: fuerza de contacto",
+   "obtenido": 164.96851945283953,
+   "objetivo": 165.0,
+   "unidad": "N",
+   "error_pct": -0.019079119491193938,
+   "ok": true
+  },
+  {
+   "caso": "Bola ⌀8 mm: presión hertziana",
+   "obtenido": 899.4697956206784,
+   "objetivo": 900.0,
+   "unidad": "MPa",
+   "error_pct": -0.058911597702401904,
+   "ok": true
+  },
+  {
+   "caso": "Bola ⌀8 mm: duración de contacto",
+   "obtenido": 54.9872238615267,
+   "objetivo": 55.0,
+   "unidad": "µs",
+   "error_pct": -0.023229342678725763,
+   "ok": true
+  },
+  {
+   "caso": "Leeb D: energía",
+   "obtenido": 11.451812499999999,
+   "objetivo": 11.5,
+   "unidad": "mJ",
+   "error_pct": -0.41902173913044294,
+   "ok": true
+  },
+  {
+   "caso": "Leeb D: impulso",
+   "obtenido": 11.172499999999998,
+   "objetivo": 11.2,
+   "unidad": "mN·s",
+   "error_pct": -0.2455357142857289,
+   "ok": true
+  },
+  {
+   "caso": "Palanca y=5.05: brazo efectivo",
+   "obtenido": 3.55,
+   "objetivo": 3.55,
+   "unidad": "mm",
+   "error_pct": 0.0,
+   "ok": true
+  },
+  {
+   "caso": "Palanca y=5.05: giro",
+   "obtenido": 48.418968602604785,
+   "objetivo": 48.4,
+   "unidad": "°",
+   "error_pct": 0.039191327695840106,
+   "ok": true
+  },
+  {
+   "caso": "Palanca y=5.05: oblicuidad",
+   "obtenido": 17.75345847831573,
+   "objetivo": 17.8,
+   "unidad": "°",
+   "error_pct": -0.26146922294534924,
+   "ok": true
+  },
+  {
+   "caso": "Palanca y=7.0: brazo efectivo",
+   "obtenido": 5.5,
+   "objetivo": 5.5,
+   "unidad": "mm",
+   "error_pct": 0.0,
+   "ok": true
+  },
+  {
+   "caso": "Palanca y=7.0: giro",
+   "obtenido": 31.25224337077218,
+   "objetivo": 31.3,
+   "unidad": "°",
+   "error_pct": -0.15257709018472765,
+   "ok": true
+  },
+  {
+   "caso": "Palanca y=7.0: oblicuidad",
+   "obtenido": 13.596224622059243,
+   "objetivo": 13.6,
+   "unidad": "°",
+   "error_pct": -0.027760131917330857,
+   "ok": true
+  },
+  {
+   "caso": "Palanca y=8.0: brazo efectivo",
+   "obtenido": 6.500000000000001,
+   "objetivo": 6.5,
+   "unidad": "mm",
+   "error_pct": 1.3664283380001927e-14,
+   "ok": true
+  },
+  {
+   "caso": "Palanca y=8.0: giro",
+   "obtenido": 26.444205929114915,
+   "objetivo": 26.4,
+   "unidad": "°",
+   "error_pct": 0.16744670119286512,
+   "ok": true
+  },
+  {
+   "caso": "Palanca y=8.0: oblicuidad",
+   "obtenido": 11.947189444696768,
+   "objetivo": 11.9,
+   "unidad": "°",
+   "error_pct": 0.39654995543502336,
+   "ok": true
+  }
+ ],
+ "n_ok": 34,
+ "n_total": 34,
+ "kappa_implicito_50mm": 0.8334592032823327,
+ "kappa_implicito_100mm": 0.8335503923319579,
+ "kappa_estandar": 0.8333333333333334
+}

@@ -1,0 +1,231 @@
+{
+ "limites": [
+  {
+   "R_mm": 2,
+   "E_elastico_640_mJ": 0.032933198924559426,
+   "E_shakedown_1024_mJ": 0.3453296199551882,
+   "E_visible_1800_mJ": 5.795575568963022
+  },
+  {
+   "R_mm": 3,
+   "E_elastico_640_mJ": 0.11114954637038829,
+   "E_shakedown_1024_mJ": 1.1654874673487632,
+   "E_visible_1800_mJ": 19.560067545250238
+  },
+  {
+   "R_mm": 4,
+   "E_elastico_640_mJ": 0.2634655913964763,
+   "E_shakedown_1024_mJ": 2.7626369596415135,
+   "E_visible_1800_mJ": 46.36460455170428
+  },
+  {
+   "R_mm": 5,
+   "E_elastico_640_mJ": 0.514581233196241,
+   "E_shakedown_1024_mJ": 5.395775311799818,
+   "E_visible_1800_mJ": 90.55586826504722
+  },
+  {
+   "R_mm": 6,
+   "E_elastico_640_mJ": 0.8891963709631057,
+   "E_shakedown_1024_mJ": 9.323899738790095,
+   "E_visible_1800_mJ": 156.4805403620017
+  },
+  {
+   "R_mm": 8,
+   "E_elastico_640_mJ": 2.1077247311718095,
+   "E_shakedown_1024_mJ": 22.101095677132104,
+   "E_visible_1800_mJ": 370.9168364136342
+  },
+  {
+   "R_mm": 10,
+   "E_elastico_640_mJ": 4.116649865569934,
+   "E_shakedown_1024_mJ": 43.16620249439856,
+   "E_visible_1800_mJ": 724.4469461203782
+  },
+  {
+   "R_mm": 12,
+   "E_elastico_640_mJ": 7.113570967704842,
+   "E_shakedown_1024_mJ": 74.59119791032072,
+   "E_visible_1800_mJ": 1251.8443228960125
+  },
+  {
+   "R_mm": 15,
+   "E_elastico_640_mJ": 13.893693296298562,
+   "E_shakedown_1024_mJ": 145.68593341859554,
+   "E_visible_1800_mJ": 2445.0084431562827
+  },
+  {
+   "R_mm": 20,
+   "E_elastico_640_mJ": 32.93319892455948,
+   "E_shakedown_1024_mJ": 345.32961995518895,
+   "E_visible_1800_mJ": 5795.575568963029
+  }
+ ],
+ "severidad_constante": [
+  {
+   "R_mm": 4,
+   "E_mJ": 1.4488938922407588,
+   "factor_vs_ancla": 1.0022092358309185
+  },
+  {
+   "R_mm": 6,
+   "E_mJ": 4.890016886312553,
+   "factor_vs_ancla": 3.3824561709293444
+  },
+  {
+   "R_mm": 8,
+   "E_mJ": 11.591151137926069,
+   "factor_vs_ancla": 8.017673886647346
+  },
+  {
+   "R_mm": 10,
+   "E_mJ": 22.63896706626182,
+   "factor_vs_ancla": 15.659519309858073
+  },
+  {
+   "R_mm": 12,
+   "E_mJ": 39.12013509050039,
+   "factor_vs_ancla": 27.05964936743473
+  },
+  {
+   "R_mm": 15,
+   "E_mJ": 76.40651384863384,
+   "factor_vs_ancla": 52.85087767077114
+  },
+  {
+   "R_mm": 20,
+   "E_mJ": 181.11173653009465,
+   "factor_vs_ancla": 125.27615447886467
+  }
+ ],
+ "puntas": [
+  {
+   "material": "Acero",
+   "E_star_GPa": 19.09802744659373,
+   "p_max_MPa": 980.3760436656628,
+   "t_c_us": 59.28898112206138,
+   "F_N": 1922.480328076873,
+   "delta_E_star_pct": 0.0
+  },
+  {
+   "material": "Carburo de tungsteno",
+   "E_star_GPa": 20.166982616060984,
+   "p_max_MPa": 1024.0345721336582,
+   "t_c_us": 58.011356756559294,
+   "F_N": 1964.8204464033033,
+   "delta_E_star_pct": 5.597201975211896
+  },
+  {
+   "material": "Nitruro de silicio",
+   "E_star_GPa": 19.611440428668132,
+   "p_max_MPa": 1001.4043515838999,
+   "t_c_us": 58.66317914861282,
+   "F_N": 1942.9887969441797,
+   "delta_E_star_pct": 2.688303718853291
+  },
+  {
+   "material": "Aleación pesada W",
+   "E_star_GPa": 19.77848101265823,
+   "p_max_MPa": 1008.2221342845671,
+   "t_c_us": 58.46449711780423,
+   "F_N": 1949.5917265689288,
+   "delta_E_star_pct": 3.5629520795660286
+  }
+ ],
+ "fatiga": [
+  {
+   "p_max_MPa": 500.0,
+   "p_shakedown_MPa": 1024.0,
+   "verdict": "elastico_puro",
+   "N_golpes_admisibles": Infinity
+  },
+  {
+   "p_max_MPa": 700.0,
+   "p_shakedown_MPa": 1024.0,
+   "verdict": "shakedown",
+   "N_golpes_admisibles": Infinity
+  },
+  {
+   "p_max_MPa": 900.0,
+   "p_shakedown_MPa": 1024.0,
+   "verdict": "shakedown",
+   "N_golpes_admisibles": Infinity
+  },
+  {
+   "p_max_MPa": 1100.0,
+   "p_shakedown_MPa": 1024.0,
+   "verdict": "ratcheting_lento",
+   "N_golpes_admisibles": 1347.3684210526314
+  },
+  {
+   "p_max_MPa": 1400.0,
+   "p_shakedown_MPa": 1024.0,
+   "verdict": "ratcheting_lento",
+   "N_golpes_admisibles": 272.3404255319149
+  },
+  {
+   "p_max_MPa": 1800.0,
+   "p_shakedown_MPa": 1024.0,
+   "verdict": "ratcheting_lento",
+   "N_golpes_admisibles": 131.95876288659792
+  },
+  {
+   "p_max_MPa": 2200.0,
+   "p_shakedown_MPa": 1024.0,
+   "verdict": "indentacion_visible",
+   "N_golpes_admisibles": 1.0
+  }
+ ],
+ "correccion_plastica": [
+  {
+   "E_mJ": 5.0,
+   "p_max_MPa": 596.4258266125257,
+   "plastic": false,
+   "F_ratio": 1.0,
+   "tc_ratio": 1.0,
+   "e_plastic": 1.0,
+   "energy_lost_frac": 0.0
+  },
+  {
+   "E_mJ": 20.0,
+   "p_max_MPa": 786.9885964044902,
+   "plastic": true,
+   "p_y_MPa": 640.0,
+   "v_yield_ms": 4.89919283660681,
+   "E_yield_mJ": 96.0083618010379,
+   "F_ratio": 0.90179073134172,
+   "tc_ratio": 1.0530454509341578,
+   "e_plastic": 1.0,
+   "energy_lost_frac": 0.0
+  },
+  {
+   "E_mJ": 60.0,
+   "p_max_MPa": 980.3760436656628,
+   "plastic": true,
+   "p_y_MPa": 640.0,
+   "v_yield_ms": 4.89919283660681,
+   "E_yield_mJ": 96.0083618010379,
+   "F_ratio": 0.8079670347516021,
+   "tc_ratio": 1.112508093328744,
+   "e_plastic": 1.0,
+   "energy_lost_frac": 0.0
+  },
+  {
+   "E_mJ": 150.0,
+   "p_max_MPa": 1177.5536205368746,
+   "plastic": true,
+   "p_y_MPa": 640.0,
+   "v_yield_ms": 4.89919283660681,
+   "E_yield_mJ": 96.0083618010379,
+   "F_ratio": 0.7372242986089967,
+   "tc_ratio": 1.1646627341576603,
+   "e_plastic": 0.9457519056201403,
+   "energy_lost_frac": 0.10555333301587322
+  }
+ ],
+ "ancla": {
+  "E_mJ": 1.4457,
+  "p_max_MPa": 900.0,
+  "R_mm": 4.0
+ }
+}

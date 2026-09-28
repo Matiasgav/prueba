@@ -1,0 +1,463 @@
+{
+ "demandas": [
+  {
+   "E_mJ": 192.39999999999998,
+   "F_cocción_N": 80.5105715116738,
+   "carrera_cocción_mm": 4.5,
+   "P_media_W": 0.3848,
+   "t_disponible_s": 0.5,
+   "veces_la_fuerza_del_LAH04": 42.5981859850126,
+   "veces_el_trabajo_del_LAH04": 25.44973544973545,
+   "acumulador": "Barra de torsión plegada (192 mJ)"
+  },
+  {
+   "E_mJ": 60.0,
+   "F_cocción_N": 44.961122241792275,
+   "carrera_cocción_mm": 2.5130246412265085,
+   "P_media_W": 0.12,
+   "t_disponible_s": 0.5,
+   "veces_la_fuerza_del_LAH04": 23.788953567085862,
+   "veces_el_trabajo_del_LAH04": 7.936507936507937,
+   "acumulador": "Barra de torsión a 60 mJ"
+  },
+  {
+   "E_mJ": 13.6,
+   "F_cocción_N": 6.1,
+   "carrera_cocción_mm": 4.5,
+   "P_media_W": 0.0272,
+   "t_disponible_s": 0.5,
+   "veces_la_fuerza_del_LAH04": 3.2275132275132274,
+   "veces_el_trabajo_del_LAH04": 1.7989417989417988,
+   "acumulador": "Ballesta (13.6 mJ)"
+  },
+  {
+   "E_mJ": 5.0,
+   "F_cocción_N": 3.2249,
+   "carrera_cocción_mm": 3.0,
+   "P_media_W": 0.01,
+   "t_disponible_s": 0.5,
+   "veces_la_fuerza_del_LAH04": 1.7062962962962964,
+   "veces_el_trabajo_del_LAH04": 0.6613756613756614,
+   "acumulador": "Palanca en L con VCM a 5 mJ"
+  }
+ ],
+ "metodos": [
+  {
+   "E_mJ": 5.0,
+   "directa": {
+    "metodo": "carga directa",
+    "W_actuador_mJ": 7.588,
+    "E_objetivo_mJ": 5.0,
+    "alcanza": true,
+    "deficit_x": 0.6589351607801792,
+    "F_necesaria_N": 1.25,
+    "nota": "una reducción cambia fuerza por carrera pero no crea trabajo: si W_actuador < E_objetivo, no hay relación de transmisión que lo resuelva"
+   },
+   "trinquete": {
+    "metodo": "trinquete",
+    "W_util_por_ciclo_mJ": 5.691,
+    "N_ciclos": 1,
+    "rate_hz": 60,
+    "t_carga_s": 0.016666666666666666,
+    "P_mecanica_W": 0.3,
+    "P_electrica_W": 5.1,
+    "duty_termico": 2.914285714285714,
+    "ok_termico": false,
+    "ciclos_de_diente_por_vida": 10000000.0,
+    "F_max_actuador_N": 1.897
+   },
+   "resonante": {
+    "Q20": {
+     "metodo": "resonante",
+     "k_N_m": 2500.0,
+     "f_Hz": 125.8230302612176,
+     "x_max_mm": 2.0,
+     "v_max_ms": 1.5811388300841898,
+     "F_necesaria_N": 0.25,
+     "F_disponible_N": 1.897,
+     "alcanza": true,
+     "margen_fuerza": 7.588,
+     "Q": 20,
+     "tau_ms": 50.596442562694065,
+     "t_98pct_ms": 202.38577025077626,
+     "P_mecanica_W": 0.02470529422006547,
+     "P_electrica_W": 0.08857589140692973,
+     "ok_termico": true,
+     "ciclos_por_tiro": 25.464790894703253
+    },
+    "Q50": {
+     "metodo": "resonante",
+     "k_N_m": 2500.0,
+     "f_Hz": 125.8230302612176,
+     "x_max_mm": 2.0,
+     "v_max_ms": 1.5811388300841898,
+     "F_necesaria_N": 0.1,
+     "F_disponible_N": 1.897,
+     "alcanza": true,
+     "margen_fuerza": 18.97,
+     "Q": 50,
+     "tau_ms": 126.49110640673517,
+     "t_98pct_ms": 505.9644256269407,
+     "P_mecanica_W": 0.009882117688026186,
+     "P_electrica_W": 0.014172142625108759,
+     "ok_termico": true,
+     "ciclos_por_tiro": 63.66197723675813
+    },
+    "Q100": {
+     "metodo": "resonante",
+     "k_N_m": 2500.0,
+     "f_Hz": 125.8230302612176,
+     "x_max_mm": 2.0,
+     "v_max_ms": 1.5811388300841898,
+     "F_necesaria_N": 0.05,
+     "F_disponible_N": 1.897,
+     "alcanza": true,
+     "margen_fuerza": 37.94,
+     "Q": 100,
+     "tau_ms": 252.98221281347034,
+     "t_98pct_ms": 1011.9288512538814,
+     "P_mecanica_W": 0.004941058844013093,
+     "P_electrica_W": 0.0035430356562771896,
+     "ok_termico": true,
+     "ciclos_por_tiro": 127.32395447351627
+    }
+   }
+  },
+  {
+   "E_mJ": 20.0,
+   "directa": {
+    "metodo": "carga directa",
+    "W_actuador_mJ": 7.588,
+    "E_objetivo_mJ": 20.0,
+    "alcanza": false,
+    "deficit_x": 2.635740643120717,
+    "F_necesaria_N": 5.0,
+    "nota": "una reducción cambia fuerza por carrera pero no crea trabajo: si W_actuador < E_objetivo, no hay relación de transmisión que lo resuelva"
+   },
+   "trinquete": {
+    "metodo": "trinquete",
+    "W_util_por_ciclo_mJ": 5.691,
+    "N_ciclos": 4,
+    "rate_hz": 60,
+    "t_carga_s": 0.06666666666666667,
+    "P_mecanica_W": 0.3,
+    "P_electrica_W": 5.1,
+    "duty_termico": 2.914285714285714,
+    "ok_termico": false,
+    "ciclos_de_diente_por_vida": 40000000.0,
+    "F_max_actuador_N": 1.897
+   },
+   "resonante": {
+    "Q20": {
+     "metodo": "resonante",
+     "k_N_m": 10000.0,
+     "f_Hz": 251.6460605224352,
+     "x_max_mm": 2.0,
+     "v_max_ms": 3.1622776601683795,
+     "F_necesaria_N": 1.0,
+     "F_disponible_N": 1.897,
+     "alcanza": true,
+     "margen_fuerza": 1.897,
+     "Q": 20,
+     "tau_ms": 25.298221281347033,
+     "t_98pct_ms": 101.19288512538813,
+     "P_mecanica_W": 0.19764235376052375,
+     "P_electrica_W": 1.4172142625108757,
+     "ok_termico": true,
+     "ciclos_por_tiro": 25.464790894703253
+    },
+    "Q50": {
+     "metodo": "resonante",
+     "k_N_m": 10000.0,
+     "f_Hz": 251.6460605224352,
+     "x_max_mm": 2.0,
+     "v_max_ms": 3.1622776601683795,
+     "F_necesaria_N": 0.4,
+     "F_disponible_N": 1.897,
+     "alcanza": true,
+     "margen_fuerza": 4.7425,
+     "Q": 50,
+     "tau_ms": 63.245553203367585,
+     "t_98pct_ms": 252.98221281347034,
+     "P_mecanica_W": 0.07905694150420949,
+     "P_electrica_W": 0.22675428200174014,
+     "ok_termico": true,
+     "ciclos_por_tiro": 63.66197723675813
+    },
+    "Q100": {
+     "metodo": "resonante",
+     "k_N_m": 10000.0,
+     "f_Hz": 251.6460605224352,
+     "x_max_mm": 2.0,
+     "v_max_ms": 3.1622776601683795,
+     "F_necesaria_N": 0.2,
+     "F_disponible_N": 1.897,
+     "alcanza": true,
+     "margen_fuerza": 9.485,
+     "Q": 100,
+     "tau_ms": 126.49110640673517,
+     "t_98pct_ms": 505.9644256269407,
+     "P_mecanica_W": 0.03952847075210474,
+     "P_electrica_W": 0.056688570500435034,
+     "ok_termico": true,
+     "ciclos_por_tiro": 127.32395447351627
+    }
+   }
+  },
+  {
+   "E_mJ": 60.0,
+   "directa": {
+    "metodo": "carga directa",
+    "W_actuador_mJ": 7.588,
+    "E_objetivo_mJ": 60.0,
+    "alcanza": false,
+    "deficit_x": 7.907221929362151,
+    "F_necesaria_N": 15.0,
+    "nota": "una reducción cambia fuerza por carrera pero no crea trabajo: si W_actuador < E_objetivo, no hay relación de transmisión que lo resuelva"
+   },
+   "trinquete": {
+    "metodo": "trinquete",
+    "W_util_por_ciclo_mJ": 5.691,
+    "N_ciclos": 11,
+    "rate_hz": 60,
+    "t_carga_s": 0.18333333333333332,
+    "P_mecanica_W": 0.32727272727272727,
+    "P_electrica_W": 5.1,
+    "duty_termico": 2.914285714285714,
+    "ok_termico": false,
+    "ciclos_de_diente_por_vida": 110000000.0,
+    "F_max_actuador_N": 1.897
+   },
+   "resonante": {
+    "Q20": {
+     "metodo": "resonante",
+     "k_N_m": 30000.0,
+     "f_Hz": 435.8637623494105,
+     "x_max_mm": 2.0,
+     "v_max_ms": 5.477225575051661,
+     "F_necesaria_N": 3.0,
+     "F_disponible_N": 1.897,
+     "alcanza": false,
+     "margen_fuerza": 0.6323333333333333,
+     "Q": 20,
+     "tau_ms": 14.60593486680443,
+     "t_98pct_ms": 58.42373946721772,
+     "P_mecanica_W": 1.0269797953221864,
+     "P_electrica_W": 12.75492836259788,
+     "ok_termico": false,
+     "ciclos_por_tiro": 25.464790894703256
+    },
+    "Q50": {
+     "metodo": "resonante",
+     "k_N_m": 30000.0,
+     "f_Hz": 435.8637623494105,
+     "x_max_mm": 2.0,
+     "v_max_ms": 5.477225575051661,
+     "F_necesaria_N": 1.2,
+     "F_disponible_N": 1.897,
+     "alcanza": true,
+     "margen_fuerza": 1.5808333333333333,
+     "Q": 50,
+     "tau_ms": 36.51483716701107,
+     "t_98pct_ms": 146.0593486680443,
+     "P_mecanica_W": 0.41079191812887456,
+     "P_electrica_W": 2.0407885380156605,
+     "ok_termico": false,
+     "ciclos_por_tiro": 63.66197723675814
+    },
+    "Q100": {
+     "metodo": "resonante",
+     "k_N_m": 30000.0,
+     "f_Hz": 435.8637623494105,
+     "x_max_mm": 2.0,
+     "v_max_ms": 5.477225575051661,
+     "F_necesaria_N": 0.6,
+     "F_disponible_N": 1.897,
+     "alcanza": true,
+     "margen_fuerza": 3.1616666666666666,
+     "Q": 100,
+     "tau_ms": 73.02967433402215,
+     "t_98pct_ms": 292.1186973360886,
+     "P_mecanica_W": 0.20539595906443728,
+     "P_electrica_W": 0.5101971345039151,
+     "ok_termico": true,
+     "ciclos_por_tiro": 127.32395447351628
+    }
+   }
+  }
+ ],
+ "reparto_resonador": [
+  {
+   "m_res_g": 1.0,
+   "m_proj_g": 3.0,
+   "frac_al_proyectil": 0.75,
+   "E_proyectil_mJ": 45.0,
+   "E_perdida_mJ": 15.0,
+   "eta_si_golpea": 0.75
+  },
+  {
+   "m_res_g": 2.0,
+   "m_proj_g": 2.0,
+   "frac_al_proyectil": 0.5,
+   "E_proyectil_mJ": 30.0,
+   "E_perdida_mJ": 30.0,
+   "eta_si_golpea": 1.0
+  },
+  {
+   "m_res_g": 0.5,
+   "m_proj_g": 3.5,
+   "frac_al_proyectil": 0.875,
+   "E_proyectil_mJ": 52.5,
+   "E_perdida_mJ": 7.5,
+   "eta_si_golpea": 0.4375
+  }
+ ],
+ "volumen_vs_energia": [
+  {
+   "L_barra_mm": 60.0,
+   "d_mm": 1.398225613364345,
+   "E_mJ": 192.39012811543304,
+   "ocupa_el_resto": "nada (lo que suponía el informe)"
+  },
+  {
+   "L_barra_mm": 40.0,
+   "d_mm": 0.9321504089095632,
+   "E_mJ": 57.004482404572755,
+   "ocupa_el_resto": "cargador de 20 mm (optimista)"
+  },
+  {
+   "L_barra_mm": 20.0,
+   "d_mm": 0.4660752044547816,
+   "E_mJ": 7.125560300571594,
+   "ocupa_el_resto": "motor ⌀8 + reductor 64:1 + husillo = 40 mm"
+  },
+  {
+   "L_barra_mm": 15.0,
+   "d_mm": 0.34955640334108623,
+   "E_mJ": 3.0060957518036413,
+   "ocupa_el_resto": "ídem + tuerca, guía y sensor"
+  }
+ ],
+ "trenes": [
+  {
+   "motor": "coreless ⌀6x12",
+   "reduccion": 64,
+   "paso_mm": 0.5,
+   "F_N": 59.112207369945544,
+   "largo_mm": 36,
+   "v_mm_s": 1.5625,
+   "t_2.5mm_ms": 1599.9999999999998,
+   "cabe": true
+  },
+  {
+   "motor": "coreless ⌀6x12",
+   "reduccion": 64,
+   "paso_mm": 1.0,
+   "F_N": 29.556103684972772,
+   "largo_mm": 36,
+   "v_mm_s": 3.125,
+   "t_2.5mm_ms": 799.9999999999999,
+   "cabe": true
+  },
+  {
+   "motor": "coreless ⌀6x12",
+   "reduccion": 256,
+   "paso_mm": 0.5,
+   "F_N": 236.44882947978218,
+   "largo_mm": 40,
+   "v_mm_s": 0.390625,
+   "t_2.5mm_ms": 6399.999999999999,
+   "cabe": true
+  },
+  {
+   "motor": "coreless ⌀6x12",
+   "reduccion": 256,
+   "paso_mm": 1.0,
+   "F_N": 118.22441473989109,
+   "largo_mm": 40,
+   "v_mm_s": 0.78125,
+   "t_2.5mm_ms": 3199.9999999999995,
+   "cabe": true
+  },
+  {
+   "motor": "coreless ⌀8x16",
+   "reduccion": 64,
+   "paso_mm": 0.5,
+   "F_N": 152.00281895128853,
+   "largo_mm": 40,
+   "v_mm_s": 1.5625,
+   "t_2.5mm_ms": 1599.9999999999998,
+   "cabe": true
+  },
+  {
+   "motor": "coreless ⌀8x16",
+   "reduccion": 64,
+   "paso_mm": 1.0,
+   "F_N": 76.00140947564427,
+   "largo_mm": 40,
+   "v_mm_s": 3.125,
+   "t_2.5mm_ms": 799.9999999999999,
+   "cabe": true
+  },
+  {
+   "motor": "coreless ⌀8x16",
+   "reduccion": 256,
+   "paso_mm": 0.5,
+   "F_N": 608.0112758051541,
+   "largo_mm": 44,
+   "v_mm_s": 0.390625,
+   "t_2.5mm_ms": 6399.999999999999,
+   "cabe": true
+  },
+  {
+   "motor": "coreless ⌀8x16",
+   "reduccion": 256,
+   "paso_mm": 1.0,
+   "F_N": 304.00563790257706,
+   "largo_mm": 44,
+   "v_mm_s": 0.78125,
+   "t_2.5mm_ms": 3199.9999999999995,
+   "cabe": true
+  },
+  {
+   "motor": "BLDC ⌀8x20",
+   "reduccion": 64,
+   "paso_mm": 0.5,
+   "F_N": 270.2272336911796,
+   "largo_mm": 44,
+   "v_mm_s": 1.5625,
+   "t_2.5mm_ms": 1599.9999999999998,
+   "cabe": true
+  },
+  {
+   "motor": "BLDC ⌀8x20",
+   "reduccion": 64,
+   "paso_mm": 1.0,
+   "F_N": 135.1136168455898,
+   "largo_mm": 44,
+   "v_mm_s": 3.125,
+   "t_2.5mm_ms": 799.9999999999999,
+   "cabe": true
+  },
+  {
+   "motor": "BLDC ⌀8x20",
+   "reduccion": 256,
+   "paso_mm": 0.5,
+   "F_N": 1080.9089347647184,
+   "largo_mm": 48,
+   "v_mm_s": 0.390625,
+   "t_2.5mm_ms": 6399.999999999999,
+   "cabe": false
+  },
+  {
+   "motor": "BLDC ⌀8x20",
+   "reduccion": 256,
+   "paso_mm": 1.0,
+   "F_N": 540.4544673823592,
+   "largo_mm": 48,
+   "v_mm_s": 0.78125,
+   "t_2.5mm_ms": 3199.9999999999995,
+   "cabe": false
+  }
+ ]
+}

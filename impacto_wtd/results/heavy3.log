@@ -1,0 +1,11 @@
+[03:22:12] criterio de retorno de onda, calibrado por simulación
+  -> wave_return_sim.json (9 kB)
+[03:24:07] masa óptima por simulación
+    vano 50 mm: 40 simulaciones
+    vano 100 mm: 40 simulaciones
+  -> mass_sim.json (27 kB)
+[03:26:35] posición del golpe a lo largo del vano
+    vano 50 mm: 30 simulaciones
+    vano 100 mm: 30 simulaciones
+  -> strike_position.json (14 kB)
+[03:28:27] total 375.6 s

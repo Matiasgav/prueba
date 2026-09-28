@@ -1,0 +1,478 @@
+[
+ {
+  "aid": "A1",
+  "family": "A",
+  "name": "Cañón de resorte con traba magnética",
+  "principle": "Resorte helicoidal comprimido dentro del ánima; el proyectil se retiene con un electroimán en la culata y se dispara cortando la corriente. El resorte llega a su longitud libre antes de la boca y el proyectil sale en vuelo libre.",
+  "E_max_mJ": 149.99999999999997,
+  "E_nom_mJ": 60.0,
+  "stroke_mm": 22.0,
+  "m_drive_eff_g": 0.5848085323775843,
+  "free_flight": "limpio (sin campo DC, sin contacto)",
+  "parasitic_pct_weight": 0.43,
+  "fits_10mm": false,
+  "rate_hz": 2.0,
+  "wear_parts": "ninguna bajo carga deslizante; guía del proyectil",
+  "cocking_power_W": 0.35,
+  "trl": 8,
+  "pros": [
+   "Es la arquitectura de una sonda Leeb: 40 años de uso industrial.",
+   "Carrera larga (22 mm) => resorte de baja tensión y vida infinita (Goodman n = 1.49).",
+   "Traba magnética: sin diente que se desgaste, sin deriva del punto de disparo.",
+   "Energía programable por profundidad de amartillado (E ∝ x²).",
+   "La reacción del impacto NO pasa por el crawler."
+  ],
+  "cons": [
+   "Necesita ~55 mm de espacio RADIAL. Incompatible con el chasis de 10 mm del brief §2.",
+   "Surge del resorte: entrega un 3 % menos que el modelo m/3.",
+   "El cañón debe ventearse (>= 3.3 mm² de área) o el aire se come el 1 % de la energía."
+  ],
+  "detail": {
+   "d_mm": 0.7000000000000004,
+   "D_mm": 6.825000000000004,
+   "n_a": 25.084873312092267,
+   "C": 9.75,
+   "k_N_m": 298.43893480257117,
+   "F1_N": 3.535353535353535,
+   "F2_N": 10.1010101010101,
+   "tau_max_MPa": 582.9010146909923,
+   "n_goodman": 1.4871429461593526,
+   "vida_infinita": true,
+   "Sse_MPa": 450.82532250349465,
+   "Ssu_MPa": 1559.9990341853518,
+   "L_occupied_mm": 40.959411318464596,
+   "L_solid_mm": 18.959411318464596,
+   "L_free_mm": 53.30556516461844,
+   "OD_mm": 7.525000000000004,
+   "mass_g": 1.754425597132753,
+   "m_eff_g": 0.5848085323775843,
+   "f_surge_Hz": 65.64178687097012,
+   "E_mJ": 149.99999999999997,
+   "stroke_mm": 22.0
+  }
+ },
+ {
+  "aid": "A2",
+  "family": "A",
+  "name": "Cañón de resorte con traba mecánica (sear)",
+  "principle": "Igual que A1 pero con uña mecánica de disparo.",
+  "E_max_mJ": 149.99999999999997,
+  "E_nom_mJ": 60.0,
+  "stroke_mm": 22.0,
+  "m_drive_eff_g": 0.5848085323775843,
+  "free_flight": "limpio",
+  "parasitic_pct_weight": 0.43,
+  "fits_10mm": false,
+  "rate_hz": 2.0,
+  "wear_parts": "uña de disparo (desgaste bajo carga)",
+  "cocking_power_W": 0.35,
+  "trl": 9,
+  "pros": [
+   "Solución del martillo Schmidt: probadísima.",
+   "No consume potencia para retener."
+  ],
+  "cons": [
+   "La uña se desgasta y el punto de disparo deriva: es la fuente dominante de dispersión (42 % de la varianza en el Monte Carlo).",
+   "Mismo problema de espacio radial que A1."
+  ],
+  "detail": {
+   "d_mm": 0.7000000000000004,
+   "D_mm": 6.825000000000004,
+   "n_a": 25.084873312092267,
+   "C": 9.75,
+   "k_N_m": 298.43893480257117,
+   "F1_N": 3.535353535353535,
+   "F2_N": 10.1010101010101,
+   "tau_max_MPa": 582.9010146909923,
+   "n_goodman": 1.4871429461593526,
+   "vida_infinita": true,
+   "Sse_MPa": 450.82532250349465,
+   "Ssu_MPa": 1559.9990341853518,
+   "L_occupied_mm": 40.959411318464596,
+   "L_solid_mm": 18.959411318464596,
+   "L_free_mm": 53.30556516461844,
+   "OD_mm": 7.525000000000004,
+   "mass_g": 1.754425597132753,
+   "m_eff_g": 0.5848085323775843,
+   "f_surge_Hz": 65.64178687097012,
+   "E_mJ": 149.99999999999997,
+   "stroke_mm": 22.0
+  }
+ },
+ {
+  "aid": "A3",
+  "family": "A",
+  "name": "Voice coil tubular de carrera larga (accionamiento directo)",
+  "principle": "Sin acumulador: el VCA acelera el proyectil sobre 22 mm y lo suelta. Energía totalmente programable en tiempo real.",
+  "E_max_mJ": 45.0,
+  "E_nom_mJ": 30.0,
+  "stroke_mm": 22.0,
+  "m_drive_eff_g": 0.0,
+  "free_flight": "comprometido: hay que apagar la corriente antes de la separación o queda fuerza residual",
+  "parasitic_pct_weight": 5.0,
+  "fits_10mm": false,
+  "rate_hz": 10.0,
+  "wear_parts": "ninguna",
+  "cocking_power_W": 0.0,
+  "trl": 6,
+  "pros": [
+   "Energía ajustable tiro a tiro sin mecanismo.",
+   "Sin partes de desgaste, sin acumulador que fatigar.",
+   "Cadencia alta."
+  ],
+  "cons": [
+   "Potencia PICO: 60 mJ en 5 ms son 12 W mecánicos más pérdidas; con K_F realista hace falta una fuente de decenas de voltios.",
+   "La energía queda 3 a 5 veces por debajo del acumulador para el mismo volumen.",
+   "Fuerza magnética residual tras el corte: contamina el vuelo libre salvo con snubber de corte rápido."
+  ],
+  "detail": {}
+ },
+ {
+  "aid": "A4",
+  "family": "A",
+  "name": "Solenoide de reluctancia de carrera larga",
+  "principle": "Proyectil ferromagnético atraído por un circuito tipo E. F = B²A/(2µ0): muy fuerte, pero sólo cerca del cierre.",
+  "E_max_mJ": 80.0,
+  "E_nom_mJ": 50.0,
+  "stroke_mm": 12.0,
+  "m_drive_eff_g": 0.0,
+  "free_flight": "malo: el proyectil es el armadura, el flujo remanente lo frena en todo el vuelo",
+  "parasitic_pct_weight": 50.0,
+  "fits_10mm": false,
+  "rate_hz": 5.0,
+  "wear_parts": "ninguna",
+  "cocking_power_W": 0.0,
+  "trl": 7,
+  "pros": [
+   "Fuerza específica muy alta (el solenoide existente de GRIS da 53.5 mJ y le gana 20x al voice coil).",
+   "Simple, robusto, barato."
+  ],
+  "cons": [
+   "El proyectil TIENE que ser ferromagnético, y entonces el vuelo libre deja de serlo: es exactamente lo que el usuario pide evitar.",
+   "Fuerza ∝ 1/g²: casi todo el trabajo en el último milímetro, y la velocidad de salida depende críticamente del corte.",
+   "No lineal: la energía no se puede programar sin medirla."
+  ],
+  "detail": {}
+ },
+ {
+  "aid": "B1",
+  "family": "B",
+  "name": "Barra de torsión plegada + cigüeñal (RECOMENDADA en 10 mm)",
+  "principle": "Barra de torsión en U a lo largo del módulo (dos tramos en serie), con un cigüeñal corto que empuja el proyectil sobre los 4.5 mm disponibles. El cigüeñal se separa del proyectil al llegar al fin de carrera y el proyectil sale en vuelo libre.",
+  "E_max_mJ": 192.39012811543304,
+  "E_nom_mJ": 60.0,
+  "stroke_mm": 4.5,
+  "m_drive_eff_g": 0.006774954783646384,
+  "free_flight": "limpio (sin campo DC, sin contacto)",
+  "parasitic_pct_weight": 0.5,
+  "fits_10mm": true,
+  "rate_hz": 2.0,
+  "wear_parts": "cojinetes del cigüeñal, contacto cigüeñal-proyectil",
+  "cocking_power_W": 0.35,
+  "trl": 5,
+  "pros": [
+   "Es la ÚNICA topología que escapa a la limitación de carrera: su 'carrera' es un ángulo, y el ángulo no está limitado por los 10 mm de altura.",
+   "Energía máxima 192 mJ en 10x10x60, comparable al cañón radial.",
+   "Inercia reflejada al proyectil: 0.0068 g, o sea CERO a efectos prácticos (contra 2.4 g de la palanca en L).",
+   "Entra en el chasis de 10 mm."
+  ],
+  "cons": [
+   "Mecánicamente más intrincado: barra plegada, yugo, cojinetes.",
+   "El cigüeñal barre lateralmente 0.8 mm: el contacto con el proyectil desliza y hay que tratarlo (rodillo o pastilla dura).",
+   "TRL bajo: no hay antecedente industrial directo."
+  ],
+  "detail": {
+   "feasible": true,
+   "phi_rad": 1.1948128332907004,
+   "phi_deg": 68.45773265562516,
+   "d_mm": 1.398225613364345,
+   "L_active_mm": 110.39999999999999,
+   "n_folds": 2,
+   "k_t_Nm_rad": 0.26953366843218496,
+   "T_max_Nm": 0.3220422860466952,
+   "F_crank_N": 80.5105715116738,
+   "E_mJ": 192.39012811543304,
+   "E_check_mJ": 192.390128115433,
+   "bar_mass_g": 1.330709074472196,
+   "m_reflected_g": 0.006774954783646384,
+   "crank_r_mm": 4.0,
+   "stroke_mm": 4.5,
+   "height_needed_mm": 6.898225613364344,
+   "x_swing_mm": 0.6928108611692618,
+   "fits_height": true
+  }
+ },
+ {
+  "aid": "B2",
+  "family": "B",
+  "name": "Barra de torsión simple (sin plegar)",
+  "principle": "Igual a B1 con un solo tramo.",
+  "E_max_mJ": 24.04876601442913,
+  "E_nom_mJ": 20.0,
+  "stroke_mm": 4.5,
+  "m_drive_eff_g": 0.0002117173369889495,
+  "free_flight": "limpio",
+  "parasitic_pct_weight": 0.5,
+  "fits_10mm": true,
+  "rate_hz": 3.0,
+  "wear_parts": "cojinetes",
+  "cocking_power_W": 0.15,
+  "trl": 6,
+  "pros": [
+   "Mucho más simple que B1.",
+   "Suficiente si el objetivo es Leeb D (11.5 mJ) y no Leeb G."
+  ],
+  "cons": [
+   "Sólo 24 mJ: 8 veces menos que B1."
+  ],
+  "detail": {
+   "feasible": true,
+   "phi_rad": 1.1948128332907004,
+   "phi_deg": 68.45773265562516,
+   "d_mm": 0.6991128066821725,
+   "L_active_mm": 55.199999999999996,
+   "n_folds": 1,
+   "k_t_Nm_rad": 0.03369170855402312,
+   "T_max_Nm": 0.0402552857558369,
+   "F_crank_N": 10.063821438959225,
+   "E_mJ": 24.04876601442913,
+   "E_check_mJ": 24.048766014429123,
+   "bar_mass_g": 0.1663386343090245,
+   "m_reflected_g": 0.0002117173369889495,
+   "crank_r_mm": 4.0,
+   "stroke_mm": 4.5,
+   "height_needed_mm": 6.199112806682172,
+   "x_swing_mm": 0.6928108611692618,
+   "fits_height": true
+  }
+ },
+ {
+  "aid": "B3",
+  "family": "B",
+  "name": "Ballesta (resorte de flexión) empujando el proyectil",
+  "principle": "Lámina empotrada-empotrada a lo largo del módulo, flexionada, que empuja el proyectil y se separa al pasar por su posición neutra.",
+  "E_max_mJ": 13.611111111111116,
+  "E_nom_mJ": 13.611111111111116,
+  "stroke_mm": 2.9166666666666674,
+  "m_drive_eff_g": 0.31123680000000004,
+  "free_flight": "limpio",
+  "parasitic_pct_weight": 0.5,
+  "fits_10mm": true,
+  "rate_hz": 3.0,
+  "wear_parts": "ninguna (separación en el punto neutro)",
+  "cocking_power_W": 0.1,
+  "trl": 6,
+  "pros": [
+   "Simplísima: una lámina y un tope.",
+   "Separación automática y repetible en el punto de fuerza nula.",
+   "Masa efectiva muy baja."
+  ],
+  "cons": [
+   "La flexión es un mal acumulador: u = σ²/(18E) contra τ²/(4G) de la torsión, o sea 8.3 veces menos energía por unidad de volumen.",
+   "Con σ_adm = 700 MPa sólo llega a 2.92 mm de flecha y 13.6 mJ."
+  ],
+  "detail": {
+   "L_mm": 50.0,
+   "b_mm": 8.0,
+   "t_mm": 0.25,
+   "k_N_m": 3200.0,
+   "F_N": 9.333333333333336,
+   "delta_mm": 2.9166666666666674,
+   "delta_max_mm": 2.9166666666666674,
+   "sigma_MPa": 700.0,
+   "sigma_allow_MPa": 700.0,
+   "E_mJ": 13.611111111111116,
+   "mass_g": 0.7850000000000001,
+   "m_eff_g": 0.31123680000000004,
+   "ok_fatiga": true,
+   "u_espec_J_kg": 17.33899504600142
+  }
+ },
+ {
+  "aid": "B4",
+  "family": "B",
+  "name": "VCA plano tipo racetrack, accionamiento directo",
+  "principle": "Bobina plana de pista de atletismo (40 x 8 mm) que acelera el proyectil sobre 4.5 mm.",
+  "E_max_mJ": 14.0,
+  "E_nom_mJ": 10.0,
+  "stroke_mm": 4.5,
+  "m_drive_eff_g": 0.0,
+  "free_flight": "comprometido (corriente residual)",
+  "parasitic_pct_weight": 5.0,
+  "fits_10mm": true,
+  "rate_hz": 10.0,
+  "wear_parts": "ninguna",
+  "cocking_power_W": 0.0,
+  "trl": 6,
+  "pros": [
+   "Es la salida que el brief §2.1 propone al problema de empaque, y efectivamente entra.",
+   "Fuerza lineal con la corriente: energía programable.",
+   "Sin acumulador ni traba."
+  ],
+  "cons": [
+   "4.5 mm de carrera es el techo: para 60 mJ haría falta 13 N constantes, y con B=0.55 T eso pide 24 kA·vuelta.",
+   "Queda en la clase Leeb D, no Leeb G."
+  ],
+  "detail": {}
+ },
+ {
+  "aid": "B5",
+  "family": "B",
+  "name": "Leva/cuña de conversión axial→radial",
+  "principle": "Resorte largo en X que empuja un patín con rampa; la rampa empuja el proyectil en Y.",
+  "E_max_mJ": 0.0,
+  "E_nom_mJ": 0.0,
+  "stroke_mm": 4.5,
+  "m_drive_eff_g": 2.0,
+  "free_flight": "limpio",
+  "parasitic_pct_weight": 0.5,
+  "fits_10mm": true,
+  "rate_hz": 2.0,
+  "wear_parts": "rampa (contacto hertziano deslizante)",
+  "cocking_power_W": 0.35,
+  "trl": 4,
+  "pros": [
+   "Permite usar toda la longitud del módulo para el resorte."
+  ],
+  "cons": [
+   "DESCARTADA POR EL TEOREMA DEL TREN DE TRANSMISIÓN. Con rampa de 20° la relación es i = 0.36 y la inercia del patín se refleja amplificada por 1/i² = 7.6. Un patín de 2 g se comporta como 15 g contra un proyectil de 8 g: el 65 % de la energía se va con el patín.",
+   "Rendimiento de la rampa tan β/tan(β+φ) = 0.76 con µ = 0.1."
+  ],
+  "detail": {
+   "i": 0.364,
+   "eff_inercia": 0.3463983937086924,
+   "eff_friccion": 0.756
+  }
+ },
+ {
+  "aid": "B6",
+  "family": "B",
+  "name": "Palanca en L con chapa plana (línea base del informe)",
+  "principle": "La arquitectura vigente del brief §5.",
+  "E_max_mJ": 2.9,
+  "E_nom_mJ": 2.3,
+  "stroke_mm": 3.0,
+  "m_drive_eff_g": 2.41,
+  "free_flight": "1 mm de vuelo libre en la punta",
+  "parasitic_pct_weight": 100.0,
+  "fits_10mm": true,
+  "rate_hz": 5.0,
+  "wear_parts": "pivote, contacto chapa-palanca",
+  "cocking_power_W": 0.0,
+  "trl": 4,
+  "pros": [
+   "Ya está estudiada y dimensionada.",
+   "No necesita acumulador."
+  ],
+  "cons": [
+   "2.3 mJ: entre 25 y 80 veces menos que las alternativas con acumulador.",
+   "El 43 % de la energía cinética queda en los 3.49 g del actuador (teorema del tren de transmisión otra vez).",
+   "La reacción del impacto se cierra contra el chasis del crawler."
+  ],
+  "detail": {}
+ },
+ {
+  "aid": "X1",
+  "family": "X",
+  "name": "Neumático",
+  "principle": "Pistón accionado por aire comprimido.",
+  "E_max_mJ": 500.0,
+  "E_nom_mJ": 100.0,
+  "stroke_mm": 20.0,
+  "m_drive_eff_g": 0.0,
+  "free_flight": "malo: el aire sigue empujando después de la boca",
+  "parasitic_pct_weight": 200.0,
+  "fits_10mm": true,
+  "rate_hz": 5.0,
+  "wear_parts": "sellos",
+  "cocking_power_W": 0.0,
+  "trl": 7,
+  "pros": [
+   "Densidad de energía altísima."
+  ],
+  "cons": [
+   "Requiere línea de aire hasta el crawler dentro del bore.",
+   "El chorro de aire a la salida sigue empujando al proyectil en el tramo libre: rompe el requisito de vuelo libre.",
+   "Aire comprimido cerca de un bobinado de estator: contaminación por aceite y humedad."
+  ],
+  "detail": {}
+ },
+ {
+  "aid": "X2",
+  "family": "X",
+  "name": "Pila piezoeléctrica con amplificación",
+  "principle": "Stack piezo + amplificador mecánico de carrera.",
+  "E_max_mJ": 25.0,
+  "E_nom_mJ": 10.0,
+  "stroke_mm": 0.04,
+  "m_drive_eff_g": 0.0,
+  "free_flight": "limpio",
+  "parasitic_pct_weight": 0.5,
+  "fits_10mm": true,
+  "rate_hz": 100.0,
+  "wear_parts": "ninguna",
+  "cocking_power_W": 0.0,
+  "trl": 5,
+  "pros": [
+   "Sin partes móviles macroscópicas, cadencia altísima.",
+   "Densidad de energía respetable (~100 kJ/m³)."
+  ],
+  "cons": [
+   "Carrera de 40 µm: hace falta un amplificador de 100:1, y ahí vuelve el teorema del tren de transmisión con 1/i² = 10⁴.",
+   "Necesita cientos de voltios.",
+   "Rigidez del amplificador en serie con el stack: la mitad de la energía se queda en la flexibilidad del mecanismo."
+  ],
+  "detail": {}
+ },
+ {
+  "aid": "X3",
+  "family": "X",
+  "name": "Cañón de inducción (coil gun)",
+  "principle": "Bobinas conmutadas que aceleran un anillo conductor.",
+  "E_max_mJ": 5.0,
+  "E_nom_mJ": 2.0,
+  "stroke_mm": 22.0,
+  "m_drive_eff_g": 0.0,
+  "free_flight": "limpio una vez apagadas las bobinas",
+  "parasitic_pct_weight": 1.0,
+  "fits_10mm": false,
+  "rate_hz": 5.0,
+  "wear_parts": "ninguna",
+  "cocking_power_W": 0.0,
+  "trl": 3,
+  "pros": [
+   "Sin contacto, sin desgaste."
+  ],
+  "cons": [
+   "Rendimiento del 1 al 3 % a esta escala: para 60 mJ mecánicos hacen falta 2 a 6 J eléctricos por tiro en un pulso de milisegundos. Inviable en un crawler.",
+   "Requiere banco de capacitores y conmutación de cientos de A."
+  ],
+  "detail": {}
+ },
+ {
+  "aid": "X4",
+  "family": "X",
+  "name": "Multi-impacto de baja energía (estrategia alternativa)",
+  "principle": "En vez de un golpe fuerte, N golpes chicos promediados. La relación señal-ruido mejora como sqrt(N).",
+  "E_max_mJ": 3.0,
+  "E_nom_mJ": 1.5,
+  "stroke_mm": 4.5,
+  "m_drive_eff_g": 0.0,
+  "free_flight": "limpio",
+  "parasitic_pct_weight": 0.5,
+  "fits_10mm": true,
+  "rate_hz": 50.0,
+  "wear_parts": "ninguna",
+  "cocking_power_W": 0.0,
+  "trl": 6,
+  "pros": [
+   "No es una arquitectura sino una ESTRATEGIA, y compite de verdad: 100 golpes de 1.5 mJ promediados dan la misma relación señal-ruido que uno de 15 mJ, con presión de contacto 1.7 veces menor y cero riesgo de daño.",
+   "Permite un actuador chiquito y lineal (el LAH04 sirve)."
+  ],
+  "cons": [
+   "NO sirve para el discriminante no lineal: la firma de una cuña floja depende de la amplitud, y con golpes chicos la cuña no llega a despegar del hombro. Se pierde justo el efecto que distingue floja de ajustada.",
+   "100 golpes por punto a 50 Hz son 2 s por punto: con 1000 posiciones, 33 minutos de puro golpeteo por máquina."
+  ],
+  "detail": {}
+ }
+]
