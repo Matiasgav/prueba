@@ -71,12 +71,13 @@ ENGRANAJES = {
                     'fuente': 'KG M50S20 (catálogo)'},
     'KG m0,5 z25': {'m': 0.5, 'z': 25, 'b': 3.0, 'J': 0.216, 'I': 0.065,
                     'fuente': 'KG M50S25 (catálogo)'},
-    # a medida, mismo tamaño que la M50S20: ancho b = 0,3 R_e
-    'm0,5 z20': {'m': 0.5, 'z': 20, 'b': None, 'J': 0.200, 'I': 0.062,
+    # a medida, misma geometría que la M50S20 (ancho 2,5 mm): reemplazo directo
+    'm0,5 z20': {'m': 0.5, 'z': 20, 'b': 2.5, 'J': 0.200, 'I': 0.062,
                  'fuente': 'a medida'},
     # a medida, el mayor módulo normalizado que entra en d_a <= 11,5 mm con
     # z >= 16; J e I interpolados entre 16 y 20 dientes (Figs. 15-7 y 15-6)
-    'm0,6 z17': {'m': 0.6, 'z': 17, 'b': None, 'J': 0.189, 'I': 0.059,
+    # (ancho 2,5 mm, la misma proporción b/R_e que las mitras KG)
+    'm0,6 z17': {'m': 0.6, 'z': 17, 'b': 2.5, 'J': 0.189, 'I': 0.059,
                  'fuente': 'a medida'},
 }
 
@@ -89,7 +90,10 @@ def geometria(g):
     b_max = min(0.3 * Re, 10 * m)
     b = g['b'] if g['b'] else b_max
     return {'m': m, 'z': z, 'd': d, 'delta': delta, 'Re': Re, 'b': b,
-            'b_max': b_max, 'b_ef': min(b, b_max),
+            # Se acredita el ancho real, como en el Ejemplo 15-1 de Shigley
+            # (F = 1,10 pulg > 0,3 A0 = 1,06 pulg). b_max es solo la proporción
+            # recomendada de la tabla 13-3, usada para dimensionar las mitras a medida.
+            'b_max': b_max, 'b_ef': b,
             'dm': d - b * math.sin(math.radians(delta)),
             'zv': z / math.cos(math.radians(delta)),
             'da': d + 2 * m * math.cos(math.radians(delta)),
@@ -109,6 +113,14 @@ MATERIALES = {
         'base_F': 'Shigley Fig. 15-13, grado 1, 170 HB',
         'base_H': 'Shigley Fig. 15-12, grado 1, 170 HB',
         'kg_W': {100: 1.5, 200: 3.1, 400: 6.2, 600: 9.3, 800: 12.4, 1000: 15.5},
+    },
+    # Misma mitra con la dureza típica del S45C sin tratar (a confirmar midiendo)
+    'S45C 200 HB': {
+        'codigo': 'M50S20-1103', 'E': 205e3, 'nu': 0.30, 'HB': 200.0, 'Sy': 345.0,
+        'sFlim': 0.30 * 200 + 14.48, 'sHlim': 2.35 * 200 + 162.89,
+        'base_F': 'Shigley ec. (15-23), grado 1, 200 HB',
+        'base_H': 'Shigley ec. (15-22), grado 1, 200 HB',
+        'kg_W': None,
     },
     'Latón C3604B': {
         'codigo': 'M50B20-1103', 'E': 100e3, 'nu': 0.34, 'HB': 100.0, 'Sy': 250.0,
@@ -274,6 +286,8 @@ DISENOS = [
     # clave, engranaje, material, etiqueta corta, grupo (figura), descripción
     ('M50S20', 'KG m0,5 z20', 'S45C', 'KG M50S20', 'KG M50S20\nS45C (actual)',
      'KG M50S20, S45C (stock, actual)'),
+    ('M50S20h', 'KG m0,5 z20', 'S45C 200 HB', 'KG M50S20 200 HB', 'KG M50S20\nS45C 200 HB',
+     'KG M50S20, S45C con 200 HB (dureza típica)'),
     ('M50B20', 'KG m0,5 z20', 'Latón C3604B', 'KG M50B20', 'KG M50B20\nlatón',
      'KG M50B20, latón C3604B (stock)'),
     ('Q20', 'm0,5 z20', 'SCM440 bonificado', 'm0,5 z20 SCM440', 'm0,5 z20\nSCM440 300 HB',
@@ -324,12 +338,44 @@ def comparacion_kg():
         filas = {}
         for rpm, W in tabla.items():
             c = capacidad(g, MATERIALES['S45C'], rpm, N_KG, f=COND_KG, alternada=False)
-            cb = capacidad(dict(g, b_ef=g['b']), MATERIALES['S45C'], rpm, N_KG,
-                           f=COND_KG, alternada=False)
+            c2 = capacidad(g, MATERIALES['S45C 200 HB'], rpm, N_KG, f=COND_KG, alternada=False)
             filas[rpm] = {'W': W, 'T_kg': T_kg(W, rpm), 'T_F': c['T_F'], 'T_H': c['T_H'],
-                          'T_F_b_total': cb['T_F'], 'ratio_F': c['T_F'] / T_kg(W, rpm)}
+                          'T_F_200': c2['T_F'], 'T_H_200': c2['T_H'],
+                          'ratio_F': c['T_F'] / T_kg(W, rpm)}
         out[k] = filas
     return out
+
+
+def hipotesis_kg(rpm=100):
+    """M50S20 en las condiciones del datasheet: cuánto se acerca Shigley al
+    valor de KG al revisar cada supuesto conservador (acumulado)."""
+    g = BASE
+    Tk = T_kg(KG_W['M50S20'][rpm], rpm)
+
+    def fila(lab, gg, mat, f):
+        c = capacidad(gg, MATERIALES[mat], rpm, N_KG, f=dict(COND_KG, **f), alternada=False)
+        return {'caso': lab, 'T_F': c['T_F'], 'T_H': c['T_H'],
+                'F_kg': c['T_F'] / Tk, 'H_kg': c['T_H'] / Tk}
+    f1 = {'Y_Z_fijo': 1.0, 'Z_Z_fijo': 1.0}
+    return [
+        fila('Versión anterior: ancho 0,3 R_e, 170 HB', dict(g, b_ef=g['b_max']), 'S45C', {}),
+        fila('Ancho real 2,5 mm (corrección)', g, 'S45C', {}),
+        fila('+ dureza típica 200 HB', g, 'S45C 200 HB', {}),
+        fila('+ K_R de KG leído como R = 0,99', g, 'S45C 200 HB', f1),
+        fila('+ dientes coronados (Z_xc = 1,5)', g, 'S45C 200 HB', dict(f1, Z_xc=1.5)),
+    ]
+
+
+def ejemplo_15_1():
+    """Validación: Shigley 8.ª ed., Ejemplo 15-1 (P = 5, 25/25, F = 1,10 pulg,
+    180 HB, Q_v = 7, 600 rpm, R = 0,99, 1e7 ciclos, sin coronar)."""
+    g = geometria({'m': 25.4 / 5, 'z': 25, 'b': 1.10 * 25.4, 'J': 0.216, 'I': 0.065})
+    mat = {'E': 205e3, 'nu': 0.30, 'Sy': 400.0,
+           'sFlim': 0.30 * 180 + 14.48, 'sHlim': 2.35 * 180 + 162.89}
+    c = capacidad(g, mat, 600, 1e7, f={'Q_v': 7, 'R': 0.99}, alternada=False)
+    lbf = 4.44822
+    return {'W_F_lbf': c['W_F'] / lbf, 'W_H_lbf': c['W_H'] / lbf,
+            'libro_W_F_lbf': 552.6, 'libro_W_H_lbf': 458.1}
 
 
 def cascada(rpm=100):
@@ -421,7 +467,7 @@ def barras(ax, grupos, series, colores, etiquetas, fmt='{:.3f}'):
     ax.set_xticks(x, grupos)
 
 
-SERIES5 = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4']
+SERIES5 = ['#2a78d6', '#7f63c9', '#eb6834', '#1baf7a', '#eda100', '#e87ba4']
 
 
 def fig_resumen(res):
@@ -542,8 +588,8 @@ def fig_sensibilidad():
         m2 = dict(mat, sFlim=0.30 * hb + 14.48, sHlim=2.35 * hb + 162.89)
         t_hb.append(capacidad(BASE, m2, 100, N)['T_adm'])
     casos.append(('Dureza 167 / 200 HB', min(t_hb), max(t_hb)))
-    gb = dict(BASE, b_ef=BASE['b'])
-    casos.append(('Ancho 2,12 / 2,5 mm', base, capacidad(gb, mat, 100, N)['T_adm']))
+    gb = dict(BASE, b_ef=BASE['b_max'])
+    casos.append(('Ancho 2,12 / 2,5 mm', capacidad(gb, mat, 100, N)['T_adm'], base))
     filas = sorted([(l, min(a, b), max(a, b)) for l, a, b in casos], key=lambda r: r[2] - r[1])
     fig, ax = plt.subplots(figsize=(8.4, 3.6))
     for i, (lab, lo, hi) in enumerate(filas):
@@ -682,11 +728,16 @@ def main():
     with open(os.path.join(RES, 'comparacion_kg.json'), 'w', encoding='utf-8') as fh:
         json.dump({'condiciones_kg': COND_KG, 'N_kg': N_KG,
                    'tabla': {k: js(v) for k, v in comp.items()},
-                   'cascada_100rpm': pasos}, fh, ensure_ascii=False, indent=1)
+                   'cascada_100rpm': pasos, 'hipotesis_100rpm': hipotesis_kg(),
+                   'validacion_ejemplo_15_1': ejemplo_15_1()}, fh, ensure_ascii=False, indent=1)
+    for h in hipotesis_kg():
+        print(f"HIP {h['caso']:42s} TF={h['T_F']:.4f} ({h['F_kg']:.2f})"
+              f" TH={h['T_H']:.4f} ({h['H_kg']:.2f})")
+    print('EJ 15-1', ejemplo_15_1())
     for k, v in comp.items():
         for r, x in v.items():
             print(f"KG {k} {r:5d} T_kg={x['T_kg']:.4f} TF={x['T_F']:.4f} TH={x['T_H']:.4f}"
-                  f" TFb={x['T_F_b_total']:.4f} ratio={x['ratio_F']:.2f}")
+                  f" TF200={x['T_F_200']:.4f} TH200={x['T_H_200']:.4f} ratio={x['ratio_F']:.2f}")
     for lab, t in pasos:
         print(f'{t:.4f}  {lab}')
 

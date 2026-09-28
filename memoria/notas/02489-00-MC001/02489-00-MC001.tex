@@ -138,36 +138,36 @@ Torque admisible por engranaje del par cónico 1:1 a 90° de la rueda, según Sh
 (cap.~15, método AGMA), con confiabilidad del 95\,\%, torque en ambos sentidos y 10~años de uso.
 Todas las mejoras respetan $d_a\le11{,}5$~mm.
 
-\begin{table}[H]\centering\small\setlength{\tabcolsep}{4.5pt}
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{3.6pt}
 \begin{tabular}{l r ccc cc r}
 \toprule
  & & \multicolumn{3}{c}{Torque normal [N\,m]} & \multicolumn{2}{c}{Pico de 10 s [N\,m]} & \\
 \cmidrule(lr){3-5}\cmidrule(lr){6-7}
 Diseño & $d_a$ [mm] & 0,5 rpm & 50 rpm & 100 rpm & 0 rpm & 100 rpm & vs.\ actual\\
 \midrule
-KG M50S20, S45C (actual)          & 10,71 & 0,129 & 0,083 & \textbf{0,076} & 0,195 & \textbf{0,133} & 1,0\\
-KG M50B20, latón                  & 10,71 & 0,063 & 0,040 & 0,039 & 0,094 & 0,065 & 0,5\\
-m\,0,5 z20, SCM440 300 HB         & 10,71 & 0,206 & 0,133 & \textbf{0,128} & 0,311 & \textbf{0,213} & 1,7\\
-m\,0,5 z20, SCM415 carburizada    & 10,71 & 0,408 & 0,263 & \textbf{0,254} & 0,615 & \textbf{0,421} & 3,3\\
-m\,0,6 z17, SCM415 carburizada    & 11,05 & 0,482 & 0,310 & \textbf{0,299} & 0,725 & \textbf{0,496} & 3,9\\
+KG M50S20 actual, 170 HB   & 10,71 & 0,152 & 0,098 & \textbf{0,090} & 0,229 & \textbf{0,157} & 1,0\\
+KG M50S20 actual, 200 HB   & 10,71 & 0,173 & 0,112 & \textbf{0,108} & 0,261 & \textbf{0,179} & 1,2\\
+KG M50B20, latón                  & 10,71 & 0,074 & 0,048 & 0,046 & 0,111 & 0,076 & 0,5\\
+m\,0,5 z20, SCM440 300 HB         & 10,71 & 0,243 & 0,157 & \textbf{0,151} & 0,366 & \textbf{0,251} & 1,7\\
+m\,0,5 z20, SCM415 carburizada    & 10,71 & 0,481 & 0,310 & \textbf{0,299} & 0,724 & \textbf{0,496} & 3,3\\
+m\,0,6 z17, SCM415 carburizada    & 11,05 & 0,557 & 0,358 & \textbf{0,346} & 0,838 & \textbf{0,573} & 3,9\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{itemize}
-  \item \textbf{Mitra actual KG M50S20:} admite \textbf{0,076\Nm} en servicio continuo y
-        \textbf{0,133\Nm} en picos, a 100~rpm.
-  \item \textbf{Datasheet de KG:} publica 1,5~W a 100~rpm (0,143\Nm). Recalculado con Shigley \emph{en las mismas
-        condiciones del datasheet} da 0,071\Nm a flexión y 0,047\Nm a picado: \textbf{el datasheet da el doble} que
-        Shigley y no publica el picado, que es el límite real. Con su propia regla de carga en ambos sentidos (2/3),
-        KG daría 0,095\Nm, un 25\,\% más que esta nota.
+  \item \textbf{Mitra actual KG M50S20:} admite entre \textbf{0,090 y 0,108\Nm} en servicio continuo a 100~rpm, según la dureza
+        real del S45C (170~HB mínimo de norma, 200~HB típico). En picos admite 0,157 a 0,179\Nm. \textbf{Hay que medir la dureza.}
+  \item \textbf{Coincide con el datasheet de KG.} KG publica 0,143\Nm a 100~rpm para carga en un sentido; con su propia regla
+        para carga en ambos sentidos (2/3) da \textbf{0,095\Nm}, dentro del rango anterior. La diferencia aparente venía de
+        supuestos conservadores de la versión anterior de esta nota (sec.~\ref{sec:datasheet}).
+  \item \textbf{KG no publica el picado.} Con 170~HB el picado es el límite a 100~rpm; con 200~HB pasa a mandar la flexión.
   \item \textbf{No hay mejora de stock dentro de 11,5~mm:} la siguiente mitra KG (M50S25) mide 13,2~mm.
   \item \textbf{Mejora sin cambiar la geometría:} la misma mitra m\,0,5 z20 a medida en SCM440 bonificado (×1,7)
         o en SCM415 carburizado (×3,3). Entra en el mismo lugar que la actual.
-  \item \textbf{Máximo dentro de 11,5~mm:} m\,0,6 z17 carburizada (×3,9; 0,299\Nm continuo). Es el mayor módulo
-        que entra con los 16 dientes mínimos, pero cambia la distancia de montaje.
-  \item Por encima de 0,28\Nm de pico los dos prisioneros M2,5 ya no alcanzan: las mejoras necesitan arrastre
-        positivo (plano en D o pasador) y, las carburizadas, eje de 4~mm. Todo vale solo con \textbf{grasa EP}.
+  \item \textbf{Máximo dentro de 11,5~mm:} m\,0,6 z17 carburizada (×3,9; 0,346\Nm continuo), pero cambia la distancia de montaje.
+  \item Los dos prisioneros M2,5 admiten 0,28\Nm: alcanzan para la mitra actual, no para las mejoras. Estas necesitan
+        arrastre positivo (plano en D o pasador) y, las carburizadas, eje de 4~mm. Todo vale solo con \textbf{grasa EP}.
 \end{itemize}
 
 \begin{figure}[H]\centering
@@ -193,6 +193,7 @@ Carga & BLDC con perfil trapezoidal suave; torque en ambos sentidos & pedido\\
 Picos & 10 s cada uno, 1 por hora de uso (2400 en la vida) & pedido / \textbf{supuesto}\\
 Lubricación y temperatura & Grasa en compartimiento cerrado; 30--40\,°C & pedido\\
 Montaje & Ambos engranajes en voladizo & \textbf{supuesto} (conservador)\\
+Dureza S45C & 170~HB (mínimo JIS G4051) y 200~HB (típico) & \textbf{a medir}\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -208,7 +209,7 @@ $\max(1;\,n\cdot10/60)$ ciclos. Los dos regímenes se combinan con la regla de M
 \end{equation}
 
 %-----------------------------------------------------------------------
-\section{Comparación con el datasheet de KG}
+\section{Comparación con el datasheet de KG}\label{sec:datasheet}
 KG publica, para sus mitras de S45C, una tabla de potencia admisible a flexión según la velocidad. La columna de
 resistencia superficial (picado) figura con «--»: no la publica.
 
@@ -230,48 +231,76 @@ Confiabilidad & $K_R=1{,}2$; $C_R=1{,}15$ & $R=0{,}95$: $Y_Z=0{,}895$; $Z_Z=0{,}
 Sentido de carga & Uno solo; con inversión, 2/3 del valor & Ambos sentidos: 70\,\%\\
 Lubricación & Baño de aceite 100~cSt & Grasa EP\\
 Montaje & Ambos en voladizo & Ambos en voladizo\\
-Ancho de diente & El de catálogo (2,5~mm) & Útil $0{,}3R_e=2{,}12$~mm\\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\paragraph{Mismas condiciones.} Para ver si el método coincide, se recalculó con Shigley usando las condiciones del
-datasheet ($K_A=1{,}25$, $Y_Z=1{,}2$, $Z_Z=1{,}15$, $10^7$ ciclos, un sentido):
+\paragraph{Validación del cálculo.} El código reproduce el Ejemplo 15-1 de Shigley (mitras de 25 dientes, $P=5$,
+$F=1{,}10$~pulg, 180~HB, 600~rpm): da 546 y 460~lbf a flexión y picado, frente a 552,6 y 458,1~lbf del libro.
+Las diferencias vienen del redondeo de factores en el ejemplo.
+
+\paragraph{Mismas condiciones.} Se recalculó con Shigley usando las condiciones del datasheet
+($K_A=1{,}25$, $Y_Z=1{,}2$, $Z_Z=1{,}15$, $10^7$ ciclos, un sentido):
 
 \begin{table}[H]\centering\small\setlength{\tabcolsep}{5pt}
-\begin{tabular}{l r c c c c c}
+\begin{tabular}{l r c cc cc}
 \toprule
-Mitra & rpm & Datasheet KG & \multicolumn{3}{c}{Shigley, condiciones KG [N\,m]} & Shigley / KG\\
-\cmidrule(lr){4-6}
- & & N\,m & Flexión & Flexión, $b$ total & Picado & (flexión)\\
+Mitra & rpm & Datasheet KG & \multicolumn{2}{c}{Shigley 170 HB [N\,m]} & \multicolumn{2}{c}{Shigley 200 HB [N\,m]}\\
+\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+ & & N\,m & Flexión & Picado & Flexión & Picado\\
 \midrule
-M50S20 & 100  & 0,143 & 0,071 & 0,084 & 0,047 & 0,50\\
-       & 1000 & 0,148 & 0,065 & 0,077 & 0,043 & 0,44\\
-M50S25 & 100  & 0,239 & 0,119 & 0,135 & 0,095 & 0,50\\
-       & 1000 & 0,240 & 0,108 & 0,122 & 0,087 & 0,45\\
+M50S20 & 100  & 0,143 & 0,084 & 0,055 & 0,095 & 0,070\\
+       & 1000 & 0,148 & 0,077 & 0,051 & 0,087 & 0,064\\
+M50S25 & 100  & 0,239 & 0,135 & 0,108 & 0,153 & 0,137\\
+       & 1000 & 0,240 & 0,122 & 0,098 & 0,139 & 0,124\\
 \bottomrule
 \end{tabular}
 \end{table}
 
+\paragraph{¿Dónde puede estar la diferencia?} Shigley da entre 0,51 y 0,58 del datasheet a flexión con los supuestos
+de base. Se revisó cada supuesto conservador, acumulando (M50S20, 100~rpm, condiciones KG):
+
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{5pt}
+\begin{tabular}{l cc cc}
+\toprule
+Supuesto & \multicolumn{2}{c}{Flexión} & \multicolumn{2}{c}{Picado}\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+ & N\,m & / KG & N\,m & / KG\\
+\midrule
+Versión anterior: ancho $0{,}3R_e=2{,}12$~mm, 170~HB & 0,071 & 0,50 & 0,047 & 0,33\\
+Ancho real 2,5~mm (\textbf{corrección}) & 0,084 & 0,58 & 0,055 & 0,39\\
++ dureza típica 200~HB & 0,095 & 0,66 & 0,070 & 0,49\\
++ $K_R$ de KG leído como $R=0{,}99$ ($Y_Z=1$) & 0,114 & 0,80 & 0,092 & 0,64\\
++ dientes coronados ($Z_{xc}=1{,}5$) & 0,114 & 0,80 & 0,123 & 0,86\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{Ancho de diente: error de la versión anterior.} Se había acreditado solo $0{,}3R_e$, pero Shigley usa el ancho
+        real: en el Ejemplo 15-1, $F=1{,}10$~pulg supera a $0{,}3A_0=1{,}06$~pulg. Ya está corregido en toda la nota (+18\,\%).
+  \item \textbf{Dureza.} 170~HB es el mínimo de la norma del S45C; lo habitual sin tratar es 180--220~HB. Es el supuesto que más
+        mueve el picado. \textbf{Se resuelve midiendo la dureza de una mitra.}
+  \item \textbf{Confiabilidad.} Se tomó el $K_R=1{,}2$ de KG como el $Y_Z=1{,}2$ de AGMA ($R\approx0{,}998$). Si en JGMA equivale
+        a $R\approx0{,}99$, Shigley sube un 20\,\%. No se pudo confirmar sin la norma JGMA.
+  \item \textbf{Coronamiento.} Sin dato de KG se supuso diente sin coronar. Si está coronado, el picado sube un tercio.
+  \item \textbf{Ninguno de los dos métodos cubre el módulo 0,5.} AGMA se desarrolló para engranajes más grandes y Shigley
+        fija $Y_x=0{,}5$ por debajo de $m=1{,}6$; JGMA 403 empieza en $m=1{,}5$. El 20\,\% restante no se puede resolver por cálculo.
+  \item \textbf{Conclusión:} el datasheet no está mal. Vale para sus condiciones (un sentido, aceite, $10^7$ ciclos) y no publica
+        el picado. Llevado al servicio de la rueda con su propia regla de 2/3 da 0,095\Nm, entre los 0,090 y 0,108\Nm de esta nota.
+\end{itemize}
+
 \begin{figure}[H]\centering
   \includegraphics[width=\linewidth]{fig_datasheet.pdf}
-  \caption{Arriba: datasheet KG frente a Shigley en las condiciones del datasheet. Abajo: del valor del datasheet al
+  \caption{Arriba: datasheet KG frente a Shigley en las condiciones del datasheet (170~HB). Abajo: del valor del datasheet al
   torque admisible de esta nota, cambiando una condición por vez.}
   \label{fig:datasheet}
 \end{figure}
 
-\begin{itemize}
-  \item \textbf{Con las mismas condiciones, Shigley da la mitad} (0,44--0,50 entre 100 y 1000~rpm, en las dos mitras).
-        El ancho explica solo una parte: acreditando los 2,5~mm completos se llega a 0,59. El resto es la diferencia
-        entre JGMA y AGMA en resistencias admisibles y factores, y KG aplica JGMA 403 por debajo de su alcance ($m\ge1{,}5$).
-        A 10~rpm la tabla da 0,1~W, un valor redondeado que no permite comparar.
-  \item \textbf{El picado manda y KG no lo publica.} En las condiciones del datasheet, Shigley da 0,047\Nm a picado,
-        un tercio del valor de la tabla. La tabla de KG no es un límite de uso para este par.
-  \item \textbf{Del datasheet a esta nota} (fig.~\ref{fig:datasheet}, abajo): el método baja el valor de 0,143 a 0,071\Nm.
-        El motor suave ($\times1{,}25$) y la confiabilidad del 95\,\% en lugar de $K_R=1{,}2$ ($\times1{,}34$) lo suben a 0,119.
-        La vida más larga ($\times0{,}97$) y la carga en ambos sentidos ($\times0{,}70$) lo llevan a 0,080\Nm a flexión,
-        y el picado fija el admisible en \textbf{0,076\Nm}.
-\end{itemize}
+\textbf{Del datasheet a esta nota} (fig.~\ref{fig:datasheet}, abajo): el método baja el valor de 0,143 a 0,084\Nm.
+El motor suave ($\times1{,}25$) y la confiabilidad del 95\,\% en lugar de $K_R=1{,}2$ ($\times1{,}34$) lo suben a 0,140.
+La vida más larga ($\times0{,}97$) y la carga en ambos sentidos ($\times0{,}70$) lo llevan a 0,095\Nm a flexión,
+y el picado fija el admisible en \textbf{0,090\Nm} (170~HB).
 
 %-----------------------------------------------------------------------
 \section{Diseños analizados}
@@ -282,24 +311,25 @@ RS PRO 521-5780 (13,9~mm) y m\,0,6 z21 (13,4~mm) quedan fuera.
 \begin{table}[H]\centering\small\setlength{\tabcolsep}{4pt}
 \begin{tabular}{l l r r r r r r r}
 \toprule
-Diseño & Material & $m$ & $z$ & $d_e$ & $d_a$ & $b_{ef}$ & $Y_J$ & $Z_I$\\
+Diseño & Material & $m$ & $z$ & $d_e$ & $d_a$ & $b$ & $Y_J$ & $Z_I$\\
  & & mm & & mm & mm & mm & & \\
 \midrule
-KG M50S20 & S45C, 170 HB & 0,5 & 20 & 10,0 & 10,71 & 2,12 & 0,200 & 0,062\\
-KG M50B20 & Latón C3604B & 0,5 & 20 & 10,0 & 10,71 & 2,12 & 0,200 & 0,062\\
-A medida & SCM440 bonificado 300 HB & 0,5 & 20 & 10,0 & 10,71 & 2,12 & 0,200 & 0,062\\
-A medida & SCM415 carb. 58--62 HRC & 0,5 & 20 & 10,0 & 10,71 & 2,12 & 0,200 & 0,062\\
-A medida & SCM415 carb. 58--62 HRC & 0,6 & 17 & 10,2 & 11,05 & 2,16 & 0,189 & 0,059\\
+KG M50S20 & S45C, 170 o 200 HB & 0,5 & 20 & 10,0 & 10,71 & 2,5 & 0,200 & 0,062\\
+KG M50B20 & Latón C3604B & 0,5 & 20 & 10,0 & 10,71 & 2,5 & 0,200 & 0,062\\
+A medida & SCM440 bonificado 300 HB & 0,5 & 20 & 10,0 & 10,71 & 2,5 & 0,200 & 0,062\\
+A medida & SCM415 carb. 58--62 HRC & 0,5 & 20 & 10,0 & 10,71 & 2,5 & 0,200 & 0,062\\
+A medida & SCM415 carb. 58--62 HRC & 0,6 & 17 & 10,2 & 11,05 & 2,5 & 0,189 & 0,059\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{itemize}
   \item \textbf{Geometría} ($\delta=45^\circ$): $d_e=mz$, $R_e=d_e/(2\sin\delta)$, $d_a=d_e+2m\cos\delta$.
-        Shigley solo acredita un ancho útil $b_{ef}=\min(b;\,0{,}3R_e)$ (tabla 13-3); las mitras a medida se dimensionan con ese ancho.
+        Se acredita el ancho real $b$, como en el Ejemplo 15-1.
   \item $Y_J$ y $Z_I$ salen de las figuras 15-7 y 15-6; para 17 dientes se interpolaron entre 16 y 20.
   \item \textbf{m\,0,5 z20 a medida:} misma geometría que la mitra actual, se reemplaza sin tocar la carcasa.
-  \item \textbf{m\,0,6 z17:} gana un 18\,\% sobre la m\,0,5 z20 carburizada, pero su distancia de montaje es distinta.
+  \item \textbf{m\,0,6 z17:} ancho de 2,5~mm, con la misma proporción $b/R_e$ que las mitras KG. Gana un 16\,\% sobre la
+        m\,0,5 z20 carburizada, pero su distancia de montaje es distinta.
 \end{itemize}
 
 %-----------------------------------------------------------------------
@@ -335,27 +365,28 @@ $S_F$, $S_H$ & 1 & Capacidad nominal; el margen lo dan $R$ y los supuestos.\\
 \end{table}
 
 \paragraph{Materiales.}
-El S45C sin tratar entra como acero templado total grado~1 con 170~HB (mínimo de JIS G4051):
-$\sigma_{F\,\lim}=0{,}30\,\text{HB}+14{,}48=65{,}5$~MPa y $\sigma_{H\,\lim}=2{,}35\,\text{HB}+162{,}89=562$~MPa, ec.~(15-23) y (15-22).
+El S45C sin tratar entra como acero templado total grado~1. Con 170~HB (mínimo de JIS G4051):
+$\sigma_{F\,\lim}=0{,}30\,\text{HB}+14{,}48=65{,}5$~MPa y $\sigma_{H\,\lim}=2{,}35\,\text{HB}+162{,}89=562$~MPa, ec.~(15-23) y (15-22);
+con 200~HB, 74,5 y 633~MPa.
 El SCM440 bonificado a 300~HB, con las mismas ecuaciones, da 104,5 y 868~MPa.
 El SCM415 carburizado toma 206,8 y 1379~MPa (30 y 200~kpsi; tablas 15-6 y 15-4, grado~1).
 El latón no está en Shigley: se escaló desde el S45C por la relación de límites de fatiga (138/285) a flexión y por la dureza (100/170) a picado.
 $Z_E$ sale de la ec.~(15-21): 189,4 para acero-acero y 134,1\,$\sqrt{\text{MPa}}$ para latón-latón.
 
-\paragraph{Ejemplo: KG M50S20, servicio normal a 100 rpm.}
+\paragraph{Ejemplo: KG M50S20, 170 HB, servicio normal a 100 rpm.}
 \begin{align*}
 N_L &= 2\times(100\cdot60\cdot20\cdot12\cdot10)=2{,}88\times10^{7}
   &&\Rightarrow Y_{NT}=0{,}966,\; Z_{NT}=1{,}238\\
 \sigma_{FP} &= 0{,}70\times65{,}5\times0{,}966/0{,}895 = 49{,}5\ \text{MPa}
-  &&\Rightarrow T_F=0{,}080\ \text{N\,m}\\
+  &&\Rightarrow T_F=0{,}095\ \text{N\,m}\\
 \sigma_{HP} &= 562\times1{,}238/0{,}946 = 736\ \text{MPa}
-  &&\Rightarrow T_H=\mathbf{0{,}076}\ \text{N\,m}\ \text{(picado)}
+  &&\Rightarrow T_H=\mathbf{0{,}090}\ \text{N\,m}\ \text{(picado)}
 \end{align*}
 
 %-----------------------------------------------------------------------
 \section{Comportamiento con la velocidad y sensibilidad}
 Con más velocidad hay más ciclos en la vida y el torque admisible baja. Las mitras de acero mejorado quedan limitadas
-por flexión; el S45C a 100~rpm queda al límite entre flexión y picado.
+por flexión; el S45C de 170~HB a 100~rpm queda al límite entre flexión y picado.
 
 \begin{figure}[H]\centering
   \includegraphics[width=\linewidth]{fig_rpm.pdf}
@@ -364,7 +395,7 @@ por flexión; el S45C a 100~rpm queda al límite entre flexión y picado.
 
 \begin{figure}[H]\centering
   \includegraphics[width=\linewidth]{fig_sensibilidad.pdf}
-  \caption{Sensibilidad del torque normal de KG M50S20 a 100~rpm a cada supuesto.}
+  \caption{Sensibilidad del torque normal de KG M50S20 (170~HB) a 100~rpm a cada supuesto.}
   \label{fig:sens}
 \end{figure}
 
@@ -374,21 +405,21 @@ por flexión; el S45C a 100~rpm queda al límite entre flexión y picado.
 \end{figure}
 
 Lo que más mueve el resultado es el montaje ($K_{mb}$), la dureza real del S45C y los golpes de rueda ($K_A$).
-Si el latón se evalúa con la resistencia a picado del bronce (tabla 14-7), su torque normal baja de 0,039 a 0,019\Nm a 100~rpm.
+Si el latón se evalúa con la resistencia a picado del bronce (tabla 14-7), su torque normal baja de 0,046 a 0,023\Nm a 100~rpm.
 
 %-----------------------------------------------------------------------
 \section{Fijación al eje y lubricación}
 \begin{table}[H]\centering\small\setlength{\tabcolsep}{4pt}
 \begin{tabular}{l r r l r r}
 \toprule
-Diseño & Pico 0 rpm & 2 prisioneros M2,5 & Fijación propuesta & \multicolumn{2}{c}{$\tau$ eje [MPa]}\\
+Diseño & Pico 0 rpm & 2 prisioneros M2,5 & Fijación & \multicolumn{2}{c}{$\tau$ eje [MPa]}\\
 \cmidrule(lr){5-6}
  & N\,m & N\,m & & eje 3~mm & eje 4~mm\\
 \midrule
-KG M50S20 (actual) & 0,195 & 0,28 & prisioneros (alcanza) & 37 & --\\
-m\,0,5 z20 SCM440 & 0,311 & 0,28 & plano en D o pasador & 59 & 25\\
-m\,0,5 z20 carburizada & 0,615 & 0,28 & pasador, eje de 4~mm & 116 & 49\\
-m\,0,6 z17 carburizada & 0,725 & 0,28 & pasador, eje de 4~mm & 137 & 58\\
+KG M50S20 & 0,229--0,261 & 0,28 & prisioneros & 43--49 & --\\
+m\,0,5 z20 SCM440 & 0,366 & 0,28 & plano en D / pasador & 69 & 29\\
+m\,0,5 z20 carburizada & 0,724 & 0,28 & pasador, eje de 4~mm & 137 & 58\\
+m\,0,6 z17 carburizada & 0,838 & 0,28 & pasador, eje de 4~mm & 158 & 67\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -402,10 +433,19 @@ de falla a largo plazo. Usar grasa semifluida NLGI 00--0 de complejo de litio co
 reengrase en cada mantenimiento y control del juego después de las primeras campañas. En seco los valores de esta nota no son válidos.
 
 %-----------------------------------------------------------------------
+\section{Próximos pasos}
+\begin{enumerate}[leftmargin=1.4em]
+  \item \textbf{Medir la dureza} de una mitra M50S20 (Brinell o Vickers convertida). Fija el torque admisible entre 0,090 y 0,108\Nm.
+  \item \textbf{Consultar a KG} si los dientes están coronados y qué capacidad a picado dan para $m=0{,}5$.
+  \item \textbf{Ensayo de banco} para cerrar el 20\,\% que ningún método resuelve: par M50S20 con grasa EP a 0,10\Nm en ambos
+        sentidos, inspeccionando flancos y juego a intervalos fijos de ciclos.
+\end{enumerate}
+
+%-----------------------------------------------------------------------
 \section{Referencias}
 \begin{enumerate}[label={[\arabic*]}, leftmargin=2em]
   \item Budynas, R.\,G. y Nisbett, J.\,K. \emph{Diseño en ingeniería mecánica de Shigley}, 8.ª ed. McGraw-Hill, 2008.
-        Cap.~15 (ec. 15-1 a 15-23, tablas 15-4 y 15-6, figs. 15-6 a 15-13), tablas 13-3, 7-4 y 14-7.
+        Cap.~15 (ec. 15-1 a 15-23, tablas 15-4 y 15-6, figs. 15-6 a 15-13, Ejemplo 15-1), tablas 13-3, 7-4 y 14-7.
   \item KG (Kyoiku Gear). Catálogo KG4001, mitras, pp.~233--276 (tabla de potencia, p.~261).
   \item KG. Material de referencia KG5001, p.~18 (condiciones de cálculo) y p.~20 (conversión de potencia).
 \end{enumerate}
