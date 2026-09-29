@@ -29,6 +29,7 @@ memoria/
 | [02489-00-MC005](pdf/02489-00-MC005.pdf) | Selección del solenoide del impactador | 24/09/2026 |
 | [02489-00-MC006](pdf/02489-00-MC006.pdf) | Forma y largo del flex del conector M12 | 28/09/2026 |
 | [02489-00-MC007](pdf/02489-00-MC007.pdf) | Selección del LED OSLON SSL 80 | 28/09/2026 |
+| [02489-00-MC008](pdf/02489-00-MC008.pdf) | Selección del conector Fischer MiniMax | 29/09/2026 |
 
 ## Escribir una nota nueva
 
