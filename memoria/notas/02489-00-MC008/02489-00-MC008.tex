@@ -136,10 +136,11 @@
   \item \textbf{Conjunto seleccionado:} receptáculo MR11WS08 0019 AN1 E1AP (P/N 131600, PCB, rear panel mount, bloqueo a rosca) y plug MP11ZS08 0019 AN1 Z1AS (P/N 131633, soldable, latón/PEEK). Ambos son Size 08, 19 contactos: 15 de señal de 1~A y 4 de potencia de 5~A, todos de \ensuremath{\varnothing}0,5~mm.
   \item \textbf{Corte de panel:} \ensuremath{\varnothing}10,45$^{+0,1}_{\,0}$~mm con un plano superior (cota $Y=10{,}2^{+0,1}_{\,0}$~mm). Rosca de panel M10,5$\times$0,5, tuerca ranurada con llave de 10~mm, par 1,5~N\,m.
   \item \textbf{Robustez verificada en los datasheets:} IP68, $-40$ a $+135$~°C, 5\,000 ciclos, vibración 10--2\,000~Hz a 15~g (solo versión a rosca), choque 300~g, niebla salina 1\,000~h, blindaje 360°. Plug a rosca: \ensuremath{\varnothing}12,9~mm.
-  \item \textbf{Potencia 48~V:} viable. La tensión asignada de esta configuración es $\le$100~V (no 250~V; ese valor es de la variante USB de 9 contactos), suficiente para 48~V con margen 2,1$\times$.
+  \item \textbf{Alimentación 48~V:} viable. La tensión asignada de esta configuración es $\le$100~V (no 250~V; ese valor es de la variante USB de 9 contactos), suficiente para 48~V con margen 2,1$\times$.
   \item \textbf{Límite real: caída en el cable.} Con 2$\times$AWG24 por polaridad el lazo vale $\approx$0,086~$\Omega$/m. Para $\Delta V\le 5$\,\% (2,4~V) la corriente continua máxima es \textbf{2,8~A a 10~m} y \textbf{1,9~A a 15~m}. A 3~A y 10~m llegan 45,4~V y el cable disipa 7,7~W.
-  \item \textbf{Discrepancia sobre Ethernet:} la especificación técnica (p.~J-4) marca Ethernet (5~Gbit/s, AWG24) solo para el Size 08 de \emph{8 contactos}. Para el de 19 contactos marca audio/vídeo 10,2~Gbit/s\textsuperscript{*} y USB~2.0, no Ethernet. Fischer \emph{sí} recomienda en J-18 los pares 8/19, 10/11, 13/14 y 16/17 para Ethernet en el de 19, pero no publica validación 1000BASE-T. No hallé «Ethernet 10~Gbit/s con AWG28» en el documento.
-  \item \textbf{Pendiente:} (i) corriente continua real del robot; (ii) confirmar por escrito con Fischer la validación 1000BASE-T en el 19 contactos; (iii) confirmar el significado de $E_{\max}=2{,}3$~mm (¿espesor de panel útil?); (iv) diseño de pistas de 5~A en la PCB con pines de \ensuremath{\varnothing}0,4~mm.
+  \item \textbf{Gigabit Ethernet (1000BASE-T):} usa los pares 8/19, 10/11, 13/14 y 16/17 del cableado recomendado por Fischer (J-18). \emph{Queda por verificar} con Fischer sobre el conjunto de 19 contactos.
+  \item \textbf{Cable armado por proveedor:} no se ensambla en la empresa. Se compra el cable terminado y sobremoldeado, con el receptáculo aparte. Proveedores en la sección~8.
+  \item \textbf{Pendiente:} (i) corriente continua real del robot; (ii) verificar 1000BASE-T con Fischer sobre el conjunto de 19 contactos; (iii) confirmar el significado de $E_{\max}=2{,}3$~mm (¿espesor de panel útil?); (iv) diseño de pistas de 5~A en la PCB con pines de \ensuremath{\varnothing}0,4~mm.
 \end{itemize}
 
 \section{Conjunto seleccionado}
@@ -277,25 +278,58 @@ Lazo: $R=2\,(R_{24}/2)\,L=R_{24}L\approx0{,}086\,L$~$\Omega$ (con $L$ en m), má
 Los valores de 10 y 15~m coinciden con los de la nota de partida (diferencias $\le$0,03~V por usar 0,0858 en vez de 0,086 y sumar contactos). Con el cobre a 60~°C la caída sube $\approx$14\,\%. Corriente máxima para $\Delta V\le 5$\,\% de 48~V: 2,8~A (10~m) y 1,9~A (15~m).
 
 \section{Ethernet}
-\textbf{Qué dice Fischer.} La especificación técnica (J-4) marca Ethernet solo en el Size 08 de 8 contactos, con AWG24 y 5~Gbit/s. En la fila del Size 08 de 19 contactos marca audio/vídeo (10,2~Gbit/s, «dependiente de la aplicación») y USB~2.0. El cableado recomendado (J-18) sí define cuatro pares Ethernet en el de 19 contactos. Por eso la nota de partida es correcta en la asignación de pines, pero la afirmación de que el documento contempla «Ethernet de 10~Gbit/s con AWG28» en el de 19 contactos no se pudo verificar. \textbf{No se encontró validación 1000BASE-T del 19 contactos.}
+Se usan los pares de Ethernet que Fischer recomienda para el 19 contactos (J-18): 8/19, 10/11, 13/14 y 16/17. \textbf{Queda por verificar} el desempeño 1000BASE-T del conjunto de 19 contactos.
 
-Recomendaciones:
+Se pedirá al proveedor del cable:
 \begin{itemize}
-  \item Pedir a Fischer confirmación escrita, o un ensayo, de 1000BASE-T sobre el conjunto de 19 contactos.
-  \item Mantener en la solicitud al ensamblador: \emph{«1000BASE-T verified end-to-end over complete cable assembly, including both MiniMax terminations»}.
-  \item Alternativa de reducción de riesgo: Size 08 de 8 contactos para Ethernet, con la contra-parte de potencia y RS-485 en otro conector.
+  \item \emph{«1000BASE-T verified end-to-end over complete cable assembly, including both MiniMax terminations.»}
+  \item Confirmación de Fischer de la configuración de pares sobre el conjunto de 19 contactos.
 \end{itemize}
 
-\section{Cable, ensamblado y proveedores}
+\section{Cable armado y proveedores}
+\textbf{Se compra el cable armado (plug $\leftrightarrow$ plug, sobremoldeado y ensayado); no se ensambla en la empresa.}
+
+\subsection{Especificación del cable armado}
 \begin{itemize}
-  \item \textbf{Construcción:} 4 pares AWG28 de 100~$\Omega$ (Ethernet), 1 par AWG28 (RS-485), 1 par AWG28 (analógica), 4$\times$AWG24 (potencia), blindaje general 360° al cuerpo. \textbf{Objetivo OD $\le$ 6,7~mm} (máximo de sobremoldeado, J-9). Una estimación por áreas (12 conductores de $\approx$0,5~mm y 4 de $\approx$0,9~mm con 60\,\% de empaquetado) da un núcleo de $\approx$3,2~mm; con blindaje y cubierta $\approx$5~mm (\emph{estimación}, a confirmar por el ensamblador).
-  \item \textbf{Ensamblado por proveedor:} Fischer garantiza IP64 para cableados estándar; IP68 bajo pedido. El soldado, el destrenzado de pares, la continuidad de pantalla, el alivio de tracción y el sobremoldeado dependen del proceso.
-  \item \textbf{Proveedores a consultar:} Fischer Connectors (cable assemblies), RODAN Technologies (socio oficial) y NAV Engineering.
-  \item \textbf{Longitud:} 10~m preferida frente a 15~m (ver caída de tensión).
+  \item \textbf{Conectores:} plug MP11ZS08 0019 AN1 Z1AS (P/N 131633) en ambos extremos; sobremoldeo recto.
+  \item \textbf{Longitud:} 10~m preferida; 15~m solo si es necesario (ver caída de tensión).
+  \item \textbf{Construcción:} 4 pares AWG28 de 100~$\Omega$ (Ethernet), 1 par AWG28 (RS-485), 1 par AWG28 (analógica), 4$\times$AWG24 (alimentación), blindaje general 360° al cuerpo.
+  \item \textbf{Diámetro exterior $\le$ 6,7~mm} (máximo de sobremoldeado, J-9). Una estimación por áreas da $\approx$5~mm con blindaje y cubierta (\emph{estimación}, a confirmar por el proveedor).
+  \item \textbf{Ensayos:} continuidad y aislación de los 19 contactos; 1000BASE-T de extremo a extremo (por verificar).
+  \item \textbf{Sellado:} Fischer garantiza IP64 en cableados estándar; pedir IP68 (20~m / 24~h), que se ofrece bajo pedido.
 \end{itemize}
 
-\section{Precio}
-Mouser Canadá (nota de partida, sin reverificar): receptáculo CAD 288,20/u., CAD 244,99 a 10~u. El plug terminado y el cable especial requieren cotización.
+\subsection{Proveedores del cable armado}
+\begin{table}[H]\centering
+  \caption{Proveedores consultados para el cable armado.}
+  \begin{tabular}{p{3.6cm} p{4.4cm} p{6.2cm}}
+    \toprule
+    Proveedor & Rol & Observación \\
+    \midrule
+    Fischer Connectors (servicio Cable Assembly) & Fabricante; diseña y arma cable + conector + sobremoldeo & Primera opción: responde por el conjunto completo. Ofrece Ethernet y terminaciones a medida. \\
+    RODAN Technologies & Socio de Fischer; cable assemblies y sobremoldeo & Segunda opción. Tiene e-catálogo Fischer con pedido de cotización. \\
+    NAV Engineering & Fabricante de arneses (\emph{harnesses}) & Alternativa; según la nota de partida comercializa el MP11ZS08 0019 AN1 Z1AS (no verificado). \\
+    LCI Brasil / sedes Fischer de la región & Distribuidor / contacto regional & Vía de contacto local para Latinoamérica; ver la página de sedes de Fischer. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Proveedores del receptáculo}
+\begin{table}[H]\centering
+  \caption{Proveedores del receptáculo MR11WS08 0019 AN1 E1AP (P/N 131600).}
+  \begin{tabular}{p{3.6cm} p{4.4cm} p{6.2cm}}
+    \toprule
+    Proveedor & Rol & Observación \\
+    \midrule
+    Fischer Connectors & Fabricante & Cotización directa y disponibilidad. \\
+    Mouser & Distribuidor & CAD 288,20/u.; CAD 244,99 a 10~u. (nota de partida, sin reverificar). \\
+    RODAN Technologies & Socio de Fischer & Cotización por e-catálogo. \\
+    Keiconn (Kensington Electronics) & Distribuidor de Fischer & Sin stock declarado del P/N 131600 en el Product Finder; consultar. \\
+    TrustedParts.com & Buscador de distribuidores autorizados & Compara inventario y precio. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+Conviene cotizar el cable armado y el receptáculo juntos con Fischer o RODAN, para que un solo proveedor responda por la compatibilidad del conjunto.
 
 \section{Limitaciones}
 \begin{itemize}
