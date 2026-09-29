@@ -1,0 +1,105 @@
+{
+ "R25_ohm_m": 0.0858,
+ "tabla": [
+  {
+   "L": 10,
+   "I": 2,
+   "dV_cable": 1.72,
+   "dV_total": 1.73,
+   "V_robot": 46.3,
+   "P_cable": 3.4,
+   "dV_60C": 1.96
+  },
+  {
+   "L": 10,
+   "I": 3,
+   "dV_cable": 2.57,
+   "dV_total": 2.59,
+   "V_robot": 45.4,
+   "P_cable": 7.7,
+   "dV_60C": 2.94
+  },
+  {
+   "L": 10,
+   "I": 4,
+   "dV_cable": 3.43,
+   "dV_total": 3.45,
+   "V_robot": 44.5,
+   "P_cable": 13.7,
+   "dV_60C": 3.92
+  },
+  {
+   "L": 10,
+   "I": 5,
+   "dV_cable": 4.29,
+   "dV_total": 4.31,
+   "V_robot": 43.7,
+   "P_cable": 21.4,
+   "dV_60C": 4.91
+  },
+  {
+   "L": 10,
+   "I": 10,
+   "dV_cable": 8.58,
+   "dV_total": 8.63,
+   "V_robot": 39.4,
+   "P_cable": 85.8,
+   "dV_60C": 9.81
+  },
+  {
+   "L": 15,
+   "I": 2,
+   "dV_cable": 2.57,
+   "dV_total": 2.58,
+   "V_robot": 45.4,
+   "P_cable": 5.1,
+   "dV_60C": 2.94
+  },
+  {
+   "L": 15,
+   "I": 3,
+   "dV_cable": 3.86,
+   "dV_total": 3.88,
+   "V_robot": 44.1,
+   "P_cable": 11.6,
+   "dV_60C": 4.41
+  },
+  {
+   "L": 15,
+   "I": 4,
+   "dV_cable": 5.15,
+   "dV_total": 5.17,
+   "V_robot": 42.8,
+   "P_cable": 20.6,
+   "dV_60C": 5.88
+  },
+  {
+   "L": 15,
+   "I": 5,
+   "dV_cable": 6.43,
+   "dV_total": 6.46,
+   "V_robot": 41.5,
+   "P_cable": 32.2,
+   "dV_60C": 7.35
+  },
+  {
+   "L": 15,
+   "I": 10,
+   "dV_cable": 12.87,
+   "dV_total": 12.92,
+   "V_robot": 35.1,
+   "P_cable": 128.7,
+   "dV_60C": 14.69
+  }
+ ],
+ "Imax_5pc": {
+  "10": 2.78,
+  "15": 1.86
+ },
+ "corte": {
+  "X": 10.45,
+  "Y": 10.2,
+  "profundidad_plano": 0.25,
+  "cuerda_plano": 3.19
+ }
+}
