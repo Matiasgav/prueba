@@ -47,6 +47,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
 .wrap { max-width: 1320px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 56px; }
 header { display: grid; gap: 6px; margin-bottom: 22px; }
@@ -95,6 +96,15 @@ main { display: grid; gap: 20px; min-width: 0; }
 .specline code { font-family: var(--f-mono); font-size: 12.5px; line-height: 1.55; flex: 1; min-width: 0; white-space: normal; }
 .specline button { font: 500 12px var(--f-mono); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
 td.up { color: var(--warn); } td.down { color: var(--ok); }
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line); }
+.tabs button { font: 500 14px var(--f-body); color: var(--muted); background: transparent; border: 0; border-bottom: 2px solid transparent; padding: 10px 14px; cursor: pointer; margin-bottom: -1px; }
+.tabs button:hover { color: var(--ink); }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tabs button small { display: block; font: 400 11.5px var(--f-mono); color: var(--muted); letter-spacing: .02em; }
+.tabpanel { display: grid; gap: 20px; min-width: 0; }
+.pill { display: inline-block; font: 500 12px var(--f-mono); padding: 2px 10px; border-radius: 999px; border: 1px solid currentColor; }
+.pill.ok { color: var(--ok); } .pill.bad { color: var(--warn); }
+.busy { font: 400 12px var(--f-mono); color: var(--muted); }
 .fig { overflow-x: auto; }
 .fig svg { display: block; width: 100%; min-width: 640px; height: auto; }
 .fig svg text { font-family: var(--f-mono); fill: var(--ink); }
@@ -130,7 +140,7 @@ tr.cur td { color: var(--accent); font-weight: 500; }
         <div class="group-title">Datos del robot</div>
         <div class="ctl">
           <div class="ctl-head"><label for="gmin">Ancho del módulo central</label><output id="gmin-o"></output></div>
-          <input id="gmin" type="range" min="30" max="100" step="1" value="70">
+          <input id="gmin" type="range" min="20" max="150" step="1" value="70">
           <div class="presets" id="gmin-presets">
             <button type="button" data-v="50">50</button><button type="button" data-v="55">55</button><button type="button" data-v="60">60</button><button type="button" data-v="70">70</button>
           </div>
@@ -177,6 +187,12 @@ tr.cur td { color: var(--accent); font-weight: 500; }
     </aside>
 
     <main>
+      <nav class="tabs" role="tablist" aria-label="Estudios">
+        <button type="button" role="tab" id="tb-reg" data-tab="reg" aria-selected="true">Regulación centrada<small>robot sobre el eje de ranura</small></button>
+        <button type="button" role="tab" id="tb-mod" data-tab="mod" aria-selected="false">Módulo y oruga<small>cuándo no hace falta regular</small></button>
+        <button type="button" role="tab" id="tb-des" data-tab="des" aria-selected="false">Operación descentrada<small>dos orugas por lado</small></button>
+      </nav>
+      <div class="tabpanel" id="tab-reg" role="tabpanel" aria-labelledby="tb-reg">
       <section class="card spec" aria-live="polite">
         <div class="eyebrow">Regulación que tiene que tener el robot</div>
         <p class="verdict" id="verdict"></p>
@@ -261,6 +277,77 @@ con r_max = 0,40:  carrera/lado = G/4 + 1,5·W</div>
           <li>La ranura máxima casi nunca manda: las máquinas grandes tienen dientes anchos y el primer diente admite casi cualquier separación.</li>
         </ul>
       </section>
+      </div>
+
+      <div class="tabpanel" id="tab-mod" role="tabpanel" aria-labelledby="tb-mod" hidden>
+        <section class="card spec">
+          <div class="eyebrow">Estudio complementario · módulo central y ancho de oruga</div>
+          <p class="verdict" id="mod-verdict"></p>
+          <div class="eq" id="mod-eq"></div>
+          <p class="sub">Usa la familia de máquinas y el margen de apoyo del panel. Tocá una celda del mapa para pasar esos valores al panel.</p>
+        </section>
+        <section class="card">
+          <h2>Carrera por lado según módulo y oruga</h2>
+          <p class="sub">Cada celda es un robot centrado. Las celdas verdes no necesitan regulación: un robot de ancho fijo apoya en todas las máquinas. En el resto, el color indica cuánta carrera por lado hace falta. <span class="busy" id="mod-busy"></span></p>
+          <div class="fig"><svg id="mod-map" viewBox="0 0 960 440" role="img" aria-label="Carrera por lado según ancho de módulo y de oruga"></svg></div>
+        </section>
+        <section class="card">
+          <h2>Oruga más ancha sin regulación</h2>
+          <p class="sub">Para cada ancho de módulo, la oruga más ancha con la que un robot fijo entra en todas las máquinas. Debajo de la curva no hace falta mecanismo de regulación.</p>
+          <div class="fig"><svg id="mod-zero" viewBox="0 0 960 320" role="img" aria-label="Oruga máxima sin regulación según el módulo"></svg></div>
+          <div class="tablewrap"><table id="mod-tbl"></table></div>
+        </section>
+      </div>
+
+      <div class="tabpanel" id="tab-des" role="tabpanel" aria-labelledby="tb-des" hidden>
+        <section class="card spec">
+          <div class="eyebrow">Estudio complementario · robot descentrado</div>
+          <p class="sub">Cada lado lleva dos orugas iguales separadas una distancia <i>e</i>. El robot puede quedar en cualquier posición respecto de las ranuras y pasar de una a la siguiente. Se exige que en cada lado la suma de lo que apoyan sus dos orugas sobre dientes nunca baje de la superposición mínima, en todas las posiciones de un paso y en todas las máquinas del panel.</p>
+          <div class="two">
+            <div class="ctl"><div class="ctl-head"><label for="d-ov">Superposición mínima por lado</label><output id="d-ov-o"></output></div><input id="d-ov" type="range" min="5" max="40" step="1" value="15"></div>
+            <div class="ctl"><div class="ctl-head"><label for="d-x">Separación máxima admisible entre orugas</label><output id="d-x-o"></output></div><input id="d-x" type="range" min="10" max="100" step="5" value="60"></div>
+            <div class="ctl"><div class="ctl-head"><label for="d-w">Ancho de cada oruga</label><output id="d-w-o"></output></div><input id="d-w" type="range" min="5" max="60" step="0.5" value="27"></div>
+            <div class="ctl"><div class="ctl-head"><label for="d-e">Separación entre las dos orugas</label><output id="d-e-o"></output></div><input id="d-e" type="range" min="0" max="60" step="0.5" value="12"></div>
+          </div>
+          <p class="verdict" id="d-verdict"></p>
+          <dl class="spec-list">
+            <div class="row main"><dt>Configuración más angosta que cumple</dt><dd id="d-best"></dd><span class="note" id="d-best-note"></span></div>
+            <div class="row"><dt>Orugas más angostas que cumplen</dt><dd id="d-narrow"></dd><span class="note" id="d-narrow-note"></span></div>
+            <div class="row"><dt>Peor apoyo por lado (configuración elegida)</dt><dd id="d-worst"></dd><span class="note" id="d-worst-note"></span></div>
+            <div class="row"><dt>Ancho de apoyo por lado</dt><dd id="d-foot"></dd><span class="note">2 orugas + separación</span></div>
+            <div class="row"><dt>Ancho exterior del robot</dt><dd id="d-outer"></dd><span class="note">módulo del panel + 2 lados; la luz central queda fija</span></div>
+            <div class="row"><dt>Separación fija válida para esta oruga</dt><dd id="d-efix"></dd><span class="note">valores de e que sirven en todas las máquinas sin tocar nada</span></div>
+            <div class="row"><dt>Separación regulable para esta oruga</dt><dd id="d-ereg"></dd><span class="note">rango de e si se ajusta en cada máquina</span></div>
+          </dl>
+        </section>
+        <section class="card">
+          <h2>Mapa de configuraciones</h2>
+          <p class="sub">Peor apoyo por lado en todas las máquinas, para cada combinación de ancho de oruga y separación. Verde: cumple la superposición mínima. Los huecos aparecen cuando la distancia entre orugas coincide con el paso de alguna máquina y las dos caen sobre ranuras a la vez. Tocá una celda para elegirla. <span class="busy" id="d-busy"></span></p>
+          <div class="fig"><svg id="d-map" viewBox="0 0 960 460" role="img" aria-label="Peor apoyo según ancho de oruga y separación"></svg></div>
+        </section>
+        <section class="card">
+          <h2>Pasaje de ranura a ranura</h2>
+          <p class="sub">Movés el robot lateralmente a lo largo de un paso completo y se ve cuánto apoya cada lado. La luz central es el módulo del panel.</p>
+          <div class="two">
+            <div class="ctl"><div class="ctl-head"><label for="d-s">Ancho de ranura</label><output id="d-s-o"></output></div><input id="d-s" type="range" min="18" max="50" step="0.5" value="50"></div>
+            <div class="ctl"><div class="ctl-head"><label for="d-r">Ranura / paso</label><output id="d-r-o"></output></div><input id="d-r" type="range" min="30" max="40" step="0.5" value="30"></div>
+            <div class="ctl"><div class="ctl-head"><label for="d-u">Posición del robot</label><output id="d-u-o"></output></div><input id="d-u" type="range" min="0" max="100" step="0.5" value="0"></div>
+            <div class="presets" style="align-self:end"><button type="button" id="d-goworst">Ir al peor caso</button></div>
+          </div>
+          <div class="fig"><svg id="d-draw" viewBox="0 0 960 230" role="img" aria-label="Robot descentrado sobre el núcleo"></svg></div>
+          <div class="fig"><svg id="d-curve" viewBox="0 0 960 260" role="img" aria-label="Apoyo por lado a lo largo de un paso"></svg></div>
+        </section>
+        <section class="card model">
+          <h2>Qué muestra este estudio</h2>
+          <ul>
+            <li>La luz central no cambia el resultado: como el robot recorre todas las posiciones de un paso, el peor caso de cada lado es el mismo sin importar dónde esté el otro. En este modo no hace falta regular la separación central; alcanza con que sea la del módulo.</li>
+            <li>Hay un piso que no depende de cómo se repartan las orugas: el ancho de apoyo por lado tiene que ser al menos la ranura más ancha más la superposición. Con el apoyo más angosto, una ranura puede quedar abajo del lado y solo apoya lo que sobra: <span id="d-floor"></span></li>
+            <li>Separar las orugas ahorra material de oruga, pero abre huecos: si la distancia entre orugas es parecida al paso de alguna máquina, las dos pueden caer sobre ranuras a la vez.</li>
+            <li>El apoyo se cuenta como la suma de las dos orugas de un lado. Una oruga que cruza una ranura apoya en los dos dientes vecinos y cuenta ambos tramos.</li>
+            <li>Barrido del mapa: oruga cada 1 mm, separación cada 1 mm y máquinas cada 1 mm de ranura y 1 % de proporción. La configuración recomendada y la elegida se verifican con ranura cada 0,25 mm y proporción cada 0,25 %.</li>
+          </ul>
+        </section>
+      </div>
     </main>
   </div>
 </div>
@@ -331,6 +418,58 @@ function sweep(P, ds = 0.05, dr = 0.001) {
     }
   }
   return { lo, hi, bad, n };
+}
+
+// Rango óptimo: intervalo [a, a+D] más corto, con a >= G, que toca alguna banda de cada máquina.
+function mergeList(list) {
+  list.sort((u, v) => u[0] - v[0]); const out = [];
+  for (const iv of list) { const l = out[out.length - 1]; if (l && iv[0] <= l[1]) l[1] = Math.max(l[1], iv[1]); else out.push([iv[0], iv[1]]); }
+  return out;
+}
+function intersect(A, B) {
+  const out = []; let i = 0, j = 0;
+  while (i < A.length && j < B.length) {
+    const lo = Math.max(A[i][0], B[j][0]), hi = Math.min(A[i][1], B[j][1]);
+    if (lo <= hi) out.push([lo, hi]);
+    if (A[i][1] < B[j][1]) i++; else j++;
+  }
+  return out;
+}
+function makeTester(P, ds, dr) {
+  const top = P.G + 400, sets = [];
+  for (const r of grid(P.rmin, P.rmax, dr)) for (const s of grid(P.smin, P.smax, ds)) {
+    const b = bands(s, r, P, top).filter(x => x.hi >= P.G).map(x => [Math.max(x.lo, P.G), x.hi]);
+    if (b.length) sets.push(b);
+  }
+  return D => {
+    let cur = [[P.G, top]];
+    for (const m of sets) { cur = intersect(cur, mergeList(m.map(([a, b]) => [a - D, b]))); if (!cur.length) return null; }
+    return cur[0][0];
+  };
+}
+function optimalA(P, ds, dr) {
+  const test = makeTester(P, ds, dr);
+  const a0 = test(0); if (a0 != null) return a0;
+  let lo = 0, hi = 400; if (test(hi) == null) return P.G;
+  for (let i = 0; i < 22; i++) { const mid = (lo + hi) / 2; if (test(mid) != null) hi = mid; else lo = mid; }
+  return Math.max(P.G, test(hi));
+}
+function regulation(P, ds = 0.05, dr = 0.001, ods = 0.25, odr = 0.0025) {
+  const A = sweep(P, ds, dr);
+  const a = optimalA(P, ods, odr);
+  if (a > P.G + 1e-6) {
+    const B = sweep({ ...P, G: a }, ds, dr);
+    if (isFinite(B.lo.g) && (!isFinite(A.lo.g) || B.hi.g - B.lo.g < A.hi.g - A.lo.g - 1e-6)) return { ...B, a };
+  }
+  return { ...A, a: P.G };
+}
+const regFast = P => regulation(P, 0.25, 0.005, 0.5, 0.005);
+// Versión rápida para los mapas: prueba de robot fijo y dos topes candidatos.
+function regHeat(Q) {
+  if (makeTester(Q, 1, 0.01)(0) != null) return 0;
+  let best = Infinity;
+  for (const a of [Q.G, Math.max(Q.G, Q.smax + 2 * Q.m)]) { const q = sweep({ ...Q, G: a }, 0.5, 0.01); if (isFinite(q.lo.g)) best = Math.min(best, (q.hi.g - q.lo.g) / 2); }
+  return isFinite(best) ? best : NaN;
 }
 
 let S = null; // último resultado
@@ -416,7 +555,7 @@ function renderSpecFig() {
 // Carrera por lado cambiando un solo dato.
 function renderLevers() {
   const base = (S.hi.g - S.lo.g) / 2;
-  const side = Q => { const q = sweep(Q, 0.1, 0.002); return isFinite(q.lo.g) ? (q.hi.g - q.lo.g) / 2 : NaN; };
+  const side = Q => { const q = regulation(Q, 0.1, 0.002, 0.5, 0.005); return isFinite(q.lo.g) ? (q.hi.g - q.lo.g) / 2 : NaN; };
   const cases = [
     ['Módulo central 5 mm más angosto', { ...P, Gm: P.Gm - 5, G: P.G - 5 }],
     ['Holgura en tope cerrado +5 mm', { ...P, H: P.H + 5, G: P.G + 5 }],
@@ -715,16 +854,335 @@ function renderSens() {
 
 function renderClosed() {
   if (P.m !== 0) { $('closed').textContent = 'Con margen de apoyo distinto de cero la expresión cambia; los valores de arriba salen del barrido numérico.'; return; }
+  if (S.hi.g - S.lo.g < 0.05) { $('closed').textContent = 'Con los valores actuales no hace falta regulación: un robot fijo entra en todas las máquinas (ver la pestaña Módulo y oruga).'; return; }
   const v = (P.G + 2 * P.W) * (2 + P.rmax) / (2 - P.rmax);
   $('closed').textContent = `Con los valores actuales: (${fmt(P.G, 0)} + 2·${fmt(P.W, 1)}) · (2 + ${fmt(P.rmax, 2)}) / (2 − ${fmt(P.rmax, 2)}) = ${fmt(v)} mm, que coincide con el barrido (${fmt(S.hi.g)} mm) siempre que la máquina crítica caiga dentro del rango de ranuras.`;
 }
 
+// ================= Pestaña: módulo y oruga =================
+const MOD_G = grid(20, 150, 5), MOD_W = grid(5, 30, 1);
+let modState = { key: '', vals: null, zero: null, job: 0 };
+function modKey() { return JSON.stringify({ m: P.m, smin: P.smin, smax: P.smax, rmin: P.rmin, rmax: P.rmax }); }
+function isZero(Q) { return makeTester(Q, 1, 0.01)(0) != null; }
+function wZero(G) {
+  const base = { ...P, G, Gm: G, H: 0 };
+  if (!isZero({ ...base, W: 0.5 })) return 0;
+  let lo = 0.5, hi = 60;
+  if (isZero({ ...base, W: hi })) return hi;
+  for (let i = 0; i < 14; i++) { const mid = (lo + hi) / 2; if (isZero({ ...base, W: mid })) lo = mid; else hi = mid; }
+  return lo;
+}
+function modCompute() {
+  const key = modKey();
+  if (modState.key === key && modState.vals) { renderMod(); return; }
+  const job = ++modState.job;
+  modState = { key, vals: new Float32Array(MOD_G.length * MOD_W.length).fill(NaN), zero: null, job };
+  let i = 0;
+  const step = () => {
+    if (modState.job !== job) return;
+    const t0 = performance.now();
+    while (i < MOD_G.length && performance.now() - t0 < 30) {
+      const G = MOD_G[i];
+      MOD_W.forEach((W, j) => { modState.vals[i * MOD_W.length + j] = regHeat({ ...P, G, Gm: G, H: 0, W }); });
+      i++;
+    }
+    $('mod-busy').textContent = i < MOD_G.length ? `calculando ${Math.round(100 * i / MOD_G.length)} %…` : '';
+    if (i < MOD_G.length) { renderModMap(); setTimeout(step, 0); return; }
+    modState.zero = grid(20, 150, 2).map(G => ({ G, W: wZero(G) }));
+    renderMod();
+  };
+  step();
+}
+function renderMod() { renderModMap(); renderModZero(); renderModText(); }
+function renderModText() {
+  const cur = regFast({ ...P, H: 0, G: P.Gm }), side = (cur.hi.g - cur.lo.g) / 2;
+  const wz = wZero(P.Gm);
+  let gz = null; for (let G = 20; G <= 150; G += 1) if (isZero({ ...P, G, Gm: G, H: 0 })) gz = G;
+  const zero = side < 0.05;
+  $('mod-verdict').innerHTML = zero
+    ? `Con módulo de <strong>${fmt(P.Gm, 0)} mm</strong> y orugas de <strong>${fmt(P.W, 1)} mm</strong> <strong>no hace falta regulación</strong>: con la luz fija en ${fmt(cur.lo.g)} mm el robot apoya en todas las máquinas.`
+    : `Con módulo de <strong>${fmt(P.Gm, 0)} mm</strong> y orugas de <strong>${fmt(P.W, 1)} mm</strong> hacen falta <strong>${fmt(side)} mm</strong> de carrera por lado. ` +
+      (wz > 0.5 ? `Para no regular, con este módulo la oruga tiene que medir <strong>${fmt(wz)} mm</strong> o menos` : 'Con este módulo ninguna oruga razonable evita la regulación') +
+      (gz != null ? `; con esta oruga, el módulo tiene que medir <strong>${fmt(gz, 0)} mm</strong> o menos.` : '; con esta oruga ningún módulo del rango evita la regulación.');
+  const k1 = P.smin * (2 - P.rmax) / P.rmax;
+  $('mod-eq').textContent =
+`Sin regulación, con todas las orugas en el 1.er diente:
+  oruga ≤ [ s_min·(2 − r_max)/r_max − max(G, s_max + 2m) − 2m ] / 2
+  con los datos del panel: [ ${fmt(k1)} − max(G, ${fmt(P.smax + 2 * P.m)}) − ${fmt(2 * P.m)} ] / 2
+  módulo ≤ ${fmt(P.smax + 2 * P.m, 0)} mm  →  oruga ≤ ${fmt((k1 - P.smax - 4 * P.m) / 2)} mm`;
+}
+function renderModMap() {
+  const svg = $('mod-map'); svg.innerHTML = '';
+  const L = 70, R = 860, T = 20, B = 380, nG = MOD_G.length, nW = MOD_W.length;
+  const x = lin(MOD_G[0] - 2.5, MOD_G[nG - 1] + 2.5, L, R), y = lin(MOD_W[0] - 0.5, MOD_W[nW - 1] + 0.5, B, T);
+  const vals = modState.vals; if (!vals) return;
+  let mx = 0; for (const v of vals) if (v > mx) mx = v;
+  const c0 = hexRgb(css('--seq-lo')), c1 = hexRgb(css('--seq-hi'));
+  const cw = (R - L) / nG, ch = (B - T) / nW;
+  const cells = el('g', {}, svg);
+  MOD_G.forEach((G, i) => MOD_W.forEach((W, j) => {
+    const v = vals[i * nW + j]; if (isNaN(v)) return;
+    const r = el('rect', { x: x(G) - cw / 2, y: y(W) - ch / 2, width: cw + .5, height: ch + .5, fill: v < 0.05 ? 'var(--ok)' : mix(c0, c1, v / Math.max(mx, 1)), 'fill-opacity': v < 0.05 ? .75 : 1, style: 'cursor:pointer' }, cells);
+    const tt = el('title', {}, r); tt.textContent = `módulo ${G} · oruga ${W} → ${v < 0.05 ? 'sin regulación' : fmt(v) + ' mm por lado'}`;
+    r.addEventListener('click', () => { $('gmin').value = G; $('w').value = W; $('hol').value = 0; update(false); });
+    if (cw > 26 && ch > 11) txt(cells, x(G), y(W) + 4, v < 0.05 ? '0' : fmt(v, 0), { 'text-anchor': 'middle', 'font-size': 9.5, fill: v / Math.max(mx, 1) > .55 ? 'var(--panel)' : 'var(--ink)', 'pointer-events': 'none' });
+  }));
+  if (P.Gm >= 17.5 && P.Gm <= 152.5 && P.W >= 4.5 && P.W <= 30.5) {
+    el('rect', { x: x(P.Gm) - cw / 2, y: y(P.W) - ch / 2, width: cw, height: ch, fill: 'none', stroke: 'var(--ink)', 'stroke-width': 2.5 }, svg);
+  }
+  for (const G of MOD_G) if (G % 10 === 0) txt(svg, x(G), B + 18, fmt(G, 0), { 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--muted)' });
+  for (const W of MOD_W) if (W % 5 === 0) txt(svg, L - 8, y(W) + 4, fmt(W, 0), { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--muted)' });
+  txt(svg, (L + R) / 2, B + 38, 'ancho del módulo central [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)' });
+  txt(svg, 16, (T + B) / 2, 'ancho de oruga [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)', transform: `rotate(-90 16 ${(T + B) / 2})` });
+  const lx = 885, defs = el('defs', {}, svg), gr = el('linearGradient', { id: 'modg', x1: 0, y1: 1, x2: 0, y2: 0 }, defs);
+  el('stop', { offset: 0, 'stop-color': css('--seq-lo') }, gr); el('stop', { offset: 1, 'stop-color': css('--seq-hi') }, gr);
+  el('rect', { x: lx, y: T + 30, width: 16, height: B - T - 30, fill: 'url(#modg)' }, svg);
+  el('rect', { x: lx, y: T, width: 16, height: 22, fill: 'var(--ok)', 'fill-opacity': .75 }, svg);
+  txt(svg, lx + 20, T + 15, '0', { 'font-size': 11 });
+  txt(svg, lx + 20, T + 42, fmt(mx, 0), { 'font-size': 11 });
+  txt(svg, lx + 20, B, '>0', { 'font-size': 11 });
+  txt(svg, lx + 8, T - 6, 'mm/lado', { 'text-anchor': 'middle', 'font-size': 10.5, fill: 'var(--muted)' });
+}
+function renderModZero() {
+  const svg = $('mod-zero'); svg.innerHTML = '';
+  const Z = modState.zero; if (!Z) return;
+  const L = 62, R = 940, T = 16, B = 260;
+  const ymax = Math.max(20, Math.ceil(Math.max(...Z.map(z => z.W)) / 5) * 5 + 5);
+  const x = lin(20, 150, L, R), y = lin(0, ymax, B, T);
+  for (const v of niceTicks(0, ymax, 6)) { el('line', { x1: L, x2: R, y1: y(v), y2: y(v), stroke: 'var(--line)' }, svg); txt(svg, L - 8, y(v) + 4, fmt(v, 0), { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--muted)' }); }
+  for (const v of niceTicks(20, 150, 13)) txt(svg, x(v), B + 18, fmt(v, 0), { 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--muted)' });
+  const pts = Z.map(z => `${x(z.G)},${y(z.W)}`);
+  el('polygon', { points: [`${x(20)},${y(0)}`, ...pts, `${x(150)},${y(0)}`].join(' '), fill: 'var(--ok)', 'fill-opacity': .18 }, svg);
+  el('polyline', { points: pts.join(' '), fill: 'none', stroke: 'var(--ok)', 'stroke-width': 2.5 }, svg);
+  const zi = Z.find(z => z.W > 0.5); if (zi) txt(svg, x(zi.G) + 8, y(0) - 10, 'robot fijo, sin regulación', { 'font-size': 11.5, fill: 'var(--ok)' });
+  el('circle', { cx: x(Math.min(150, Math.max(20, P.Gm))), cy: y(Math.min(ymax, P.W)), r: 5, fill: 'var(--ink)' }, svg);
+  txt(svg, x(Math.min(150, Math.max(20, P.Gm))) + 8, y(Math.min(ymax, P.W)) - 8, `actual (${fmt(P.Gm, 0)}, ${fmt(P.W, 1)})`, { 'font-size': 11.5 });
+  el('line', { x1: L, x2: R, y1: B, y2: B, stroke: 'var(--muted)' }, svg);
+  txt(svg, (L + R) / 2, B + 38, 'ancho del módulo central [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)' });
+  txt(svg, 14, (T + B) / 2, 'oruga máx. [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)', transform: `rotate(-90 14 ${(T + B) / 2})` });
+  const picks = [30, 40, 50, 55, 60, 70];
+  let h = '<thead><tr><th>Módulo central</th><th>Oruga máx. sin regular</th>' + [10, 13, 17, 20].map(W => `<th>Oruga ${W}: carrera/lado</th>`).join('') + '</tr></thead><tbody>';
+  for (const G of picks) {
+    const z = Z.reduce((a, b) => Math.abs(b.G - G) < Math.abs(a.G - G) ? b : a);
+    const w = z.G === G ? z.W : wZero(G);
+    h += `<tr${G === P.Gm ? ' class="cur"' : ''}><td>${G} mm</td><td>${w > 0.5 ? fmt(w) + ' mm' : '—'}</td>` + [10, 13, 17, 20].map(W => { const v = regHeat({ ...P, G, Gm: G, H: 0, W }); return `<td>${v < 0.05 ? '0' : fmt(v)}</td>`; }).join('') + '</tr>';
+  }
+  $('mod-tbl').innerHTML = h + '</tbody>';
+}
+
+// ================= Pestaña: operación descentrada =================
+const Fp = (x, p, t) => { const q = Math.floor(x / p); return q * t + Math.min(x - q * p, t); };
+// Menor apoyo de un lado (dos orugas de ancho w separadas e) en todas las posiciones de un paso.
+function minSide(s, r, w, e) {
+  const p = s / r, t = p - s, E = [0, w, w + e, 2 * w + e];
+  let mn = Infinity, arg = 0;
+  for (const te of [0, t]) for (const se of E) {
+    const u = ((te - se) % p + p) % p;
+    const c = Fp(u + w, p, t) - Fp(u, p, t) + Fp(u + 2 * w + e, p, t) - Fp(u + w + e, p, t);
+    if (c < mn) { mn = c; arg = u; }
+  }
+  return { c: mn, u: arg };
+}
+function machines(ds, dr) { const M = []; for (const r of grid(P.rmin, P.rmax, dr)) for (const s of grid(P.smin, P.smax, ds)) M.push([s, r]); return M; }
+function worstOf(M, w, e) { let best = { c: Infinity }; for (const [s, r] of M) { const q = minSide(s, r, w, e); if (q.c < best.c) best = { c: q.c, u: q.u, s, r }; } return best; }
+function DP() { return { ov: +$('d-ov').value, X: +$('d-x').value, w: +$('d-w').value, e: +$('d-e').value }; }
+const DW = grid(5, 60, 1);
+let desState = { key: '', job: 0 };
+function desCompute() {
+  const D = DP();
+  $('d-e').max = D.X; if (+$('d-e').value > D.X) $('d-e').value = D.X;
+  const key = JSON.stringify({ smin: P.smin, smax: P.smax, rmin: P.rmin, rmax: P.rmax, ov: D.ov, X: D.X });
+  if (desState.key === key && desState.done) { renderDes(); return; }
+  const job = ++desState.job, DE = grid(0, D.X, 1), M = machines(1, 0.01);
+  desState = { key, job, DE, worst: new Float32Array(DW.length * DE.length).fill(NaN), regOK: new Array(DW.length).fill(null), done: false, best: null };
+  let i = 0;
+  const step = () => {
+    if (desState.job !== job) return;
+    const t0 = performance.now();
+    while (i < DW.length && performance.now() - t0 < 30) {
+      const w = DW[i], ok = new Uint8Array(M.length);
+      DE.forEach((e, j) => {
+        let mn = Infinity;
+        M.forEach(([s, r], k) => { const c = minSide(s, r, w, e).c; if (c < mn) mn = c; if (c >= D.ov) ok[k] = 1; });
+        desState.worst[i * DE.length + j] = mn;
+      });
+      desState.regOK[i] = ok.every(v => v);
+      i++;
+    }
+    $('d-busy').textContent = i < DW.length ? `calculando ${Math.round(100 * i / DW.length)} %…` : '';
+    if (i < DW.length) { renderDesMap(); setTimeout(step, 0); return; }
+    // configuración más angosta que cumple, verificada fina
+    const cand = [];
+    DW.forEach((w, a) => DE.forEach((e, b) => { if (desState.worst[a * DE.length + b] >= D.ov) cand.push([2 * w + e, w, e]); }));
+    cand.sort((u, v) => u[0] - v[0] || u[1] - v[1]);
+    const MF = machines(0.25, 0.0025);
+    for (const [f, w, e] of cand.slice(0, 40)) { const q = worstOf(MF, w, e); if (q.c >= D.ov - 1e-9) { desState.best = { f, w, e, c: q.c }; break; } }
+    // orugas más angostas con alguna separación fija válida
+    const byW = cand.slice().sort((u, v) => u[1] - v[1] || u[2] - v[2]);
+    for (const [f, w, e] of byW.slice(0, 40)) { const q = worstOf(MF, w, e); if (q.c >= D.ov - 1e-9) { desState.narrow = { f, w, e, c: q.c }; break; } }
+    desState.done = true;
+    renderDes();
+  };
+  step();
+}
+// Para la oruga elegida: separaciones fijas válidas y rango si se regula.
+function desForW(D) {
+  const M = machines(0.5, 0.005), E = grid(0, D.X, 0.25);
+  const okE = E.map(() => true), perM = M.map(() => []);
+  E.forEach((e, j) => M.forEach(([s, r], k) => { if (minSide(s, r, D.w, e).c >= D.ov) perM[k].push(j); else okE[j] = false; }));
+  const runs = idx => { const out = []; for (const j of idx) { const l = out[out.length - 1]; if (l && j === l[2] + 1) { l[1] = E[j]; l[2] = j; } else out.push([E[j], E[j], j]); } return out.map(([a, b]) => [a, b]); };
+  const fixed = runs(E.map((_, j) => j).filter(j => okE[j]));
+  let reg = null;
+  if (perM.every(l => l.length)) {
+    const sets = perM.map(runs);
+    const test = Dd => { let cur = [[0, D.X]]; for (const m of sets) { cur = intersect(cur, mergeList(m.map(([a, b]) => [a - Dd, b]))); if (!cur.length) return null; } return cur[0][0]; };
+    let lo = 0, hi = D.X;
+    if (test(0) != null) reg = [test(0), test(0)];
+    else if (test(hi) != null) { for (let i = 0; i < 18; i++) { const mid = (lo + hi) / 2; if (test(mid) != null) hi = mid; else lo = mid; } const a = Math.max(0, test(hi)); reg = [a, Math.min(D.X, a + hi)]; }
+  }
+  return { fixed, reg };
+}
+function renderDes() {
+  const D = DP();
+  $('d-ov-o').textContent = fmt(D.ov, 0) + ' mm'; $('d-x-o').textContent = fmt(D.X, 0) + ' mm';
+  $('d-w-o').textContent = fmt(D.w, 1) + ' mm'; $('d-e-o').textContent = fmt(D.e, 1) + ' mm';
+  const ds = $('d-s'), dr = $('d-r');
+  ds.min = P.smin; ds.max = P.smax; dr.min = P.rmin * 100; dr.max = P.rmax * 100;
+  $('d-s-o').textContent = fmt(+ds.value, 1) + ' mm'; $('d-r-o').textContent = fmt(+dr.value, 1) + ' %'; $('d-u-o').textContent = fmt(+$('d-u').value, 1) + ' % del paso';
+  const foot = 2 * D.w + D.e;
+  const W = worstOf(machines(0.25, 0.0025), D.w, D.e);
+  desState.cur = W;
+  const pass = W.c >= D.ov - 1e-9;
+  const floor = P.smax + D.ov;
+  $('d-floor').textContent = `con ranura máxima de ${fmt(P.smax, 0)} mm y superposición de ${fmt(D.ov, 0)} mm, el apoyo por lado no puede bajar de ${fmt(floor, 0)} mm.`;
+  $('d-verdict').innerHTML = `Configuración elegida: dos orugas de <strong>${fmt(D.w, 1)} mm</strong> separadas <strong>${fmt(D.e, 1)} mm</strong> por lado. ` +
+    (pass ? `<span class="pill ok">Cumple</span> en todas las máquinas: el peor apoyo por lado es ${fmt(W.c)} mm.` : `<span class="pill bad">No cumple</span>: en la peor máquina un lado apoya solo ${fmt(Math.max(0, W.c))} mm.`);
+  const B = desState.best;
+  $('d-best').innerHTML = B ? `${fmt(B.w, 0)} + ${fmt(B.e, 0)} + ${fmt(B.w, 0)} <small>mm</small>` : (desState.done ? 'ninguna' : '…');
+  $('d-best-note').textContent = B ? `oruga ${fmt(B.w, 0)} mm, separación ${fmt(B.e, 0)} mm: apoyo por lado ${fmt(B.f, 0)} mm, peor apoyo ${fmt(B.c)} mm. Ancho exterior ${fmt(P.Gm + 2 * B.f, 0)} mm con el módulo de ${fmt(P.Gm, 0)}.` : (desState.done ? `ninguna combinación con oruga hasta 60 mm y separación hasta ${fmt(D.X, 0)} mm cumple` : 'calculando');
+  const Nw = desState.narrow;
+  $('d-narrow').innerHTML = Nw ? `${fmt(Nw.w, 0)} + ${fmt(Nw.e, 0)} + ${fmt(Nw.w, 0)} <small>mm</small>` : (desState.done ? 'ninguna' : '…');
+  $('d-narrow-note').textContent = Nw ? `oruga ${fmt(Nw.w, 0)} mm con separación ${fmt(Nw.e, 0)} mm: apoyo por lado ${fmt(Nw.f, 0)} mm, peor apoyo ${fmt(Nw.c)} mm. Con orugas más angostas no hay separación fija que sirva.` : '';
+  $('d-worst').innerHTML = `${fmt(Math.max(0, W.c))} <small>mm</small>`;
+  $('d-worst-note').textContent = `peor máquina: ranura ${fmt(W.s)} mm, ranura/paso ${fmt(W.r * 100)} %`;
+  $('d-foot').innerHTML = `${fmt(foot)} <small>mm</small>`;
+  $('d-outer').innerHTML = `${fmt(P.Gm + 2 * foot)} <small>mm</small>`;
+  const F = desForW(D);
+  $('d-efix').innerHTML = F.fixed.length ? F.fixed.map(([a, b]) => a === b ? fmt(a) : `${fmt(a)} – ${fmt(b)}`).join(' · ') + ' <small>mm</small>' : 'ninguna';
+  $('d-ereg').innerHTML = F.reg ? (F.reg[1] - F.reg[0] < 0.01 ? `fija en ${fmt(F.reg[0])} <small>mm</small>` : `${fmt(F.reg[0])} – ${fmt(F.reg[1])} <small>mm</small>`) : 'no alcanza';
+  renderDesMap(); renderDesDraw();
+}
+function renderDesMap() {
+  const svg = $('d-map'); svg.innerHTML = '';
+  const D = DP(), DE = desState.DE; if (!DE) return;
+  const L = 70, R = 830, T = 20, B = 400;
+  const x = lin(DW[0] - .5, DW[DW.length - 1] + .5, L, R), y = lin(DE[0] - .5, DE[DE.length - 1] + .5, B, T);
+  const cw = (R - L) / DW.length, ch = (B - T) / DE.length, g = el('g', {}, svg);
+  DW.forEach((w, i) => DE.forEach((e, j) => {
+    const v = desState.worst[i * DE.length + j]; if (isNaN(v)) return;
+    const ok = v >= D.ov;
+    el('rect', { x: x(w) - cw / 2, y: y(e) - ch / 2, width: cw + .5, height: ch + .5, fill: ok ? 'var(--ok)' : 'var(--muted)', 'fill-opacity': ok ? .35 + .5 * Math.min(1, (v - D.ov) / D.ov) : .05 + .3 * Math.max(0, v) / D.ov }, g);
+  }));
+  // piso: 2w + e = s_max + ov
+  const fl = P.smax + D.ov, clip = el('clipPath', { id: 'dclip' }, svg); el('rect', { x: L, y: T, width: R - L, height: B - T }, clip);
+  el('line', { x1: x(DW[0]), y1: y(fl - 2 * DW[0]), x2: x(DW[DW.length - 1]), y2: y(fl - 2 * DW[DW.length - 1]), stroke: 'var(--ink)', 'stroke-dasharray': '6 4', 'clip-path': 'url(#dclip)' }, svg);
+  const wl = Math.min(DW[DW.length - 1] - 4, Math.max(DW[0] + 2, (fl - DE[DE.length - 1] * 0.7) / 2));
+  txt(svg, x(wl) + 6, y(fl - 2 * wl) - 6, `apoyo por lado = ${fmt(fl, 0)} (piso)`, { 'font-size': 11 });
+  if (desState.best) { const b = desState.best; el('path', { d: `M${x(b.w)},${y(b.e) - 8}l2.4,5 5.4,.6 -4,3.7 1.1,5.3 -4.9,-2.7 -4.9,2.7 1.1,-5.3 -4,-3.7 5.4,-.6z`, fill: 'var(--k2)', stroke: 'var(--panel)' }, svg); }
+  el('circle', { cx: x(D.w), cy: y(D.e), r: 6, fill: 'none', stroke: 'var(--panel)', 'stroke-width': 4 }, svg);
+  el('circle', { cx: x(D.w), cy: y(D.e), r: 6, fill: 'none', stroke: 'var(--ink)', 'stroke-width': 2 }, svg);
+  for (const w of DW) if (w % 5 === 0) txt(svg, x(w), B + 18, fmt(w, 0), { 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--muted)' });
+  for (const v of niceTicks(0, DE[DE.length - 1], 8)) txt(svg, L - 8, y(v) + 4, fmt(v, 0), { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--muted)' });
+  txt(svg, (L + R) / 2, B + 38, 'ancho de cada oruga [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)' });
+  txt(svg, 16, (T + B) / 2, 'separación entre orugas e [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)', transform: `rotate(-90 16 ${(T + B) / 2})` });
+  txt(svg, R + 8, T + 12, '★ más angosta', { 'font-size': 10.5, fill: 'var(--k2)' });
+  txt(svg, R + 8, T + 28, '○ elegida', { 'font-size': 10.5 });
+  const hit = el('rect', { x: L, y: T, width: R - L, height: B - T, fill: 'transparent', style: 'cursor:crosshair' }, svg);
+  hit.addEventListener('click', ev => {
+    const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+    const loc = pt.matrixTransform(svg.getScreenCTM().inverse());
+    $('d-w').value = Math.round(lin(L, R, DW[0] - .5, DW[DW.length - 1] + .5)(loc.x)); $('d-e').value = Math.max(0, Math.round(lin(B, T, DE[0] - .5, DE[DE.length - 1] + .5)(loc.y)));
+    renderDes();
+  });
+}
+function sideStrips(c, D, sg) {
+  const g0 = P.Gm / 2;
+  const a = [[g0, g0 + D.w], [g0 + D.w + D.e, g0 + 2 * D.w + D.e]];
+  return a.map(([u, v]) => sg > 0 ? [c + u, c + v] : [c - v, c - u]);
+}
+function contactAt(strips, s, p, t) { return strips.reduce((acc, [a, b]) => acc + Fp(b - s / 2, p, t) - Fp(a - s / 2, p, t), 0); }
+function renderDesDraw() {
+  const D = DP(), s = +$('d-s').value, r = +$('d-r').value / 100, p = s / r, t = p - s, c = +$('d-u').value / 100 * p;
+  const svg = $('d-draw'); svg.innerHTML = '';
+  const half = P.Gm / 2 + 2 * D.w + D.e, X = half + p * 0.8;
+  const x = lin(-X, X, 20, 940), mm = 920 / (2 * X), y0 = 130;
+  el('rect', { x: 20, y: y0, width: 920, height: 70, fill: 'var(--steel)' }, svg);
+  const jMax = Math.ceil(X / p) + 2;
+  for (let j = -jMax; j <= jMax; j++) {
+    const a = x(Math.max(j * p - s / 2, -X)), b = x(Math.min(j * p + s / 2, X)); if (b <= a) continue;
+    el('rect', { x: a, y: y0, width: b - a, height: 60, fill: 'var(--bg)' }, svg);
+    const bw = (b - a) * .7; el('rect', { x: (a + b) / 2 - bw / 2, y: y0 + 16, width: bw, height: 38, rx: 2, fill: 'var(--copper)' }, svg);
+  }
+  for (let j = -jMax; j <= jMax; j++) { const a0 = j * p + s / 2; const a = x(Math.max(a0, -X)), b = x(Math.min(a0 + t, X)); if (b > a) el('rect', { x: a, y: y0 - 3, width: b - a, height: 3, fill: 'var(--steel-top)' }, svg); }
+  const res = [];
+  for (const sg of [-1, 1]) {
+    const st = sideStrips(c, D, sg), cc = contactAt(st, s, p, t); res.push(cc);
+    for (const [a, b] of st) {
+      el('rect', { x: x(a), y: y0 - 21, width: (b - a) * mm, height: 18, rx: 4, fill: 'var(--k1)' }, svg);
+      // tramos apoyados
+      for (let j = -jMax; j <= jMax; j++) { const t0 = Math.max(a, j * p + s / 2), t1 = Math.min(b, j * p + s / 2 + t); if (t1 > t0) el('rect', { x: x(t0), y: y0 - 4, width: (t1 - t0) * mm, height: 4, fill: 'var(--ok)' }, svg); }
+    }
+    const xm = x(sg * (P.Gm / 2 + D.w + D.e / 2) + c);
+    txt(svg, xm, y0 - 34, `apoyo ${fmt(cc)} mm`, { 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 500, fill: cc >= D.ov - 1e-9 ? 'var(--ok)' : 'var(--warn)' });
+  }
+  el('rect', { x: x(c - P.Gm / 2), y: y0 - 60, width: P.Gm * mm, height: 22, fill: 'var(--accent-soft)', stroke: 'var(--accent)', 'stroke-dasharray': '5 3' }, svg);
+  txt(svg, x(c), y0 - 45, 'módulo', { 'text-anchor': 'middle', 'font-size': 10.5, fill: 'var(--accent)' });
+  el('line', { x1: x(c), x2: x(c), y1: 20, y2: y0 + 70, stroke: 'var(--accent)', 'stroke-dasharray': '3 3' }, svg);
+  el('line', { x1: x(0), x2: x(0), y1: y0 + 60, y2: y0 + 80, stroke: 'var(--muted)' }, svg);
+  txt(svg, x(0) + 4, y0 + 92, `eje de ranura · robot corrido ${fmt(c)} mm (paso ${fmt(p)} mm)`, { 'font-size': 11, fill: 'var(--muted)' });
+  svg.setAttribute('viewBox', `0 0 960 ${y0 + 100}`);
+  // curva de apoyo a lo largo del paso
+  const cv = $('d-curve'); cv.innerHTML = '';
+  const L = 62, R = 940, T = 16, B = 210, N = 400;
+  const us = grid(0, p, p / N), cL = us.map(u => contactAt(sideStrips(u, D, -1), s, p, t)), cR = us.map(u => contactAt(sideStrips(u, D, 1), s, p, t));
+  const ymax = Math.max(D.ov * 1.5, ...cL, ...cR) * 1.1;
+  const xx = lin(0, p, L, R), yy = lin(0, ymax, B, T);
+  for (const v of niceTicks(0, ymax, 5)) { el('line', { x1: L, x2: R, y1: yy(v), y2: yy(v), stroke: 'var(--line)' }, cv); txt(cv, L - 8, yy(v) + 4, fmt(v, 0), { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--muted)' }); }
+  for (const v of niceTicks(0, p, 10)) txt(cv, xx(v), B + 18, fmt(v, 0), { 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--muted)' });
+  el('rect', { x: L, y: yy(D.ov), width: R - L, height: B - yy(D.ov), fill: 'var(--warn)', 'fill-opacity': .07 }, cv);
+  el('line', { x1: L, x2: R, y1: yy(D.ov), y2: yy(D.ov), stroke: 'var(--warn)', 'stroke-dasharray': '6 4' }, cv);
+  txt(cv, R - 4, yy(D.ov) + 15, `superposición mínima ${fmt(D.ov, 0)}`, { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--warn)' });
+  el('polyline', { points: us.map((u, i) => `${xx(u)},${yy(cL[i])}`).join(' '), fill: 'none', stroke: 'var(--k1)', 'stroke-width': 2.2 }, cv);
+  el('polyline', { points: us.map((u, i) => `${xx(u)},${yy(cR[i])}`).join(' '), fill: 'none', stroke: 'var(--k2)', 'stroke-width': 2.2, 'stroke-dasharray': '7 3' }, cv);
+  txt(cv, L + 6, T + 12, 'lado izquierdo', { 'font-size': 11, fill: 'var(--k1)' });
+  txt(cv, L + 130, T + 12, 'lado derecho', { 'font-size': 11, fill: 'var(--k2)' });
+  el('line', { x1: xx(c), x2: xx(c), y1: T, y2: B, stroke: 'var(--ink)', 'stroke-width': 1.5 }, cv);
+  el('line', { x1: L, x2: R, y1: B, y2: B, stroke: 'var(--muted)' }, cv);
+  txt(cv, (L + R) / 2, B + 38, 'desplazamiento lateral del robot respecto del eje de ranura [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)' });
+  txt(cv, 14, (T + B) / 2, 'apoyo por lado [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)', transform: `rotate(-90 14 ${(T + B) / 2})` });
+}
+
+// ================= Pestañas =================
+let tab = 'reg';
+function setTab(name, push) {
+  tab = name;
+  for (const b of document.querySelectorAll('.tabs button')) b.setAttribute('aria-selected', b.dataset.tab === name);
+  for (const id of ['reg', 'mod', 'des']) $('tab-' + id).hidden = id !== name;
+  if (push) { try { history.replaceState(null, '', '#' + name); } catch (e) {} }
+  update(false);
+}
+document.querySelector('.tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setTab(b.dataset.tab, true); });
+
 function update(onlyMachine) {
   P = params();
   syncOutputs();
-  if (!onlyMachine || !S) S = sweep(P);
-  renderResult(); renderStator(); renderLine(); renderMap(); renderSlice(); renderClosed();
-  clearTimeout(update.t); if (!onlyMachine) update.t = setTimeout(() => { renderLevers(); renderRaise(); renderSens(); }, 60);
+  if (!onlyMachine || !S) S = regulation(P);
+  clearTimeout(update.t);
+  if (tab === 'reg') {
+    renderResult(); renderStator(); renderLine(); renderMap(); renderSlice(); renderClosed();
+    if (!onlyMachine) update.t = setTimeout(() => { renderLevers(); renderRaise(); renderSens(); }, 60);
+  } else if (tab === 'mod') modCompute();
+  else desCompute();
 }
 
 for (const id of ['gmin', 'hol', 'w', 'm', 'smin', 'smax', 'rmin', 'rmax']) $(id).addEventListener('input', () => update(false));
@@ -736,9 +1194,15 @@ $('copy').addEventListener('click', () => {
   const done = () => { btn.textContent = 'Copiado'; setTimeout(() => btn.textContent = 'Copiar', 1500); };
   try { navigator.clipboard.writeText(s).then(done, () => { getSelection().selectAllChildren($('specline')); }); } catch (e) { getSelection().selectAllChildren($('specline')); }
 });
-const rerenderTheme = () => { if (S) { renderMap(); } };
+for (const id of ['d-ov', 'd-x']) $(id).addEventListener('input', () => desCompute());
+for (const id of ['d-w', 'd-e']) $(id).addEventListener('input', () => renderDes());
+for (const id of ['d-s', 'd-r', 'd-u']) $(id).addEventListener('input', () => { renderDes(); });
+$('d-goworst').addEventListener('click', () => { const W = desState.cur; if (!W || !isFinite(W.c)) return; $('d-s').value = Math.round(W.s * 2) / 2; $('d-r').value = Math.round(W.r * 200) / 2; const s = +$('d-s').value, r = +$('d-r').value / 100, p = s / r; const q = minSide(s, r, +$('d-w').value, +$('d-e').value); const c = ((q.u + s / 2 - P.Gm / 2) % p + p) % p; $('d-u').value = Math.round(c / p * 200) / 2; renderDes(); });
+const rerenderTheme = () => { if (!S) return; if (tab === 'reg') renderMap(); else if (tab === 'mod') renderModMap(); };
 try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerenderTheme); } catch (e) {}
 new MutationObserver(rerenderTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-update(false);
+window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (['reg', 'mod', 'des'].includes(h) && h !== tab) setTab(h, false); });
+const h0 = (location.hash || '').slice(1);
+if (['reg', 'mod', 'des'].includes(h0)) setTab(h0, false); else update(false);
 })();
 </script>
