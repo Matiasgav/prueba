@@ -76,15 +76,25 @@ main { display: grid; gap: 20px; min-width: 0; }
 .result { display: grid; gap: 14px; }
 .verdict { font-size: 17px; line-height: 1.45; margin: 0; max-width: 80ch; }
 .verdict strong { font-family: var(--f-mono); font-weight: 500; }
-.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
-.tile { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 2px; }
-.tile.main { border-color: var(--accent); background: var(--accent-soft); }
-.tile .lbl { font-size: 12.5px; color: var(--muted); }
-.tile .val { font-family: var(--f-mono); font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.tile .val small { font-size: 13px; color: var(--muted); }
-.tile .note { font-size: 12px; color: var(--muted); }
 .crit { font-size: 13.5px; color: var(--muted); margin: 0; max-width: 90ch; }
 .warnbox { border: 1px solid var(--warn); color: var(--warn); border-radius: 8px; padding: 8px 12px; font-size: 13.5px; }
+.spec { gap: 14px; }
+.spec-body { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: center; }
+@media (min-width: 900px) { .spec-body { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); } }
+.fig.spec-fig svg { min-width: 0; }
+#levers td:first-child { font-family: var(--f-body); }
+.spec-list { margin: 0; display: grid; gap: 0; }
+.spec-list .row { display: grid; grid-template-columns: 1fr auto; column-gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.spec-list dt { font-size: 14px; font-weight: 500; }
+.spec-list dd { margin: 0; font-family: var(--f-mono); font-size: 16px; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.spec-list .note { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
+.spec-list .row.main { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 8px; padding: 10px 12px; margin-bottom: 6px; }
+.spec-list .row.main dd { font-size: 28px; font-weight: 500; color: var(--accent); }
+.spec-list .row.main dt { align-self: center; font-weight: 600; }
+.specline { display: flex; gap: 10px; align-items: flex-start; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.specline code { font-family: var(--f-mono); font-size: 12.5px; line-height: 1.55; flex: 1; min-width: 0; white-space: normal; }
+.specline button { font: 500 12px var(--f-mono); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+td.up { color: var(--warn); } td.down { color: var(--ok); }
 .fig { overflow-x: auto; }
 .fig svg { display: block; width: 100%; min-width: 640px; height: auto; }
 .fig svg text { font-family: var(--f-mono); fill: var(--ink); }
@@ -117,13 +127,19 @@ tr.cur td { color: var(--accent); font-weight: 500; }
   <div class="layout">
     <aside class="panel" aria-label="Parámetros">
       <div class="group">
-        <div class="group-title">Robot</div>
+        <div class="group-title">Datos del robot</div>
         <div class="ctl">
-          <div class="ctl-head"><label for="gmin">Mínimo libre para el módulo</label><output id="gmin-o"></output></div>
+          <div class="ctl-head"><label for="gmin">Ancho del módulo central</label><output id="gmin-o"></output></div>
           <input id="gmin" type="range" min="30" max="100" step="1" value="70">
           <div class="presets" id="gmin-presets">
             <button type="button" data-v="50">50</button><button type="button" data-v="55">55</button><button type="button" data-v="60">60</button><button type="button" data-v="70">70</button>
           </div>
+          <p class="hint">Luz mínima entre orugas. Es un límite duro: las orugas nunca pueden cerrarse más que esto.</p>
+        </div>
+        <div class="ctl">
+          <div class="ctl-head"><label for="hol">Holgura extra en tope cerrado</label><output id="hol-o"></output></div>
+          <input id="hol" type="range" min="0" max="60" step="1" value="0">
+          <p class="hint">Permite que la separación mínima sea mayor que el módulo, para probar si así baja la carrera.</p>
         </div>
         <div class="ctl">
           <div class="ctl-head"><label for="w">Ancho de cada oruga</label><output id="w-o"></output></div>
@@ -132,18 +148,18 @@ tr.cur td { color: var(--accent); font-weight: 500; }
         <div class="ctl">
           <div class="ctl-head"><label for="m">Margen de apoyo por borde</label><output id="m-o"></output></div>
           <input id="m" type="range" min="0" max="5" step="0.5" value="0">
-          <p class="hint">Distancia que la oruga debe quedar adentro del borde del diente, por tolerancia de guiado. Con 0 la oruga puede llegar justo al borde.</p>
+          <p class="hint">Cuánto tiene que quedar la oruga adentro del borde del diente, por tolerancia de guiado. Con 0 puede llegar justo al borde.</p>
         </div>
       </div>
       <div class="group">
-        <div class="group-title">Familia de máquinas</div>
+        <div class="group-title">Máquinas que tiene que cubrir</div>
         <div class="ctl">
           <div class="ctl-head"><label for="smin">Ranura mínima</label><output id="smin-o"></output></div>
           <input id="smin" type="range" min="10" max="30" step="1" value="18">
         </div>
         <div class="ctl">
           <div class="ctl-head"><label for="smax">Ranura máxima</label><output id="smax-o"></output></div>
-          <input id="smax" type="range" min="25" max="60" step="1" value="40">
+          <input id="smax" type="range" min="25" max="60" step="1" value="50">
           <div class="presets" id="smax-presets">
             <button type="button" data-v="40">40 habitual</button><button type="button" data-v="50">50 extremo</button>
           </div>
@@ -157,20 +173,35 @@ tr.cur td { color: var(--accent); font-weight: 500; }
           <input id="rmax" type="range" min="20" max="50" step="1" value="40">
         </div>
       </div>
-      <p class="hint">Estrategia: en cada máquina las orugas se abren lo mínimo posible (el primer diente que admite el módulo). El rango de diseño va de la menor a la mayor de esas separaciones.</p>
+      <p class="hint">En cada máquina las orugas se abren lo mínimo posible: el primer diente que respeta el tope cerrado. La regulación va de la menor a la mayor de esas aperturas.</p>
     </aside>
 
     <main>
-      <section class="card result" aria-live="polite">
+      <section class="card spec" aria-live="polite">
+        <div class="eyebrow">Regulación que tiene que tener el robot</div>
         <p class="verdict" id="verdict"></p>
-        <div class="tiles">
-          <div class="tile main"><span class="lbl">Separación interior (luz entre orugas)</span><span class="val" id="t-range"></span><span class="note">lo que ve el módulo</span></div>
-          <div class="tile"><span class="lbl">Carrera del mecanismo</span><span class="val" id="t-stroke"></span><span class="note">total, las dos orugas</span></div>
-          <div class="tile"><span class="lbl">Distancia entre ejes de oruga</span><span class="val" id="t-axis"></span><span class="note">separación interior + 1 oruga</span></div>
-          <div class="tile"><span class="lbl">Ancho exterior del tren</span><span class="val" id="t-outer"></span><span class="note">separación interior + 2 orugas</span></div>
+        <div class="spec-body">
+          <div class="fig spec-fig"><svg id="specfig" viewBox="0 0 560 300" role="img" aria-label="Robot en tope cerrado y en tope abierto"></svg></div>
+          <dl class="spec-list">
+            <div class="row main"><dt>Carrera por lado</dt><dd id="t-side"></dd><span class="note">cuánto se desplaza cada oruga hacia afuera</span></div>
+            <div class="row"><dt>Tope cerrado</dt><dd id="t-closed"></dd><span class="note">luz mínima entre orugas</span></div>
+            <div class="row"><dt>Tope abierto</dt><dd id="t-open"></dd><span class="note">luz máxima entre orugas</span></div>
+            <div class="row"><dt>Carrera total</dt><dd id="t-stroke"></dd><span class="note">suma de los dos lados</span></div>
+            <div class="row"><dt>Entre ejes de oruga</dt><dd id="t-axis"></dd><span class="note">cerrado – abierto</span></div>
+            <div class="row"><dt>Ancho exterior</dt><dd id="t-outer"></dd><span class="note">cerrado – abierto</span></div>
+          </dl>
         </div>
+        <div class="specline"><code id="specline"></code><button type="button" id="copy">Copiar</button></div>
         <p class="crit" id="crit"></p>
         <div class="warnbox" id="warn" hidden></div>
+      </section>
+
+      <section class="card">
+        <h2>Qué reduce la carrera</h2>
+        <p class="sub">Carrera por lado si se cambia un solo dato respecto de la configuración actual. Sirve para ver qué parámetro conviene negociar.</p>
+        <div class="tablewrap"><table id="levers"></table></div>
+        <p class="sub">Tope cerrado por encima del módulo: cómo cambia la carrera por lado si se deja más luz de la necesaria.</p>
+        <div class="fig"><svg id="raise" viewBox="0 0 960 300" role="img" aria-label="Carrera por lado según el tope cerrado"></svg></div>
       </section>
 
       <section class="card">
@@ -192,7 +223,7 @@ tr.cur td { color: var(--accent); font-weight: 500; }
           <span><i class="sw" style="background:var(--k1)"></i>orugas en el 1.er diente</span>
           <span><i class="sw" style="background:var(--k2)"></i>2.º diente</span>
           <span><i class="sw" style="background:var(--k3)"></i>3.er diente</span>
-          <span><i class="sw" style="background:var(--accent-soft);border:1px solid var(--accent)"></i>rango de diseño</span>
+          <span><i class="sw" style="background:var(--accent-soft);border:1px solid var(--accent)"></i>regulación del robot</span>
         </div>
       </section>
 
@@ -209,9 +240,9 @@ tr.cur td { color: var(--accent); font-weight: 500; }
       </section>
 
       <section class="card">
-        <h2>Efecto del mínimo del módulo</h2>
-        <p class="sub">Rango de separación interior necesario para cubrir toda la familia de máquinas, según el espacio que reserve el módulo.</p>
-        <div class="fig"><svg id="sens" viewBox="0 0 960 360" role="img" aria-label="Rango de separación en función del mínimo del módulo"></svg></div>
+        <h2>Efecto del ancho del módulo</h2>
+        <p class="sub">Regulación necesaria para cubrir todas las máquinas según el ancho del módulo central, con el tope cerrado igual al módulo.</p>
+        <div class="fig"><svg id="sens" viewBox="0 0 960 360" role="img" aria-label="Regulación en función del ancho del módulo"></svg></div>
         <div class="tablewrap"><table id="tbl"></table></div>
       </section>
 
@@ -219,8 +250,10 @@ tr.cur td { color: var(--accent); font-weight: 500; }
         <h2>Modelo</h2>
         <p>Se toma el eje de la ranura como origen. Con ranura <i>s</i>, proporción <i>r</i> = ranura/paso, paso <i>p</i> = <i>s</i>/<i>r</i> y diente <i>t</i> = <i>p</i> − <i>s</i>, el diente número <i>k</i> a cada lado empieza en <i>s</i>/2 + (<i>k</i>−1)·<i>p</i>. Con orugas de ancho <i>W</i>, margen <i>m</i> y separación interior <i>g</i> (entre bordes internos), las dos orugas apoyan enteras en el diente <i>k</i> si:</p>
         <div class="eq">s + 2(k−1)·p + 2m  ≤  g  ≤  s + 2(k−1)·p + 2t − 2W − 2m</div>
-        <p>Cada máquina usa la menor <i>g</i> que cumple eso y además <i>g</i> ≥ mínimo del módulo. El máximo del rango lo fija la máquina en que las orugas apenas no caben en el primer diente y saltan al segundo. Con <i>m</i> = 0 queda una expresión cerrada:</p>
-        <div class="eq">g_max = (G + 2W) · (2 + r_max) / (2 − r_max)        g_min = G</div>
+        <p>Cada máquina usa la menor <i>g</i> que cumple eso y además <i>g</i> ≥ <i>G</i>, el tope cerrado (ancho del módulo más la holgura). El tope abierto lo fija la máquina en que las orugas apenas no caben en el primer diente y saltan al segundo. Con <i>m</i> = 0 queda una expresión cerrada:</p>
+        <div class="eq">tope abierto  = (G + 2W) · (2 + r_max) / (2 − r_max)
+carrera/lado  = (tope abierto − G) / 2
+con r_max = 0,40:  carrera/lado = G/4 + 1,5·W</div>
         <p id="closed"></p>
         <ul>
           <li>Barrido: ranura cada 0,05 mm y proporción cada 0,1 %, más los puntos exactos de transición entre dientes.</li>
@@ -256,7 +289,8 @@ function params() {
   let smin = +$('smin').value, smax = +$('smax').value, rmin = +$('rmin').value / 100, rmax = +$('rmax').value / 100;
   if (smin > smax) [smin, smax] = [smax, smin];
   if (rmin > rmax) [rmin, rmax] = [rmax, rmin];
-  return { G: +$('gmin').value, W: +$('w').value, m: +$('m').value, smin, smax, rmin, rmax };
+  const Gm = +$('gmin').value, H = +$('hol').value;
+  return { Gm, H, G: Gm + H, W: +$('w').value, m: +$('m').value, smin, smax, rmin, rmax };
 }
 
 // Bandas de apoyo de una máquina: separación interior g válida con las orugas en el diente k.
@@ -303,14 +337,15 @@ let S = null; // último resultado
 let P = null;
 
 function syncOutputs() {
-  $('gmin-o').textContent = fmt(P.G, 0) + ' mm';
+  $('gmin-o').textContent = fmt(P.Gm, 0) + ' mm';
+  $('hol-o').textContent = P.H ? `+${fmt(P.H, 0)} mm → tope ${fmt(P.G, 0)}` : '0 mm';
   $('w-o').textContent = fmt(P.W, 1) + ' mm';
   $('m-o').textContent = fmt(P.m, 1) + ' mm';
   $('smin-o').textContent = fmt(+$('smin').value, 0) + ' mm';
   $('smax-o').textContent = fmt(+$('smax').value, 0) + ' mm';
   $('rmin-o').textContent = fmt(+$('rmin').value, 0) + ' %';
   $('rmax-o').textContent = fmt(+$('rmax').value, 0) + ' %';
-  for (const b of $('gmin-presets').children) b.setAttribute('aria-pressed', +b.dataset.v === P.G);
+  for (const b of $('gmin-presets').children) b.setAttribute('aria-pressed', +b.dataset.v === P.Gm);
   for (const b of $('smax-presets').children) b.setAttribute('aria-pressed', +b.dataset.v === +$('smax').value);
   const ss = $('ss'), sr = $('sr');
   ss.min = P.smin; ss.max = P.smax; sr.min = P.rmin * 100; sr.max = P.rmax * 100;
@@ -323,22 +358,108 @@ function syncOutputs() {
 function renderResult() {
   const { lo, hi, bad } = S;
   const warn = $('warn');
+  const ids = ['t-side', 't-closed', 't-open', 't-stroke', 't-axis', 't-outer'];
   if (!isFinite(lo.g)) {
-    $('verdict').textContent = 'Con estos parámetros ninguna máquina admite las orugas: el diente es más angosto que la oruga.';
-    ['t-range', 't-stroke', 't-axis', 't-outer'].forEach(id => $(id).textContent = '—');
-    $('crit').textContent = ''; warn.hidden = true; return;
+    $('verdict').textContent = 'Con estos datos ninguna máquina admite las orugas: el diente es más angosto que la oruga.';
+    ids.forEach(id => $(id).textContent = '—'); $('specline').textContent = '';
+    $('crit').textContent = ''; warn.hidden = true; $('specfig').innerHTML = ''; return;
   }
-  const stroke = hi.g - lo.g;
-  $('verdict').innerHTML = `Para cubrir todas las máquinas, las orugas tienen que poder abrirse entre <strong>${fmt(lo.g)}</strong> y <strong>${fmt(hi.g)} mm</strong> de separación interior: una carrera de <strong>${fmt(stroke)} mm</strong>, o ${fmt(stroke / 2)} mm por oruga si se mueven simétricas.`;
-  $('t-range').innerHTML = `${fmt(lo.g)} – ${fmt(hi.g)} <small>mm</small>`;
-  $('t-stroke').innerHTML = `${fmt(stroke)} <small>mm</small>`;
-  $('t-axis').innerHTML = `${fmt(lo.g + P.W)} – ${fmt(hi.g + P.W)} <small>mm</small>`;
-  $('t-outer').innerHTML = `${fmt(lo.g + 2 * P.W)} – ${fmt(hi.g + 2 * P.W)} <small>mm</small>`;
+  const stroke = hi.g - lo.g, mmS = ' <small>mm</small>';
+  const sRange = P.smin === P.smax ? `${fmt(P.smin, 0)} mm` : `${fmt(P.smin, 0)} a ${fmt(P.smax, 0)} mm`;
+  $('verdict').innerHTML = `Para cubrir ranuras de ${sRange} con ranura/paso entre ${fmt(P.rmin * 100, 0)} y ${fmt(P.rmax * 100, 0)} %, cada oruga tiene que regular <strong>${fmt(stroke / 2)} mm</strong>: la luz entre orugas va de <strong>${fmt(lo.g)}</strong> (tope cerrado) a <strong>${fmt(hi.g)} mm</strong> (tope abierto).`;
+  $('t-side').innerHTML = fmt(stroke / 2) + mmS;
+  $('t-closed').innerHTML = fmt(lo.g) + mmS;
+  $('t-open').innerHTML = fmt(hi.g) + mmS;
+  $('t-stroke').innerHTML = fmt(stroke) + mmS;
+  $('t-axis').innerHTML = `${fmt(lo.g + P.W)} – ${fmt(hi.g + P.W)}` + mmS;
+  $('t-outer').innerHTML = `${fmt(lo.g + 2 * P.W)} – ${fmt(hi.g + 2 * P.W)}` + mmS;
+  $('specline').textContent = `Regulación de orugas: luz interior ${fmt(lo.g)} a ${fmt(hi.g)} mm; carrera ${fmt(stroke / 2)} mm por lado (${fmt(stroke)} mm total); entre ejes ${fmt(lo.g + P.W)} a ${fmt(hi.g + P.W)} mm; ancho exterior ${fmt(lo.g + 2 * P.W)} a ${fmt(hi.g + 2 * P.W)} mm. Datos: módulo ${fmt(P.Gm, 0)} mm${P.H ? ` + holgura ${fmt(P.H, 0)} mm` : ''}, orugas ${fmt(P.W, 1)} mm, margen de apoyo ${fmt(P.m, 1)} mm; ranuras ${sRange}, ranura/paso ${fmt(P.rmin * 100, 0)} a ${fmt(P.rmax * 100, 0)} %.`;
   const p = hi.s / hi.r, t = p - hi.s;
-  $('crit').innerHTML = `Máquina que fija el máximo: ranura ${fmt(hi.s)} mm, ranura/paso ${fmt(hi.r * 100)} % (paso ${fmt(p)} mm, diente ${fmt(t)} mm). Con el módulo de ${fmt(P.G, 0)} mm las orugas no caben en el 1.er diente y pasan al ${ord(hi.k)}. <button type="button" id="goto-crit" class="linkbtn" style="font:inherit;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline">Ver esta máquina</button>`;
-  $('goto-crit').onclick = () => { $('ss').value = Math.round(hi.s * 2) / 2; $('sr').value = Math.round(hi.r * 200) / 2; update(); $('stator').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
-  if (bad > 0) { warn.hidden = false; warn.textContent = `Hay máquinas en el barrido con diente más angosto que la oruga más los márgenes: el robot no puede apoyar en ellas y quedaron fuera del rango.`; }
+  $('crit').innerHTML = `El tope abierto lo fija la máquina de ranura ${fmt(hi.s)} mm y ranura/paso ${fmt(hi.r * 100)} % (paso ${fmt(p)} mm, diente ${fmt(t)} mm): con el tope cerrado en ${fmt(P.G, 0)} mm las orugas no entran en el 1.er diente y tienen que pasar al ${ord(hi.k)}. <button type="button" id="goto-crit" style="font:inherit;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline">Ver esta máquina</button>`;
+  $('goto-crit').onclick = () => { $('ss').value = Math.round(hi.s * 2) / 2; $('sr').value = Math.round(hi.r * 200) / 2; update(true); $('stator').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+  if (bad > 0) { warn.hidden = false; warn.textContent = `Hay máquinas con el diente más angosto que la oruga más los márgenes: el robot no puede apoyar en ellas y quedaron fuera de la regulación.`; }
   else warn.hidden = true;
+  renderSpecFig();
+}
+
+// Robot visto de frente en los dos topes, a la misma escala.
+function renderSpecFig() {
+  const svg = $('specfig'); svg.innerHTML = '';
+  const lo = S.lo.g, hi = S.hi.g, W = P.W, side = (hi - lo) / 2;
+  const half = hi / 2 + W, x = lin(-half, half, 40, 520), mm = 480 / (2 * half);
+  const draw = (g, yT, label) => {
+    txt(svg, 40, yT - 30, label, { 'font-size': 12, 'font-weight': 500, fill: 'var(--muted)' });
+    el('rect', { x: x(-P.Gm / 2), y: yT, width: P.Gm * mm, height: 34, fill: 'var(--accent-soft)', stroke: 'var(--accent)', 'stroke-dasharray': '5 3' }, svg);
+    txt(svg, x(0), yT + 21, 'módulo', { 'text-anchor': 'middle', 'font-size': 10.5, fill: 'var(--accent)' });
+    for (const sg of [-1, 1]) {
+      const a = sg < 0 ? x(-g / 2 - W) : x(g / 2);
+      el('rect', { x: a, y: yT + 4, width: W * mm, height: 30, rx: 5, fill: 'var(--k1)' }, svg);
+    }
+    el('line', { x1: x(-half), x2: x(half), y1: yT + 36, y2: yT + 36, stroke: 'var(--steel-top)', 'stroke-width': 2 }, svg);
+    for (const v of [-g / 2, g / 2]) el('line', { x1: x(v), x2: x(v), y1: yT - 16, y2: yT + 4, stroke: 'var(--muted)', 'stroke-width': .8 }, svg);
+    dim(svg, x(-g / 2), x(g / 2), yT - 12, `${fmt(g)}`);
+  };
+  draw(lo, 60, 'Tope cerrado');
+  draw(hi, 215, 'Tope abierto');
+  // carrera por lado
+  for (const sg of [-1, 1]) {
+    const a = x(sg * (lo / 2 + W / 2)), b = x(sg * (hi / 2 + W / 2));
+    el('line', { x1: a, x2: a, y1: 98, y2: 216, stroke: 'var(--muted)', 'stroke-dasharray': '3 3', 'stroke-width': .8 }, svg);
+    el('line', { x1: b, x2: b, y1: 140, y2: 218, stroke: 'var(--muted)', 'stroke-dasharray': '3 3', 'stroke-width': .8 }, svg);
+    el('path', { d: `M${a},150L${b},150M${b + (sg > 0 ? -6 : 6)},145L${b},150L${b + (sg > 0 ? -6 : 6)},155`, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2 }, svg);
+    txt(svg, (a + b) / 2, 142, `${fmt(side)}`, { 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 500, fill: 'var(--accent)' });
+  }
+  txt(svg, x(0), 154, 'carrera por lado', { 'text-anchor': 'middle', 'font-size': 10.5, fill: 'var(--muted)' });
+  txt(svg, 520, 294, 'mm · vista de frente, a escala', { 'text-anchor': 'end', 'font-size': 10, fill: 'var(--muted)' });
+}
+
+// Carrera por lado cambiando un solo dato.
+function renderLevers() {
+  const base = (S.hi.g - S.lo.g) / 2;
+  const side = Q => { const q = sweep(Q, 0.1, 0.002); return isFinite(q.lo.g) ? (q.hi.g - q.lo.g) / 2 : NaN; };
+  const cases = [
+    ['Módulo central 5 mm más angosto', { ...P, Gm: P.Gm - 5, G: P.G - 5 }],
+    ['Holgura en tope cerrado +5 mm', { ...P, H: P.H + 5, G: P.G + 5 }],
+    ['Orugas 1 mm más angostas', { ...P, W: P.W - 1 }],
+    ['Orugas 2 mm más angostas', { ...P, W: P.W - 2 }],
+    ['Margen de apoyo +0,5 mm por borde', { ...P, m: P.m + .5 }],
+    [`Ranura/paso máx. ${fmt(P.rmax * 100 - 2, 0)} % en vez de ${fmt(P.rmax * 100, 0)} %`, { ...P, rmax: Math.max(P.rmin, P.rmax - .02) }],
+    [`Ranura máx. ${fmt(Math.max(P.smin, P.smax - 10), 0)} mm en vez de ${fmt(P.smax, 0)} mm`, { ...P, smax: Math.max(P.smin, P.smax - 10) }],
+  ];
+  let h = '<thead><tr><th>Cambio</th><th>Carrera por lado</th><th>Diferencia</th></tr></thead><tbody>';
+  h += `<tr class="cur"><td>Configuración actual</td><td>${fmt(base)} mm</td><td>—</td></tr>`;
+  for (const [lbl, Q] of cases) {
+    const v = side(Q), d = v - base;
+    const cls = Math.abs(d) < 0.05 ? '' : d < 0 ? 'down' : 'up';
+    h += `<tr><td>${lbl}</td><td>${isNaN(v) ? '—' : fmt(v) + ' mm'}</td><td class="${cls}">${isNaN(v) ? '—' : (d > 0 ? '+' : '') + fmt(d)}</td></tr>`;
+  }
+  $('levers').innerHTML = h + '</tbody>';
+}
+
+let raiseCache = { key: '', rows: [] };
+function renderRaise() {
+  const svg = $('raise'); svg.innerHTML = '';
+  const key = JSON.stringify({ ...P, H: 0, G: 0 });
+  if (raiseCache.key !== key) {
+    const rows = [];
+    for (let H = 0; H <= 80; H += 1) { const q = sweep({ ...P, H, G: P.Gm + H }, 0.1, 0.002); if (isFinite(q.lo.g)) rows.push({ H, side: (q.hi.g - q.lo.g) / 2 }); }
+    raiseCache = { key, rows };
+  }
+  const rows = raiseCache.rows; if (!rows.length) return;
+  const L = 62, R = 940, T = 20, B = 250;
+  const ymax = Math.ceil(Math.max(...rows.map(r => r.side)) * 1.15 / 10) * 10;
+  const x = lin(0, 80, L, R), y = lin(0, ymax, B, T);
+  for (const v of niceTicks(0, ymax, 6)) { el('line', { x1: L, x2: R, y1: y(v), y2: y(v), stroke: 'var(--line)' }, svg); txt(svg, L - 8, y(v) + 4, fmt(v, 0), { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--muted)' }); }
+  for (const v of niceTicks(0, 80, 8)) txt(svg, x(v), B + 18, `${fmt(P.Gm + v, 0)}`, { 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--muted)' });
+  el('polyline', { points: rows.map(r => `${x(r.H)},${y(r.side)}`).join(' '), fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2.5 }, svg);
+  const best = rows.reduce((a, b) => b.side < a.side - 1e-6 ? b : a);
+  el('circle', { cx: x(best.H), cy: y(best.side), r: 5, fill: 'var(--ok)' }, svg);
+  txt(svg, x(best.H) + 8, y(best.side) + 18, `mínima: ${fmt(best.side)} mm con tope ${fmt(P.Gm + best.H, 0)}`, { 'font-size': 11.5, fill: 'var(--ok)' });
+  const cur = rows.find(r => r.H === P.H);
+  if (cur && cur !== best) { el('circle', { cx: x(cur.H), cy: y(cur.side), r: 5, fill: 'var(--ink)' }, svg); txt(svg, x(cur.H) + 8, y(cur.side) - 8, `actual: ${fmt(cur.side)}`, { 'font-size': 11.5 }); }
+  el('line', { x1: L, x2: R, y1: B, y2: B, stroke: 'var(--muted)' }, svg);
+  txt(svg, (L + R) / 2, B + 38, 'tope cerrado (luz mínima entre orugas) [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)' });
+  txt(svg, 14, (T + B) / 2, 'carrera por lado [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)', transform: `rotate(-90 14 ${(T + B) / 2})` });
 }
 
 function renderStator() {
@@ -385,8 +506,8 @@ function renderStator() {
     el('rect', { x: x(-halfOuter), y: y0 - 64, width: 2 * halfOuter * mm, height: 26, rx: 4, fill: 'var(--ink)', 'fill-opacity': .82 }, svg);
     txt(svg, x(0), y0 - 47, 'chasis', { 'text-anchor': 'middle', fill: 'var(--panel)', 'font-size': 11 });
     // módulo
-    el('rect', { x: x(-P.G / 2), y: y0 - 36, width: P.G * mm, height: 30, fill: 'var(--accent-soft)', stroke: 'var(--accent)', 'stroke-dasharray': '5 3' }, svg);
-    txt(svg, x(0), y0 - 17, `módulo ${fmt(P.G, 0)}`, { 'text-anchor': 'middle', fill: 'var(--accent)', 'font-size': 11 });
+    el('rect', { x: x(-P.Gm / 2), y: y0 - 36, width: P.Gm * mm, height: 30, fill: 'var(--accent-soft)', stroke: 'var(--accent)', 'stroke-dasharray': '5 3' }, svg);
+    txt(svg, x(0), y0 - 17, `módulo ${fmt(P.Gm, 0)}`, { 'text-anchor': 'middle', fill: 'var(--accent)', 'font-size': 11 });
     // cota g
     const yc = 40;
     for (const v of [-g / 2, g / 2]) el('line', { x1: x(v), x2: x(v), y1: yc - 6, y2: y0 - 64, stroke: 'var(--muted)', 'stroke-width': .8 }, svg);
@@ -423,9 +544,9 @@ function renderLine() {
   const top = Math.max(S.hi.g * 1.35, P.G * 2, 120);
   const x = lin(0, top, 40, 930), yb = 40;
   el('rect', { x: x(S.lo.g), y: yb - 16, width: x(S.hi.g) - x(S.lo.g), height: 32, fill: 'var(--accent-soft)', stroke: 'var(--accent)', 'stroke-width': 1 }, svg);
-  txt(svg, x(S.lo.g), 14, 'rango de diseño', { fill: 'var(--accent)', 'font-size': 11 });
+  txt(svg, x(S.lo.g), 14, 'regulación', { fill: 'var(--accent)', 'font-size': 11 });
   el('rect', { x: x(0), y: yb - 16, width: x(P.G) - x(0), height: 32, fill: 'var(--muted)', 'fill-opacity': .12 }, svg);
-  txt(svg, x(0) + 4, 14, 'invade el módulo', { fill: 'var(--muted)', 'font-size': 11 });
+  txt(svg, x(0) + 4, 14, 'debajo del tope cerrado', { fill: 'var(--muted)', 'font-size': 11 });
   for (const b of bands(s, r, P, top)) {
     const a = Math.max(0, b.lo), c = Math.min(top, b.hi);
     if (c <= a) continue;
@@ -532,8 +653,8 @@ function renderSlice() {
     el('polygon', { points: pts.map(([a, b]) => `${x(a)},${y(b)}`).join(' '), fill: kColor(k), 'fill-opacity': .28, stroke: kColor(k), 'stroke-width': 1 }, cg);
   }
   el('line', { x1: L, x2: R, y1: y(P.G), y2: y(P.G), stroke: 'var(--ink)', 'stroke-dasharray': '6 4' }, svg);
-  txt(svg, R - 4, y(P.G) + 15, `mínimo del módulo ${fmt(P.G, 0)}`, { 'text-anchor': 'end', 'font-size': 11 });
-  txt(svg, L + 6, y(S.hi.g) + 14, `rango de diseño ${fmt(S.lo.g)} – ${fmt(S.hi.g)}`, { 'font-size': 11, fill: 'var(--accent)' });
+  txt(svg, R - 4, y(P.G) + 15, `tope cerrado ${fmt(P.G, 0)}`, { 'text-anchor': 'end', 'font-size': 11 });
+  txt(svg, L + 6, y(S.hi.g) + 14, `regulación ${fmt(S.lo.g)} – ${fmt(S.hi.g)}`, { 'font-size': 11, fill: 'var(--accent)' });
   // separación usada
   const sv = grid(P.smin, P.smax, (P.smax - P.smin) / 500);
   for (let k = 1; k <= 8; k++) { const st = sTrans(k, r, P); if (st > P.smin && st < P.smax) sv.push(st * (1 - 1e-9), st); }
@@ -550,10 +671,10 @@ function renderSlice() {
 
 let sensCache = { key: '', rows: [] };
 function sensRows() {
-  const key = JSON.stringify({ ...P, G: 0 });
+  const key = JSON.stringify({ ...P, G: 0, Gm: 0, H: 0 });
   if (sensCache.key !== key) {
     const rows = [];
-    for (let G = 30; G <= 100; G++) { const q = sweep({ ...P, G }, 0.1, 0.002); rows.push({ G, lo: q.lo.g, hi: q.hi.g }); }
+    for (let G = 30; G <= 100; G++) { const q = sweep({ ...P, G, Gm: G, H: 0 }, 0.1, 0.002); rows.push({ G, lo: q.lo.g, hi: q.hi.g }); }
     sensCache = { key, rows };
   }
   return sensCache.rows;
@@ -573,21 +694,21 @@ function renderSens() {
   el('polyline', { points: rows.map(r => `${x(r.G)},${y(r.lo)}`).join(' '), fill: 'none', stroke: 'var(--accent)', 'stroke-width': 1.5 }, svg);
   txt(svg, x(97), y(rows[rows.length - 4].hi) - 10, 'máximo', { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--accent)' });
   txt(svg, x(97), y(rows[rows.length - 4].lo) + 18, 'mínimo', { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--accent)' });
-  const cur = rows.find(r => r.G === P.G);
+  const cur = rows.find(r => r.G === P.Gm);
   if (cur) {
     el('line', { x1: x(cur.G), x2: x(cur.G), y1: y(cur.hi), y2: y(cur.lo), stroke: 'var(--ink)', 'stroke-width': 2 }, svg);
     for (const v of [cur.hi, cur.lo]) el('circle', { cx: x(cur.G), cy: y(v), r: 4, fill: 'var(--ink)' }, svg);
-    txt(svg, x(cur.G) + 8, (y(cur.hi) + y(cur.lo)) / 2 + 4, `carrera ${fmt(cur.hi - cur.lo)}`, { 'font-size': 12, 'font-weight': 500 });
+    txt(svg, x(cur.G) + 8, (y(cur.hi) + y(cur.lo)) / 2 + 4, `${fmt((cur.hi - cur.lo) / 2)} por lado`, { 'font-size': 12, 'font-weight': 500 });
   }
   el('line', { x1: L, x2: R, y1: B, y2: B, stroke: 'var(--muted)' }, svg);
   txt(svg, (L + R) / 2, B + 38, 'mínimo libre para el módulo G [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)' });
   txt(svg, 14, (T + B) / 2, 'separación interior [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)', transform: `rotate(-90 14 ${(T + B) / 2})` });
   // tabla
-  const pick = [...new Set([50, 55, 60, 70, P.G])].sort((a, b) => a - b);
-  let h = '<thead><tr><th>Mínimo del módulo</th><th>Separación interior</th><th>Carrera</th><th>Por oruga</th><th>Entre ejes</th><th>Ancho exterior</th></tr></thead><tbody>';
+  const pick = [...new Set([50, 55, 60, 70, P.Gm])].sort((a, b) => a - b);
+  let h = '<thead><tr><th>Módulo central</th><th>Tope cerrado – abierto</th><th>Carrera por lado</th><th>Carrera total</th><th>Entre ejes</th><th>Ancho exterior</th></tr></thead><tbody>';
   for (const G of pick) {
     const r = rows.find(q => q.G === G); if (!r) continue;
-    h += `<tr${G === P.G ? ' class="cur"' : ''}><td>${fmt(G, 0)} mm</td><td>${fmt(r.lo)} – ${fmt(r.hi)}</td><td>${fmt(r.hi - r.lo)}</td><td>${fmt((r.hi - r.lo) / 2)}</td><td>${fmt(r.lo + P.W)} – ${fmt(r.hi + P.W)}</td><td>${fmt(r.lo + 2 * P.W)} – ${fmt(r.hi + 2 * P.W)}</td></tr>`;
+    h += `<tr${G === P.Gm ? ' class="cur"' : ''}><td>${fmt(G, 0)} mm</td><td>${fmt(r.lo)} – ${fmt(r.hi)}</td><td>${fmt((r.hi - r.lo) / 2)}</td><td>${fmt(r.hi - r.lo)}</td><td>${fmt(r.lo + P.W)} – ${fmt(r.hi + P.W)}</td><td>${fmt(r.lo + 2 * P.W)} – ${fmt(r.hi + 2 * P.W)}</td></tr>`;
   }
   $('tbl').innerHTML = h + '</tbody>';
 }
@@ -603,13 +724,18 @@ function update(onlyMachine) {
   syncOutputs();
   if (!onlyMachine || !S) S = sweep(P);
   renderResult(); renderStator(); renderLine(); renderMap(); renderSlice(); renderClosed();
-  clearTimeout(update.t); update.t = setTimeout(renderSens, onlyMachine ? 0 : 60);
+  clearTimeout(update.t); if (!onlyMachine) update.t = setTimeout(() => { renderLevers(); renderRaise(); renderSens(); }, 60);
 }
 
-for (const id of ['gmin', 'w', 'm', 'smin', 'smax', 'rmin', 'rmax']) $(id).addEventListener('input', () => update(false));
+for (const id of ['gmin', 'hol', 'w', 'm', 'smin', 'smax', 'rmin', 'rmax']) $(id).addEventListener('input', () => update(false));
 for (const id of ['ss', 'sr']) $(id).addEventListener('input', () => update(true));
 $('gmin-presets').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (v) { $('gmin').value = v; update(false); } });
 $('smax-presets').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (v) { $('smax').value = v; update(false); } });
+$('copy').addEventListener('click', () => {
+  const s = $('specline').textContent, btn = $('copy');
+  const done = () => { btn.textContent = 'Copiado'; setTimeout(() => btn.textContent = 'Copiar', 1500); };
+  try { navigator.clipboard.writeText(s).then(done, () => { getSelection().selectAllChildren($('specline')); }); } catch (e) { getSelection().selectAllChildren($('specline')); }
+});
 const rerenderTheme = () => { if (S) { renderMap(); } };
 try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerenderTheme); } catch (e) {}
 new MutationObserver(rerenderTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
