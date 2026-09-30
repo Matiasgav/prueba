@@ -191,6 +191,7 @@ tr.cur td { color: var(--accent); font-weight: 500; }
         <button type="button" role="tab" id="tb-reg" data-tab="reg" aria-selected="true">Regulación centrada<small>robot sobre el eje de ranura</small></button>
         <button type="button" role="tab" id="tb-mod" data-tab="mod" aria-selected="false">Módulo y oruga<small>cuándo no hace falta regular</small></button>
         <button type="button" role="tab" id="tb-des" data-tab="des" aria-selected="false">Operación descentrada<small>dos orugas por lado</small></button>
+        <button type="button" role="tab" id="tb-tri" data-tab="tri" aria-selected="false">Tres orugas<small>dos de un lado, una del otro</small></button>
       </nav>
       <div class="tabpanel" id="tab-reg" role="tabpanel" aria-labelledby="tb-reg">
       <section class="card spec" aria-live="polite">
@@ -345,6 +346,54 @@ con r_max = 0,40:  carrera/lado = G/4 + 1,5·W</div>
             <li>Separar las orugas ahorra material de oruga, pero abre huecos: si la distancia entre orugas es parecida al paso de alguna máquina, las dos pueden caer sobre ranuras a la vez.</li>
             <li>El apoyo se cuenta como la suma de las dos orugas de un lado. Una oruga que cruza una ranura apoya en los dos dientes vecinos y cuenta ambos tramos.</li>
             <li>Barrido del mapa: oruga cada 1 mm, separación cada 1 mm y máquinas cada 1 mm de ranura y 1 % de proporción. La configuración recomendada y la elegida se verifican con ranura cada 0,25 mm y proporción cada 0,25 %.</li>
+          </ul>
+        </section>
+      </div>
+      <div class="tabpanel" id="tab-tri" role="tabpanel" aria-labelledby="tb-tri" hidden>
+        <section class="card spec">
+          <div class="eyebrow">Estudio complementario · tres orugas, robot descentrado</div>
+          <p class="sub">De izquierda a derecha: oruga A, separación <i>e</i>, oruga B, luz del módulo <i>G</i>, oruga C. El robot recorre todas las posiciones de un paso. En cada posición tiene que cumplirse una de dos cosas: <b>B apoya al menos la superposición mínima</b>, o <b>A y C apoyan cada una al menos la superposición mínima</b>.</p>
+          <div class="two">
+            <div class="ctl"><div class="ctl-head"><label for="t-ov">Superposición mínima</label><output id="t-ov-o"></output></div><input id="t-ov" type="range" min="5" max="40" step="1" value="15"></div>
+            <div class="ctl"><div class="ctl-head"><label for="t-gx">Luz del módulo máxima a estudiar</label><output id="t-gx-o"></output></div><input id="t-gx" type="range" min="100" max="350" step="5" value="280"></div>
+            <div class="ctl"><div class="ctl-head"><label for="t-wa">Oruga A (extremo, lado doble)</label><output id="t-wa-o"></output></div><input id="t-wa" type="range" min="5" max="70" step="0.5" value="44"></div>
+            <div class="ctl"><div class="ctl-head"><label for="t-e">Separación A – B</label><output id="t-e-o"></output></div><input id="t-e" type="range" min="0" max="60" step="0.5" value="12.5"></div>
+            <div class="ctl"><div class="ctl-head"><label for="t-wb">Oruga B (central, junto al módulo)</label><output id="t-wb-o"></output></div><input id="t-wb" type="range" min="5" max="70" step="0.5" value="25"></div>
+            <div class="ctl"><div class="ctl-head"><label for="t-wc">Oruga C (sola, del otro lado)</label><output id="t-wc-o"></output></div><input id="t-wc" type="range" min="5" max="70" step="0.5" value="30"></div>
+            <div class="ctl"><div class="ctl-head"><label for="t-g">Luz del módulo B – C</label><output id="t-g-o"></output></div><input id="t-g" type="range" min="70" max="280" step="0.5" value="118"></div>
+          </div>
+          <p class="verdict" id="t-verdict"></p>
+          <dl class="spec-list">
+            <div class="row"><dt>Separación A – B fija válida</dt><dd id="t-efix"></dd><span class="note">con las orugas A y B elegidas, valores de e que sirven en todas las máquinas</span></div>
+            <div class="row"><dt>Luz del módulo fija válida</dt><dd id="t-gfix"></dd><span class="note">con las orugas B y C elegidas, valores de G ≥ módulo que sirven en todas las máquinas</span></div>
+            <div class="row main"><dt>Luz del módulo regulable</dt><dd id="t-greg"></dd><span class="note" id="t-greg-note">rango de G si se ajusta en cada máquina</span></div>
+            <div class="row"><dt>Ancho exterior</dt><dd id="tr-outer"></dd><span class="note">A + e + B + G + C, con la luz elegida y, si hay, con el rango regulable</span></div>
+          </dl>
+        </section>
+        <section class="card">
+          <h2>Orugas mínimas según la oruga central</h2>
+          <p class="sub">Para cada ancho de B: la oruga A más angosta que funciona con una separación fija, y la oruga C más angosta que funciona con la luz del módulo fija o regulable. Tocá una fila para cargarla arriba. <span class="busy" id="t-busy"></span></p>
+          <div class="tablewrap"><table id="t-tbl"></table></div>
+        </section>
+        <section class="card">
+          <h2>Pasaje de ranura a ranura</h2>
+          <p class="sub">Apoyo de cada oruga a lo largo de un paso. Las franjas rojas marcan posiciones donde no se cumple la condición.</p>
+          <div class="two">
+            <div class="ctl"><div class="ctl-head"><label for="t-s">Ancho de ranura</label><output id="t-s-o"></output></div><input id="t-s" type="range" min="18" max="50" step="0.5" value="50"></div>
+            <div class="ctl"><div class="ctl-head"><label for="t-r">Ranura / paso</label><output id="t-r-o"></output></div><input id="t-r" type="range" min="30" max="40" step="0.5" value="40"></div>
+            <div class="ctl"><div class="ctl-head"><label for="t-u">Posición del robot</label><output id="t-u-o"></output></div><input id="t-u" type="range" min="0" max="100" step="0.5" value="0"></div>
+            <div class="presets" style="align-self:end"><button type="button" id="t-goworst">Ir a la máquina que falla</button></div>
+          </div>
+          <div class="fig"><svg id="t-draw" viewBox="0 0 960 230" role="img" aria-label="Robot de tres orugas sobre el núcleo"></svg></div>
+          <div class="fig"><svg id="t-curve" viewBox="0 0 960 270" role="img" aria-label="Apoyo de cada oruga a lo largo de un paso"></svg></div>
+        </section>
+        <section class="card model">
+          <h2>Qué muestra este estudio</h2>
+          <ul>
+            <li>Las exigencias sobre A y sobre C se separan: cada vez que B apoya poco, A tiene que apoyar bien y C también. Por eso la separación A – B y la luz del módulo se pueden estudiar por separado.</li>
+            <li>A está cerca de B, así que una sola separación fija sirve para todos los pasos. C está del otro lado del módulo, a 90 mm o más de B: esa distancia no puede quedar bien ubicada respecto de pasos que van de 45 a 167 mm a la vez. Con la luz fija, C solo funciona si es tan ancha que apoya siempre por sí sola (ranura máxima + superposición).</li>
+            <li>Con la luz regulable, cada máquina necesita que C quede "en fase" con B: la luz útil se repite cada paso, así que el rango a regular puede acercarse a un paso entero de la máquina más grande. Si el rango de la tabla llega al tope de luz estudiada, subí ese tope.</li>
+            <li>Barrido: máquinas cada 1 mm de ranura y 1 % de proporción para la tabla; la configuración elegida se verifica cada 0,5 mm y 0,5 %.</li>
           </ul>
         </section>
       </div>
@@ -1162,12 +1211,187 @@ function renderDesDraw() {
   txt(cv, 14, (T + B) / 2, 'apoyo por lado [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)', transform: `rotate(-90 14 ${(T + B) / 2})` });
 }
 
+// ================= Pestaña: tres orugas =================
+const cTr = (a, w, s, p, t) => Fp(a + w - s / 2, p, t) - Fp(a - s / 2, p, t);
+const modp = (x, p) => ((x % p) + p) % p;
+function bpsTr(off, w, s, p, t) { const o = []; for (const te of [0, t]) for (const e of [0, w]) o.push(modp(s / 2 + te - off - e, p)); return o; }
+// Posiciones x0 (borde izquierdo de B) en [0, p) donde B apoya menos que ov.
+function badB(WB, s, p, t, ov) {
+  const pts = [...new Set([0, p, ...bpsTr(0, WB, s, p, t)])].sort((a, b) => a - b), out = [];
+  for (let i = 0; i + 1 < pts.length; i++) {
+    const a = pts[i], b = pts[i + 1]; if (b - a < 1e-9) continue;
+    const va = cTr(a, WB, s, p, t), vb = cTr(b, WB, s, p, t); let lo, hi;
+    if (va < ov && vb < ov) { lo = a; hi = b; } else if (va < ov) { lo = a; hi = a + (b - a) * (ov - va) / (vb - va); } else if (vb < ov) { lo = a + (b - a) * (ov - va) / (vb - va); hi = b; } else continue;
+    const l = out[out.length - 1]; if (l && lo <= l[1] + 1e-9) l[1] = hi; else out.push([lo, hi]);
+  }
+  return out;
+}
+function okOver(bad, off, w, s, p, t, ov) {
+  for (const [a, b] of bad) {
+    const pts = [a + 1e-7, b - 1e-7, ...bpsTr(off, w, s, p, t).filter(x => x > a && x < b)];
+    for (const x of pts) if (cTr(x + off, w, s, p, t) < ov - 1e-9) return false;
+  }
+  return true;
+}
+function machinesTr(ds, dr) { const M = []; for (const s of grid(P.smin, P.smax, ds).reverse()) for (const r of grid(P.rmin, P.rmax, dr).reverse()) { const p = s / r; M.push({ s, r, p, t: p - s }); } return M; }
+function TP() { return { ov: +$('t-ov').value, gx: +$('t-gx').value, wa: +$('t-wa').value, e: +$('t-e').value, wb: +$('t-wb').value, wc: +$('t-wc').value, g: +$('t-g').value }; }
+function badCache(M, WB, ov) { const k = WB + '|' + ov; M.bad = M.bad || {}; if (!M.bad[k]) M.bad[k] = M.map(m => badB(WB, m.s, m.p, m.t, ov)); return M.bad[k]; }
+const okA = (M, bad, WA, WB, e, ov, i) => !bad[i].length || okOver(bad[i], -e - WA, WA, M[i].s, M[i].p, M[i].t, ov);
+const okC = (M, bad, WC, WB, g, ov, i) => !bad[i].length || okOver(bad[i], WB + g, WC, M[i].s, M[i].p, M[i].t, ov);
+function allOk(M, bad, fn, w, WB, v, ov) { for (let i = 0; i < M.length; i++) if (!fn(M, bad, w, WB, v, ov, i)) return i; return -1; }
+function runsOf(vals, step) { const o = []; for (const v of vals) { const l = o[o.length - 1]; if (l && v - l[1] <= step + 1e-9) l[1] = v; else o.push([v, v]); } return o; }
+const fmtRuns = rs => rs.length ? rs.map(([a, b]) => b - a < 1e-9 ? fmt(a) : `${fmt(a)} – ${fmt(b)}`).join(' · ') + ' <small>mm</small>' : 'ninguna';
+// Rango mínimo de un valor regulable por máquina (sets = intervalos válidos por máquina).
+function minRange(sets, lo0, hi0) {
+  const test = D => { let cur = [[lo0, hi0]]; for (const s of sets) { cur = intersect(cur, mergeList(s.map(([a, b]) => [a - D, b]))); if (!cur.length) return null; } return cur[0][0]; };
+  if (test(0) != null) return [test(0), test(0)];
+  let lo = 0, hi = hi0 - lo0; if (test(hi) == null) return null;
+  for (let i = 0; i < 18; i++) { const mid = (lo + hi) / 2; if (test(mid) != null) hi = mid; else lo = mid; }
+  const a = test(hi); return [a, a + hi];
+}
+function perMachineSets(M, bad, fn, w, WB, vals, step, ov) {
+  const sets = [];
+  for (let i = 0; i < M.length; i++) { const v = vals.filter(x => fn(M, bad, w, WB, x, ov, i)); if (!v.length) return { sets: null, fail: i }; sets.push(runsOf(v, step)); }
+  return { sets };
+}
+let triState = { key: '', job: 0 };
+function triSync() {
+  const T = TP();
+  $('t-g').min = P.Gm; $('t-g').max = Math.max(P.Gm, T.gx); if (+$('t-g').value < P.Gm) $('t-g').value = P.Gm;
+  const T2 = TP();
+  for (const [id, v, u] of [['t-ov', T2.ov, ' mm'], ['t-gx', T2.gx, ' mm'], ['t-wa', T2.wa, ' mm'], ['t-e', T2.e, ' mm'], ['t-wb', T2.wb, ' mm'], ['t-wc', T2.wc, ' mm'], ['t-g', T2.g, ' mm']]) $(id + '-o').textContent = fmt(v, 1) + u;
+  const ts = $('t-s'), tr = $('t-r'); ts.min = P.smin; ts.max = P.smax; tr.min = P.rmin * 100; tr.max = P.rmax * 100;
+  $('t-s-o').textContent = fmt(+ts.value, 1) + ' mm'; $('t-r-o').textContent = fmt(+tr.value, 1) + ' %'; $('t-u-o').textContent = fmt(+$('t-u').value, 1) + ' % del paso';
+  return T2;
+}
+function triRender() {
+  const T = triSync();
+  const M = triState.Mmed && triState.Mkey === JSON.stringify([P.smin, P.smax, P.rmin, P.rmax]) ? triState.Mmed : (triState.Mmed = machinesTr(0.5, 0.005));
+  triState.Mkey = JSON.stringify([P.smin, P.smax, P.rmin, P.rmax]);
+  const bad = badCache(M, T.wb, T.ov);
+  const fa = allOk(M, bad, okA, T.wa, T.wb, T.e, T.ov), fc = allOk(M, bad, okC, T.wc, T.wb, T.g, T.ov);
+  const pass = fa < 0 && fc < 0;
+  triState.failM = fa >= 0 ? M[fa] : fc >= 0 ? M[fc] : null;
+  const which = fa >= 0 && fc >= 0 ? 'A y C fallan' : fa >= 0 ? 'A falla' : 'C falla';
+  $('t-verdict').innerHTML = `A ${fmt(T.wa, 1)} · e ${fmt(T.e, 1)} · B ${fmt(T.wb, 1)} · G ${fmt(T.g, 1)} · C ${fmt(T.wc, 1)} mm. ` +
+    (pass ? `<span class="pill ok">Cumple</span> en todas las máquinas con la luz fija en ${fmt(T.g)} mm.` : `<span class="pill bad">No cumple</span> con la luz fija en ${fmt(T.g)} mm: ${which} cuando B cruza una ranura, por ejemplo en la máquina de ranura ${fmt(triState.failM.s)} mm y ranura/paso ${fmt(triState.failM.r * 100)} %.`);
+  const E = grid(0, 60, 0.5), GG = grid(P.Gm, Math.max(P.Gm, T.gx), 0.5);
+  $('t-efix').innerHTML = fmtRuns(runsOf(E.filter(e => allOk(M, bad, okA, T.wa, T.wb, e, T.ov) < 0), 0.5));
+  $('t-gfix').innerHTML = fmtRuns(runsOf(GG.filter(g => allOk(M, bad, okC, T.wc, T.wb, g, T.ov) < 0), 0.5));
+  const Mc = machinesTr(1, 0.01), badc = badCache(Mc, T.wb, T.ov);
+  const pm = perMachineSets(Mc, badc, okC, T.wc, T.wb, GG, 0.5, T.ov);
+  const rg = pm.sets ? minRange(pm.sets, P.Gm, Math.max(P.Gm, T.gx)) : null;
+  $('t-greg').innerHTML = rg ? (rg[1] - rg[0] < 0.05 ? `fija en ${fmt(rg[0])} <small>mm</small>` : `${fmt(rg[0])} – ${fmt(rg[1])} <small>mm</small>`) : 'no alcanza';
+  $('t-greg-note').textContent = rg ? (rg[1] - rg[0] < 0.05 ? 'una sola luz sirve para todas las máquinas' : `carrera de ${fmt(rg[1] - rg[0])} mm, la mueve solo la oruga C; cada máquina usa un valor dentro de ese rango`) : (pm.sets ? `ningún rango dentro de ${fmt(P.Gm, 0)} – ${fmt(T.gx, 0)} mm cubre todas las máquinas` : `en la máquina de ranura ${fmt(Mc[pm.fail].s)} mm y ranura/paso ${fmt(Mc[pm.fail].r * 100)} % ninguna luz sirve: B + C es demasiado angosto`);
+  const base = T.wa + T.e + T.wb + T.wc;
+  $('tr-outer').innerHTML = `${fmt(base + T.g)}` + (rg && rg[1] - rg[0] >= 0.05 ? ` <small>mm · regulable ${fmt(base + rg[0])} – ${fmt(base + rg[1])}</small>` : ' <small>mm</small>');
+  triDraw();
+  triTable();
+}
+function triTable() {
+  const T = TP(), key = JSON.stringify({ smin: P.smin, smax: P.smax, rmin: P.rmin, rmax: P.rmax, ov: T.ov, gx: T.gx, gm: P.Gm });
+  if (triState.key === key) { triTableRender(); return; }
+  const job = ++triState.job; triState.key = key; triState.rows = [];
+  const M = machinesTr(1, 0.01), E = grid(0, 60, 0.5), GG = grid(P.Gm, Math.max(P.Gm, T.gx), 1);
+  const WBs = [10, 15, 17, 20, 25, 30, 35, 40, 45, 50, 55, 60];
+  const minW = pred => { let lo = 1, hi = 90; if (!pred(hi)) return null; for (let i = 0; i < 8; i++) { const mid = (lo + hi) / 2; if (pred(mid)) hi = mid; else lo = mid; } return Math.ceil(hi * 2) / 2; };
+  let k = 0;
+  const step = () => {
+    if (triState.job !== job) return;
+    const WB = WBs[k], bad = badCache(M, WB, T.ov);
+    const wa = minW(w => E.some(e => allOk(M, bad, okA, w, WB, e, T.ov) < 0));
+    const ea = wa ? runsOf(E.filter(e => allOk(M, bad, okA, wa, WB, e, T.ov) < 0), 0.5) : [];
+    const wcf = minW(w => GG.some(g => allOk(M, bad, okC, w, WB, g, T.ov) < 0));
+    const gf = wcf ? runsOf(GG.filter(g => allOk(M, bad, okC, wcf, WB, g, T.ov) < 0), 1) : [];
+    const regFor = w => { const pm = perMachineSets(M, bad, okC, w, WB, GG, 1, T.ov); return pm.sets ? minRange(pm.sets, P.Gm, Math.max(P.Gm, T.gx)) : null; };
+    const wcr = minW(w => regFor(w) != null), rr = wcr ? regFor(wcr) : null;
+    triState.rows.push({ WB, wa, ea, wcf, gf, wcr, rr });
+    k++;
+    $('t-busy').textContent = k < WBs.length ? `calculando ${Math.round(100 * k / WBs.length)} %…` : '';
+    triTableRender();
+    if (k < WBs.length) setTimeout(step, 0);
+  };
+  setTimeout(step, 0);
+}
+function triTableRender() {
+  let h = '<thead><tr><th>Oruga B</th><th>A mínima</th><th>Separación A – B</th><th>C mínima, luz fija</th><th>C mínima, luz regulable</th><th>Luz regulable</th><th>Carrera de C</th></tr></thead><tbody>';
+  for (const r of triState.rows || []) {
+    const rr = r.rr;
+    h += `<tr data-wb="${r.WB}" style="cursor:pointer"><td>${fmt(r.WB, 0)} mm</td><td>${r.wa ? fmt(r.wa) : '—'}</td><td>${r.ea.length ? r.ea.map(([a, b]) => b - a < 1e-9 ? fmt(a) : `${fmt(a)} – ${fmt(b)}`).join(' · ') : '—'}</td><td>${r.wcf ? fmt(r.wcf) : '—'}</td><td>${r.wcr ? fmt(r.wcr) : '—'}</td><td>${rr ? `${fmt(rr[0])} – ${fmt(rr[1])}${rr[1] >= Math.max(P.Gm, +$('t-gx').value) - 0.5 ? ' (tope)' : ''}` : '—'}</td><td>${rr ? fmt(rr[1] - rr[0]) : '—'}</td></tr>`;
+  }
+  $('t-tbl').innerHTML = h + '</tbody>';
+}
+$('t-tbl').addEventListener('click', ev => {
+  const tr = ev.target.closest('tr[data-wb]'); if (!tr) return;
+  const r = triState.rows.find(x => x.WB === +tr.dataset.wb); if (!r) return;
+  $('t-wb').value = r.WB; if (r.wa) { $('t-wa').value = r.wa; $('t-e').value = r.ea[0][0]; }
+  if (r.wcr) { $('t-wc').value = r.wcr; $('t-g').value = r.rr[0]; }
+  triRender(); $('tab-tri').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+function triDraw() {
+  const T = TP(), s = +$('t-s').value, r = +$('t-r').value / 100, p = s / r, t = p - s, x0 = +$('t-u').value / 100 * p;
+  const strips = { A: [x0 - T.e - T.wa, T.wa], B: [x0, T.wb], C: [x0 + T.wb + T.g, T.wc] };
+  const cols = { A: 'var(--k3)', B: 'var(--k1)', C: 'var(--k2)' };
+  const svg = $('t-draw'); svg.innerHTML = '';
+  const lo = x0 - T.e - T.wa - p * 0.6, hi = x0 + T.wb + T.g + T.wc + p * 0.6;
+  const x = lin(lo, hi, 20, 940), mm = 920 / (hi - lo), y0 = 130;
+  el('rect', { x: 20, y: y0, width: 920, height: 70, fill: 'var(--steel)' }, svg);
+  const j0 = Math.floor(lo / p) - 1, j1 = Math.ceil(hi / p) + 1;
+  for (let j = j0; j <= j1; j++) {
+    const a = x(Math.max(j * p - s / 2, lo)), b = x(Math.min(j * p + s / 2, hi)); if (b <= a) continue;
+    el('rect', { x: a, y: y0, width: b - a, height: 60, fill: 'var(--bg)' }, svg);
+    const bw = (b - a) * .7; el('rect', { x: (a + b) / 2 - bw / 2, y: y0 + 16, width: bw, height: 38, rx: 2, fill: 'var(--copper)' }, svg);
+  }
+  const c = {};
+  for (const k of ['A', 'B', 'C']) {
+    const [a, w] = strips[k]; c[k] = cTr(a, w, s, p, t);
+    el('rect', { x: x(a), y: y0 - 21, width: w * mm, height: 18, rx: 4, fill: cols[k] }, svg);
+    for (let j = j0; j <= j1; j++) { const t0 = Math.max(a, j * p + s / 2), t1 = Math.min(a + w, j * p + s / 2 + t); if (t1 > t0) el('rect', { x: x(t0), y: y0 - 4, width: (t1 - t0) * mm, height: 4, fill: 'var(--ok)' }, svg); }
+    txt(svg, x(a + w / 2), y0 - 30, `${k} ${fmt(c[k])}`, { 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 500, fill: c[k] >= T.ov - 1e-9 ? 'var(--ok)' : 'var(--warn)' });
+  }
+  const gA = x0 + T.wb, gB = gA + T.g;
+  el('rect', { x: x(gA), y: y0 - 64, width: T.g * mm, height: 22, fill: 'var(--accent-soft)', stroke: 'var(--accent)', 'stroke-dasharray': '5 3' }, svg);
+  txt(svg, x((gA + gB) / 2), y0 - 49, `módulo · luz ${fmt(T.g)}`, { 'text-anchor': 'middle', 'font-size': 10.5, fill: 'var(--accent)' });
+  const okNow = c.B >= T.ov - 1e-9 || (c.A >= T.ov - 1e-9 && c.C >= T.ov - 1e-9);
+  txt(svg, 30, 20, okNow ? 'Cumple en esta posición' : 'No cumple en esta posición', { 'font-size': 12, 'font-weight': 500, fill: okNow ? 'var(--ok)' : 'var(--warn)' });
+  svg.setAttribute('viewBox', `0 0 960 ${y0 + 80}`);
+  // curvas
+  const cv = $('t-curve'); cv.innerHTML = '';
+  const L = 62, R = 940, Tt = 22, B = 214, N = 500, us = grid(0, p, p / N);
+  const cur = { A: [], B: [], C: [] };
+  for (const u of us) { cur.A.push(cTr(u - T.e - T.wa, T.wa, s, p, t)); cur.B.push(cTr(u, T.wb, s, p, t)); cur.C.push(cTr(u + T.wb + T.g, T.wc, s, p, t)); }
+  const ymax = Math.max(T.ov * 1.5, ...cur.A, ...cur.B, ...cur.C) * 1.1;
+  const xx = lin(0, p, L, R), yy = lin(0, ymax, B, Tt);
+  us.forEach((u, i) => { const ok = cur.B[i] >= T.ov - 1e-9 || (cur.A[i] >= T.ov - 1e-9 && cur.C[i] >= T.ov - 1e-9); if (!ok) el('rect', { x: xx(u), y: Tt, width: (R - L) / N + .6, height: B - Tt, fill: 'var(--warn)', 'fill-opacity': .18 }, cv); });
+  for (const v of niceTicks(0, ymax, 5)) { el('line', { x1: L, x2: R, y1: yy(v), y2: yy(v), stroke: 'var(--line)' }, cv); txt(cv, L - 8, yy(v) + 4, fmt(v, 0), { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--muted)' }); }
+  for (const v of niceTicks(0, p, 10)) txt(cv, xx(v), B + 18, fmt(v, 0), { 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--muted)' });
+  el('line', { x1: L, x2: R, y1: yy(T.ov), y2: yy(T.ov), stroke: 'var(--warn)', 'stroke-dasharray': '6 4' }, cv);
+  const dash = { A: '2 3', B: '', C: '8 4' };
+  for (const k of ['A', 'B', 'C']) el('polyline', { points: us.map((u, i) => `${xx(u)},${yy(cur[k][i])}`).join(' '), fill: 'none', stroke: cols[k], 'stroke-width': 2.2, 'stroke-dasharray': dash[k] }, cv);
+  ['A', 'B', 'C'].forEach((k, i) => txt(cv, L + 6 + i * 90, Tt - 8, `oruga ${k}`, { 'font-size': 11, fill: cols[k] }));
+  txt(cv, R, Tt - 8, `superposición ${fmt(T.ov, 0)}`, { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--warn)' });
+  el('line', { x1: xx(x0), x2: xx(x0), y1: Tt, y2: B, stroke: 'var(--ink)', 'stroke-width': 1.5 }, cv);
+  el('line', { x1: L, x2: R, y1: B, y2: B, stroke: 'var(--muted)' }, cv);
+  txt(cv, (L + R) / 2, B + 38, 'posición del borde izquierdo de B respecto del eje de ranura [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)' });
+  txt(cv, 14, (Tt + B) / 2, 'apoyo [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)', transform: `rotate(-90 14 ${(Tt + B) / 2})` });
+}
+for (const id of ['t-ov', 't-gx', 't-wa', 't-e', 't-wb', 't-wc', 't-g']) $(id).addEventListener('input', () => triRender());
+for (const id of ['t-s', 't-r', 't-u']) $(id).addEventListener('input', () => { triSync(); triDraw(); });
+$('t-goworst').addEventListener('click', () => {
+  const m = triState.failM; if (!m) return;
+  $('t-s').value = Math.round(m.s * 2) / 2; $('t-r').value = Math.round(m.r * 200) / 2; triSync();
+  const T = TP(), s = +$('t-s').value, r = +$('t-r').value / 100, p = s / r, t = p - s;
+  let worst = 0, wv = Infinity;
+  for (const u of grid(0, p, p / 400)) { const cB = cTr(u, T.wb, s, p, t), f = Math.max(cB, Math.min(cTr(u - T.e - T.wa, T.wa, s, p, t), cTr(u + T.wb + T.g, T.wc, s, p, t))); if (f < wv) { wv = f; worst = u; } }
+  $('t-u').value = Math.round(worst / p * 200) / 2; triSync(); triDraw();
+});
+
 // ================= Pestañas =================
 let tab = 'reg';
 function setTab(name, push) {
   tab = name;
   for (const b of document.querySelectorAll('.tabs button')) b.setAttribute('aria-selected', b.dataset.tab === name);
-  for (const id of ['reg', 'mod', 'des']) $('tab-' + id).hidden = id !== name;
+  for (const id of ['reg', 'mod', 'des', 'tri']) $('tab-' + id).hidden = id !== name;
   if (push) { try { history.replaceState(null, '', '#' + name); } catch (e) {} }
   update(false);
 }
@@ -1182,7 +1406,8 @@ function update(onlyMachine) {
     renderResult(); renderStator(); renderLine(); renderMap(); renderSlice(); renderClosed();
     if (!onlyMachine) update.t = setTimeout(() => { renderLevers(); renderRaise(); renderSens(); }, 60);
   } else if (tab === 'mod') modCompute();
-  else desCompute();
+  else if (tab === 'des') desCompute();
+  else triRender();
 }
 
 for (const id of ['gmin', 'hol', 'w', 'm', 'smin', 'smax', 'rmin', 'rmax']) $(id).addEventListener('input', () => update(false));
@@ -1201,8 +1426,8 @@ $('d-goworst').addEventListener('click', () => { const W = desState.cur; if (!W 
 const rerenderTheme = () => { if (!S) return; if (tab === 'reg') renderMap(); else if (tab === 'mod') renderModMap(); };
 try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerenderTheme); } catch (e) {}
 new MutationObserver(rerenderTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (['reg', 'mod', 'des'].includes(h) && h !== tab) setTab(h, false); });
+window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (['reg', 'mod', 'des', 'tri'].includes(h) && h !== tab) setTab(h, false); });
 const h0 = (location.hash || '').slice(1);
-if (['reg', 'mod', 'des'].includes(h0)) setTab(h0, false); else update(false);
+if (['reg', 'mod', 'des', 'tri'].includes(h0)) setTab(h0, false); else update(false);
 })();
 </script>
