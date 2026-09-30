@@ -1,0 +1,618 @@
+<title>Separación de orugas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: panel de parámetros fijo a la izquierda, resultados y vistas del barrido a la derecha; una columna en pantallas angostas. */
+:root {
+  --bg: #eef1f3;
+  --panel: #ffffff;
+  --ink: #16212b;
+  --muted: #5a6875;
+  --line: #d3dae0;
+  --steel: #9aa7b3;
+  --steel-top: #6d7c8a;
+  --copper: #b5652b;
+  --copper-2: #d99a64;
+  --accent: #1c6c89;
+  --accent-soft: rgba(28,108,137,.14);
+  --k1: #1c6c89;
+  --k2: #b7791f;
+  --k3: #7a4fa3;
+  --k4: #6b7680;
+  --seq-lo: #dcecf1;
+  --seq-hi: #0f3d52;
+  --warn: #a4471c;
+  --ok: #2c7a4f;
+  --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1418; --panel: #151d23; --ink: #e2e8ec; --muted: #93a1ad; --line: #28333c;
+    --steel: #4a5763; --steel-top: #6b7a88; --copper: #cf7f43; --copper-2: #8f5327;
+    --accent: #5db4d3; --accent-soft: rgba(93,180,211,.16);
+    --k1: #5db4d3; --k2: #e0a246; --k3: #b48be0; --k4: #8f9aa4;
+    --seq-lo: #173341; --seq-hi: #9fdcf0; --warn: #f08a5d; --ok: #6cc896;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1418; --panel: #151d23; --ink: #e2e8ec; --muted: #93a1ad; --line: #28333c;
+  --steel: #4a5763; --steel-top: #6b7a88; --copper: #cf7f43; --copper-2: #8f5327;
+  --accent: #5db4d3; --accent-soft: rgba(93,180,211,.16);
+  --k1: #5db4d3; --k2: #e0a246; --k3: #b48be0; --k4: #8f9aa4;
+  --seq-lo: #173341; --seq-hi: #9fdcf0; --warn: #f08a5d; --ok: #6cc896;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1320px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 56px; }
+header { display: grid; gap: 6px; margin-bottom: 22px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(26px, 4vw, 38px); line-height: 1.1; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+.lead { max-width: 72ch; color: var(--muted); margin: 0; }
+h2 { font-family: var(--f-display); font-size: 18px; font-weight: 600; margin: 0; text-wrap: balance; }
+.sub { color: var(--muted); font-size: 13.5px; margin: 0; max-width: 80ch; }
+.layout { display: grid; grid-template-columns: 1fr; gap: 20px; align-items: start; }
+@media (min-width: 1000px) { .layout { grid-template-columns: 300px minmax(0, 1fr); } .panel { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); } }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 18px; }
+.group { display: grid; gap: 12px; }
+.group-title { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+.ctl { display: grid; gap: 4px; }
+.ctl-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ctl label { font-size: 13.5px; font-weight: 500; }
+.ctl output { font-family: var(--f-mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+.ctl input[type=range] { width: 100%; accent-color: var(--accent); }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; }
+.presets button { font: 500 12px var(--f-mono); color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; cursor: pointer; }
+.presets button:hover { border-color: var(--accent); }
+.presets button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hint { font-size: 12.5px; color: var(--muted); margin: 0; }
+main { display: grid; gap: 20px; min-width: 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 12px; min-width: 0; }
+.result { display: grid; gap: 14px; }
+.verdict { font-size: 17px; line-height: 1.45; margin: 0; max-width: 80ch; }
+.verdict strong { font-family: var(--f-mono); font-weight: 500; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.tile { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 2px; }
+.tile.main { border-color: var(--accent); background: var(--accent-soft); }
+.tile .lbl { font-size: 12.5px; color: var(--muted); }
+.tile .val { font-family: var(--f-mono); font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tile .val small { font-size: 13px; color: var(--muted); }
+.tile .note { font-size: 12px; color: var(--muted); }
+.crit { font-size: 13.5px; color: var(--muted); margin: 0; max-width: 90ch; }
+.warnbox { border: 1px solid var(--warn); color: var(--warn); border-radius: 8px; padding: 8px 12px; font-size: 13.5px; }
+.fig { overflow-x: auto; }
+.fig svg { display: block; width: 100%; min-width: 640px; height: auto; }
+.fig svg text { font-family: var(--f-mono); fill: var(--ink); }
+.two { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 700px) { .two { grid-template-columns: 1fr 1fr; } }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 14px; height: 10px; border-radius: 2px; display: inline-block; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { font-weight: 600; font-size: 12.5px; color: var(--muted); }
+td { font-family: var(--f-mono); }
+tr.cur td { color: var(--accent); font-weight: 500; }
+.tablewrap { overflow-x: auto; }
+.model { display: grid; gap: 10px; max-width: 80ch; }
+.model p, .model li { margin: 0; font-size: 14px; }
+.model ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.eq { font-family: var(--f-mono); font-size: 13.5px; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; overflow-x: auto; white-space: pre; }
+@media (prefers-reduced-motion: no-preference) { .presets button { transition: background .15s, border-color .15s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Robot de inspección de estator · barrido geométrico</div>
+    <h1>Separación de orugas</h1>
+    <p class="lead">El robot va centrado sobre una ranura y cada oruga tiene que apoyar entera sobre un diente. El barrido recorre todas las máquinas posibles (ancho de ranura y proporción ranura/paso) y calcula qué separación entre orugas necesita cada una, respetando el espacio mínimo del módulo central.</p>
+  </header>
+
+  <div class="layout">
+    <aside class="panel" aria-label="Parámetros">
+      <div class="group">
+        <div class="group-title">Robot</div>
+        <div class="ctl">
+          <div class="ctl-head"><label for="gmin">Mínimo libre para el módulo</label><output id="gmin-o"></output></div>
+          <input id="gmin" type="range" min="30" max="100" step="1" value="70">
+          <div class="presets" id="gmin-presets">
+            <button type="button" data-v="50">50</button><button type="button" data-v="55">55</button><button type="button" data-v="60">60</button><button type="button" data-v="70">70</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <div class="ctl-head"><label for="w">Ancho de cada oruga</label><output id="w-o"></output></div>
+          <input id="w" type="range" min="10" max="30" step="0.5" value="17">
+        </div>
+        <div class="ctl">
+          <div class="ctl-head"><label for="m">Margen de apoyo por borde</label><output id="m-o"></output></div>
+          <input id="m" type="range" min="0" max="5" step="0.5" value="0">
+          <p class="hint">Distancia que la oruga debe quedar adentro del borde del diente, por tolerancia de guiado. Con 0 la oruga puede llegar justo al borde.</p>
+        </div>
+      </div>
+      <div class="group">
+        <div class="group-title">Familia de máquinas</div>
+        <div class="ctl">
+          <div class="ctl-head"><label for="smin">Ranura mínima</label><output id="smin-o"></output></div>
+          <input id="smin" type="range" min="10" max="30" step="1" value="18">
+        </div>
+        <div class="ctl">
+          <div class="ctl-head"><label for="smax">Ranura máxima</label><output id="smax-o"></output></div>
+          <input id="smax" type="range" min="25" max="60" step="1" value="40">
+          <div class="presets" id="smax-presets">
+            <button type="button" data-v="40">40 habitual</button><button type="button" data-v="50">50 extremo</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <div class="ctl-head"><label for="rmin">Ranura / paso, mínimo</label><output id="rmin-o"></output></div>
+          <input id="rmin" type="range" min="20" max="50" step="1" value="30">
+        </div>
+        <div class="ctl">
+          <div class="ctl-head"><label for="rmax">Ranura / paso, máximo</label><output id="rmax-o"></output></div>
+          <input id="rmax" type="range" min="20" max="50" step="1" value="40">
+        </div>
+      </div>
+      <p class="hint">Estrategia: en cada máquina las orugas se abren lo mínimo posible (el primer diente que admite el módulo). El rango de diseño va de la menor a la mayor de esas separaciones.</p>
+    </aside>
+
+    <main>
+      <section class="card result" aria-live="polite">
+        <p class="verdict" id="verdict"></p>
+        <div class="tiles">
+          <div class="tile main"><span class="lbl">Separación interior (luz entre orugas)</span><span class="val" id="t-range"></span><span class="note">lo que ve el módulo</span></div>
+          <div class="tile"><span class="lbl">Carrera del mecanismo</span><span class="val" id="t-stroke"></span><span class="note">total, las dos orugas</span></div>
+          <div class="tile"><span class="lbl">Distancia entre ejes de oruga</span><span class="val" id="t-axis"></span><span class="note">separación interior + 1 oruga</span></div>
+          <div class="tile"><span class="lbl">Ancho exterior del tren</span><span class="val" id="t-outer"></span><span class="note">separación interior + 2 orugas</span></div>
+        </div>
+        <p class="crit" id="crit"></p>
+        <div class="warnbox" id="warn" hidden></div>
+      </section>
+
+      <section class="card">
+        <h2>Corte del núcleo en una máquina</h2>
+        <p class="sub">Vista desarrollada del entrehierro, escala horizontal real. Elegí la máquina con los controles o tocando el mapa de más abajo. Las orugas se dibujan en la separación que le corresponde a esa máquina.</p>
+        <div class="two">
+          <div class="ctl">
+            <div class="ctl-head"><label for="ss">Ancho de ranura de esta máquina</label><output id="ss-o"></output></div>
+            <input id="ss" type="range" min="18" max="40" step="0.5" value="26">
+          </div>
+          <div class="ctl">
+            <div class="ctl-head"><label for="sr">Ranura / paso de esta máquina</label><output id="sr-o"></output></div>
+            <input id="sr" type="range" min="30" max="40" step="0.5" value="40">
+          </div>
+        </div>
+        <div class="fig"><svg id="stator" viewBox="0 0 960 330" role="img" aria-label="Corte del núcleo con el robot"></svg></div>
+        <div class="fig"><svg id="nline" viewBox="0 0 960 96" role="img" aria-label="Separaciones posibles para esta máquina"></svg></div>
+        <div class="legend">
+          <span><i class="sw" style="background:var(--k1)"></i>orugas en el 1.er diente</span>
+          <span><i class="sw" style="background:var(--k2)"></i>2.º diente</span>
+          <span><i class="sw" style="background:var(--k3)"></i>3.er diente</span>
+          <span><i class="sw" style="background:var(--accent-soft);border:1px solid var(--accent)"></i>rango de diseño</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Mapa de máquinas</h2>
+        <p class="sub">Cada celda es una máquina. El color indica la separación interior que necesita. Las curvas marcan dónde las orugas dejan de caber en un diente y tienen que saltar al siguiente: ahí aparecen los saltos grandes.</p>
+        <div class="fig"><svg id="map" viewBox="0 0 960 380" role="img" aria-label="Mapa de separación requerida por máquina"></svg></div>
+      </section>
+
+      <section class="card">
+        <h2 id="slice-title">Bandas de apoyo</h2>
+        <p class="sub">Para la proporción ranura/paso de la máquina elegida: cada banda es el conjunto de separaciones en que las dos orugas quedan enteras sobre el mismo par de dientes. La línea gruesa es la separación que usa el robot.</p>
+        <div class="fig"><svg id="slice" viewBox="0 0 960 400" role="img" aria-label="Bandas de apoyo según ancho de ranura"></svg></div>
+      </section>
+
+      <section class="card">
+        <h2>Efecto del mínimo del módulo</h2>
+        <p class="sub">Rango de separación interior necesario para cubrir toda la familia de máquinas, según el espacio que reserve el módulo.</p>
+        <div class="fig"><svg id="sens" viewBox="0 0 960 360" role="img" aria-label="Rango de separación en función del mínimo del módulo"></svg></div>
+        <div class="tablewrap"><table id="tbl"></table></div>
+      </section>
+
+      <section class="card model">
+        <h2>Modelo</h2>
+        <p>Se toma el eje de la ranura como origen. Con ranura <i>s</i>, proporción <i>r</i> = ranura/paso, paso <i>p</i> = <i>s</i>/<i>r</i> y diente <i>t</i> = <i>p</i> − <i>s</i>, el diente número <i>k</i> a cada lado empieza en <i>s</i>/2 + (<i>k</i>−1)·<i>p</i>. Con orugas de ancho <i>W</i>, margen <i>m</i> y separación interior <i>g</i> (entre bordes internos), las dos orugas apoyan enteras en el diente <i>k</i> si:</p>
+        <div class="eq">s + 2(k−1)·p + 2m  ≤  g  ≤  s + 2(k−1)·p + 2t − 2W − 2m</div>
+        <p>Cada máquina usa la menor <i>g</i> que cumple eso y además <i>g</i> ≥ mínimo del módulo. El máximo del rango lo fija la máquina en que las orugas apenas no caben en el primer diente y saltan al segundo. Con <i>m</i> = 0 queda una expresión cerrada:</p>
+        <div class="eq">g_max = (G + 2W) · (2 + r_max) / (2 − r_max)        g_min = G</div>
+        <p id="closed"></p>
+        <ul>
+          <li>Barrido: ranura cada 0,05 mm y proporción cada 0,1 %, más los puntos exactos de transición entre dientes.</li>
+          <li>El máximo es un límite: la máquina crítica exacta entra en el primer diente con la oruga justo al borde; una apenas más angosta ya necesita el segundo.</li>
+          <li>La ranura máxima casi nunca manda: las máquinas grandes tienen dientes anchos y el primer diente admite casi cualquier separación.</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+(() => {
+const NS = 'http://www.w3.org/2000/svg';
+const $ = id => document.getElementById(id);
+const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const txt = (parent, x, y, s, attrs = {}) => { const t = el('text', { x, y, 'font-size': 12, ...attrs }, parent); t.textContent = s; return t; };
+const fmt = (v, d = 1) => Number(v).toLocaleString('es-AR', { minimumFractionDigits: d, maximumFractionDigits: d });
+const lin = (d0, d1, r0, r1) => v => r0 + (v - d0) * (r1 - r0) / (d1 - d0);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const kColor = k => `var(--k${Math.min(k, 4)})`;
+const ord = k => k === 1 ? '1.er' : k === 2 ? '2.º' : k === 3 ? '3.er' : k + '.º';
+
+function niceTicks(a, b, n) {
+  const span = b - a, step0 = span / n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const step = [1, 2, 5, 10].map(f => f * mag).find(s => s >= step0);
+  const out = []; for (let v = Math.ceil(a / step) * step; v <= b + 1e-9; v += step) out.push(+v.toFixed(6));
+  return out;
+}
+function grid(a, b, d) { const N = Math.max(1, Math.round((b - a) / d)); const o = []; for (let i = 0; i <= N; i++) o.push(a + (b - a) * i / N); return o; }
+
+function params() {
+  let smin = +$('smin').value, smax = +$('smax').value, rmin = +$('rmin').value / 100, rmax = +$('rmax').value / 100;
+  if (smin > smax) [smin, smax] = [smax, smin];
+  if (rmin > rmax) [rmin, rmax] = [rmax, rmin];
+  return { G: +$('gmin').value, W: +$('w').value, m: +$('m').value, smin, smax, rmin, rmax };
+}
+
+// Bandas de apoyo de una máquina: separación interior g válida con las orugas en el diente k.
+function bands(s, r, P, gTop) {
+  const p = s / r, t = p - s, out = [];
+  if (t < P.W + 2 * P.m) return out;
+  for (let k = 1; k <= 30; k++) {
+    const base = s + 2 * (k - 1) * p;
+    out.push({ k, lo: base + 2 * P.m, hi: base + 2 * t - 2 * P.W - 2 * P.m });
+    if (base > gTop) break;
+  }
+  return out;
+}
+// Menor separación válida que respeta el módulo.
+function need(s, r, P) {
+  const p = s / r, t = p - s;
+  if (t < P.W + 2 * P.m) return null;
+  for (let k = 1; k <= 60; k++) {
+    const base = s + 2 * (k - 1) * p, hi = base + 2 * t - 2 * P.W - 2 * P.m;
+    if (hi >= P.G) return { g: Math.max(base + 2 * P.m, P.G), k, p, t };
+  }
+  return null;
+}
+// Ancho de ranura en que el borde superior de la banda k toca el mínimo del módulo.
+const sTrans = (k, r, P) => (P.G + 2 * P.W + 2 * P.m) * r / (2 * k - r);
+const sNoFit = (r, P) => (P.W + 2 * P.m) * r / (1 - r);
+
+function sweep(P, ds = 0.05, dr = 0.001) {
+  let lo = { g: Infinity }, hi = { g: -Infinity }, bad = 0, n = 0;
+  for (const r of grid(P.rmin, P.rmax, dr)) {
+    const ss = grid(P.smin, P.smax, ds);
+    for (let k = 1; k <= 8; k++) { const st = sTrans(k, r, P); if (st > P.smin && st <= P.smax) ss.push(st * (1 - 1e-9)); }
+    for (const s of ss) {
+      const q = need(s, r, P); n++;
+      if (!q) { bad++; continue; }
+      if (q.g < lo.g) lo = { g: q.g, s, r, k: q.k };
+      if (q.g > hi.g) hi = { g: q.g, s, r, k: q.k };
+    }
+  }
+  return { lo, hi, bad, n };
+}
+
+let S = null; // último resultado
+let P = null;
+
+function syncOutputs() {
+  $('gmin-o').textContent = fmt(P.G, 0) + ' mm';
+  $('w-o').textContent = fmt(P.W, 1) + ' mm';
+  $('m-o').textContent = fmt(P.m, 1) + ' mm';
+  $('smin-o').textContent = fmt(+$('smin').value, 0) + ' mm';
+  $('smax-o').textContent = fmt(+$('smax').value, 0) + ' mm';
+  $('rmin-o').textContent = fmt(+$('rmin').value, 0) + ' %';
+  $('rmax-o').textContent = fmt(+$('rmax').value, 0) + ' %';
+  for (const b of $('gmin-presets').children) b.setAttribute('aria-pressed', +b.dataset.v === P.G);
+  for (const b of $('smax-presets').children) b.setAttribute('aria-pressed', +b.dataset.v === +$('smax').value);
+  const ss = $('ss'), sr = $('sr');
+  ss.min = P.smin; ss.max = P.smax; sr.min = P.rmin * 100; sr.max = P.rmax * 100;
+  if (+ss.value < P.smin) ss.value = P.smin; if (+ss.value > P.smax) ss.value = P.smax;
+  if (+sr.value < P.rmin * 100) sr.value = P.rmin * 100; if (+sr.value > P.rmax * 100) sr.value = P.rmax * 100;
+  $('ss-o').textContent = fmt(+ss.value, 1) + ' mm';
+  $('sr-o').textContent = fmt(+sr.value, 1) + ' %';
+}
+
+function renderResult() {
+  const { lo, hi, bad } = S;
+  const warn = $('warn');
+  if (!isFinite(lo.g)) {
+    $('verdict').textContent = 'Con estos parámetros ninguna máquina admite las orugas: el diente es más angosto que la oruga.';
+    ['t-range', 't-stroke', 't-axis', 't-outer'].forEach(id => $(id).textContent = '—');
+    $('crit').textContent = ''; warn.hidden = true; return;
+  }
+  const stroke = hi.g - lo.g;
+  $('verdict').innerHTML = `Para cubrir todas las máquinas, las orugas tienen que poder abrirse entre <strong>${fmt(lo.g)}</strong> y <strong>${fmt(hi.g)} mm</strong> de separación interior: una carrera de <strong>${fmt(stroke)} mm</strong>, o ${fmt(stroke / 2)} mm por oruga si se mueven simétricas.`;
+  $('t-range').innerHTML = `${fmt(lo.g)} – ${fmt(hi.g)} <small>mm</small>`;
+  $('t-stroke').innerHTML = `${fmt(stroke)} <small>mm</small>`;
+  $('t-axis').innerHTML = `${fmt(lo.g + P.W)} – ${fmt(hi.g + P.W)} <small>mm</small>`;
+  $('t-outer').innerHTML = `${fmt(lo.g + 2 * P.W)} – ${fmt(hi.g + 2 * P.W)} <small>mm</small>`;
+  const p = hi.s / hi.r, t = p - hi.s;
+  $('crit').innerHTML = `Máquina que fija el máximo: ranura ${fmt(hi.s)} mm, ranura/paso ${fmt(hi.r * 100)} % (paso ${fmt(p)} mm, diente ${fmt(t)} mm). Con el módulo de ${fmt(P.G, 0)} mm las orugas no caben en el 1.er diente y pasan al ${ord(hi.k)}. <button type="button" id="goto-crit" class="linkbtn" style="font:inherit;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline">Ver esta máquina</button>`;
+  $('goto-crit').onclick = () => { $('ss').value = Math.round(hi.s * 2) / 2; $('sr').value = Math.round(hi.r * 200) / 2; update(); $('stator').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+  if (bad > 0) { warn.hidden = false; warn.textContent = `Hay máquinas en el barrido con diente más angosto que la oruga más los márgenes: el robot no puede apoyar en ellas y quedaron fuera del rango.`; }
+  else warn.hidden = true;
+}
+
+function renderStator() {
+  const svg = $('stator'); svg.innerHTML = '';
+  const s = +$('ss').value, r = +$('sr').value / 100, q = need(s, r, P);
+  const p = s / r, t = p - s;
+  const g = q ? q.g : P.G;
+  const halfOuter = g / 2 + P.W;
+  const X = Math.max(halfOuter + 0.9 * p, s / 2 + 1.6 * p, P.G / 2 + 30);
+  const x = lin(-X, X, 30, 930), mm = 900 / (2 * X);
+  const y0 = 200, slotD = 82, coreB = y0 + slotD + 22;
+  // núcleo
+  el('rect', { x: 30, y: y0, width: 900, height: coreB - y0, fill: 'var(--steel)' }, svg);
+  const jMax = Math.ceil(X / p) + 1;
+  for (let j = -jMax; j <= jMax; j++) {
+    const c = j * p, a = x(Math.max(c - s / 2, -X)), b = x(Math.min(c + s / 2, X));
+    if (b <= a) continue;
+    el('rect', { x: a, y: y0, width: b - a, height: slotD, fill: 'var(--bg)' }, svg);
+    const bw = (b - a) * 0.72, bx = (a + b) / 2 - bw / 2;
+    el('rect', { x: bx, y: y0 + 12, width: bw, height: 6, fill: 'var(--steel-top)' }, svg); // cuña
+    el('rect', { x: bx, y: y0 + 22, width: bw, height: 26, fill: 'var(--copper)', rx: 2 }, svg);
+    el('rect', { x: bx, y: y0 + 51, width: bw, height: 26, fill: 'var(--copper)', rx: 2 }, svg);
+  }
+  // caras de diente
+  for (let j = -jMax; j <= jMax; j++) {
+    const a0 = j * p + s / 2, a1 = a0 + t;
+    const a = x(Math.max(a0, -X)), b = x(Math.min(a1, X));
+    if (b > a) el('rect', { x: a, y: y0 - 3, width: b - a, height: 3, fill: 'var(--steel-top)' }, svg);
+  }
+  // eje de ranura
+  el('line', { x1: x(0), x2: x(0), y1: 36, y2: coreB, stroke: 'var(--muted)', 'stroke-dasharray': '4 4', 'stroke-width': 1 }, svg);
+  txt(svg, x(0) + 6, coreB - 4, 'eje de ranura', { fill: 'var(--muted)', 'font-size': 11 });
+  if (q) {
+    const col = kColor(q.k);
+    // orugas
+    for (const sg of [-1, 1]) {
+      const i0 = sg * g / 2, i1 = sg * (g / 2 + P.W);
+      const a = x(Math.min(i0, i1)), w = P.W * mm;
+      el('rect', { x: a, y: y0 - 21, width: w, height: 18, rx: 5, fill: col }, svg);
+      for (let i = 1; i < 5; i++) el('line', { x1: a + w * i / 5, x2: a + w * i / 5, y1: y0 - 19, y2: y0 - 5, stroke: 'var(--panel)', 'stroke-opacity': .5 }, svg);
+      el('rect', { x: a + w / 2 - 4, y: y0 - 38, width: 8, height: 17, fill: 'var(--steel-top)' }, svg);
+    }
+    // chasis
+    el('rect', { x: x(-halfOuter), y: y0 - 64, width: 2 * halfOuter * mm, height: 26, rx: 4, fill: 'var(--ink)', 'fill-opacity': .82 }, svg);
+    txt(svg, x(0), y0 - 47, 'chasis', { 'text-anchor': 'middle', fill: 'var(--panel)', 'font-size': 11 });
+    // módulo
+    el('rect', { x: x(-P.G / 2), y: y0 - 36, width: P.G * mm, height: 30, fill: 'var(--accent-soft)', stroke: 'var(--accent)', 'stroke-dasharray': '5 3' }, svg);
+    txt(svg, x(0), y0 - 17, `módulo ${fmt(P.G, 0)}`, { 'text-anchor': 'middle', fill: 'var(--accent)', 'font-size': 11 });
+    // cota g
+    const yc = 40;
+    for (const v of [-g / 2, g / 2]) el('line', { x1: x(v), x2: x(v), y1: yc - 6, y2: y0 - 64, stroke: 'var(--muted)', 'stroke-width': .8 }, svg);
+    dim(svg, x(-g / 2), x(g / 2), yc, `separación interior ${fmt(g)} mm`);
+    const yo = 16;
+    for (const v of [-halfOuter, halfOuter]) el('line', { x1: x(v), x2: x(v), y1: yo - 6, y2: y0 - 64, stroke: 'var(--muted)', 'stroke-width': .8, 'stroke-opacity': .6 }, svg);
+    dim(svg, x(-halfOuter), x(halfOuter), yo, `ancho exterior ${fmt(2 * halfOuter)} mm`, true);
+    txt(svg, x(g / 2 + P.W / 2), y0 - 70, `${ord(q.k)} diente`, { 'text-anchor': 'middle', fill: col, 'font-size': 11 });
+  } else {
+    txt(svg, 480, 90, 'El diente es más angosto que la oruga: esta máquina no admite el robot.', { 'text-anchor': 'middle', fill: 'var(--warn)' });
+  }
+  // cotas de ranura, diente y paso
+  const yd = coreB + 16;
+  dim(svg, x(-s / 2), x(s / 2), yd, `s ${fmt(s)}`);
+  dim(svg, x(s / 2), x(s / 2 + t), yd, `diente ${fmt(t)}`);
+  dim(svg, x(0), x(p), yd + 24, '');
+  txt(svg, x(p) + 6, yd + 28, `paso ${fmt(p)}`, { 'font-size': 11, fill: 'var(--muted)' });
+  svg.setAttribute('viewBox', `0 0 960 ${yd + 36}`);
+}
+function dim(svg, a, b, y, label, faint) {
+  const op = faint ? .6 : 1;
+  el('line', { x1: a, x2: b, y1: y, y2: y, stroke: 'var(--ink)', 'stroke-width': 1, 'stroke-opacity': op }, svg);
+  for (const v of [a, b]) el('line', { x1: v, x2: v, y1: y - 5, y2: y + 5, stroke: 'var(--ink)', 'stroke-width': 1, 'stroke-opacity': op }, svg);
+  if (label) {
+    const cx = (a + b) / 2, w = label.length * 7 + 10;
+    el('rect', { x: cx - w / 2, y: y - 9, width: w, height: 17, fill: 'var(--panel)' }, svg);
+    txt(svg, cx, y + 4, label, { 'text-anchor': 'middle', 'font-size': 11.5, 'fill-opacity': op });
+  }
+}
+
+function renderLine() {
+  const svg = $('nline'); svg.innerHTML = '';
+  const s = +$('ss').value, r = +$('sr').value / 100, q = need(s, r, P);
+  const top = Math.max(S.hi.g * 1.35, P.G * 2, 120);
+  const x = lin(0, top, 40, 930), yb = 40;
+  el('rect', { x: x(S.lo.g), y: yb - 16, width: x(S.hi.g) - x(S.lo.g), height: 32, fill: 'var(--accent-soft)', stroke: 'var(--accent)', 'stroke-width': 1 }, svg);
+  txt(svg, x(S.lo.g), 14, 'rango de diseño', { fill: 'var(--accent)', 'font-size': 11 });
+  el('rect', { x: x(0), y: yb - 16, width: x(P.G) - x(0), height: 32, fill: 'var(--muted)', 'fill-opacity': .12 }, svg);
+  txt(svg, x(0) + 4, 14, 'invade el módulo', { fill: 'var(--muted)', 'font-size': 11 });
+  for (const b of bands(s, r, P, top)) {
+    const a = Math.max(0, b.lo), c = Math.min(top, b.hi);
+    if (c <= a) continue;
+    el('rect', { x: x(a), y: yb - 7, width: Math.max(2, x(c) - x(a)), height: 14, rx: 3, fill: kColor(b.k), 'fill-opacity': b.hi < P.G ? .35 : .9 }, svg);
+  }
+  if (q) {
+    el('line', { x1: x(q.g), x2: x(q.g), y1: yb - 20, y2: yb + 20, stroke: 'var(--ink)', 'stroke-width': 2 }, svg);
+    txt(svg, x(q.g) + 5, yb + 30, `robot: ${fmt(q.g)}`, { 'font-size': 11.5 });
+  }
+  el('line', { x1: x(0), x2: x(top), y1: 76, y2: 76, stroke: 'var(--line)' }, svg);
+  for (const v of niceTicks(0, top, 10)) {
+    el('line', { x1: x(v), x2: x(v), y1: 76, y2: 80, stroke: 'var(--muted)' }, svg);
+    txt(svg, x(v), 92, fmt(v, 0), { 'text-anchor': 'middle', 'font-size': 10.5, fill: 'var(--muted)' });
+  }
+}
+
+function hexRgb(h) { h = h.replace('#', ''); return [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); }
+function mix(a, b, f) { return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * f)).join(',')})`; }
+
+function renderMap() {
+  const svg = $('map'); svg.innerHTML = '';
+  const L = 70, R = 860, T = 20, B = 320;
+  const x = lin(P.smin, P.smax, L, R), y = lin(P.rmin, P.rmax, B, T);
+  const nx = 64, ny = 40, c0 = hexRgb(css('--seq-lo')), c1 = hexRgb(css('--seq-hi'));
+  const dx = (P.smax - P.smin) / nx, dy = (P.rmax - P.rmin) / ny;
+  const span = Math.max(1e-6, S.hi.g - S.lo.g);
+  const g = el('g', {}, svg);
+  for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+    const s = P.smin + (i + .5) * dx, r = P.rmin + (j + .5) * dy, q = need(s, r, P);
+    el('rect', { x: x(P.smin + i * dx), y: y(P.rmin + (j + 1) * dy), width: (R - L) / nx + .6, height: (B - T) / ny + .6,
+      fill: q ? mix(c0, c1, (q.g - S.lo.g) / span) : 'var(--warn)', 'fill-opacity': q ? 1 : .35 }, g);
+  }
+  // curvas de transición
+  const clip = el('clipPath', { id: 'mapclip' }, svg); el('rect', { x: L, y: T, width: R - L, height: B - T }, clip);
+  const cg = el('g', { 'clip-path': 'url(#mapclip)' }, svg);
+  const rs = grid(P.rmin, P.rmax, (P.rmax - P.rmin) / 60);
+  const labels = [];
+  for (let k = 1; k <= 4; k++) {
+    const pts = rs.map(r => [x(sTrans(k, r, P)), y(r)]);
+    el('polyline', { points: pts.map(p => p.join(',')).join(' '), fill: 'none', stroke: 'var(--panel)', 'stroke-width': 2.5 }, cg);
+    el('polyline', { points: pts.map(p => p.join(',')).join(' '), fill: 'none', stroke: 'var(--ink)', 'stroke-width': 1.2, 'stroke-dasharray': '6 3' }, cg);
+  }
+  // etiquetas de región a media altura
+  const rm = (P.rmin + P.rmax) / 2;
+  const cuts = [P.smax]; for (let k = 1; k <= 5; k++) cuts.push(Math.max(P.smin, Math.min(P.smax, sTrans(k, rm, P))));
+  for (let k = 1; k <= 5; k++) {
+    const a = cuts[k], b = cuts[k - 1];
+    if (x(b) - x(a) > 70) {
+      const tx = txt(svg, (x(a) + x(b)) / 2, y(rm) + 4, `${ord(k)} diente`, { 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 500 });
+      const bb = tx.getBBox(); const bg = el('rect', { x: bb.x - 5, y: bb.y - 2, width: bb.width + 10, height: bb.height + 4, rx: 3, fill: 'var(--panel)', 'fill-opacity': .85 }, svg);
+      svg.insertBefore(bg, tx);
+    }
+  }
+  const nf = rs.filter(r => sNoFit(r, P) > P.smin);
+  if (nf.length) el('polyline', { points: nf.map(r => `${x(Math.min(P.smax, sNoFit(r, P)))},${y(r)}`).join(' '), fill: 'none', stroke: 'var(--warn)', 'stroke-width': 2 }, cg);
+  // máquina elegida y crítica
+  const ss = +$('ss').value, sr = +$('sr').value / 100;
+  el('circle', { cx: x(ss), cy: y(sr), r: 7, fill: 'none', stroke: 'var(--panel)', 'stroke-width': 4 }, svg);
+  el('circle', { cx: x(ss), cy: y(sr), r: 7, fill: 'none', stroke: 'var(--ink)', 'stroke-width': 2 }, svg);
+  if (isFinite(S.hi.g)) {
+    const hx = x(S.hi.s), hy = y(S.hi.r);
+    el('path', { d: `M${hx - 6},${hy - 6}L${hx + 6},${hy + 6}M${hx + 6},${hy - 6}L${hx - 6},${hy + 6}`, stroke: 'var(--warn)', 'stroke-width': 2.5 }, svg);
+    txt(svg, Math.min(hx + 10, R - 90), Math.max(hy - 10, T + 12), 'máquina crítica', { fill: 'var(--warn)', 'font-size': 11 });
+  }
+  // ejes
+  for (const v of niceTicks(P.smin, P.smax, 10)) { el('line', { x1: x(v), x2: x(v), y1: B, y2: B + 5, stroke: 'var(--muted)' }, svg); txt(svg, x(v), B + 18, fmt(v, 0), { 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--muted)' }); }
+  for (const v of niceTicks(P.rmin, P.rmax, 5)) { el('line', { x1: L - 5, x2: L, y1: y(v), y2: y(v), stroke: 'var(--muted)' }, svg); txt(svg, L - 8, y(v) + 4, fmt(v * 100, 0) + '%', { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--muted)' }); }
+  txt(svg, (L + R) / 2, B + 36, 'ancho de ranura s [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)' });
+  txt(svg, 16, (T + B) / 2, 'ranura / paso', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)', transform: `rotate(-90 16 ${(T + B) / 2})` });
+  // leyenda de color
+  const lx = 885, lw = 16, defs = el('defs', {}, svg), gr = el('linearGradient', { id: 'seqg', x1: 0, y1: 1, x2: 0, y2: 0 }, defs);
+  el('stop', { offset: 0, 'stop-color': css('--seq-lo') }, gr); el('stop', { offset: 1, 'stop-color': css('--seq-hi') }, gr);
+  el('rect', { x: lx, y: T, width: lw, height: B - T, fill: 'url(#seqg)' }, svg);
+  txt(svg, lx + lw / 2, T - 6, 'g [mm]', { 'text-anchor': 'middle', 'font-size': 10.5, fill: 'var(--muted)' });
+  txt(svg, lx + lw + 4, T + 10, fmt(S.hi.g, 0), { 'font-size': 11 });
+  txt(svg, lx + lw + 4, B, fmt(S.lo.g, 0), { 'font-size': 11 });
+  // clic para elegir
+  const hit = el('rect', { x: L, y: T, width: R - L, height: B - T, fill: 'transparent', style: 'cursor:crosshair' }, svg);
+  hit.addEventListener('click', ev => {
+    const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+    const loc = pt.matrixTransform(svg.getScreenCTM().inverse());
+    const s = lin(L, R, P.smin, P.smax)(loc.x), r = lin(B, T, P.rmin, P.rmax)(loc.y);
+    $('ss').value = Math.round(s * 2) / 2; $('sr').value = Math.round(r * 200) / 2; update(true);
+  });
+}
+
+function renderSlice() {
+  const svg = $('slice'); svg.innerHTML = '';
+  const r = +$('sr').value / 100, ss = +$('ss').value;
+  $('slice-title').textContent = `Bandas de apoyo con ranura/paso = ${fmt(r * 100)} %`;
+  const L = 62, R = 940, T = 16, B = 350;
+  const top = Math.ceil(Math.max(S.hi.g * 1.3, P.G * 1.8) / 20) * 20;
+  const x = lin(P.smin, P.smax, L, R), y = lin(0, top, B, T);
+  const clip = el('clipPath', { id: 'slclip' }, svg); el('rect', { x: L, y: T, width: R - L, height: B - T }, clip);
+  for (const v of niceTicks(0, top, 8)) { el('line', { x1: L, x2: R, y1: y(v), y2: y(v), stroke: 'var(--line)' }, svg); txt(svg, L - 8, y(v) + 4, fmt(v, 0), { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--muted)' }); }
+  for (const v of niceTicks(P.smin, P.smax, 10)) txt(svg, x(v), B + 18, fmt(v, 0), { 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--muted)' });
+  const cg = el('g', { 'clip-path': 'url(#slclip)' }, svg);
+  el('rect', { x: L, y: y(S.hi.g), width: R - L, height: y(S.lo.g) - y(S.hi.g), fill: 'var(--accent-soft)' }, cg);
+  el('rect', { x: L, y: y(P.G), width: R - L, height: B - y(P.G), fill: 'var(--muted)', 'fill-opacity': .08 }, cg);
+  const s0 = Math.max(P.smin, sNoFit(r, P));
+  if (s0 < P.smax) for (let k = 1; k <= 6; k++) {
+    const lo = s => s * (1 + 2 * (k - 1) / r) + 2 * P.m, hi = s => s * (2 * k - r) / r - 2 * P.W - 2 * P.m;
+    const pts = [[s0, lo(s0)], [P.smax, lo(P.smax)], [P.smax, hi(P.smax)], [s0, hi(s0)]];
+    el('polygon', { points: pts.map(([a, b]) => `${x(a)},${y(b)}`).join(' '), fill: kColor(k), 'fill-opacity': .28, stroke: kColor(k), 'stroke-width': 1 }, cg);
+  }
+  el('line', { x1: L, x2: R, y1: y(P.G), y2: y(P.G), stroke: 'var(--ink)', 'stroke-dasharray': '6 4' }, svg);
+  txt(svg, R - 4, y(P.G) + 15, `mínimo del módulo ${fmt(P.G, 0)}`, { 'text-anchor': 'end', 'font-size': 11 });
+  txt(svg, L + 6, y(S.hi.g) + 14, `rango de diseño ${fmt(S.lo.g)} – ${fmt(S.hi.g)}`, { 'font-size': 11, fill: 'var(--accent)' });
+  // separación usada
+  const sv = grid(P.smin, P.smax, (P.smax - P.smin) / 500);
+  for (let k = 1; k <= 8; k++) { const st = sTrans(k, r, P); if (st > P.smin && st < P.smax) sv.push(st * (1 - 1e-9), st); }
+  sv.sort((a, b) => a - b);
+  let d = '', pen = false;
+  for (const s of sv) { const q = need(s, r, P); if (!q) { pen = false; continue; } d += `${pen ? 'L' : 'M'}${x(s).toFixed(1)},${y(q.g).toFixed(1)}`; pen = true; }
+  el('path', { d, fill: 'none', stroke: 'var(--ink)', 'stroke-width': 2.5 }, cg);
+  el('line', { x1: x(ss), x2: x(ss), y1: T, y2: B, stroke: 'var(--ink)', 'stroke-opacity': .35 }, svg);
+  el('line', { x1: L, x2: R, y1: B, y2: B, stroke: 'var(--muted)' }, svg);
+  txt(svg, (L + R) / 2, B + 38, 'ancho de ranura s [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)' });
+  txt(svg, 14, (T + B) / 2, 'separación interior g [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)', transform: `rotate(-90 14 ${(T + B) / 2})` });
+  svg.setAttribute('viewBox', `0 0 960 ${B + 48}`);
+}
+
+let sensCache = { key: '', rows: [] };
+function sensRows() {
+  const key = JSON.stringify({ ...P, G: 0 });
+  if (sensCache.key !== key) {
+    const rows = [];
+    for (let G = 30; G <= 100; G++) { const q = sweep({ ...P, G }, 0.1, 0.002); rows.push({ G, lo: q.lo.g, hi: q.hi.g }); }
+    sensCache = { key, rows };
+  }
+  return sensCache.rows;
+}
+function renderSens() {
+  const svg = $('sens'); svg.innerHTML = '';
+  const rows = sensRows().filter(r => isFinite(r.lo));
+  if (!rows.length) return;
+  const L = 62, R = 940, T = 16, B = 310;
+  const top = Math.ceil(Math.max(...rows.map(r => r.hi)) * 1.08 / 20) * 20;
+  const x = lin(30, 100, L, R), y = lin(0, top, B, T);
+  for (const v of niceTicks(0, top, 8)) { el('line', { x1: L, x2: R, y1: y(v), y2: y(v), stroke: 'var(--line)' }, svg); txt(svg, L - 8, y(v) + 4, fmt(v, 0), { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--muted)' }); }
+  for (const v of niceTicks(30, 100, 14)) txt(svg, x(v), B + 18, fmt(v, 0), { 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--muted)' });
+  const area = rows.map(r => `${x(r.G)},${y(r.hi)}`).concat(rows.slice().reverse().map(r => `${x(r.G)},${y(r.lo)}`));
+  el('polygon', { points: area.join(' '), fill: 'var(--accent-soft)' }, svg);
+  el('polyline', { points: rows.map(r => `${x(r.G)},${y(r.hi)}`).join(' '), fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2.5 }, svg);
+  el('polyline', { points: rows.map(r => `${x(r.G)},${y(r.lo)}`).join(' '), fill: 'none', stroke: 'var(--accent)', 'stroke-width': 1.5 }, svg);
+  txt(svg, x(97), y(rows[rows.length - 4].hi) - 10, 'máximo', { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--accent)' });
+  txt(svg, x(97), y(rows[rows.length - 4].lo) + 18, 'mínimo', { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--accent)' });
+  const cur = rows.find(r => r.G === P.G);
+  if (cur) {
+    el('line', { x1: x(cur.G), x2: x(cur.G), y1: y(cur.hi), y2: y(cur.lo), stroke: 'var(--ink)', 'stroke-width': 2 }, svg);
+    for (const v of [cur.hi, cur.lo]) el('circle', { cx: x(cur.G), cy: y(v), r: 4, fill: 'var(--ink)' }, svg);
+    txt(svg, x(cur.G) + 8, (y(cur.hi) + y(cur.lo)) / 2 + 4, `carrera ${fmt(cur.hi - cur.lo)}`, { 'font-size': 12, 'font-weight': 500 });
+  }
+  el('line', { x1: L, x2: R, y1: B, y2: B, stroke: 'var(--muted)' }, svg);
+  txt(svg, (L + R) / 2, B + 38, 'mínimo libre para el módulo G [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)' });
+  txt(svg, 14, (T + B) / 2, 'separación interior [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)', transform: `rotate(-90 14 ${(T + B) / 2})` });
+  // tabla
+  const pick = [...new Set([50, 55, 60, 70, P.G])].sort((a, b) => a - b);
+  let h = '<thead><tr><th>Mínimo del módulo</th><th>Separación interior</th><th>Carrera</th><th>Por oruga</th><th>Entre ejes</th><th>Ancho exterior</th></tr></thead><tbody>';
+  for (const G of pick) {
+    const r = rows.find(q => q.G === G); if (!r) continue;
+    h += `<tr${G === P.G ? ' class="cur"' : ''}><td>${fmt(G, 0)} mm</td><td>${fmt(r.lo)} – ${fmt(r.hi)}</td><td>${fmt(r.hi - r.lo)}</td><td>${fmt((r.hi - r.lo) / 2)}</td><td>${fmt(r.lo + P.W)} – ${fmt(r.hi + P.W)}</td><td>${fmt(r.lo + 2 * P.W)} – ${fmt(r.hi + 2 * P.W)}</td></tr>`;
+  }
+  $('tbl').innerHTML = h + '</tbody>';
+}
+
+function renderClosed() {
+  if (P.m !== 0) { $('closed').textContent = 'Con margen de apoyo distinto de cero la expresión cambia; los valores de arriba salen del barrido numérico.'; return; }
+  const v = (P.G + 2 * P.W) * (2 + P.rmax) / (2 - P.rmax);
+  $('closed').textContent = `Con los valores actuales: (${fmt(P.G, 0)} + 2·${fmt(P.W, 1)}) · (2 + ${fmt(P.rmax, 2)}) / (2 − ${fmt(P.rmax, 2)}) = ${fmt(v)} mm, que coincide con el barrido (${fmt(S.hi.g)} mm) siempre que la máquina crítica caiga dentro del rango de ranuras.`;
+}
+
+function update(onlyMachine) {
+  P = params();
+  syncOutputs();
+  if (!onlyMachine || !S) S = sweep(P);
+  renderResult(); renderStator(); renderLine(); renderMap(); renderSlice(); renderClosed();
+  clearTimeout(update.t); update.t = setTimeout(renderSens, onlyMachine ? 0 : 60);
+}
+
+for (const id of ['gmin', 'w', 'm', 'smin', 'smax', 'rmin', 'rmax']) $(id).addEventListener('input', () => update(false));
+for (const id of ['ss', 'sr']) $(id).addEventListener('input', () => update(true));
+$('gmin-presets').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (v) { $('gmin').value = v; update(false); } });
+$('smax-presets').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (v) { $('smax').value = v; update(false); } });
+const rerenderTheme = () => { if (S) { renderMap(); } };
+try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerenderTheme); } catch (e) {}
+new MutationObserver(rerenderTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+update(false);
+})();
+</script>
