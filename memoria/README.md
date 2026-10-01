@@ -30,6 +30,7 @@ memoria/
 | [02489-00-MC006](pdf/02489-00-MC006.pdf) | Forma y largo del flex del conector M12 | 28/09/2026 |
 | [02489-00-MC007](pdf/02489-00-MC007.pdf) | Selección del LED OSLON SSL 80 | 28/09/2026 |
 | [02489-00-MC009](pdf/02489-00-MC009.pdf) | Geometría de ranuras estatóricas en generadores ≥ 20 MW | 30/09/2026 |
+| [02489-00-MC010](pdf/02489-00-MC010.pdf) | Evaluación de la cámara NanEyeC | 01/10/2026 |
 
 ## Escribir una nota nueva
 
