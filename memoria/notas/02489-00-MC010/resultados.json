@@ -1,0 +1,75 @@
+{
+  "campo": [
+    {
+      "d_mm": 4.0,
+      "ancho_mm": 9.8,
+      "px_por_mm": 32.7,
+      "mm_por_px": 0.031
+    },
+    {
+      "d_mm": 5.0,
+      "ancho_mm": 12.25,
+      "px_por_mm": 26.1,
+      "mm_por_px": 0.038
+    },
+    {
+      "d_mm": 6.0,
+      "ancho_mm": 14.7,
+      "px_por_mm": 21.8,
+      "mm_por_px": 0.046
+    },
+    {
+      "d_mm": 8.0,
+      "ancho_mm": 19.6,
+      "px_por_mm": 16.3,
+      "mm_por_px": 0.061
+    },
+    {
+      "d_mm": 12.0,
+      "ancho_mm": 29.39,
+      "px_por_mm": 10.9,
+      "mm_por_px": 0.092
+    }
+  ],
+  "seim": [
+    {
+      "sclk_MHz": 12.375,
+      "cuadro_ms": 103.7,
+      "fps": 9.6,
+      "Mbit_s": 12.38
+    },
+    {
+      "sclk_MHz": 24.75,
+      "cuadro_ms": 51.8,
+      "fps": 19.3,
+      "Mbit_s": 24.75
+    },
+    {
+      "sclk_MHz": 60.0,
+      "cuadro_ms": 21.4,
+      "fps": 46.8,
+      "Mbit_s": 60.0
+    },
+    {
+      "sclk_MHz": 75.0,
+      "cuadro_ms": 17.1,
+      "fps": 58.5,
+      "Mbit_s": 75.0
+    }
+  ],
+  "medido_naneyem": [
+    {
+      "d_mm": 4.0,
+      "ancho_mm": 11.2,
+      "px_por_mm": 28.6,
+      "nominal_mm": 9.8
+    },
+    {
+      "d_mm": 6.0,
+      "ancho_mm": 14.24,
+      "px_por_mm": 22.5,
+      "nominal_mm": 14.7
+    }
+  ],
+  "caudal_util_Mbit_s_58fps": 59.4
+}
