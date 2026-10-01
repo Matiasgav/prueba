@@ -20,6 +20,7 @@
   --k2: #b7791f;
   --k3: #7a4fa3;
   --k4: #6b7680;
+  --sensor: #0b0f13;
   --seq-lo: #dcecf1;
   --seq-hi: #0f3d52;
   --warn: #a4471c;
@@ -34,7 +35,7 @@
     --steel: #4a5763; --steel-top: #6b7a88; --copper: #cf7f43; --copper-2: #8f5327;
     --accent: #5db4d3; --accent-soft: rgba(93,180,211,.16);
     --k1: #5db4d3; --k2: #e0a246; --k3: #b48be0; --k4: #8f9aa4;
-    --seq-lo: #173341; --seq-hi: #9fdcf0; --warn: #f08a5d; --ok: #6cc896;
+    --sensor: #000000; --seq-lo: #173341; --seq-hi: #9fdcf0; --warn: #f08a5d; --ok: #6cc896;
     color-scheme: dark;
   }
 }
@@ -43,7 +44,7 @@
   --steel: #4a5763; --steel-top: #6b7a88; --copper: #cf7f43; --copper-2: #8f5327;
   --accent: #5db4d3; --accent-soft: rgba(93,180,211,.16);
   --k1: #5db4d3; --k2: #e0a246; --k3: #b48be0; --k4: #8f9aa4;
-  --seq-lo: #173341; --seq-hi: #9fdcf0; --warn: #f08a5d; --ok: #6cc896;
+  --sensor: #000000; --seq-lo: #173341; --seq-hi: #9fdcf0; --warn: #f08a5d; --ok: #6cc896;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -243,6 +244,18 @@ tr.cur td { color: var(--accent); font-weight: 500; }
           <span><i class="sw" style="background:var(--k3)"></i>3.er diente</span>
           <span><i class="sw" style="background:var(--accent-soft);border:1px solid var(--accent)"></i>regulación del robot</span>
         </div>
+      </section>
+
+      <section class="card spec">
+        <div class="eyebrow">Sensores de inspección</div>
+        <p class="sub">Un sensor en cada diente vecino a la ranura inspeccionada, con su borde alineado al borde del diente que está lejos de la ranura y el cuerpo entero sobre el diente. En el corte de arriba se dibujan como cuadrados negros.</p>
+        <div class="two">
+          <div class="ctl"><div class="ctl-head"><label for="sn-w">Ancho del sensor</label><output id="sn-w-o"></output></div><input id="sn-w" type="range" min="4" max="30" step="0.5" value="12"></div>
+        </div>
+        <p class="verdict" id="sn-verdict"></p>
+        <div class="tablewrap"><table id="sn-tbl"></table></div>
+        <p class="sub" id="sn-note"></p>
+        <div class="eq" id="sn-eq"></div>
       </section>
 
       <section class="card">
@@ -695,13 +708,36 @@ function renderRaise() {
   txt(svg, 14, (T + B) / 2, 'carrera por lado [mm]', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)', transform: `rotate(-90 14 ${(T + B) / 2})` });
 }
 
+function renderSensors() {
+  const Ws = +$('sn-w').value;
+  $('sn-w-o').textContent = fmt(Ws, 1) + ' mm';
+  // borde exterior respecto del eje de ranura: p - s/2 = s(2 - r)/(2r); crece con s y baja con r
+  const half = (s, r) => s * (2 - r) / (2 * r);
+  const lo = half(P.smin, P.rmax), hi = half(P.smax, P.rmin);
+  const tmin = P.smin * (1 - P.rmax) / P.rmax;
+  const rows = [
+    ['Bordes exteriores (distancia entre sensores, por fuera)', 2 * lo, 2 * hi],
+    ['Centros de los sensores', 2 * lo - Ws, 2 * hi - Ws],
+    ['Bordes interiores (luz entre sensores)', 2 * lo - 2 * Ws, 2 * hi - 2 * Ws],
+    ['Borde exterior de cada sensor al eje de la ranura', lo, hi],
+    ['Centro de cada sensor al eje de la ranura', lo - Ws / 2, hi - Ws / 2],
+  ];
+  let h = '<thead><tr><th>Medida</th><th>Mínimo</th><th>Máximo</th><th>Rango</th></tr></thead><tbody>';
+  for (const [l, a, b] of rows) h += `<tr><td style="font-family:var(--f-body)">${l}</td><td>${fmt(a)}</td><td>${fmt(b)}</td><td>${fmt(b - a)}</td></tr>`;
+  $('sn-tbl').innerHTML = h + '</tbody>';
+  $('sn-verdict').innerHTML = `Cada sensor tiene que poder ubicarse entre <strong>${fmt(lo - Ws / 2)}</strong> y <strong>${fmt(hi - Ws / 2)} mm</strong> del eje de la ranura (medido a su centro): una carrera de <strong>${fmt(hi - lo)} mm por sensor</strong>, o ${fmt(2 * (hi - lo))} mm entre los dos.`;
+  $('sn-note').textContent = `El mínimo es la máquina de ranura ${fmt(P.smin, 0)} mm con ranura/paso ${fmt(P.rmax * 100, 0)} %; el máximo, la de ranura ${fmt(P.smax, 0)} mm con ${fmt(P.rmin * 100, 0)} %. ` +
+    (tmin >= Ws ? `El diente más angosto mide ${fmt(tmin)} mm, así que el sensor siempre entra entero.` : `Ojo: el diente más angosto mide ${fmt(tmin)} mm, menos que el sensor; en esas máquinas no entra entero.`) +
+    ' El sensor queda sobre el mismo diente que las orugas del robot centrado; para que no choquen tienen que ir desplazados a lo largo del eje de avance (por delante o por detrás de las orugas).';
+  $('sn-eq').textContent = `borde exterior del sensor al eje de ranura = s/2 + diente = paso − s/2 = s·(2 − r) / (2r)\ncon el panel: ${fmt(P.smin, 0)}·(2 − ${fmt(P.rmax, 2)})/(2·${fmt(P.rmax, 2)}) = ${fmt(lo)} mm   …   ${fmt(P.smax, 0)}·(2 − ${fmt(P.rmin, 2)})/(2·${fmt(P.rmin, 2)}) = ${fmt(hi)} mm`;
+}
 function renderStator() {
   const svg = $('stator'); svg.innerHTML = '';
   const s = +$('ss').value, r = +$('sr').value / 100, q = need(s, r, P);
   const p = s / r, t = p - s;
   const g = q ? q.g : P.G;
   const halfOuter = g / 2 + P.W;
-  const X = Math.max(halfOuter + 0.9 * p, s / 2 + 1.6 * p, P.G / 2 + 30);
+  const X = Math.max(halfOuter + 0.9 * p, s / 2 + 1.6 * p, P.G / 2 + 30, p - s / 2 + 20);
   const x = lin(-X, X, 30, 930), mm = 900 / (2 * X);
   const y0 = 200, slotD = 82, coreB = y0 + slotD + 22;
   // núcleo
@@ -752,13 +788,27 @@ function renderStator() {
   } else {
     txt(svg, 480, 90, 'El diente es más angosto que la oruga: esta máquina no admite el robot.', { 'text-anchor': 'middle', fill: 'var(--warn)' });
   }
+  // sensores: borde exterior del diente vecino, cuerpo sobre el diente
+  const Ws = +$('sn-w').value, eOut = s / 2 + t, sOK = t >= Ws;
+  for (const sg of [-1, 1]) {
+    const a = sg > 0 ? eOut - Ws : -eOut;
+    el('rect', { x: x(a), y: y0 - Ws * mm, width: Ws * mm, height: Ws * mm, fill: 'var(--sensor)', stroke: 'var(--ink)', 'stroke-width': .8, 'fill-opacity': sOK ? 1 : .4 }, svg);
+  }
+  const ysn = coreB + 64;
+  for (const v of [-eOut, eOut]) el('line', { x1: x(v), x2: x(v), y1: y0, y2: ysn + 6, stroke: 'var(--muted)', 'stroke-width': .8, 'stroke-dasharray': '2 3' }, svg);
+  dim(svg, x(-eOut), x(eOut), ysn, `sensores, bordes exteriores ${fmt(2 * eOut)} mm`);
+  if (q) {
+    const ti = g / 2, to = g / 2 + P.W, si = eOut - Ws;
+    const ov = Math.min(to, eOut) - Math.max(ti, si);
+    if (ov > 0) txt(svg, x(eOut) + 6, y0 - Ws * mm - 6, 'sensor y oruga en el mismo diente', { 'font-size': 11, fill: 'var(--warn)' });
+  }
   // cotas de ranura, diente y paso
   const yd = coreB + 16;
   dim(svg, x(-s / 2), x(s / 2), yd, `s ${fmt(s)}`);
   dim(svg, x(s / 2), x(s / 2 + t), yd, `diente ${fmt(t)}`);
   dim(svg, x(0), x(p), yd + 24, '');
   txt(svg, x(p) + 6, yd + 28, `paso ${fmt(p)}`, { 'font-size': 11, fill: 'var(--muted)' });
-  svg.setAttribute('viewBox', `0 0 960 ${yd + 36}`);
+  svg.setAttribute('viewBox', `0 0 960 ${ysn + 14}`);
 }
 function dim(svg, a, b, y, label, faint) {
   const op = faint ? .6 : 1;
@@ -1573,7 +1623,7 @@ function update(onlyMachine) {
   if (!onlyMachine || !S) S = regulation(P);
   clearTimeout(update.t);
   if (tab === 'reg') {
-    renderResult(); renderStator(); renderLine(); renderMap(); renderSlice(); renderClosed();
+    renderResult(); renderSensors(); renderStator(); renderLine(); renderMap(); renderSlice(); renderClosed();
     if (!onlyMachine) update.t = setTimeout(() => { renderLevers(); renderRaise(); renderSens(); }, 60);
   } else if (tab === 'mod') modCompute();
   else if (tab === 'des') desCompute();
@@ -1582,7 +1632,7 @@ function update(onlyMachine) {
 }
 
 for (const id of ['gmin', 'hol', 'w', 'm', 'smin', 'smax', 'rmin', 'rmax']) $(id).addEventListener('input', () => update(false));
-for (const id of ['ss', 'sr']) $(id).addEventListener('input', () => update(true));
+for (const id of ['ss', 'sr', 'sn-w']) $(id).addEventListener('input', () => update(true));
 $('gmin-presets').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (v) { $('gmin').value = v; update(false); } });
 $('smax-presets').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (v) { $('smax').value = v; update(false); } });
 $('copy').addEventListener('click', () => {
