@@ -177,11 +177,11 @@ tr.cur td { color: var(--accent); font-weight: 500; }
         </div>
         <div class="ctl">
           <div class="ctl-head"><label for="rmin">Ranura / paso, mínimo</label><output id="rmin-o"></output></div>
-          <input id="rmin" type="range" min="20" max="50" step="1" value="30">
+          <input id="rmin" type="range" min="10" max="80" step="1" value="20">
         </div>
         <div class="ctl">
           <div class="ctl-head"><label for="rmax">Ranura / paso, máximo</label><output id="rmax-o"></output></div>
-          <input id="rmax" type="range" min="20" max="50" step="1" value="40">
+          <input id="rmax" type="range" min="10" max="80" step="1" value="75">
         </div>
       </div>
       <p class="hint">En cada máquina las orugas se abren lo mínimo posible: el primer diente que respeta el tope cerrado. La regulación va de la menor a la mayor de esas aperturas.</p>
@@ -581,7 +581,7 @@ function optimalA(P, ds, dr) {
 }
 function regulation(P, ds = 0.05, dr = 0.001, ods = 0.25, odr = 0.0025) {
   const A = sweep(P, ds, dr);
-  const a = optimalA(P, ods, odr);
+  const a = optimalA(P, ods, Math.max(odr, (P.rmax - P.rmin) / 40));
   if (a > P.G + 1e-6) {
     const B = sweep({ ...P, G: a }, ds, dr);
     if (isFinite(B.lo.g) && (!isFinite(A.lo.g) || B.hi.g - B.lo.g < A.hi.g - A.lo.g - 1e-6)) return { ...B, a };
@@ -731,7 +731,9 @@ function renderSensors() {
   $('sn-w-o').textContent = fmt(Ws, 1) + ' mm';
   // borde exterior respecto del eje de ranura: p - s/2 = s(2 - r)/(2r); crece con s y baja con r
   const half = (s, r) => s * (2 - r) / (2 * r);
-  const lo = half(P.smin, P.rmax), hi = half(P.smax, P.rmin);
+  // el sensor entra entero si diente >= sensor, o sea r <= s/(s + Ws)
+  const rFit = Math.min(P.rmax, P.smin / (P.smin + Ws));
+  const lo = half(P.smin, rFit), hi = half(P.smax, Math.min(P.rmin, P.smax / (P.smax + Ws)));
   const tmin = P.smin * (1 - P.rmax) / P.rmax;
   const rows = [
     ['Bordes exteriores (distancia entre sensores, por fuera)', 2 * lo, 2 * hi],
@@ -744,8 +746,8 @@ function renderSensors() {
   for (const [l, a, b] of rows) h += `<tr><td style="font-family:var(--f-body)">${l}</td><td>${fmt(a)}</td><td>${fmt(b)}</td><td>${fmt(b - a)}</td></tr>`;
   $('sn-tbl').innerHTML = h + '</tbody>';
   $('sn-verdict').innerHTML = `Cada sensor tiene que poder ubicarse entre <strong>${fmt(lo - Ws / 2)}</strong> y <strong>${fmt(hi - Ws / 2)} mm</strong> del eje de la ranura (medido a su centro): una carrera de <strong>${fmt(hi - lo)} mm por sensor</strong>, o ${fmt(2 * (hi - lo))} mm entre los dos.`;
-  $('sn-note').textContent = `El mínimo es la máquina de ranura ${fmt(P.smin, 0)} mm con ranura/paso ${fmt(P.rmax * 100, 0)} %; el máximo, la de ranura ${fmt(P.smax, 0)} mm con ${fmt(P.rmin * 100, 0)} %. ` +
-    (tmin >= Ws ? `El diente más angosto mide ${fmt(tmin)} mm, así que el sensor siempre entra entero.` : `Ojo: el diente más angosto mide ${fmt(tmin)} mm, menos que el sensor; en esas máquinas no entra entero.`) +
+  $('sn-note').textContent = `El mínimo es la máquina de ranura ${fmt(P.smin, 0)} mm con ranura/paso ${fmt(rFit * 100, 0)} %; el máximo, la de ranura ${fmt(P.smax, 0)} mm con ${fmt(P.rmin * 100, 0)} %. ` +
+    (tmin >= Ws ? `El diente más angosto mide ${fmt(tmin)} mm, así que el sensor siempre entra entero.` : `Ojo: el diente más angosto mide ${fmt(tmin)} mm, menos que el sensor. El sensor solo entra entero si la ranura es como mucho s/(s + ${fmt(Ws, 0)}) del paso (${fmt(100 * P.smin / (P.smin + Ws), 0)} % con ranura de ${fmt(P.smin, 0)} mm); las máquinas por encima de eso quedaron fuera del rango.`) +
     ' El sensor queda sobre el mismo diente que apoyan las orugas; para que no choquen tienen que ir por delante o por detrás de las orugas en la dirección de avance.';
   $('sn-eq').textContent = `borde exterior del sensor al eje de ranura = s/2 + diente = paso − s/2 = s·(2 − r) / (2r)\ncon el panel: ${fmt(P.smin, 0)}·(2 − ${fmt(P.rmax, 2)})/(2·${fmt(P.rmax, 2)}) = ${fmt(lo)} mm   …   ${fmt(P.smax, 0)}·(2 − ${fmt(P.rmin, 2)})/(2·${fmt(P.rmin, 2)}) = ${fmt(hi)} mm`;
 }
