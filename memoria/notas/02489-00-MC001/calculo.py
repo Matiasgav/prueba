@@ -17,6 +17,10 @@ Diseños (d_a <= 11,5 mm, z >= 16 según Shigley tabla 13-3): KG M50S20 (S45C,
 actual), KG M50B20 (latón) y tres mitras a medida: m0,5 z20 de SCM440 bonificado,
 m0,5 z20 y m0,6 z17 de SCM415 carburizado.
 
+Agrega la falla por flexión del S45C (material elegido) con el uso real de
+24 h seguidas una vez por mes, para vidas de 10, 5 y 2 años y tres escenarios
+de factores, y el torque de rotura estática del diente.
+
 También compara con el datasheet de KG (tabla de potencia a flexión) recalculando
 con Shigley en las condiciones de KG.
 """
@@ -400,6 +404,71 @@ def cascada(rpm=100):
     return pasos
 
 
+
+# ---------------------------------------------------------------------------
+# 8c. Falla por flexión del S45C (material elegido): 24 h por mes
+# ---------------------------------------------------------------------------
+HORAS_MES_REAL = 24          # uso informado después: 24 h seguidas, 1 vez por mes
+VIDAS = [10, 5, 2]           # años
+ESCENARIOS = [
+    # clave, etiqueta, factores
+    ('informe', 'Factores de la nota', {}),
+    ('sin_montaje', 'Optimista sin cambiar el montaje',
+     {'Q_v': 8, 'R': 0.90, 'alternada': 1.0}),
+    ('completo', 'Optimista completo',
+     {'Q_v': 8, 'R': 0.90, 'alternada': 1.0, 'Z_xc': 1.5, 'K_mb': 1.10}),
+]
+MAT_S45C = ['S45C', 'S45C 200 HB']
+
+
+def con_uso(horas_mes, anios, fn):
+    """Evalúa fn() con otro uso (horas por mes y años) y restaura el caso base."""
+    global N_PICOS
+    viejo = (DATOS['horas_por_mes'], DATOS['anios'], N_PICOS)
+    DATOS['horas_por_mes'], DATOS['anios'] = horas_mes, anios
+    N_PICOS = DATOS['picos_por_hora'] * horas_mes * 12 * anios
+    try:
+        return fn()
+    finally:
+        DATOS['horas_por_mes'], DATOS['anios'], N_PICOS = viejo
+
+
+def flexion_s45c(rpm=100):
+    """Torque admisible a flexión (T_F) y a picado (T_H) de la M50S20 en S45C,
+    servicio continuo y pico de 10 s, para cada escenario de factores y vida."""
+    out = {}
+    for esc, _lab, f in ESCENARIOS:
+        out[esc] = {}
+        for mk in MAT_S45C:
+            mat = MATERIALES[mk]
+            out[esc][mk] = {}
+            for a in VIDAS + list(range(1, 11)):
+                def calc():
+                    n = capacidad(BASE, mat, rpm, N_eval(ciclos_normal(rpm)), f=f)
+                    p = capacidad(BASE, mat, rpm, N_eval(ciclos_pico(rpm)), f=f)
+                    return {'N': n['N'], 'T_F': n['T_F'], 'T_H': n['T_H'],
+                            'T_F_pico': p['T_F'], 'T_H_pico': p['T_H'],
+                            'sFP': n['sFP'], 'Y_NT': n['Y_NT']}
+                out[esc][mk][a] = con_uso(HORAS_MES_REAL, a, calc)
+    return out
+
+
+def rotura_estatica():
+    """Torque que rompe el diente de un golpe: tensión en la raíz igual a S_ut,
+    sin factores de vida, confiabilidad ni seguridad (K_A = K_v = 1).
+    S_ut = 3,41 HB MPa (Shigley ec. 2-17)."""
+    g = BASE
+    out = {}
+    for mk in MAT_S45C:
+        HB = MATERIALES[mk]['HB']
+        Sut = 3.41 * HB
+        fila = {'HB': HB, 'Sut': Sut}
+        for Kmb in (1.25, 1.10):
+            W = Sut * g['b_ef'] * g['m'] * g['J'] / (Y_x(g['m']) * K_Hb(g['b_ef'], Kmb))
+            fila[f'T_{Kmb:.2f}'] = W * g['d'] / 2000.0
+        out[mk] = fila
+    return out
+
 # ---------------------------------------------------------------------------
 # 9. Figuras
 # ---------------------------------------------------------------------------
@@ -690,6 +759,27 @@ def fig_geometria():
     guardar(fig, 'fig_geometria')
 
 
+
+def fig_flexion(fx):
+    """T_F continuo a 100 rpm de la M50S20 (S45C) en función de la vida."""
+    anios = list(range(1, 11))
+    fig, axs = plt.subplots(1, 2, figsize=(8.4, 3.3), sharey=True)
+    for ax, mk, tit in zip(axs, MAT_S45C, ('S45C 170 HB', 'S45C 200 HB')):
+        for (esc, lab, _f), col in zip(ESCENARIOS, SERIES):
+            ax.plot(anios, [fx[esc][mk][a]['T_F'] for a in anios], color=col, lw=1.6,
+                    marker='o', ms=3, label=lab + ' (flexión)')
+            ax.plot(anios, [fx[esc][mk][a]['T_H'] for a in anios], color=col, lw=1.0,
+                    ls='--', label=lab + ' (picado)')
+        ax.set_title(tit, fontsize=9, color=TXT)
+        ax.set_xticks([1, 2, 4, 6, 8, 10])
+        estilo(ax, 'Vida [años], 24 h por mes', 'Torque continuo [N·m]' if mk == 'S45C' else None)
+    axs[0].set_ylim(0, None)
+    h, l = axs[0].get_legend_handles_labels()
+    fig.legend(h, l, loc='lower center', ncol=3, fontsize=7.5, frameon=False,
+               bbox_to_anchor=(0.5, -0.12))
+    fig.tight_layout()
+    guardar(fig, 'fig_flexion')
+
 # ---------------------------------------------------------------------------
 # 10. Principal
 # ---------------------------------------------------------------------------
@@ -697,6 +787,7 @@ def main():
     os.makedirs(FIG, exist_ok=True)
     os.makedirs(RES, exist_ok=True)
     res = calcular_disenos()
+    fx = flexion_s45c()
     cota = {r: capacidad(BASE, MATERIALES['Latón C3604B'], r, N_eval(ciclos_normal(r)),
                          sHlim=COTA_BAJA['Latón C3604B'])['T_adm'] for r in DATOS['rpm_normal']}
     js = lambda d: {str(k): v for k, v in d.items()}  # noqa: E731
@@ -713,6 +804,12 @@ def main():
                        'M3 en eje 4': prisionero(4.0, 160)},
         'materiales': MATERIALES,
         'Y_Z': Y_Z(FACT['R']),
+        'flexion_s45c': {'horas_por_mes': HORAS_MES_REAL, 'rpm': 100,
+                         'escenarios': {e: {'etiqueta': l, 'factores': f}
+                                        for e, l, f in ESCENARIOS},
+                         'resultados': {e: {mk: js(v) for mk, v in d.items()}
+                                        for e, d in fx.items()}},
+        'rotura_estatica': rotura_estatica(),
     }
     with open(os.path.join(RES, 'resultados.json'), 'w', encoding='utf-8') as fh:
         json.dump(salida, fh, ensure_ascii=False, indent=1)
@@ -723,6 +820,7 @@ def main():
     fig_ciclos()
     fig_sensibilidad()
     fig_geometria()
+    fig_flexion(fx)
     comp, pasos = comparacion_kg(), cascada()
     fig_datasheet(comp, pasos)
     with open(os.path.join(RES, 'comparacion_kg.json'), 'w', encoding='utf-8') as fh:
@@ -750,6 +848,12 @@ def main():
                 print(f"   {reg:6s} {r:5g} N={v['N']:.2e} TF={v['T_F']:.4f} TH={v['T_H']:.4f}"
                       f" -> {v['T_adm']:.4f} {v['modo']} sFP={v['sFP']:.0f} ok={v['fluencia_ok']}")
     print(prisionero(3.0, 85), prisionero(4.0, 160))
+    for e, _l, _f in ESCENARIOS:
+        for mk in MAT_S45C:
+            print('FLEX', e, mk, '  '.join(
+                f"{a}a: F {fx[e][mk][a]['T_F']:.3f}/{fx[e][mk][a]['T_F_pico']:.3f}"
+                f" H {fx[e][mk][a]['T_H']:.3f}/{fx[e][mk][a]['T_H_pico']:.3f}" for a in VIDAS))
+    print('ROTURA', rotura_estatica())
 
 
 if __name__ == '__main__':

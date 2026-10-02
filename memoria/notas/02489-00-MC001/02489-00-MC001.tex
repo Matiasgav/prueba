@@ -166,6 +166,9 @@ m\,0,6 z17, SCM415 carburizada    & 11,05 & 0,557 & 0,358 & \textbf{0,346} & 0,8
   \item \textbf{Mejora sin cambiar la geometría:} la misma mitra m\,0,5 z20 a medida en SCM440 bonificado (×1,7)
         o en SCM415 carburizado (×3,3). Entra en el mismo lugar que la actual.
   \item \textbf{Máximo dentro de 11,5~mm:} m\,0,6 z17 carburizada (×3,9; 0,346\Nm continuo), pero cambia la distancia de montaje.
+  \item \textbf{Flexión del S45C con 24~h por mes} (sec.~\ref{sec:flexion}): a 100~rpm admite \textbf{0,094 a 0,113\Nm} en continuo
+        con los factores de la nota y 10 a 2~años de vida; con factores optimistas sin cambiar el montaje, \textbf{0,144 a 0,172\Nm}.
+        Acortar la vida suma solo un 5\,\%. El diente se rompe de un golpe recién a $\approx$1,2--1,4\Nm.
   \item Los dos prisioneros M2,5 admiten 0,28\Nm: alcanzan para la mitra actual, no para las mejoras. Estas necesitan
         arrastre positivo (plano en D o pasador) y, las carburizadas, eje de 4~mm. Todo vale solo con \textbf{grasa EP}.
 \end{itemize}
@@ -333,7 +336,7 @@ A medida & SCM415 carb. 58--62 HRC & 0,6 & 17 & 10,2 & 11,05 & 2,5 & 0,189 & 0,0
 \end{itemize}
 
 %-----------------------------------------------------------------------
-\section{Método}
+\section{Método}\label{sec:metodo}
 Shigley, cap.~15, ecuaciones AGMA para cónicos rectos en unidades SI, con $W^t$ la fuerza tangencial en el diámetro exterior.
 El torque admisible es el menor entre flexión y picado:
 \begin{align}
@@ -400,12 +403,84 @@ por flexión; el S45C de 170~HB a 100~rpm queda al límite entre flexión y pica
 \end{figure}
 
 \begin{figure}[H]\centering
-  \includegraphics[width=0.9\linewidth]{fig_picos.pdf}
+  \includegraphics[width=0.72\linewidth]{fig_picos.pdf}
   \caption{Pico admisible a 100~rpm según la frecuencia de picos.}
 \end{figure}
 
 Lo que más mueve el resultado es el montaje ($K_{mb}$), la dureza real del S45C y los golpes de rueda ($K_A$).
 Si el latón se evalúa con la resistencia a picado del bronce (tabla 14-7), su torque normal baja de 0,046 a 0,023\Nm a 100~rpm.
+
+%-----------------------------------------------------------------------
+\section{Falla por flexión del S45C}\label{sec:flexion}
+El material elegido es el \textbf{S45C} (mitra KG M50S20). Esta sección separa la falla por flexión (rotura del diente
+por fatiga en la raíz) de la de picado, con el uso informado después de la primera versión: \textbf{24~h seguidas una vez
+por mes}, en lugar de 20~h, y vidas de 10, 5 y 2~años. El método es el de la sec.~\ref{sec:metodo}; a 100~rpm la vida
+es de $3{,}5\times10^7$, $1{,}7\times10^7$ y $6{,}9\times10^6$ ciclos (con Miner, $N_{eval}=2n$).
+
+Se comparan tres escenarios de factores, cada uno acumulando sobre el anterior:
+\begin{itemize}
+  \item \textbf{Factores de la nota:} los de la tabla de la sec.~\ref{sec:metodo} ($Q_v=6$, $R=0{,}95$, 70\,\% por carga en
+        ambos sentidos, ambos engranajes en voladizo, dientes sin coronar).
+  \item \textbf{Optimista sin cambiar el montaje:} $Q_v=8$ (casi no influye: $v\approx0{,}05$~m/s), $R=0{,}90$
+        ($Y_Z=0{,}85$, el mínimo de la ec.~15-20) y el 100\,\% de la resistencia a flexión. El 70\,\% de Shigley
+        (sec.~15-2) corresponde a carga invertida en \emph{cada} ciclo, como en un engranaje loco; en la rueda la inversión
+        es ocasional (marcha atrás, frenado).
+  \item \textbf{Optimista completo:} además dientes coronados ($Z_{xc}=1{,}5$, ec.~15-12) y un engranaje entre apoyos
+        ($K_{mb}=1{,}10$, ec.~15-11). \textbf{Vale solo si el montaje y el tallado lo cumplen}; si no, rige el anterior.
+\end{itemize}
+
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{4pt}
+\begin{tabular}{l r cc cc}
+\toprule
+ & & \multicolumn{2}{c}{170 HB [N\,m]} & \multicolumn{2}{c}{200 HB [N\,m]}\\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Escenario & Vida & Continuo & Pico 10 s & Continuo & Pico 10 s\\
+\midrule
+Factores de la nota      & 10 años & 0,094 & 0,154 & 0,107 & 0,175\\
+                         &  5 años & 0,096 & 0,167 & 0,110 & 0,190\\
+                         &  2 años & 0,099 & 0,186 & 0,113 & 0,212\\
+\addlinespace
+Optimista sin montaje    & 10 años & 0,144 & 0,235 & 0,164 & 0,267\\
+                         &  5 años & 0,147 & 0,255 & 0,167 & 0,290\\
+                         &  2 años & 0,152 & 0,284 & 0,172 & 0,323\\
+\addlinespace
+Optimista completo       & 10 años & 0,164 & 0,267 & 0,186 & 0,303\\
+                         &  5 años & 0,167 & 0,290 & 0,190 & 0,330\\
+                         &  2 años & 0,172 & 0,323 & 0,196 & 0,368\\
+\bottomrule
+\end{tabular}
+\caption{Torque admisible \emph{a flexión} de la mitra M50S20 (S45C) a 100~rpm, 24~h por mes.}
+\label{tab:flexion}
+\end{table}
+
+\begin{figure}[H]\centering
+  \includegraphics[width=\linewidth]{fig_flexion.pdf}
+  \caption{Torque continuo admisible a 100~rpm según la vida: flexión (línea llena) y picado (línea de trazos).
+  El admisible de la mitra es el menor de los dos.}
+  \label{fig:flexion}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Acortar la vida casi no mueve la flexión:} de 10 a 2~años sube un 5\,\% en continuo y un 20\,\% en picos.
+        Entre $10^6$ y $10^8$ ciclos la curva de vida es casi plana ($Y_{NT}\propto N^{-0{,}032}$, ec.~15-15).
+  \item \textbf{Lo que más pesa es la carga en ambos sentidos:} pasar del 70\,\% al 100\,\% sube la flexión un 43\,\%.
+  \item \textbf{Con los factores de la nota, flexión y picado quedan parejos;} con los optimistas manda el picado,
+        salvo en el escenario completo a pocos años, donde los dos se emparejan (fig.~\ref{fig:flexion}). El admisible de la mitra
+        es el menor de los dos, no el de la tabla~\ref{tab:flexion}.
+\end{itemize}
+
+\paragraph{Rotura estática del diente.} Con la tensión en la raíz igual a la resistencia a la tracción
+($S_{ut}\approx3{,}41\,\text{HB}$, ec.~2-17: 580~MPa con 170~HB y 682~MPa con 200~HB), sin factores de vida, confiabilidad
+ni seguridad, el diente se rompe de un golpe con \textbf{$\approx$1,2~N\,m (170~HB) y $\approx$1,4~N\,m (200~HB)}
+con ambos engranajes en voladizo, y 1,3 a 1,5~N\,m con uno entre apoyos. Es un orden de magnitud, no un valor de diseño:
+hay un factor de 6 a 12 frente al admisible a fatiga, que es lo que limita.
+
+\textbf{Limitaciones}
+\begin{itemize}
+  \item \textbf{Módulo 0,5:} Shigley fija $Y_x=0{,}5$ por debajo de $m=1{,}6$; el método no está validado a este tamaño (sec.~\ref{sec:datasheet}).
+  \item \textbf{Picos:} se mantiene 1 pico por hora de uso; con 24~h por mes son 2880, 1440 y 576 picos en 10, 5 y 2~años.
+  \item \textbf{Rotura estática:} $S_{ut}$ estimado desde la dureza; el S45C es dúctil y la rotura real suele ser algo mayor.
+\end{itemize}
 
 %-----------------------------------------------------------------------
 \section{Fijación al eje y lubricación}
