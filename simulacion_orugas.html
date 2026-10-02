@@ -181,7 +181,12 @@ tr.cur td { color: var(--accent); font-weight: 500; }
         </div>
         <div class="ctl">
           <div class="ctl-head"><label for="rmax">Ranura / paso, máximo</label><output id="rmax-o"></output></div>
-          <input id="rmax" type="range" min="10" max="80" step="1" value="75">
+          <input id="rmax" type="range" min="10" max="80" step="1" value="60">
+        </div>
+        <div class="ctl">
+          <div class="ctl-head"><label for="tmin">Diente mínimo</label><output id="tmin-o"></output></div>
+          <input id="tmin" type="range" min="0" max="40" step="1" value="20">
+          <p class="hint">Las combinaciones de ranura y proporción que dan un diente más angosto que esto no existen y quedan fuera del barrido.</p>
         </div>
       </div>
       <p class="hint">En cada máquina las orugas se abren lo mínimo posible: el primer diente que respeta el tope cerrado. La regulación va de la menor a la mayor de esas aperturas.</p>
@@ -502,7 +507,7 @@ function params() {
   if (smin > smax) [smin, smax] = [smax, smin];
   if (rmin > rmax) [rmin, rmax] = [rmax, rmin];
   const Gm = +$('gmin').value, H = +$('hol').value;
-  return { Gm, H, G: Gm + H, W: +$('w').value, m: +$('m').value, smin, smax, rmin, rmax };
+  return { Gm, H, G: Gm + H, W: +$('w').value, m: +$('m').value, smin, smax, rmin, rmax, tmin: +$('tmin').value };
 }
 
 // Bandas de apoyo de una máquina: separación interior g válida con las orugas en el diente k.
@@ -530,17 +535,29 @@ function need(s, r, P) {
 const sTrans = (k, r, P) => (P.G + 2 * P.W + 2 * P.m) * r / (2 * k - r);
 const sNoFit = (r, P) => (P.W + 2 * P.m) * r / (1 - r);
 
+// Máquina dentro de la familia: diente >= diente mínimo. sFam: ranura mínima admitida para una proporción r.
+const inFam = (s, r, Q) => s * (1 - r) / r >= (Q.tmin || 0) - 1e-9;
+const sFam = (r, Q) => Math.max(Q.smin, (Q.tmin || 0) * r / (1 - r));
 function sweep(P, ds = 0.05, dr = 0.001) {
   let lo = { g: Infinity }, hi = { g: -Infinity }, bad = 0, n = 0;
   for (const r of grid(P.rmin, P.rmax, dr)) {
-    const ss = grid(P.smin, P.smax, ds);
-    for (let k = 1; k <= 8; k++) { const st = sTrans(k, r, P); if (st > P.smin && st <= P.smax) ss.push(st * (1 - 1e-9)); }
+    const s0 = sFam(r, P); if (s0 > P.smax + 1e-9) continue;
+    const ss = grid(P.smin, P.smax, ds).filter(s => s >= s0 - 1e-9); ss.push(s0);
+    for (let k = 1; k <= 8; k++) { const st = sTrans(k, r, P); if (st > s0 && st <= P.smax) ss.push(st * (1 - 1e-9)); }
     for (const s of ss) {
       const q = need(s, r, P); n++;
       if (!q) { bad++; continue; }
       if (q.g < lo.g) lo = { g: q.g, s, r, k: q.k };
       if (q.g > hi.g) hi = { g: q.g, s, r, k: q.k };
     }
+  }
+  // máquinas justo en el límite de diente mínimo
+  if (P.tmin > 0) for (const s of grid(P.smin, P.smax, ds * 4)) {
+    const r = s / (s + P.tmin); if (r < P.rmin || r > P.rmax) continue;
+    const q = need(s, r, P); n++;
+    if (!q) { bad++; continue; }
+    if (q.g < lo.g) lo = { g: q.g, s, r, k: q.k };
+    if (q.g > hi.g) hi = { g: q.g, s, r, k: q.k };
   }
   return { lo, hi, bad, n };
 }
@@ -561,8 +578,10 @@ function intersect(A, B) {
   return out;
 }
 function makeTester(P, ds, dr) {
-  const top = P.G + 400, sets = [];
-  for (const r of grid(P.rmin, P.rmax, dr)) for (const s of grid(P.smin, P.smax, ds)) {
+  const top = P.G + 150, sets = [], pts = [];
+  for (const r of grid(P.rmin, P.rmax, dr)) for (const s of grid(P.smin, P.smax, ds)) if (inFam(s, r, P)) pts.push([s, r]);
+  if (P.tmin > 0) for (const s of grid(P.smin, P.smax, ds)) { const r = s / (s + P.tmin); if (r >= P.rmin && r <= P.rmax) pts.push([s, r]); }
+  for (const [s, r] of pts) {
     const b = bands(s, r, P, top).filter(x => x.hi >= P.G).map(x => [Math.max(x.lo, P.G), x.hi]);
     if (b.length) sets.push(b);
   }
@@ -575,7 +594,7 @@ function makeTester(P, ds, dr) {
 function optimalA(P, ds, dr) {
   const test = makeTester(P, ds, dr);
   const a0 = test(0); if (a0 != null) return a0;
-  let lo = 0, hi = 400; if (test(hi) == null) return P.G;
+  let lo = 0, hi = 150; if (test(hi) == null) return P.G;
   for (let i = 0; i < 22; i++) { const mid = (lo + hi) / 2; if (test(mid) != null) hi = mid; else lo = mid; }
   return Math.max(P.G, test(hi));
 }
@@ -584,7 +603,8 @@ function regulation(P, ds = 0.05, dr = 0.001, ods = 0.25, odr = 0.0025) {
   const a = optimalA(P, ods, Math.max(odr, (P.rmax - P.rmin) / 40));
   if (a > P.G + 1e-6) {
     const B = sweep({ ...P, G: a }, ds, dr);
-    if (isFinite(B.lo.g) && (!isFinite(A.lo.g) || B.hi.g - B.lo.g < A.hi.g - A.lo.g - 1e-6)) return { ...B, a };
+    // solo si achica la carrera sin agrandar el robot
+    if (isFinite(B.lo.g) && (!isFinite(A.lo.g) || (B.hi.g - B.lo.g < A.hi.g - A.lo.g - 1e-6 && B.hi.g <= A.hi.g + 1e-6))) return { ...B, a };
   }
   return { ...A, a: P.G };
 }
@@ -609,6 +629,7 @@ function syncOutputs() {
   $('smax-o').textContent = fmt(+$('smax').value, 0) + ' mm';
   $('rmin-o').textContent = fmt(+$('rmin').value, 0) + ' %';
   $('rmax-o').textContent = fmt(+$('rmax').value, 0) + ' %';
+  $('tmin-o').textContent = fmt(P.tmin, 0) + ' mm';
   for (const b of $('gmin-presets').children) b.setAttribute('aria-pressed', +b.dataset.v === P.Gm);
   for (const b of $('smax-presets').children) b.setAttribute('aria-pressed', +b.dataset.v === +$('smax').value);
   const ss = $('ss'), sr = $('sr');
@@ -732,9 +753,10 @@ function renderSensors() {
   // borde exterior respecto del eje de ranura: p - s/2 = s(2 - r)/(2r); crece con s y baja con r
   const half = (s, r) => s * (2 - r) / (2 * r);
   // el sensor entra entero si diente >= sensor, o sea r <= s/(s + Ws)
-  const rFit = Math.min(P.rmax, P.smin / (P.smin + Ws));
-  const lo = half(P.smin, rFit), hi = half(P.smax, Math.min(P.rmin, P.smax / (P.smax + Ws)));
-  const tmin = P.smin * (1 - P.rmax) / P.rmax;
+  const tReq = Math.max(Ws, P.tmin);
+  const rFit = Math.min(P.rmax, P.smin / (P.smin + tReq));
+  const lo = half(P.smin, rFit), hi = half(P.smax, Math.min(P.rmin, P.smax / (P.smax + tReq)));
+  const tmin = Math.max(P.tmin, P.smin * (1 - P.rmax) / P.rmax);
   const rows = [
     ['Bordes exteriores (distancia entre sensores, por fuera)', 2 * lo, 2 * hi],
     ['Centros de los sensores', 2 * lo - Ws, 2 * hi - Ws],
@@ -789,17 +811,19 @@ function renderElcid() {
   // gráfico
   const cv = $('el-chart'); cv.innerHTML = '';
   const L = 62, R = 940, T = 16, B = 300, cpos = (s, r) => s * (2 - r) / (2 * r) - Ws / 2;
-  const lo = cpos(P.smin, P.rmax), hi = cpos(P.smax, P.rmin), ymax = Math.ceil(hi * 1.12 / 20) * 20;
+  const tReq = Math.max(Ws, P.tmin), rTop = s0 => Math.min(P.rmax, s0 / (s0 + tReq));
+  const lo = cpos(P.smin, rTop(P.smin)), hi = cpos(P.smax, P.rmin), ymax = Math.ceil(hi * 1.12 / 20) * 20;
   const xx = lin(P.smin, P.smax, L, R), yy = lin(0, ymax, B, T);
   for (const v of niceTicks(0, ymax, 7)) { el('line', { x1: L, x2: R, y1: yy(v), y2: yy(v), stroke: 'var(--line)' }, cv); txt(cv, L - 8, yy(v) + 4, fmt(v, 0), { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--muted)' }); }
   for (const v of niceTicks(P.smin, P.smax, 10)) txt(cv, xx(v), B + 18, fmt(v, 0), { 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--muted)' });
   el('rect', { x: L, y: yy(hi), width: R - L, height: yy(lo) - yy(hi), fill: 'var(--accent-soft)' }, cv);
-  const area = [[P.smin, cpos(P.smin, P.rmin)], [P.smax, cpos(P.smax, P.rmin)], [P.smax, cpos(P.smax, P.rmax)], [P.smin, cpos(P.smin, P.rmax)]];
+  const sg = grid(P.smin, P.smax, (P.smax - P.smin) / 100);
+  const area = [...sg.map(v => [v, cpos(v, P.rmin)]), ...sg.slice().reverse().map(v => [v, cpos(v, rTop(v))])];
   el('polygon', { points: area.map(([a, b]) => `${xx(a)},${yy(b)}`).join(' '), fill: 'var(--k2)', 'fill-opacity': .25 }, cv);
-  for (const [rr, col, lab] of [[P.rmin, 'var(--k2)', `ranura/paso ${fmt(P.rmin * 100, 0)} %`], [P.rmax, 'var(--k1)', `ranura/paso ${fmt(P.rmax * 100, 0)} %`]]) {
-    el('line', { x1: xx(P.smin), y1: yy(cpos(P.smin, rr)), x2: xx(P.smax), y2: yy(cpos(P.smax, rr)), stroke: col, 'stroke-width': 2.5 }, cv);
-    txt(cv, xx(P.smax) - 6, yy(cpos(P.smax, rr)) - 8, lab, { 'text-anchor': 'end', 'font-size': 11, fill: col });
-  }
+  el('polyline', { points: sg.map(v => `${xx(v)},${yy(cpos(v, P.rmin))}`).join(' '), fill: 'none', stroke: 'var(--k2)', 'stroke-width': 2.5 }, cv);
+  txt(cv, xx(P.smax) - 6, yy(cpos(P.smax, P.rmin)) - 8, `ranura/paso ${fmt(P.rmin * 100, 0)} %`, { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--k2)' });
+  el('polyline', { points: sg.map(v => `${xx(v)},${yy(cpos(v, rTop(v)))}`).join(' '), fill: 'none', stroke: 'var(--k1)', 'stroke-width': 2.5 }, cv);
+  txt(cv, xx(P.smax) - 6, yy(cpos(P.smax, rTop(P.smax))) + 16, `ranura/paso ${fmt(P.rmax * 100, 0)} % o el máximo con diente ≥ ${fmt(tReq, 0)} mm`, { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--k1)' });
   txt(cv, L + 6, yy(hi) + 14, `rango del mecanismo ${fmt(lo)} – ${fmt(hi)} mm (${fmt(hi - lo)} mm)`, { 'font-size': 11, fill: 'var(--accent)' });
   el('circle', { cx: xx(s), cy: yy(cpos(s, r)), r: 5, fill: 'var(--sensor)', stroke: 'var(--panel)', 'stroke-width': 1.5 }, cv);
   el('line', { x1: L, x2: R, y1: B, y2: B, stroke: 'var(--muted)' }, cv);
@@ -812,6 +836,7 @@ $('el-max').addEventListener('click', () => { $('el-s').value = P.smax; $('el-r'
 function renderStator() {
   const svg = $('stator'); svg.innerHTML = '';
   const s = +$('ss').value, r = +$('sr').value / 100, q = need(s, r, P);
+  const outFam = !inFam(s, r, P);
   const p = s / r, t = p - s;
   const g = q ? q.g : P.G;
   const halfOuter = g / 2 + P.W;
@@ -866,6 +891,7 @@ function renderStator() {
   } else {
     txt(svg, 480, 90, 'El diente es más angosto que la oruga: esta máquina no admite el robot.', { 'text-anchor': 'middle', fill: 'var(--warn)' });
   }
+  if (outFam) txt(svg, 940, y0 - 80, `fuera de la familia: diente < ${fmt(P.tmin, 0)} mm`, { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--warn)' });
   // cotas de ranura, diente y paso
   const yd = coreB + 16;
   dim(svg, x(-s / 2), x(s / 2), yd, `s ${fmt(s)}`);
@@ -922,9 +948,16 @@ function renderMap() {
   const span = Math.max(1e-6, S.hi.g - S.lo.g);
   const g = el('g', {}, svg);
   for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
-    const s = P.smin + (i + .5) * dx, r = P.rmin + (j + .5) * dy, q = need(s, r, P);
+    const s = P.smin + (i + .5) * dx, r = P.rmin + (j + .5) * dy, fam = inFam(s, r, P), q = fam ? need(s, r, P) : null;
     el('rect', { x: x(P.smin + i * dx), y: y(P.rmin + (j + 1) * dy), width: (R - L) / nx + .6, height: (B - T) / ny + .6,
-      fill: q ? mix(c0, c1, (q.g - S.lo.g) / span) : 'var(--warn)', 'fill-opacity': q ? 1 : .35 }, g);
+      fill: !fam ? 'var(--muted)' : q ? mix(c0, c1, Math.min(1, Math.max(0, (q.g - S.lo.g) / span))) : 'var(--warn)', 'fill-opacity': !fam ? .1 : q ? 1 : .35 }, g);
+  }
+  if (P.tmin > 0) {
+    const rb = grid(P.rmin, P.rmax, (P.rmax - P.rmin) / 80).filter(r => sFam(r, P) > P.smin && sFam(r, P) < P.smax);
+    if (rb.length > 1) {
+      el('polyline', { points: rb.map(r => `${x(sFam(r, P))},${y(r)}`).join(' '), fill: 'none', stroke: 'var(--warn)', 'stroke-width': 2 }, svg);
+      const rl = rb[Math.floor(rb.length * .75)]; txt(svg, x(sFam(rl, P)) - 8, y(rl), `diente < ${fmt(P.tmin, 0)} mm`, { 'text-anchor': 'end', 'font-size': 11, fill: 'var(--warn)' });
+    }
   }
   // curvas de transición
   const clip = el('clipPath', { id: 'mapclip' }, svg); el('rect', { x: L, y: T, width: R - L, height: B - T }, clip);
@@ -948,7 +981,7 @@ function renderMap() {
     }
   }
   const nf = rs.filter(r => sNoFit(r, P) > P.smin);
-  if (nf.length) el('polyline', { points: nf.map(r => `${x(Math.min(P.smax, sNoFit(r, P)))},${y(r)}`).join(' '), fill: 'none', stroke: 'var(--warn)', 'stroke-width': 2 }, cg);
+  if (nf.length && P.tmin < P.W + 2 * P.m) el('polyline', { points: nf.map(r => `${x(Math.min(P.smax, sNoFit(r, P)))},${y(r)}`).join(' '), fill: 'none', stroke: 'var(--warn)', 'stroke-width': 2 }, cg);
   // máquina elegida y crítica
   const ss = +$('ss').value, sr = +$('sr').value / 100;
   el('circle', { cx: x(ss), cy: y(sr), r: 7, fill: 'none', stroke: 'var(--panel)', 'stroke-width': 4 }, svg);
@@ -993,6 +1026,8 @@ function renderSlice() {
   const cg = el('g', { 'clip-path': 'url(#slclip)' }, svg);
   el('rect', { x: L, y: y(S.hi.g), width: R - L, height: y(S.lo.g) - y(S.hi.g), fill: 'var(--accent-soft)' }, cg);
   el('rect', { x: L, y: y(P.G), width: R - L, height: B - y(P.G), fill: 'var(--muted)', 'fill-opacity': .08 }, cg);
+  const sf = sFam(r, P);
+  if (sf > P.smin) { el('rect', { x: L, y: T, width: Math.min(R, x(sf)) - L, height: B - T, fill: 'var(--muted)', 'fill-opacity': .15 }, cg); txt(svg, L + 6, B - 8, `diente < ${fmt(P.tmin, 0)} mm`, { 'font-size': 11, fill: 'var(--muted)' }); }
   const s0 = Math.max(P.smin, sNoFit(r, P));
   if (s0 < P.smax) for (let k = 1; k <= 6; k++) {
     const lo = s => s * (1 + 2 * (k - 1) / r) + 2 * P.m, hi = s => s * (2 * k - r) / r - 2 * P.W - 2 * P.m;
@@ -1007,7 +1042,7 @@ function renderSlice() {
   for (let k = 1; k <= 8; k++) { const st = sTrans(k, r, P); if (st > P.smin && st < P.smax) sv.push(st * (1 - 1e-9), st); }
   sv.sort((a, b) => a - b);
   let d = '', pen = false;
-  for (const s of sv) { const q = need(s, r, P); if (!q) { pen = false; continue; } d += `${pen ? 'L' : 'M'}${x(s).toFixed(1)},${y(q.g).toFixed(1)}`; pen = true; }
+  for (const s of sv) { const q = inFam(s, r, P) ? need(s, r, P) : null; if (!q) { pen = false; continue; } d += `${pen ? 'L' : 'M'}${x(s).toFixed(1)},${y(q.g).toFixed(1)}`; pen = true; }
   el('path', { d, fill: 'none', stroke: 'var(--ink)', 'stroke-width': 2.5 }, cg);
   el('line', { x1: x(ss), x2: x(ss), y1: T, y2: B, stroke: 'var(--ink)', 'stroke-opacity': .35 }, svg);
   el('line', { x1: L, x2: R, y1: B, y2: B, stroke: 'var(--muted)' }, svg);
@@ -1191,7 +1226,7 @@ function minSide(s, r, w, e) {
   }
   return { c: mn, u: arg };
 }
-function machines(ds, dr) { const M = []; for (const r of grid(P.rmin, P.rmax, dr)) for (const s of grid(P.smin, P.smax, ds)) M.push([s, r]); return M; }
+function machines(ds, dr) { const M = []; for (const r of grid(P.rmin, P.rmax, dr)) { const s0 = sFam(r, P); if (s0 > P.smax) continue; for (const s of grid(P.smin, P.smax, ds).filter(s => s >= s0)) M.push([s, r]); if (s0 > P.smin) M.push([s0, r]); } return M; }
 function worstOf(M, w, e) { let best = { c: Infinity }; for (const [s, r] of M) { const q = minSide(s, r, w, e); if (q.c < best.c) best = { c: q.c, u: q.u, s, r }; } return best; }
 function DP() { return { ov: +$('d-ov').value, X: +$('d-x').value, w: +$('d-w').value, e: +$('d-e').value }; }
 const DW = grid(5, 60, 1);
@@ -1392,7 +1427,7 @@ function okOver(bad, off, w, s, p, t, ov) {
   }
   return true;
 }
-function machinesTr(ds, dr) { const M = []; for (const s of grid(P.smin, P.smax, ds).reverse()) for (const r of grid(P.rmin, P.rmax, dr).reverse()) { const p = s / r; M.push({ s, r, p, t: p - s }); } return M; }
+function machinesTr(ds, dr) { const M = []; for (const s of grid(P.smin, P.smax, ds).reverse()) for (const r of grid(P.rmin, P.rmax, dr).reverse()) { if (!inFam(s, r, P)) continue; const p = s / r; M.push({ s, r, p, t: p - s }); } return M; }
 function TP() { return { ov: +$('t-ov').value, gx: +$('t-gx').value, wa: +$('t-wa').value, e: +$('t-e').value, wb: +$('t-wb').value, wc: +$('t-wc').value, g: +$('t-g').value }; }
 function badCache(M, WB, ov) { const k = WB + '|' + ov; M.bad = M.bad || {}; if (!M.bad[k]) M.bad[k] = M.map(m => badB(WB, m.s, m.p, m.t, ov)); return M.bad[k]; }
 const okA = (M, bad, WA, WB, e, ov, i) => !bad[i].length || okOver(bad[i], -e - WA, WA, M[i].s, M[i].p, M[i].t, ov);
@@ -1696,7 +1731,7 @@ function update(onlyMachine) {
   else renderElcid();
 }
 
-for (const id of ['gmin', 'hol', 'w', 'm', 'smin', 'smax', 'rmin', 'rmax']) $(id).addEventListener('input', () => update(false));
+for (const id of ['gmin', 'hol', 'w', 'm', 'smin', 'smax', 'rmin', 'rmax', 'tmin']) $(id).addEventListener('input', () => update(false));
 for (const id of ['ss', 'sr']) $(id).addEventListener('input', () => update(true));
 $('gmin-presets').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (v) { $('gmin').value = v; update(false); } });
 $('smax-presets').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (v) { $('smax').value = v; update(false); } });
