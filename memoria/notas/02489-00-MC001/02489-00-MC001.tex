@@ -157,7 +157,7 @@ m\,0,6 z17, SCM415 carburizada    & 11,05 & 0,557 & 0,358 & \textbf{0,346} & 0,8
 
 \begin{itemize}
   \item \textbf{Mitra actual KG M50S20:} admite entre \textbf{0,090 y 0,108\Nm} en servicio continuo a 100~rpm, según la dureza
-        real del S45C (170~HB mínimo de norma, 200~HB típico). En picos admite 0,157 a 0,179\Nm. \textbf{Hay que medir la dureza.}
+        real del S45C (170~HB cota baja, 200~HB típico; KG no la especifica). En picos admite 0,157 a 0,179\Nm. \textbf{Hay que medir la dureza.}
   \item \textbf{Coincide con el datasheet de KG.} KG publica 0,143\Nm a 100~rpm para carga en un sentido; con su propia regla
         para carga en ambos sentidos (2/3) da \textbf{0,095\Nm}, dentro del rango anterior. La diferencia aparente venía de
         supuestos conservadores de la versión anterior de esta nota (sec.~\ref{sec:datasheet}).
@@ -166,6 +166,12 @@ m\,0,6 z17, SCM415 carburizada    & 11,05 & 0,557 & 0,358 & \textbf{0,346} & 0,8
   \item \textbf{Mejora sin cambiar la geometría:} la misma mitra m\,0,5 z20 a medida en SCM440 bonificado (×1,7)
         o en SCM415 carburizado (×3,3). Entra en el mismo lugar que la actual.
   \item \textbf{Máximo dentro de 11,5~mm:} m\,0,6 z17 carburizada (×3,9; 0,346\Nm continuo), pero cambia la distancia de montaje.
+  \item \textbf{Para decidir, vida en horas con un único criterio} (sec.~\ref{sec:vida}, 100~rpm, 24~h por mes): con el uso real medido
+        (0,05--0,20\Nm, picos de 0,30) la KG sin tratar dura $\approx$250~h con 200~HB y no es admisible con 170~HB; nitrocarburada,
+        \textbf{$\approx$1100~h (170~HB) a $\approx$7400~h (200~HB)}, al límite (margen $\approx$1). Con el motor a pleno
+        (0,40\Nm, picos de 0,50) ninguna mitra KG sirve.
+  \item \textbf{Óptimo con $d_a\le12$~mm: m\,0,6 z18 carburizada} ($d_a=11{,}65$~mm): no limita ni con el motor a pleno
+        (margen 1,33 continuo, 1,84 picos). Reemplazo directo: m\,0,5 z20 carburizada con la geometría de KG (margen 1,16).
   \item \textbf{Flexión del S45C con 24~h por mes} (sec.~\ref{sec:flexion}): a 100~rpm admite \textbf{0,094 a 0,113\Nm} en continuo
         con los factores de la nota y 10 a 2~años de vida; con factores optimistas sin cambiar el montaje, \textbf{0,144 a 0,172\Nm}.
         Acortar la vida suma solo un 5\,\%. El diente se rompe de un golpe recién a $\approx$1,2--1,4\Nm.
@@ -191,12 +197,12 @@ Par & Cónicos rectos iguales (mitras), 1:1, $\Sigma=90^\circ$ & pedido\\
 Envolvente & $d_a\le11{,}5$~mm para las mejoras (la actual mide 10,71~mm) & pedido\\
 Velocidades & 0; 0,5; 50 y 100 rpm & pedido\\
 Confiabilidad & $R=0{,}95$ & pedido\\
-Uso & 20 h seguidas por mes; vida de 10 años (2400 h) & pedido / \textbf{supuesto}\\
+Uso & 20 h seguidas por mes; vida de 10 años (2400 h). Secs.~\ref{sec:flexion} y \ref{sec:vida}: 24~h por mes & pedido / \textbf{supuesto}\\
 Carga & BLDC con perfil trapezoidal suave; torque en ambos sentidos & pedido\\
 Picos & 10 s cada uno, 1 por hora de uso (2400 en la vida) & pedido / \textbf{supuesto}\\
 Lubricación y temperatura & Grasa en compartimiento cerrado; 30--40\,°C & pedido\\
 Montaje & Ambos engranajes en voladizo & \textbf{supuesto} (conservador)\\
-Dureza S45C & 170~HB (mínimo JIS G4051) y 200~HB (típico) & \textbf{a medir}\\
+Dureza S45C & 170~HB (cota baja) y 200~HB (típico); KG no la especifica & \textbf{a medir}\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -483,6 +489,204 @@ hay un factor de 6 a 12 frente al admisible a fatiga, que es lo que limita.
 \end{itemize}
 
 %-----------------------------------------------------------------------
+\section{Vida en horas de cada opción}\label{sec:vida}
+Esta sección estima \textbf{cuántas horas dura cada opción} con el espectro de carga medido en el robot y con el motor
+a pleno, usando \textbf{un único criterio de factores} (tabla~\ref{tab:criterio}): el valor más realista de cada uno, sin acumular supuestos
+optimistas ni conservadores. Reemplaza a los escenarios de las secciones anteriores para decidir.
+
+\subsection{Por qué la vida varía tanto con los supuestos}
+En el rango de uso las curvas de vida de Shigley son muy planas (ec.~15-15 y 15-14, figs.~15-9 y 15-8):
+$Y_{NT}=1{,}6831\,N^{-0{,}0323}$ y $Z_{NT}=3{,}4822\,N^{-0{,}0602}$. Como $\sigma_F\propto T$ y $\sigma_H\propto\sqrt{T}$,
+\begin{equation}
+N_F\propto T^{-1/0{,}0323}=T^{-31}, \qquad N_H\propto T^{-0{,}5/0{,}0602}=T^{-8{,}3}.
+\end{equation}
+Un 10\,\% más de torque (o un 10\,\% menos de resistencia) divide la vida por 20 a flexión y por 2,2 a picado.
+Por eso, además de las horas, se informa el \textbf{margen de torque}: el torque admisible para 10~años dividido por el
+aplicado. El margen cambia poco con los supuestos y es el número que conviene mirar para decidir.
+
+\subsection{Criterio de cálculo}
+\begin{table}[!htb]\centering\small
+\begin{tabularx}{\linewidth}{l c X}
+\toprule
+Factor & Valor & Criterio y referencia (Shigley 8.ª ed.)\\\midrule
+$K_A$ sobrecarga & 1,0 & Los picos medidos ya están en el espectro; aplicarles $K_A$ los contaría dos veces.\\
+$K_v$ dinámico & 1,03 & Ec.~(15-5) y (15-6) con $Q_v=8$ (KG serie M: JIS B1704 grado~3). A 0,05~m/s casi no influye.\\
+$Y_x$, $Z_x$ tamaño & 0,5 & Ec.~(15-10) y (15-9): $m<1{,}6$~mm y $b<12{,}7$~mm.\\
+$K_{H\beta}$ distribución & 1,25 & Ec.~(15-11) con $K_{mb}=1{,}25$: ambos engranajes en voladizo, lo más probable en un módulo compacto.\\
+$Z_{xc}$ coronamiento & 2,0 & Ec.~(15-12): dientes sin coronamiento garantizado.\\
+$Y_\beta$ curvatura & 1 & Ec.~(15-13): dientes rectos.\\
+$Y_{NT}$, $Z_{NT}$ ciclos & ec. & Ec.~(15-15) y (15-14), figs.~15-9 y 15-8, en su rango de validez $10^2$--$10^{10}$ ciclos.\\
+$Y_Z$, $Z_Z$ confiabilidad & 0,850 / 0,922 & Ec.~(15-20) con $R=0{,}90$, el mínimo de su rango: el 90\,\% de los pares supera la vida calculada
+                                            (como la vida $L_{10}$ de un rodamiento). $Z_Z=\sqrt{Y_Z}$.\\
+$K_\theta$, $Z_W$ & 1 & Ec.~(15-18) y (15-16): menos de 120\,°C; mismo material en los dos engranajes.\\
+$S_F$, $S_H$ & 1 & Sin coeficiente adicional: el margen se informa aparte.\\
+Carga en ambos sentidos & 100\,\% & Flexión pulsante. El 70\,\% de Shigley (sec.~15-2) es para carga invertida en cada vuelta
+                                    (engranaje loco); en la rueda la inversión es ocasional.\\
+\bottomrule
+\end{tabularx}
+\caption{Factores del criterio central (Shigley, cap.~15, unidades SI).}\label{tab:criterio}
+\end{table}
+
+\paragraph{Materiales.}
+\begin{itemize}
+  \item \textbf{S45C de KG:} el catálogo de la serie M recta de S45C indica \emph{sin tratamiento térmico} y no especifica
+        dureza~[4]. Se calcula con 200~HB (típico de barra laminada o trefilada) y con 170~HB (cota baja);
+        $\sigma_{F\,\lim}$ y $\sigma_{H\,\lim}$ por ec.~(15-23) y (15-22), grado~1. \textbf{Hay que medirla} (sec.~\ref{sec:dureza}).
+  \item \textbf{S45C nitrocarburado} (Tenifer/QPQ o gaseoso, $\approx$570\,°C): Shigley no lo tabula. Se supone
+        $+30$\,\% en $\sigma_{H\,\lim}$ y $+20$\,\% en $\sigma_{F\,\lim}$ sobre el mismo acero sin tratar, por la diferencia entre
+        las categorías de material de ISO~6336-5~[5]. \textbf{Supuesto a validar en banco.}
+  \item \textbf{Latón C3604B:} escalado desde el S45C como en la sec.~\ref{sec:metodo}; Shigley no lo cubre.
+  \item \textbf{SCM415 carburizado:} 206,8 y 1379~MPa (30 y 200~kpsi), tablas~15-6 y 15-4, grado~1.
+  \item \textbf{SCM440 bonificado 300~HB:} ec.~(15-23) y (15-22), grado~1.
+\end{itemize}
+
+\paragraph{Espectros de carga} (torque por engranaje, 100~rpm, 24~h seguidas por mes $=$ 288~h por año):
+\begin{itemize}
+  \item \textbf{Uso real medido:} torque oscilante entre 0,05 y 0,20\Nm, tomado como senoide (60 niveles de igual duración),
+        más picos de 0,30\Nm.
+  \item \textbf{Motor a pleno:} 0,40\Nm continuo (máximo continuo del motor) más picos de 0,50\Nm (máximo del motor).
+  \item \textbf{Picos:} 10~s cada uno, 1 por hora de uso (\textbf{supuesto}); cada pico carga cada diente
+        $100\cdot10/60=16{,}7$ veces. A 100~rpm cada diente suma 6000 ciclos por hora; en 10~años, $1{,}73\times10^7$
+        ciclos continuos y $4{,}8\times10^4$ en picos.
+\end{itemize}
+
+\paragraph{Vida.} Para cada nivel de torque $T_i$ se despeja $N_i$, los ciclos hasta la falla, igualando la tensión de
+trabajo con la admisible: $\sigma_F(T_i)=\sigma_{FP}(N_i)$ y $\sigma_H(T_i)=\sigma_{HP}(N_i)$ (ec.~15-3, 15-4, 15-1 y 15-2).
+El daño por hora se suma con la regla de Miner (Shigley, sec.~6-15):
+\begin{equation}
+D_h=\sum_i \frac{n_i}{N_i}, \qquad \text{vida}=\frac{1}{D_h}\ \text{horas},
+\end{equation}
+por separado para flexión y para picado; manda el que llega antes a $D=1$. Si un nivel de torque no supera la
+resistencia a $10^{10}$ ciclos no suma daño. Si supera la resistencia aun a $10^2$ ciclos (flexión) o $10^3$ (picado),
+la opción se informa como \textbf{no admisible}: está fuera de las curvas de Shigley y fallaría tempranamente, sin
+que se pueda cuantificar cuándo. Por encima de $10^5$~h ($>$340 años) se informa \textbf{no limita}.
+
+\paragraph{Ejemplo: KG M50S20, 200~HB, sin tratar, 0,20\Nm constante.}
+\begin{align*}
+W^t &= 2T/d_e = 2\cdot0{,}20/0{,}010 = 40{,}0\ \text{N}\\
+\sigma_F &= \frac{W^t}{b}\,\frac{K_A K_v}{m_{et}}\,\frac{Y_x K_{H\beta}}{Y_\beta Y_J}\\
+  &= \frac{40{,}0}{2{,}5}\cdot\frac{1{,}0\cdot1{,}029}{0{,}5}\cdot\frac{0{,}5\cdot1{,}25}{1\cdot0{,}200} = 102{,}9\ \text{MPa}\\
+Y_{NT} &= \frac{\sigma_F\,Y_Z}{\sigma_{F\,\lim}} = \frac{102{,}9\cdot0{,}850}{74{,}5}=1{,}174
+  \;\Rightarrow\; N_F=\left(\frac{1{,}174}{6{,}1514}\right)^{-1/0{,}1192}=1{,}1\times10^{6}\ \text{ciclos}\ (181\ \text{h})\\
+\sigma_H &= Z_E\left(\frac{W^t}{b\,d_e\,Z_I}\,K_A K_v K_{H\beta} Z_x Z_{xc}\right)^{1/2}\\
+  &= 189{,}4\left(\frac{40{,}0}{2{,}5\cdot10\cdot0{,}062}\cdot1{,}029\cdot1{,}25\cdot0{,}5\cdot2{,}0\right)^{1/2} = 1091\ \text{MPa}\\
+Z_{NT} &= \frac{\sigma_H\,Z_Z}{\sigma_{H\,\lim}} = \frac{1091\cdot0{,}922}{633}=1{,}589
+  \;\Rightarrow\; N_H=\left(\frac{1{,}589}{3{,}4822}\right)^{-1/0{,}0602}=4{,}6\times10^{5}\ \text{ciclos}\ (\mathbf{76\ h})
+\end{align*}
+($Y_{NT}=1{,}174$ cae en el tramo de $10^3$ a $3\times10^6$ ciclos de la ec.~15-15, $Y_{NT}=6{,}1514\,N^{-0{,}1192}$.) Manda el picado. Con el espectro real el torque pasa la mayor parte del tiempo por debajo de 0,20\Nm y la vida sube a 249~h.
+
+\subsection{Opción 1: mitras KG de stock, con o sin tratamiento}
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{3pt}
+\resizebox{\linewidth}{!}{\begin{tabular}{l lcc lcc}
+\toprule
+ & \multicolumn{3}{c}{Uso real (0,05--0,20; picos 0,30)} & \multicolumn{3}{c}{Motor a pleno (0,40; picos 0,50)}\\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Opción & Vida & Manda & Margen & Vida & Manda & Margen\\
+\midrule
+\csname @@input\endcsname tabla_vida_kg.tex 
+\bottomrule
+\end{tabular}}
+\caption{Vida estimada de las mitras KG (d$_a$ 10,71~mm). Margen: torque admisible para 10~años sobre el aplicado,
+continuo / pico. «a»: años de uso a 288~h por año.}
+\label{tab:vida_kg}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{Sin tratar no sirve:} con 170~HB los picos de 0,30\Nm superan su resistencia a picado aun para $10^3$ ciclos;
+        con 200~HB dura $\approx$250~h ($<$1~año).
+  \item \textbf{Nitrocarburada sirve solo para el uso real, y al límite} (margen $\approx$1): $\approx$1100~h (3,7~años) con
+        170~HB y $\approx$7400~h (26~años) con 200~HB. La diferencia de dureza cambia la vida 7 veces: \textbf{medirla
+        decide la opción}. El tratamiento traslada el límite del picado a la flexión del pie del diente, que depende del núcleo.
+  \item \textbf{Con el motor a pleno ninguna mitra KG sirve} (margen 0,3--0,5).
+  \item \textbf{El latón no es admisible} en ninguno de los dos casos.
+  \item Para usar la KG nitrocarburada hay que \textbf{limitar el driver} a $\approx$0,20\Nm continuo y $\approx$0,30\Nm de pico en
+        la mitra, y validarla en banco.
+\end{itemize}
+
+\subsection{Opción 2: par a medida con $d_a\le12$~mm}
+Mitras 1:1 a 90° de 20°, con $z\ge16$ (Shigley, tabla~13-3) y $d_a=m\,(z+\sqrt2)\le12$~mm.
+El ancho se toma $b=0{,}3\,R_e$, la proporción recomendada (Ejemplo~15-1); la fila «como KG» usa el ancho real de la
+M50S20 (2,5~mm $=0{,}354\,R_e$), que es el reemplazo directo. $Y_J$ y $Z_I$ salen de las figs.~15-7 y 15-6, interpoladas
+entre 16 y 20 dientes.
+
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{2.6pt}
+\resizebox{\linewidth}{!}{\begin{tabular}{l cc lcc lcc}
+\toprule
+ & & & \multicolumn{3}{c}{Uso real} & \multicolumn{3}{c}{Motor a pleno}\\
+\cmidrule(lr){4-6}\cmidrule(lr){7-9}
+Opción & $d_a$ & $b$ & Vida & Manda & Margen & Vida & Manda & Margen\\
+\midrule
+\csname @@input\endcsname tabla_vida_12.tex 
+\bottomrule
+\end{tabular}}
+\caption{Vida estimada de los pares a medida. $d_a$ y $b$ en mm.}
+\label{tab:vida_12}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{Todas las carburizadas cubren el uso real} con margen 2 a 3.
+  \item \textbf{Para el motor a pleno el óptimo es m\,0,6 z18 carburizada:} $d_a=11{,}65$~mm, módulo normalizado, margen
+        1,33 en continuo y 1,84 en picos; no limita en ningún caso. Cambia la distancia de montaje respecto de la KG.
+  \item \textbf{Reemplazo directo:} la m\,0,5 z20 carburizada con la geometría de KG (ancho 2,5~mm) da margen 1,16 con el
+        motor a pleno ($\approx$98\,000~h). Con $b=0{,}3\,R_e$ cae a 0,99 y $\approx$1700~h: el ancho importa.
+  \item \textbf{m\,0,65 z17} rinde más, pero $d_a=11{,}97$~mm no deja margen para la tolerancia del diámetro exterior;
+        m\,0,65 es módulo de segunda serie (menos proveedores con herramienta).
+  \item \textbf{SCM440 bonificado} alcanza para el uso real (margen 1,25), no para el motor a pleno.
+\end{itemize}
+
+\begin{figure}[H]\centering
+  \includegraphics[width=\linewidth]{fig_vida_horas.pdf}
+  \caption{Vida estimada de cada opción, uso real y motor a pleno (escala logarítmica).}
+  \label{fig:vida_horas}
+\end{figure}
+
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{4pt}
+\begin{tabular}{l cc cc cc}
+\toprule
+ & \multicolumn{2}{c}{Resistencia [MPa]} & \multicolumn{2}{c}{Continuo 10 años [N\,m]} & \multicolumn{2}{c}{Picos 10 años [N\,m]}\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+Opción & $\sigma_{F\,\lim}$ & $\sigma_{H\,\lim}$ & Flexión & Picado & Flexión & Picado\\
+\midrule
+\csname @@input\endcsname tabla_vida_adm.tex 
+\bottomrule
+\end{tabular}
+\caption{Torque admisible por engranaje para 10~años ($1{,}73\times10^7$ ciclos continuos y $4{,}8\times10^4$ en picos),
+criterio central. Es la base de los márgenes de las tablas~\ref{tab:vida_kg} y \ref{tab:vida_12}.}
+\end{table}
+
+\subsection{Qué mueve el resultado}
+\begin{table}[H]\centering\small
+\begin{tabularx}{\linewidth}{l l X}
+\toprule
+Supuesto & Cambio & Efecto sobre el torque admisible\\\midrule
+Dureza del S45C & 170 → 200~HB & $+14$\,\% flexión, $+26$\,\% picado (ec.~15-23 y 15-22). Vida de la KG nitrocarburada: ×7.\\
+Inversión de sentido & ocasional → en cada vuelta & $-30$\,\% flexión (sec.~15-2).\\
+Montaje & voladizo → uno entre apoyos & $+14$\,\% en ambos modos (ec.~15-11, $K_{mb}=1{,}10$).\\
+Coronamiento & sin → con & $+33$\,\% picado (ec.~15-12, $Z_{xc}=1{,}5$).\\
+Confiabilidad & 0,90 → 0,99 & $-15$\,\% en ambos modos (ec.~15-20; en picado $T\propto1/Z_Z^2=1/Y_Z$).\\
+Frecuencia de picos & 1 → 10 por hora & Vida de la KG nitrocarburada (200~HB, uso real): de 7400 a 970~h ($\div7{,}6$).\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Medición de la dureza.}\label{sec:dureza}
+Con un durómetro Leeb no es confiable: la mitra pesa 2,6~g y el cubo deja una corona de 2,5~mm, menos que el apoyo del
+sensor y muy por debajo de la masa mínima. Se recomienda \textbf{Vickers HV10 en laboratorio}, sobre una mitra cortada y
+montada en resina (núcleo del cubo), en 2 o 3 mitras de compras distintas. Si se nitrocarbura, medir en el mismo corte la
+microdureza de la capa (HV\,0,1) y su espesor.
+
+\textbf{Limitaciones}
+\begin{itemize}
+  \item \textbf{Módulo 0,5:} el método no está validado a este tamaño; queda un 20\,\% sin explicar frente al datasheet de KG
+        (sec.~\ref{sec:datasheet}).
+  \item \textbf{Nitrocarburado:} los incrementos de resistencia son un supuesto; la vida de esa opción debe confirmarse en banco.
+  \item \textbf{Espectro:} la senoide y la frecuencia de picos son supuestos; con el registro de torque contra tiempo se
+        reemplazan por el espectro medido.
+  \item \textbf{Desgaste:} a 0,05~m/s puede limitar antes que el picado y Shigley no lo calcula; depende de la grasa.
+  \item \textbf{Eje, prisioneros y rodamientos} no están incluidos: con 0,4--0,5\Nm deben verificarse aparte.
+\end{itemize}
+
+%-----------------------------------------------------------------------
 \section{Fijación al eje y lubricación}
 \begin{table}[H]\centering\small\setlength{\tabcolsep}{4pt}
 \begin{tabular}{l r r l r r}
@@ -510,7 +714,7 @@ reengrase en cada mantenimiento y control del juego después de las primeras cam
 %-----------------------------------------------------------------------
 \section{Próximos pasos}
 \begin{enumerate}[leftmargin=1.4em]
-  \item \textbf{Medir la dureza} de una mitra M50S20 (Brinell o Vickers convertida). Fija el torque admisible entre 0,090 y 0,108\Nm.
+  \item \textbf{Medir la dureza} de 2 o 3 mitras M50S20 con Vickers HV10 en laboratorio (no con Leeb, sec.~\ref{sec:vida}). Decide si la KG nitrocarburada es viable.
   \item \textbf{Consultar a KG} si los dientes están coronados y qué capacidad a picado dan para $m=0{,}5$.
   \item \textbf{Ensayo de banco} para cerrar el 20\,\% que ningún método resuelve: par M50S20 con grasa EP a 0,10\Nm en ambos
         sentidos, inspeccionando flancos y juego a intervalos fijos de ciclos.
@@ -523,6 +727,10 @@ reengrase en cada mantenimiento y control del juego después de las primeras cam
         Cap.~15 (ec. 15-1 a 15-23, tablas 15-4 y 15-6, figs. 15-6 a 15-13, Ejemplo 15-1), tablas 13-3, 7-4 y 14-7.
   \item KG (Kyoiku Gear). Catálogo KG4001, mitras, pp.~233--276 (tabla de potencia, p.~261).
   \item KG. Material de referencia KG5001, p.~18 (condiciones de cálculo) y p.~20 (conversión de potencia).
+  \item KG. Catálogo de mitras, ed.~2025, serie M recta de S45C (m\,0,5 a 4): JIS B1704 grado~3, sin tratamiento
+        térmico, dureza no especificada. \texttt{kggear.co.jp}, sección de mitras.
+  \item ISO 6336-5:2016. \emph{Calculation of load capacity of spur and helical gears --- Part 5: Strength and quality
+        of materials}. Categorías de material, entre ellas aceros nitrocarburados.
 \end{enumerate}
 
 Cálculo reproducible: \texttt{02489-00-MC001/calculo.py}. Genera las figuras, \texttt{resultados.json} y \texttt{comparacion\_kg.json}.

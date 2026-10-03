@@ -21,6 +21,10 @@ Agrega la falla por flexión del S45C (material elegido) con el uso real de
 24 h seguidas una vez por mes, para vidas de 10, 5 y 2 años y tres escenarios
 de factores, y el torque de rotura estática del diente.
 
+Estima la vida en horas de cada opción (mitras KG con o sin tratamiento y
+pares a medida con d_a <= 12 mm) para dos espectros de carga: el uso real
+medido y el motor a pleno, con un único criterio central de factores.
+
 También compara con el datasheet de KG (tabla de potencia a flexión) recalculando
 con Shigley en las condiciones de KG.
 """
@@ -469,6 +473,201 @@ def rotura_estatica():
         out[mk] = fila
     return out
 
+
+# ---------------------------------------------------------------------------
+# 8d. Vida en horas con el espectro de carga medido (criterio central)
+# ---------------------------------------------------------------------------
+# Un solo juego de factores, el más realista de cada uno (ver la nota, sec. 8):
+F_CENTRAL = {
+    'K_A': 1.0,        # los picos medidos ya están en el espectro
+    'Q_v': 8,          # KG serie M: JIS B1704 grado 3; a 0,05 m/s no influye
+    'K_mb': 1.25,      # ec. (15-11): ambos engranajes en voladizo
+    'Z_xc': 2.0,       # ec. (15-12): sin coronamiento garantizado
+    'R': 0.90,         # ec. (15-20): como la vida L10 de un rodamiento
+    'alternada': 1.0,  # flexión pulsante: la inversión de sentido es ocasional
+}
+RPM_VIDA = 100
+HORAS_ANIO = HORAS_MES_REAL * 12            # 288 h por año
+# Espectros de torque por engranaje [N m]. Pico: 10 s, 1 por hora (supuesto).
+ESPECTROS = {
+    'real':  {'etiqueta': 'Uso real medido', 'T_min': 0.05, 'T_max': 0.20, 'T_pico': 0.30},
+    'motor': {'etiqueta': 'Motor a pleno', 'T_min': 0.40, 'T_max': 0.40, 'T_pico': 0.50},
+}
+N_NIVELES = 60          # niveles de la senoide (distribución arcoseno)
+N_MIN, N_MAX = 1e2, 1e10  # rango de validez de las ec. (15-14) y (15-15)
+VIDA_TOPE_H = 1e5       # por encima se informa «no limita» (> 340 años)
+
+
+def nitrocarburado(mat):
+    """S45C nitrocarburado (Tenifer/QPQ): no está en Shigley. Supuesto: +30 %
+    en sigma_H,lim y +20 % en sigma_F,lim respecto del mismo acero sin tratar,
+    según la diferencia entre categorías de material de ISO 6336-5. A validar."""
+    return dict(mat, sHlim=1.30 * mat['sHlim'], sFlim=1.20 * mat['sFlim'],
+                base_H=mat['base_H'] + ' x 1,30 (nitrocarburado, supuesto)',
+                base_F=mat['base_F'] + ' x 1,20 (nitrocarburado, supuesto)')
+
+
+def JI_mitra(z):
+    """Y_J y Z_I de mitras de 20°: Shigley figs. 15-7 y 15-6, leídos en
+    z = 16 y z = 20 e interpolados linealmente."""
+    t = (z - 16) / 4.0
+    return 0.1853 + t * (0.200 - 0.1853), 0.058 + t * (0.062 - 0.058)
+
+
+def geo_medida(m, z):
+    """Mitra a medida con b = 0,3 R_e (proporción recomendada F <= 0,3 A_0, como en el Ejemplo 15-1 de Shigley)."""
+    J, I = JI_mitra(z)
+    Re = m * z / (2 * math.sin(math.radians(45)))
+    return geometria({'m': m, 'z': z, 'b': round(0.30 * Re, 2), 'J': J, 'I': I})
+
+
+OPCIONES_KG = [  # clave, etiqueta, material
+    ('KG_S45C_170', 'KG M50S20, S45C 170 HB', MATERIALES['S45C']),
+    ('KG_S45C_200', 'KG M50S20, S45C 200 HB', MATERIALES['S45C 200 HB']),
+    ('KG_NIT_170', 'KG M50S20 nitrocarb., 170 HB', nitrocarburado(MATERIALES['S45C'])),
+    ('KG_NIT_200', 'KG M50S20 nitrocarb., 200 HB', nitrocarburado(MATERIALES['S45C 200 HB'])),
+    ('KG_LATON', 'KG M50B20, latón C3604B', MATERIALES['Latón C3604B']),
+]
+OPCIONES_12 = [  # clave, etiqueta, m, z, material (b = 0,3 R_e salvo C_05_20_KG)
+    ('C_05_20_KG', 'm0,5 z20 carb., b = 2,5 (como KG)', 0.5, 20, 'SCM415 carburizado'),
+    ('C_05_20', 'm0,5 z20 carburizada', 0.5, 20, 'SCM415 carburizado'),
+    ('C_06_17', 'm0,6 z17 carburizada', 0.6, 17, 'SCM415 carburizado'),
+    ('C_06_18', 'm0,6 z18 carburizada', 0.6, 18, 'SCM415 carburizado'),
+    ('C_065_16', 'm0,65 z16 carburizada', 0.65, 16, 'SCM415 carburizado'),
+    ('C_065_17', 'm0,65 z17 carburizada', 0.65, 17, 'SCM415 carburizado'),
+    ('B_06_18', 'm0,6 z18 SCM440 300 HB', 0.6, 18, 'SCM440 bonificado'),
+]
+DA_MAX_12 = 12.0
+
+
+def N_falla(g, mat, T, modo, f=None):
+    """Ciclos hasta la falla a torque constante T: se invierte
+    T_adm(N) = T con las curvas de vida Y_NT (15-15) o Z_NT (15-14).
+    inf si T no supera la capacidad a 1e10 ciclos; 0 si supera la de 1e2."""
+    f = F_CENTRAL if f is None else f
+    clave = 'T_F' if modo == 'F' else 'T_H'
+
+    def cap(N):
+        return capacidad(g, mat, RPM_VIDA, N, f=f)[clave]
+    if cap(N_MAX) >= T:
+        return math.inf
+    if cap(N_MIN) < T:
+        return 0.0
+    lo, hi = math.log(N_MIN), math.log(N_MAX)
+    for _ in range(60):
+        mid = 0.5 * (lo + hi)
+        if cap(math.exp(mid)) >= T:
+            lo = mid
+        else:
+            hi = mid
+    return math.exp(lo)
+
+
+def vida_espectro(g, mat, esp, f=None):
+    """Vida en horas con la regla de Miner (Shigley sec. 6-15). El torque
+    continuo oscila senoidalmente entre T_min y T_max (60 niveles de igual
+    duración en fase); cada hora suma un pico de 10 s a T_pico. Flexión y
+    picado se evalúan por separado: manda el que llega antes a daño 1."""
+    fases = (np.arange(N_NIVELES) + 0.5) / N_NIVELES * 2 * math.pi
+    T_med, T_amp = (esp['T_min'] + esp['T_max']) / 2, (esp['T_max'] - esp['T_min']) / 2
+    niveles = T_med + T_amp * np.sin(fases)
+    ciclos_h = RPM_VIDA * 60.0
+    ciclos_pico_h = DATOS['picos_por_hora'] * max(1.0, RPM_VIDA * DATOS['t_pico'] / 60.0)
+    out = {}
+    for modo in ('F', 'H'):
+        d_cont = sum(ciclos_h / N_NIVELES / max(N_falla(g, mat, T, modo, f), 1e-300)
+                     for T in niveles)
+        d_pico = ciclos_pico_h / max(N_falla(g, mat, esp['T_pico'], modo, f), 1e-300)
+        d = d_cont + d_pico
+        out[modo] = {'dano_h': d, 'frac_pico': d_pico / d if d > 0 else 0.0,
+                     'horas': 1.0 / d if d > 0 else math.inf}
+    modo = 'F' if out['F']['horas'] <= out['H']['horas'] else 'H'
+    h = out[modo]['horas']
+    return {'horas': h, 'anios': h / HORAS_ANIO,
+            'modo': 'flexión' if modo == 'F' else 'picado',
+            'frac_pico': out[modo]['frac_pico'],
+            'horas_F': out['F']['horas'], 'horas_H': out['H']['horas']}
+
+
+def margen_10_anios(g, mat, esp, f=None):
+    """Margen de torque: admisible para 10 años de uso (24 h por mes) sobre el
+    torque aplicado, en continuo (contra T_max) y en picos (contra T_pico)."""
+    f = F_CENTRAL if f is None else f
+    N_c = RPM_VIDA * 60.0 * HORAS_ANIO * 10
+    N_p = DATOS['picos_por_hora'] * HORAS_ANIO * 10 * max(1.0, RPM_VIDA * DATOS['t_pico'] / 60.0)
+    c = capacidad(g, mat, RPM_VIDA, N_c, f=f)
+    p = capacidad(g, mat, RPM_VIDA, N_p, f=f)
+    return {'N_cont': N_c, 'N_pico': N_p, 'T_adm_cont': c['T_adm'], 'T_adm_pico': p['T_adm'],
+            'T_F_cont': c['T_F'], 'T_H_cont': c['T_H'], 'T_F_pico': p['T_F'], 'T_H_pico': p['T_H'],
+            'margen_cont': c['T_adm'] / esp['T_max'], 'margen_pico': p['T_adm'] / esp['T_pico']}
+
+
+def estudio_vida():
+    filas = []
+    for k, lab, mat in OPCIONES_KG:
+        filas.append(('KG', k, lab, BASE, mat))
+    for k, lab, m, z, mk in OPCIONES_12:
+        g = BASE if k == 'C_05_20_KG' else geo_medida(m, z)
+        filas.append(('12mm', k, lab, g, MATERIALES[mk]))
+    out = {}
+    for grupo, k, lab, g, mat in filas:
+        out[k] = {'grupo': grupo, 'etiqueta': lab,
+                  'geo': {x: g[x] for x in ('m', 'z', 'd', 'da', 'Re', 'b_ef', 'J', 'I')},
+                  'sFlim': mat['sFlim'], 'sHlim': mat['sHlim'],
+                  'casos': {e: dict(vida_espectro(g, mat, esp), **margen_10_anios(g, mat, esp))
+                            for e, esp in ESPECTROS.items()}}
+    return out
+
+
+
+def fmt_c(x, nd=3):
+    return f'{x:.{nd}f}'.replace('.', '{,}')
+
+
+def fmt_horas(r):
+    """Texto de la vida para las tablas de la nota."""
+    h = r['horas']
+    if h < 1.0:
+        return r'\textit{no admisible}'
+    if h >= VIDA_TOPE_H:
+        return r'no limita'
+    hh = f'{h:,.0f}'.replace(',', '.') if h >= 10 else f'{h:.1f}'.replace('.', '{,}')
+    a = r['anios']
+    if a < 0.1:
+        return f'{hh} h ($<$0{{,}}1 a)'
+    aa = f'{a:.1f}'.replace('.', '{,}') if a < 100 else f'{a:.0f}'
+    return f'{hh} h ({aa} a)'
+
+
+def tablas_vida_tex(ev):
+    """Escribe las filas de las tablas de vida (tabla_vida_kg.tex y
+    tabla_vida_12.tex) para incluirlas en la nota sin transcribir a mano."""
+    for grupo, nombre in (('KG', 'tabla_vida_kg.tex'), ('12mm', 'tabla_vida_12.tex')):
+        filas = []
+        for k, v in ev.items():
+            if v['grupo'] != grupo:
+                continue
+            g, r, m = v['geo'], v['casos']['real'], v['casos']['motor']
+            celdas = [v['etiqueta']]
+            if grupo == '12mm':
+                celdas += [fmt_c(g['da'], 2), fmt_c(g['b_ef'], 2)]
+            modo = lambda x: '--' if x['horas'] >= VIDA_TOPE_H else x['modo']  # noqa: E731
+            celdas += [fmt_horas(r), modo(r), fmt_c(r['margen_cont'], 2) + ' / ' + fmt_c(r['margen_pico'], 2),
+                       fmt_horas(m), modo(m), fmt_c(m['margen_cont'], 2) + ' / ' + fmt_c(m['margen_pico'], 2)]
+            filas.append(' & '.join(celdas) + r'\\')
+        with open(os.path.join(RES, nombre), 'w', encoding='utf-8') as fh:
+            fh.write('% Generado por calculo.py (estudio_vida). No editar a mano.\n')
+            fh.write('\n'.join(filas) + '\n')
+    filas = []
+    for k, v in ev.items():
+        r = v['casos']['real']
+        filas.append(' & '.join([v['etiqueta'], fmt_c(v['sFlim'], 1), fmt_c(v['sHlim'], 0),
+                                 fmt_c(r['T_F_cont']), fmt_c(r['T_H_cont']),
+                                 fmt_c(r['T_F_pico']), fmt_c(r['T_H_pico'])]) + r'\\')
+    with open(os.path.join(RES, 'tabla_vida_adm.tex'), 'w', encoding='utf-8') as fh:
+        fh.write('% Generado por calculo.py (estudio_vida). No editar a mano.\n')
+        fh.write('\n'.join(filas) + '\n')
+
 # ---------------------------------------------------------------------------
 # 9. Figuras
 # ---------------------------------------------------------------------------
@@ -780,6 +979,40 @@ def fig_flexion(fx):
     fig.tight_layout()
     guardar(fig, 'fig_flexion')
 
+
+def fig_vida_horas(ev):
+    """Vida en horas de cada opción, uso real y motor a pleno (escala log)."""
+    claves = list(ev)
+    fig, ax = plt.subplots(figsize=(8.4, 4.4))
+    y = np.arange(len(claves))
+    for i, (e, col) in enumerate((('real', SERIES[0]), ('motor', SERIES[1]))):
+        vals = []
+        for k in claves:
+            h = ev[k]['casos'][e]['horas']
+            vals.append(min(max(h, 1.0), VIDA_TOPE_H))
+        yy = y + (i - 0.5) * 0.36
+        ax.barh(yy, vals, height=0.34, color=col, zorder=3, label=ESPECTROS[e]['etiqueta'])
+        for v, h, yv in zip(vals, [ev[k]['casos'][e]['horas'] for k in claves], yy):
+            if h >= VIDA_TOPE_H:
+                t = ' no limita'
+            elif h < 1:
+                t = ' no admisible'
+            else:
+                t = f' {h:,.0f} h'.replace(',', '.')
+            ax.text(v, yv, t, va='center', fontsize=7)
+    for h, lab in ((HORAS_ANIO, '1 año'), (10 * HORAS_ANIO, '10 años')):
+        ax.axvline(h, color=TXT2, lw=0.8, ls='--')
+        ax.text(h, -0.75, lab, fontsize=7.5, color=TXT2, ha='center')
+    ax.set_xscale('log')
+    ax.set_xlim(1, VIDA_TOPE_H * 6)
+    ax.set_yticks(y, [ev[k]['etiqueta'] for k in claves], fontsize=8)
+    ax.set_ylim(len(claves) - 0.4, -1.0)
+    estilo(ax, 'Vida estimada [h] (100 rpm; 24 h por mes = 288 h por año)')
+    ax.grid(axis='y', visible=False)
+    ax.legend(fontsize=8, frameon=False, loc='lower center', ncol=2, bbox_to_anchor=(0.5, 1.0))
+    fig.tight_layout()
+    guardar(fig, 'fig_vida_horas')
+
 # ---------------------------------------------------------------------------
 # 10. Principal
 # ---------------------------------------------------------------------------
@@ -788,6 +1021,7 @@ def main():
     os.makedirs(RES, exist_ok=True)
     res = calcular_disenos()
     fx = flexion_s45c()
+    ev = estudio_vida()
     cota = {r: capacidad(BASE, MATERIALES['Latón C3604B'], r, N_eval(ciclos_normal(r)),
                          sHlim=COTA_BAJA['Latón C3604B'])['T_adm'] for r in DATOS['rpm_normal']}
     js = lambda d: {str(k): v for k, v in d.items()}  # noqa: E731
@@ -810,6 +1044,8 @@ def main():
                          'resultados': {e: {mk: js(v) for mk, v in d.items()}
                                         for e, d in fx.items()}},
         'rotura_estatica': rotura_estatica(),
+        'vida_horas': {'factores': F_CENTRAL, 'rpm': RPM_VIDA, 'horas_por_anio': HORAS_ANIO,
+                       'espectros': ESPECTROS, 'opciones': ev},
     }
     with open(os.path.join(RES, 'resultados.json'), 'w', encoding='utf-8') as fh:
         json.dump(salida, fh, ensure_ascii=False, indent=1)
@@ -821,6 +1057,8 @@ def main():
     fig_sensibilidad()
     fig_geometria()
     fig_flexion(fx)
+    fig_vida_horas(ev)
+    tablas_vida_tex(ev)
     comp, pasos = comparacion_kg(), cascada()
     fig_datasheet(comp, pasos)
     with open(os.path.join(RES, 'comparacion_kg.json'), 'w', encoding='utf-8') as fh:
@@ -854,6 +1092,14 @@ def main():
                 f"{a}a: F {fx[e][mk][a]['T_F']:.3f}/{fx[e][mk][a]['T_F_pico']:.3f}"
                 f" H {fx[e][mk][a]['T_H']:.3f}/{fx[e][mk][a]['T_H_pico']:.3f}" for a in VIDAS))
     print('ROTURA', rotura_estatica())
+    for k, v in ev.items():
+        g = v['geo']
+        print(f"VIDA {v['etiqueta']:32s} da={g['da']:.2f} b={g['b_ef']:.2f} J={g['J']:.3f} I={g['I']:.4f}")
+        for e, r in v['casos'].items():
+            print(f"     {e:5s} {r['horas']:10.4g} h {r['anios']:9.4g} a {r['modo']:8s} picos {100*r['frac_pico']:3.0f} %"
+                  f" | hF {r['horas_F']:.3g} hH {r['horas_H']:.3g}"
+                  f" | 10a: Tc {r['T_adm_cont']:.3f} ({r['margen_cont']:.2f}) Tp {r['T_adm_pico']:.3f} ({r['margen_pico']:.2f})"
+                  f" F {r['T_F_cont']:.3f}/{r['T_F_pico']:.3f} H {r['T_H_cont']:.3f}/{r['T_H_pico']:.3f}")
 
 
 if __name__ == '__main__':
