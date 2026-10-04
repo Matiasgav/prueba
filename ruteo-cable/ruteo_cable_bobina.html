@@ -1,0 +1,334 @@
+<title>Ruteo del cable de bobina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: panel de parámetros a la izquierda, vistas planta/alzado alineadas en X a la derecha, cotas debajo. */
+:root{
+  --bg:#eef1ef; --panel:#fafbfa; --ink:#1c2321; --muted:#5a6561; --line:#c6cdc9; --grid:#dde3e0;
+  --holder:#6f8189; --holder-fill:#dbe3e5; --cable:#b65d17; --cable-static:#7b4a22; --fixed:#2c6c8c;
+  --warn:#b0362a; --ok:#2d7a4c; --ghost:#9aa6a2;
+  --f-display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#131716; --panel:#1a1f1e; --ink:#e3e8e6; --muted:#97a29e; --line:#353e3b; --grid:#252c2a;
+  --holder:#93a5ad; --holder-fill:#28323a; --cable:#e48b3d; --cable-static:#c59263; --fixed:#6db3d6;
+  --warn:#ec7a6c; --ok:#6cc495; --ghost:#5c6864; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#131716; --panel:#1a1f1e; --ink:#e3e8e6; --muted:#97a29e; --line:#353e3b; --grid:#252c2a;
+  --holder:#93a5ad; --holder-fill:#28323a; --cable:#e48b3d; --cable-static:#c59263; --fixed:#6db3d6;
+  --warn:#ec7a6c; --ok:#6cc495; --ghost:#5c6864; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:16px;padding-block:20px 40px;display:grid;gap:18px}
+header h1{font-family:var(--f-display);font-weight:700;font-size:1.9rem;margin:0;letter-spacing:.01em;text-wrap:balance}
+header p{margin:.25rem 0 0;color:var(--muted);max-width:75ch}
+.main{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.main{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px}
+.params{display:grid;gap:14px}
+fieldset{border:0;margin:0;padding:0;display:grid;gap:6px}
+legend{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:.78rem;color:var(--muted);margin-bottom:4px}
+.row{display:grid;grid-template-columns:1fr 76px;gap:8px;align-items:center}
+.row label{font-size:.88rem}
+.row label small{color:var(--muted)}
+input[type=number],select{font-family:var(--f-mono);font-size:.85rem;padding:3px 6px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);width:100%;box-sizing:border-box}
+select{grid-column:1/-1}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--fixed);outline-offset:1px}
+.views{display:grid;gap:12px;min-width:0}
+.viewhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.viewhead h2{font-family:var(--f-display);font-weight:600;font-size:1.05rem;margin:0}
+.viewhead span{font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+.svgbox{overflow-x:auto}
+svg{display:block;width:100%;min-width:560px;height:auto}
+.motion{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.motion input[type=range]{width:100%;accent-color:var(--cable)}
+button{font-family:var(--f-display);font-weight:600;font-size:.9rem;padding:4px 12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:4px;cursor:pointer}
+button:hover{border-color:var(--cable)}
+#phase{font-family:var(--f-mono);font-size:.82rem;min-width:15ch;text-align:right}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:18px;height:0;border-top:3px solid;vertical-align:middle;margin-right:5px}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+table{border-collapse:collapse;width:100%;font-size:.86rem}
+td{padding:4px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+td:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+h3{font-family:var(--f-display);font-weight:600;font-size:1rem;margin:0 0 6px}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:.86rem}
+.checks li{padding-left:22px;position:relative}
+.checks li::before{position:absolute;left:0;top:0;font-family:var(--f-mono);font-weight:600}
+.checks li.ok::before{content:"OK";color:var(--ok);font-size:.7rem;top:2px}
+.checks li.bad::before{content:"!!";color:var(--warn)}
+.checks li.info::before{content:"i";color:var(--fixed);left:5px}
+.notes{font-size:.9rem;max-width:80ch}
+.notes ol,.notes ul{padding-left:1.2rem;margin:.3rem 0}
+.notes li{margin:.2rem 0}
+code{font-family:var(--f-mono);font-size:.84em}
+</style>
+
+<div class="wrap">
+<header>
+  <h1>Ruteo del cable de bobina</h1>
+  <p>Bucle rodante en el plano XZ con salida coaxial al pivote del holder. Todas las cotas en mm, ejes globales; X0 es la referencia del recorrido y z = 0 la cara inferior del holder. Mové el control de posición para ver traslación y luego rotación.</p>
+</header>
+
+<div class="main">
+<form class="panel params" id="params" onsubmit="return false">
+  <fieldset><legend>Holder</legend>
+    <div class="row"><label for="D">Diámetro cilindro</label><input id="D" type="number" step="0.5" value="19"></div>
+    <div class="row"><label for="h">Altura (Z)</label><input id="h" type="number" step="0.5" value="12"></div>
+    <div class="row"><label for="e">Prisma más allá del radio <small>(+X)</small></label><input id="e" type="number" step="0.5" value="6"></div>
+    <div class="row"><label for="p">Pivote desde el centro <small>(+X)</small></label><input id="p" type="number" step="0.5" value="6"></div>
+  </fieldset>
+  <fieldset><legend>Movimiento</legend>
+    <div class="row"><label for="A">Centro en reposo desde X0 <small>(A)</small></label><input id="A" type="number" step="0.5" value="15"></div>
+    <div class="row"><label for="S">Carrera de la corredera</label><input id="S" type="number" step="0.5" value="30"></div>
+    <div class="row"><label for="th">Rotación al final <small>(°)</small></label><input id="th" type="number" step="5" value="180"></div>
+    <div class="row"><label for="W2">Semiancho interior chasis <small>(Y)</small></label><input id="W2" type="number" step="0.5" value="10"></div>
+  </fieldset>
+  <fieldset><legend>Cable</legend>
+    <div class="row"><label for="R">Radio del bucle <small>(dinámico)</small></label><input id="R" type="number" step="0.5" value="5"></div>
+    <div class="row"><label for="Rs">Radio de curvas fijas <small>(estático)</small></label><input id="Rs" type="number" step="0.5" value="2"></div>
+    <div class="row"><label for="d">Diámetro del cable</label><input id="d" type="number" step="0.1" value="1"></div>
+    <div class="row"><label for="c">Holgura</label><input id="c" type="number" step="0.1" value="0.5"></div>
+    <div class="row"><label for="lt">Largo libre a torsión</label><input id="lt" type="number" step="1" value="10"></div>
+  </fieldset>
+  <fieldset><legend>Disposición del bucle</legend>
+    <select id="lay">
+      <option value="bajo" selected>Bajo el holder (bucle hacia abajo)</option>
+      <option value="sobre">Sobre el holder (bucle hacia arriba)</option>
+      <option value="detras">Detrás del holder (dentro de su altura)</option>
+    </select>
+    <select id="entry">
+      <option value="1" selected>Entrada por la pared +Y</option>
+      <option value="-1">Entrada por la pared −Y</option>
+    </select>
+  </fieldset>
+</form>
+
+<div class="views">
+  <div class="panel motion">
+    <button type="button" id="play">Animar</button>
+    <input type="range" id="u" min="0" max="2" step="0.005" value="0" aria-label="Posición del mecanismo">
+    <span id="phase"></span>
+  </div>
+  <div class="panel">
+    <div class="viewhead"><h2>Planta · plano XY</h2><span>visto desde +Z</span></div>
+    <div class="svgbox"><svg id="top" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  </div>
+  <div class="panel">
+    <div class="viewhead"><h2>Alzado · plano XZ</h2><span>visto desde −Y</span></div>
+    <div class="svgbox"><svg id="side" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="legend">
+      <span><i style="border-color:var(--cable)"></i>bucle dinámico</span>
+      <span><i style="border-color:var(--cable-static)"></i>tramo fijo a la corredera</span>
+      <span><i style="border-color:var(--cable-static);border-top-style:dotted"></i>tramo a torsión (eje del pivote)</span>
+      <span><i style="border-color:var(--fixed)"></i>fijación y entrada al chasis</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="results">
+  <div class="panel"><h3>Puntos de ruteo</h3><table id="tPts"></table></div>
+  <div class="panel"><h3>Bucle y envolvente</h3><table id="tLoop"></table></div>
+  <div class="panel"><h3>Verificaciones</h3><ul class="checks" id="checks"></ul></div>
+</div>
+
+<div class="panel notes">
+  <h3>Criterio de la propuesta</h3>
+  <ol>
+    <li><b>El cable sale del holder por el eje del pivote.</b> El cable baja coaxial al agujero de giro (pasador hueco) y se sujeta a la corredera justo debajo. La corredera solo se traslada, así que la rotación final no mueve ningún punto del cable: solo lo tuerce sobre el largo libre a torsión. La extensión por rotación no consume longitud de bucle.</li>
+    <li><b>Bucle rodante en XZ.</b> Un tramo va fijo a la corredera (móvil) y el otro al chasis. El codo avanza la mitad de lo que avanza la corredera. Con el punto fijo F en la mitad de la carrera, la longitud recta necesaria es la mínima posible, S/2.</li>
+    <li><b>Entrada al chasis por Y.</b> Al final del tramo fijo, una curva estática en el plano XY lleva el cable a la pared lateral. Esa curva y la de la corredera no flexionan en servicio, por eso admiten un radio menor que el del bucle.</li>
+  </ol>
+  <h3>Supuestos a confirmar</h3>
+  <ul>
+    <li>El prisma de la D está del lado +X y el pivote a +6 mm del centro del cilindro, dentro del prisma; el eje de giro es paralelo a Z.</li>
+    <li>La corredera está debajo del holder y lleva el pasador. En reposo el centro del cilindro está a A = 15 mm de X0.</li>
+    <li>La rotación es de 180°, alrededor del pivote, cuando la corredera hace tope. Con eso el centro avanza 2·p = 12 mm más y vuelve a quedar centrado en Y.</li>
+    <li>El cable es fino y flexible (≈ Ø1 mm). Para un cable más grueso conviene alargar el tramo a torsión.</li>
+  </ul>
+</div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const ids=["D","h","e","p","A","S","th","W2","R","Rs","d","c","lt"];
+const f=(v,n=1)=>(Math.abs(v)<1e-9?0:v).toFixed(n);
+const rad=a=>a*Math.PI/180;
+
+function read(){
+  const P={};ids.forEach(k=>P[k]=parseFloat($(k).value)||0);
+  P.lay=$("lay").value;P.sy=parseFloat($("entry").value);return P;
+}
+
+function solve(P){
+  const r=P.D/2, xback0=P.A-r, xP0=P.A+P.p;
+  const zs=-(P.c+P.d/2+P.Rs);
+  let zA,zB,xM0;
+  if(P.lay==="bajo"){zA=zs;zB=zA-2*P.R;xM0=xP0-P.Rs;}
+  else if(P.lay==="sobre"){zA=P.h+P.c+P.d/2+P.Rs;zB=zA+2*P.R;xM0=xP0-P.Rs;}
+  else{zA=P.h/2+P.R;zB=P.h/2-P.R;xM0=xback0-P.c-P.d/2-3*P.Rs;}
+  const band=(lo,hi)=>hi>-P.c&&lo<P.h+P.c;
+  const Uover=band(Math.min(zA,zB)-P.d/2,Math.max(zA,zB)+P.d/2);
+  const Bover=band(zB-P.d/2,zB+P.d/2);
+  const k=Uover?Math.max(0,xM0-xback0+P.c+P.d/2):0;
+  let xF=xM0+P.S/2-k; const xFlim=xback0-P.c-P.d-P.Rs; let limited=false;
+  if(Bover&&xF>xFlim){xF=xFlim;limited=true;}
+  const L=Math.max(xM0+P.S-xF,xF-xM0+2*k,0);
+  const xB=s=>(xM0+s+xF-L)/2;
+  // holder outline (local, centre at origin) for sweep radius
+  const loc=outlineLocal(P);
+  const Rsw=Math.max(...loc.map(([x,y])=>Math.hypot(x-P.p,y)));
+  const xPend=xP0+P.S;
+  const wallEnd=Rsw>P.W2?xPend-Math.sqrt(Rsw*Rsw-P.W2*P.W2):null;
+  const xminStatic=P.lay==="detras"?xM0:xM0;
+  const xmin=Math.min(xB(0)-P.R-P.d/2,xminStatic);
+  const zall=[zA,zB,P.lay==="detras"?zs:zA];
+  return {r,xback0,xP0,zs,zA,zB,xM0,xF,L,xB,k,Uover,Bover,limited,Rsw,wallEnd,xPend,xmin,
+          zmin:Math.min(...zall,0)-P.d/2,zmax:Math.max(...zall,P.h)+P.d/2,
+          gain:P.p*(1-Math.cos(rad(P.th)))};
+}
+
+function outlineLocal(P){
+  const r=P.D/2,pts=[[r+P.e,r],[r+P.e,-r],[0,-r]];
+  for(let i=1;i<40;i++){const a=rad(-90-180*i/40);pts.push([r*Math.cos(a),r*Math.sin(a)]);}
+  pts.push([0,r]);return pts;
+}
+function arc(cx,cy,R,a0,a1,n=24){const o=[];for(let i=0;i<=n;i++){const a=rad(a0+(a1-a0)*i/n);o.push([cx+R*Math.cos(a),cy+R*Math.sin(a)]);}return o;}
+const path=pts=>"M"+pts.map(([x,y])=>`${f(x,3)},${f(-y,3)}`).join(" L");
+const T=(x,y,s,cls="",anchor="start")=>`<text x="${f(x,2)}" y="${f(-y,2)}" text-anchor="${anchor}" class="${cls}">${s}</text>`;
+
+function holderWorld(P,s,phi){
+  const xc=P.A+s, pv=[xc+P.p,0], c=Math.cos(rad(phi)), sn=Math.sin(rad(phi));
+  const tr=([x,y])=>{const dx=x-P.p,dy=y;return [pv[0]+c*dx-sn*dy,pv[1]+sn*dx+c*dy];};
+  return {pts:outlineLocal(P).map(tr),centre:tr([0,0]),pv};
+}
+
+function draw(){
+  const P=read(),G=solve(P);
+  const u=parseFloat($("u").value), s=P.S*Math.min(u,1), phi=P.th*Math.max(0,u-1);
+  $("phase").textContent=u<=1?`traslación ${f(s)} mm`:`rotación ${f(phi,0)}°`;
+  const H=holderWorld(P,s,phi), xP=P.A+s+P.p, xM=G.xM0+s, xB=G.xB(s), xback=P.A+s-G.r;
+  const xmax=Math.max(G.xPend+G.Rsw,G.xF+P.Rs)+4, xlo=Math.min(G.xmin,0)-6;
+  const W=xmax-xlo;
+  const css=`<style>
+   text{font-family:var(--f-mono);font-size:1.55px;fill:var(--muted)}
+   .lab{fill:var(--ink);font-size:1.75px}.fx{fill:var(--fixed)}
+   .g{stroke:var(--grid);stroke-width:.12}
+   .hold{fill:var(--holder-fill);stroke:var(--holder);stroke-width:.3}
+   .ghost{fill:none;stroke:var(--ghost);stroke-width:.2;stroke-dasharray:1 .8}
+   .cab{fill:none;stroke:var(--cable);stroke-linecap:round;stroke-linejoin:round}
+   .cst{fill:none;stroke:var(--cable-static);stroke-linecap:round;stroke-linejoin:round}
+   .tor{fill:none;stroke:var(--cable-static);stroke-dasharray:.4 .5}
+   .wall{stroke:var(--ink);stroke-width:.45}
+   .ref{stroke:var(--muted);stroke-width:.15;stroke-dasharray:1 1}
+   .pt{fill:var(--fixed)}.ptm{fill:var(--cable)}
+   .sweep{fill:none;stroke:var(--warn);stroke-width:.18;stroke-dasharray:.8 .6}
+  </style>`;
+  const grid=(y0,y1)=>{let g="";for(let x=Math.ceil(xlo/5)*5;x<=xmax;x+=5)g+=`<line class="g" x1="${x}" x2="${x}" y1="${-y1}" y2="${-y0}"/>`;
+    for(let y=Math.ceil(y0/5)*5;y<=y1;y+=5)g+=`<line class="g" x1="${xlo}" x2="${xmax}" y1="${-y}" y2="${-y}"/>`;return g;};
+  const xt=(y)=>{let t="";for(let x=Math.ceil(xlo/10)*10;x<=xmax-3;x+=10)t+=T(x,y,x,"","middle");return t;};
+  const dw=P.d;
+
+  /* ---------- planta XY ---------- */
+  const ym=Math.max(P.W2+4,G.Rsw+2);
+  let top=css+grid(-ym,ym);
+  top+=`<line class="ref" x1="0" x2="0" y1="${-ym}" y2="${ym}"/>`+T(0.6,ym-2.4,"X0","lab");
+  const wx1=G.wallEnd??xmax-2;
+  [1,-1].forEach(sg=>top+=`<line class="wall" x1="${xlo+2}" x2="${f(wx1,2)}" y1="${-sg*P.W2}" y2="${-sg*P.W2}"/>`);
+  if(G.wallEnd!=null)top+=T(G.wallEnd-0.6,P.W2-2.2,"fin pared ≤ "+f(G.wallEnd),"","end");
+  const h0=holderWorld(P,0,0),h1=holderWorld(P,P.S,0),h2=holderWorld(P,P.S,P.th);
+  [h0,h1,h2].forEach(hh=>top+=`<path class="ghost" d="${path(hh.pts)}Z"/>`);
+  top+=`<circle class="sweep" cx="${f(G.xPend,2)}" cy="0" r="${f(G.Rsw,2)}"/>`;
+  top+=`<path class="hold" d="${path(H.pts)}Z"/>`;
+  top+=`<circle cx="${f(H.centre[0],2)}" cy="${f(-H.centre[1],2)}" r="${f(G.r*0.62,2)}" fill="none" stroke="var(--holder)" stroke-width=".25"/>`;
+  top+=`<path class="tor" stroke-width="${dw*.6}" d="${path([H.centre,[H.centre[0]+(H.pv[0]-H.centre[0])*0.999,H.centre[1]+(H.pv[1]-H.centre[1])*0.999]])}"/>`;
+  top+=`<circle cx="${f(xP,2)}" cy="0" r="1.6" fill="var(--bg)" stroke="var(--holder)" stroke-width=".3"/>`;
+  // cable projected
+  top+=`<path class="cst" stroke-width="${dw}" d="${path([[xP,0],[xM,0]])}"/>`;
+  top+=`<path class="cab" stroke-width="${dw}" d="${path([[xM,0],[xB-P.R,0]])}"/>`;
+  const eArc=arc(G.xF,P.sy*P.Rs,P.Rs,-90*P.sy,0);
+  top+=`<path class="cab" stroke-width="${dw}" d="${path([[xB,0],[G.xF,0]])}"/>`;
+  top+=`<path class="cst" stroke-width="${dw}" d="${path([...eArc,[G.xF+P.Rs,P.sy*(P.W2+2)]])}"/>`;
+  top+=`<circle class="pt" cx="${f(G.xF,2)}" cy="0" r=".7"/>`+T(G.xF,-2.6*P.sy-0.8,"F","fx","middle");
+  top+=`<circle class="pt" cx="${f(G.xF+P.Rs,2)}" cy="${f(-P.sy*P.W2,2)}" r=".8"/>`+T(G.xF+P.Rs+1.2,P.sy*(P.W2+1.6),"E","fx");
+  top+=`<circle class="ptm" cx="${f(xM,2)}" cy="0" r=".6"/>`;
+  top+=xt(-ym+0.6);
+  $("top").setAttribute("viewBox",`${f(xlo,2)} ${f(-ym,2)} ${f(W,2)} ${f(2*ym,2)}`);
+  $("top").innerHTML=top;
+
+  /* ---------- alzado XZ ---------- */
+  const z0=G.zmin-P.R*0+-4, z1=G.zmax+4;
+  let sd=css+grid(z0,z1);
+  sd+=`<line class="ref" x1="0" x2="0" y1="${-z1}" y2="${-z0}"/>`+T(0.6,z1-2.4,"X0","lab");
+  sd+=`<line class="ref" x1="${xlo}" x2="${xmax}" y1="0" y2="0"/>`+T(xlo+0.6,0.6,"z 0");
+  const xs=H.pts.map(p=>p[0]), hx0=Math.min(...xs), hx1=Math.max(...xs);
+  [h0,h1,h2].forEach(hh=>{const a=hh.pts.map(p=>p[0]);sd+=`<rect class="ghost" x="${f(Math.min(...a),2)}" y="${-P.h}" width="${f(Math.max(...a)-Math.min(...a),2)}" height="${P.h}"/>`;});
+  sd+=`<rect class="hold" x="${f(hx0,2)}" y="${-P.h}" width="${f(hx1-hx0,2)}" height="${P.h}"/>`;
+  sd+=`<line x1="${f(xP,2)}" x2="${f(xP,2)}" y1="${-P.h-1}" y2="1" stroke="var(--holder)" stroke-width=".2" stroke-dasharray="1.5 .5 .3 .5"/>`;
+  // static + torsion
+  let tor,st;
+  if(P.lay==="bajo"){tor=[[xP,P.h/2],[xP,G.zA+P.Rs]];st=arc(xP-P.Rs,G.zA+P.Rs,P.Rs,0,-90);}
+  else if(P.lay==="sobre"){tor=[[xP,P.h/2],[xP,G.zA-P.Rs]];st=arc(xP-P.Rs,G.zA-P.Rs,P.Rs,0,90);}
+  else{const x1=xback-P.c-P.d/2-P.Rs;tor=[[xP,P.h/2],[xP,G.zs+P.Rs]];
+    st=[...arc(xP-P.Rs,G.zs+P.Rs,P.Rs,0,-90),...arc(x1,G.zs+P.Rs,P.Rs,-90,-180),...arc(x1-2*P.Rs,G.zA-P.Rs,P.Rs,0,90)];}
+  sd+=`<path class="tor" stroke-width="${dw}" d="${path(tor)}"/>`;
+  sd+=`<path class="cst" stroke-width="${dw}" d="${path(st)}"/>`;
+  const sgn=G.zA>G.zB?1:-1, a0=90*sgn;
+  const dyn=[[xM,G.zA],...arc(xB,(G.zA+G.zB)/2,P.R,a0,a0+180*sgn,36),[G.xF,G.zB]];
+  sd+=`<path class="cab" stroke-width="${dw}" d="${path(dyn)}"/>`;
+  sd+=`<path class="cst" stroke-width="${dw}" d="${path([[G.xF,G.zB],[G.xF+P.Rs,G.zB]])}"/>`;
+  sd+=`<circle class="ptm" cx="${f(xM,2)}" cy="${f(-G.zA,2)}" r=".6"/>`+T(xM-0.6,G.zA+(sgn>0?1.2:-2.6),"M","lab","end");
+  sd+=`<circle class="pt" cx="${f(G.xF,2)}" cy="${f(-G.zB,2)}" r=".7"/>`+T(G.xF,G.zB+(sgn>0?-3:1.4),"F","fx","middle");
+  sd+=`<circle class="pt" cx="${f(G.xF+P.Rs,2)}" cy="${f(-G.zB,2)}" r=".7"/>`+T(G.xF+P.Rs+1,G.zB+(sgn>0?-3:1.4),"E","fx");
+  sd+=T(xB-P.R,(G.zA+G.zB)/2-0.7,"R"+f(P.R),"","end");
+  sd+=xt(z0+0.8);
+  $("side").setAttribute("viewBox",`${f(xlo,2)} ${f(-z1,2)} ${f(W,2)} ${f(z1-z0,2)}`);
+  $("side").innerHTML=sd;
+
+  /* ---------- tablas ---------- */
+  const row=(a,b)=>`<tr><td>${a}</td><td>${b}</td></tr>`;
+  $("tPts").innerHTML=
+    row("Pivote en reposo → fin de carrera (x)",`${f(G.xP0)} → ${f(G.xPend)}`)+
+    row("Centro de bobina en reposo → fin (x)",`${f(P.A)} → ${f(P.A+P.S+G.gain)}`)+
+    row("M · unión a la corredera, relativo al pivote (Δx, z)",`${f(G.xM0-G.xP0)}, ${f(G.zA)}`)+
+    row("M · posición absoluta x, reposo → fin",`${f(G.xM0)} → ${f(G.xM0+P.S)}`)+
+    row("F · fijación al chasis, fin del tramo fijo (x, y, z)",`${f(G.xF)}, 0, ${f(G.zB)}`)+
+    row("E · entrada al chasis por "+(P.sy>0?"+Y":"−Y")+" (x, y, z)",`${f(G.xF+P.Rs)}, ${P.sy>0?"":"−"}${f(P.W2)}, ${f(G.zB)}`);
+  const xb0=G.xB(0),xb1=G.xB(P.S);
+  $("tLoop").innerHTML=
+    row("Tramo recto libre (suma de ambos tramos)",f(G.L))+
+    row("Longitud libre del bucle, recto + πR",f(G.L+Math.PI*P.R))+
+    row("Codo del bucle, x en reposo → fin",`${f(xb0)} → ${f(xb1)}`)+
+    row("Tramo móvil MB, reposo → fin",`${f(G.xM0-xb0)} → ${f(G.xM0+P.S-xb1)}`)+
+    row("Tramo fijo BF, reposo → fin",`${f(G.xF-xb0)} → ${f(G.xF-xb1)}`)+
+    row("Envolvente del cable en X (mín.)",f(G.xmin))+
+    row("Envolvente en Z (holder 0 a "+f(P.h)+")",`${f(G.zmin)} a ${f(G.zmax)}`)+
+    row("Torsión en el pivote",`${f(P.th,0)}° en ${f(P.lt)} → ${f(P.th/Math.max(P.lt,1e-6))}°/mm`);
+  const ck=[];
+  ck.push(G.xmin>=0?["ok",`El bucle queda delante de X0 (mín. ${f(G.xmin)}).`]:["bad",`El bucle sobresale ${f(-G.xmin)} mm detrás de X0. Hace falta ese espacio o cambiar de disposición.`]);
+  ck.push(G.Uover||G.Bover?["info",`El bucle comparte altura con el holder: queda forzado detrás de él${G.limited?" y F se corre hacia atrás":""}.`]:["ok","El bucle no comparte altura con el holder: F queda en la mitad de la carrera y el recto es el mínimo, S/2."]);
+  const extraZ=P.lay==="detras"?-G.zmin:(P.lay==="bajo"?-G.zmin:G.zmax-P.h);
+  ck.push(["info",`Altura extra respecto del holder: ${f(extraZ)} mm ${P.lay==="sobre"?"por encima":"por debajo"}.`]);
+  if(G.wallEnd!=null){
+    const backEnd=P.A+P.S-G.r;
+    ck.push(G.wallEnd>backEnd+P.c?["ok",`Para girar, las paredes deben terminar en x ≤ ${f(G.wallEnd)}. El holder sigue guiado hasta el tope (su espalda está en ${f(backEnd)}).`]:
+      ["bad",`Para girar, las paredes deben terminar en x ≤ ${f(G.wallEnd)}, antes de la espalda del holder en fin de carrera (${f(backEnd)}): pierde la guía antes del tope.`]);
+  }
+  ck.push(["info",`Radio barrido al girar: ${f(G.Rsw)} mm alrededor del pivote.`]);
+  ck.push(P.th/Math.max(P.lt,1e-6)>20?["bad","Torsión alta para el largo disponible: alargar el tramo coaxial o usar cable más fino."]:["ok","Torsión moderada para cable fino y flexible."]);
+  $("checks").innerHTML=ck.map(([c,t])=>`<li class="${c}">${t}</li>`).join("");
+}
+
+ids.concat(["lay","entry","u"]).forEach(k=>$(k).addEventListener("input",draw));
+let anim=null,dir=1;
+$("play").addEventListener("click",()=>{
+  if(anim){cancelAnimationFrame(anim);anim=null;$("play").textContent="Animar";return;}
+  $("play").textContent="Pausa";let last=performance.now();
+  const step=t=>{const dt=(t-last)/1000;last=t;let u=parseFloat($("u").value)+dir*dt*0.4;
+    if(u>=2){u=2;dir=-1}if(u<=0){u=0;dir=1}$("u").value=u;draw();anim=requestAnimationFrame(step);};
+  anim=requestAnimationFrame(step);
+});
+draw();
+</script>
