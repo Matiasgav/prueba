@@ -52,7 +52,7 @@ dd{margin:0}
 <div class="rec"><b>Recomendación.</b> Separar las dos funciones que hoy hace el tornillo:
   <b>guiar y pivotar</b> con un pin atrapado entre las chapas en <b>ranuras ciegas (1)</b>, sin ningún corte pasante;
   y <b>fijar</b> con una <b>zapata anular (2)</b> alrededor del pin, que se aprieta con un tornillo desde la cara exterior del holder y traba en cualquier punto y en cualquier ángulo.
-  Todo queda dentro de los 12 mm y del contorno actual. El <b>retén de bola (4)</b> agrega un clic cada 2 mm.
+  Como el holder es de PEEK, el pin, la rosca y la zapata van en un cartucho metálico que reemplaza al inserto actual: el apriete se cierra metal con metal y no se pierde por fluencia. Todo queda dentro de los 12 mm y del contorno actual. El <b>retén de bola (4)</b> agrega un clic cada 2 mm.
   La pletina exterior y la leva de la versión anterior quedan descartadas porque salían de los 12 mm.</div>
 
 <div class="legend">
@@ -118,15 +118,15 @@ F.ciega=svg(VB,
   "Corte en el pivote: un pin a presión en el nervio entra en ranuras ciegas mecanizadas desde adentro en las dos chapas. Las caras exteriores quedan enteras y el pin queda atrapado entre las chapas.");
 
 F.zapata=svg(VB,
-  holderStack()+plateGroove(0,false)+plateGroove(9,true)+
+  holderStack()+R(-3.6,3.5,3.1,8.9,"metal",'style="stroke:var(--new);stroke-dasharray:.5 .3;stroke-width:.2"')+plateGroove(0,false)+plateGroove(9,true)+
   R(-1.25,1.25,1.15,10.85,"steel")+
   P([[-3,8.2],[-2.4,7.6],[-1.3,7.6],[-1.3,8.95],[-3,8.95]],"new")+R(1.3,3,7.6,8.95,"new")+
   R(-12.4,-3.6,6.9,8.1,"steel")+P([[-3.6,6.9],[-2.5,7.5],[-3.6,8.1]],"steel")+
   AR(2.2,7.2,2.2,10.6,"force")+AR(2.2,4.8,2.2,1.4,"force")+
-  T(3.5,8,"zapata anular","nw")+T(-13.5,-1.6,"tornillo de punta cónica","sm")+L(-7.5,-1,-7.5,6.7),
-  "Corte en el pivote: la zapata anular rodea el pin en un rebaje del nervio. La punta cónica la levanta contra la chapa superior y el nervio reacciona contra la inferior.");
+  T(3.7,8.3,"zapata anular","nw")+T(3.7,4,"cartucho metálico","nw")+T(-13.5,-1.6,"tornillo de punta cónica","sm")+L(-7.5,-1,-7.5,6.7),
+  "Corte en el pivote: la zapata anular rodea el pin en un rebaje del cartucho metálico, que ocupa los 6 mm del nervio de PEEK. La punta cónica la levanta contra la chapa superior y el nervio reacciona contra la inferior.");
 F.plan=svg("-17 -26 43 37",
-  R(-17,17,12,25,"metal",'opacity=".6"')+L(-17,12,17,12,"lead")+
+  R(-17,17,12,25,"metal",'opacity=".6"')+L(-17,12,17,12,"lead")+R(1.5,9.5,11,19.3,"metal",'style="stroke:var(--new);stroke-dasharray:.5 .3;stroke-width:.2"')+
   `<rect x="-17" y="-16.75" width="24.75" height="2.5" rx="1.25" fill="none" stroke="var(--metal)" stroke-width=".18" stroke-dasharray=".7 .5"/>`+
   P([[9.5,19],[-9.5,19],[-9.5,0],...arc(0,0,9.5,180,360,40),[9.5,0]],"hold")+
   `<circle cx="0" cy="0" r="3.7" class="gap"/>`+
@@ -134,7 +134,7 @@ F.plan=svg("-17 -26 43 37",
   R(4.6,6.4,-8.2,12.2,"steel")+P([[4.6,12.2],[5.5,12.9],[6.4,12.2]],"steel")+
   `<circle cx="-4" cy="-14" r=".8" class="new"/>`+
   T(-16.5,23.6,"chapas del chasis (por encima)","sm")+T(-16.5,12.5,"canto","sm")+
-  T(-16.5,17.5,"ranura ciega","sm")+T(9.2,15.9,"pin + zapata anular","nw")+T(-4,12.6,"bola","nw","middle")+
+  T(-16.5,17.5,"ranura ciega","sm")+T(9.9,15.9,"pin + zapata en cartucho","nw")+T(-4,12.6,"bola","nw","middle")+
   T(0,-0.4,"bobina","sm","middle")+T(7.2,-4,"tornillo cónico","lab")+T(7.2,-5.4,"llave Allen desde afuera","sm")+
   AR(6.5,-10.6,13.5,-10.6,"lead")+T(10,-9.6,"X","sm","middle"),
   "Planta del holder en reposo: la zapata anular rodea el pin bajo las chapas. El tornillo cónico entra por la cara exterior de la parte redonda, al costado del agujero de la bobina, y llega a la zapata.");
@@ -157,21 +157,21 @@ F.bola=svg("-1 -14 34 16",
 const cards=[
  {t:"Cómo se fija la posición",tag:["pos","resumen"],wide:true,figs:[F.plan],
   p:"La posición la fija la zapata anular: un anillo alrededor del pin que se aprieta contra la chapa superior con un solo tornillo, accesible desde afuera.<ol style='margin:.4rem 0 0;padding-left:1.2rem'><li><b>Aflojar</b> el tornillo cónico un cuarto de vuelta. La zapata baja y el holder queda libre en X.</li><li><b>Correr</b> el holder hasta la posición. El retén de bola marca cada 2 mm, pero se puede dejar en cualquier punto.</li><li><b>Apretar</b>. El cono levanta la zapata, que aprieta contra la chapa superior, y el nervio contra la inferior.</li><li><b>Para extender</b>: llevarlo al tope con el tornillo flojo, girarlo 90° sobre el pin y apretar. La zapata es concéntrica al pin, así que traba igual en la posición girada.</li></ol>",
-  dl:[["Fuerza","Con un prisionero M2,5 a 0,3 N·m, el cono empuja la zapata con unos 400 N. Con fricción 0,3 en dos caras, el holder resiste unos 240 N en X antes de deslizar. Son estimaciones a validar con un ensayo."],["Ante un golpe","Si el golpe supera esa fuerza, el holder desliza sobre las chapas en vez de doblar algo. El borde ya no está en el camino de la carga."],["Verificar","El tornillo pasa a 0,8 mm del agujero de la bobina, si ese agujero es de Ø7,4. Hay que confirmarlo con la medida real."]]},
+  dl:[["PEEK","El PEEK fluye bajo carga sostenida, así que no puede quedar dentro del apriete. El pin, la rosca del tornillo, el anillo y el retén van en un cartucho de 7075 o acero de 6 mm de alto, que reemplaza al inserto actual. La fuerza se cierra chapa superior, anillo, cono, cartucho, chapa inferior: todo metal. El PEEK solo sostiene el cartucho y guía."],["Fuerza","Con un prisionero M2,5 a 0,3 N·m, el cono empuja la zapata con unos 400 N. Con fricción 0,3 en dos caras, el holder resiste unos 240 N en X antes de deslizar. Son estimaciones a validar con un ensayo."],["Ante un golpe","Si el golpe supera esa fuerza, el holder desliza sobre las chapas en vez de doblar algo. El borde ya no está en el camino de la carga."],["Verificar","El tornillo pasa a 0,8 mm del agujero de la bobina, si ese agujero es de Ø7,4. Hay que confirmarlo con la medida real."]]},
  {t:"Hoy",tag:["cur","problema"],figs:[F.hoy],
   p:"El nervio de 6 mm corre entre dos chapas de 3 mm. El tornillo entra al inserto del nervio y su cabeza va en un bolsillo de la chapa superior, para no salir de los 12 mm. Ese bolsillo, sumado a la ranura, deja junto al canto un borde de unos 2,3 por 1,5 mm. Un golpe sobre el holder lo dobla.",dl:[]},
  {t:"1 · Pin en ranuras ciegas",tag:["pos","guía y pivote"],figs:[F.ciega],
-  p:"En lugar de una ranura pasante, cada chapa tiene una ranura ciega mecanizada desde su cara interior, dejando 1 mm de piel. Un pin a presión en el nervio entra en las dos. El borde junto al canto queda unido a la piel y forma un cajón cerrado de 3 mm de alto, mucho más rígido que la tira de 1,5 mm actual. El pin guía en X, retiene en Y y es el eje del giro final.",
+  p:"En lugar de una ranura pasante, cada chapa tiene una ranura ciega mecanizada desde su cara interior, dejando 1 mm de piel. Un pin a presión en el cartucho metálico del nervio entra en las dos. El borde junto al canto queda unido a la piel y forma un cajón cerrado de 3 mm de alto, mucho más rígido que la tira de 1,5 mm actual. El pin guía en X, retiene en Y y es el eje del giro final.",
   dl:[["Sin piezas","El pin va a presión en el nervio y queda atrapado entre las dos chapas al armar el chasis. No tiene cabeza ni tuerca."],["12 mm","No hay nada por fuera de las chapas."],["Inserto","Ya no hace falta en el pivote. Si el nervio sigue en 6 mm, sobra lugar para la zapata."],["Mecanizado","Ranura ciega con fresa de 2,5 mm, 2 mm de profundidad, en la cara interior de cada chapa. El extremo de la ranura en el final del chasis queda redondo para el giro."]]},
  {t:"2 · Zapata anular a cuña",tag:["pos","continua"],figs:[F.zapata],
-  p:"La zapata es un anillo de 7075 alrededor del pin, alojado en un rebaje de la cara superior del nervio. Un tornillo con punta cónica la levanta contra la chapa superior y el nervio reacciona contra la inferior. Como es concéntrica al pivote, traba igual en cualquier punto de la carrera y en cualquier ángulo del giro.",
+  p:"La zapata es un anillo de 7075 alrededor del pin, alojado en un rebaje del cartucho metálico que va dentro del nervio de PEEK. Un tornillo con punta cónica la levanta contra la chapa superior y el nervio reacciona contra la inferior. Como es concéntrica al pivote, traba igual en cualquier punto de la carrera y en cualquier ángulo del giro.",
   dl:[["Sin piezas","El anillo queda encerrado entre el nervio y la chapa, y el pin lo atraviesa. El tornillo se retiene con cuello rebajado."],["Superficie","Conviene anodizado duro en el anillo y en la chapa, o un anillo de bronce, para que no se engrane aluminio con aluminio."]]},
- {t:"3 · Pinza expansiva en el nervio",tag:["pos","continua"],figs:[F.pinza],
+ {t:"3 · Pinza expansiva en el nervio",tag:["cur","descartada en PEEK"],figs:[F.pinza],
   p:"Es una variante sin zapata. Una ranura de flexión a media altura divide el nervio en dos mordazas. La punta cónica las separa unas décimas y aprietan contra las dos chapas. En 7075 la flexión es elástica y vuelve sola al aflojar.",
-  dl:[["Sin piezas","Solo el tornillo, retenido con cuello rebajado."],["Cuidado","El pin del pivote debe ir a presión en una sola mordaza y deslizante en la otra, para no trabar la apertura."],["Frente a 2","Tiene menos piezas, pero se ajusta menos fino y depende de la tolerancia del hueco de 6 mm."]]},
+  dl:[["PEEK","Las mordazas quedarían cargadas siempre y perderían apriete por fluencia en semanas. Solo sirve si el nervio fuera metálico."],["Sin piezas","Solo el tornillo, retenido con cuello rebajado."],["Cuidado","El pin del pivote debe ir a presión en una sola mordaza y deslizante en la otra, para no trabar la apertura."],["Frente a 2","Tiene menos piezas, pero se ajusta menos fino y depende de la tolerancia del hueco de 6 mm."]]},
  {t:"4 · Retén de bola interior",tag:["aux","cada 2 mm"],figs:[F.bola],
   p:"Un émbolo de bola a presión en el nervio y conos cada 2 mm en la cara interior de una chapa. Da el clic y sostiene la posición mientras se aprieta la zapata. No se ve desde afuera y no debilita el canto.",
-  dl:[["Sin piezas","Émbolo con cuerpo liso a presión y labio recalcado."]]},
+  dl:[["Sin piezas","Émbolo con cuerpo liso a presión y labio recalcado, montado en el cartucho metálico y no en el PEEK, para que no se afloje."]]},
 ];
 document.getElementById("cards").innerHTML=cards.map(c=>`
  <article class="card${c.wide?" wide":""}">
