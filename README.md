@@ -45,3 +45,7 @@ pdflatex informe_robotica_inspeccion.tex   # tres veces, por el índice
 Paquetes LaTeX requeridos (TeX Live): `texlive-latex-recommended`,
 `texlive-latex-extra`, `texlive-lang-spanish`, `texlive-fonts-recommended`.
 Para exportar las figuras a PDF: `pip install cairosvg`.
+
+## Otros modelos
+
+- [`eslabon_extensible/`](eslabon_extensible/README.md): eslabón de 190 × 13 mm con ancho regulable de 35 a 105 mm (doble Scott Russell), modelo 3D paramétrico en CadQuery, STEP/STL y visor interactivo.

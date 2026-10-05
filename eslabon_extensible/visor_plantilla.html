@@ -1,0 +1,229 @@
+<title>Eslabón de ancho regulable</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: visor 3D a la izquierda, panel de regulación y cotas a la derecha; en teléfono se apilan. */
+:root {
+  --bg: #eef1f4;
+  --panel: #f8fafb;
+  --fg: #1c2530;
+  --muted: #5d6b79;
+  --line: #cfd7df;
+  --accent: #c8601c;
+  --view: #dde3e9;
+  --f-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --f-body: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12171d; --panel: #192028; --fg: #e3e8ed; --muted: #93a1af;
+    --line: #2c3742; --accent: #ec8a48; --view: #0d1116; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12171d; --panel: #192028; --fg: #e3e8ed; --muted: #93a1af;
+  --line: #2c3742; --accent: #ec8a48; --view: #0d1116; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--f-body); padding: 16px; padding-block: 20px; }
+.wrap { max-width: 1280px; margin: 0 auto; display: grid; gap: 16px; }
+header h1 { font: 600 1.9rem/1.1 var(--f-display); margin: 0; letter-spacing: .01em; text-wrap: balance; }
+header p { margin: 4px 0 0; color: var(--muted); max-width: 70ch; }
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; }
+@media (max-width: 860px) { .main { grid-template-columns: minmax(0, 1fr); } }
+.view { position: relative; background: var(--view); border: 1px solid var(--line); border-radius: 6px; min-height: 420px; aspect-ratio: 4 / 3; max-width: 100%; overflow: hidden; }
+.view canvas { display: block; width: 100%; height: 100%; }
+.vbtns { position: absolute; left: 10px; top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+button { font: 500 13px var(--f-body); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 5px 10px; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button[aria-pressed="true"] { background: var(--accent); color: var(--panel); border-color: var(--accent); }
+.hint { position: absolute; right: 10px; bottom: 8px; font: 12px var(--f-body); color: var(--muted); }
+aside { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.box { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; display: grid; gap: 10px; }
+.box h2 { font: 600 .8rem var(--f-body); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0; }
+.big { font: 500 2.6rem/1 var(--f-mono); font-variant-numeric: tabular-nums; }
+.big small { font-size: 1rem; color: var(--muted); margin-left: 4px; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.scale { display: flex; justify-content: space-between; font: 11px var(--f-mono); color: var(--muted); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; }
+dl { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; }
+dt { color: var(--muted); }
+dd { margin: 0; font: 14px var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; }
+.legend { display: grid; gap: 4px; font-size: 13px; }
+.legend span { display: inline-block; width: 11px; height: 11px; border-radius: 2px; margin-right: 8px; vertical-align: -1px; }
+.note { font-size: 13px; color: var(--muted); margin: 0; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Eslabón de ancho regulable · doble Scott Russell</h1>
+    <p>190 × 13 mm, ancho de 35 a 105 mm. Mové el ancho y mirá cómo el carro corre sobre la barra B mientras la barra A se traslada sin girar.</p>
+  </header>
+  <div class="main">
+    <div class="view" id="view">
+      <div class="vbtns">
+        <button type="button" id="v-iso">Isométrica</button>
+        <button type="button" id="v-top">Planta</button>
+        <button type="button" id="v-end">Extremo</button>
+        <button type="button" id="ghost" aria-pressed="false">Barras transparentes</button>
+      </div>
+      <div class="hint">Arrastrar para girar · rueda para zoom</div>
+    </div>
+    <aside>
+      <section class="box">
+        <h2>Ancho total W</h2>
+        <div class="big" id="wval">70.0<small>mm</small></div>
+        <input type="range" id="w" min="35" max="105" step="0.5" value="70" aria-label="Ancho total en milímetros">
+        <div class="scale"><span>35</span><span>70</span><span>105</span></div>
+        <div class="row">
+          <button type="button" id="anim" aria-pressed="false">Animar recorrido</button>
+        </div>
+      </section>
+      <section class="box">
+        <h2>Cotas a este ancho</h2>
+        <dl>
+          <dt>Distancia entre ejes de acople</dt><dd id="d-ejes"></dd>
+          <dt>Entre rectas de pivotes, s</dt><dd id="d-s"></dd>
+          <dt>Posición del carro O–P1, p</dt><dd id="d-p"></dd>
+          <dt>Ángulo de eslabones largos</dt><dd id="d-ang"></dd>
+          <dt>Lectura en la escala de B</dt><dd id="d-esc"></dd>
+        </dl>
+        <p class="note">s² + p² = (2L)² con 2L = 92 mm. El punto Q1 de la barra A recorre una recta perpendicular a B: eso es el Scott Russell.</p>
+      </section>
+      <section class="box">
+        <h2>Piezas</h2>
+        <div class="legend" id="legend"></div>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const GEO = /*GEOMETRIA*/null;
+const P = GEO.param;
+const view = document.getElementById("view");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+view.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 1, 5000);
+camera.up.set(0, 0, 1);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8090a0, 0.75));
+const sun = new THREE.DirectionalLight(0xffffff, 0.65); sun.position.set(-150, -200, 300); scene.add(sun);
+const fill = new THREE.DirectionalLight(0xffffff, 0.25); fill.position.set(200, 250, 100); scene.add(fill);
+
+const NOMBRES = {
+  barra_A: "Barra A (lado fijo)", barra_B: "Barra B (guía del carro)", carro: "Carro",
+  eslabon_largo: "Eslabón largo ×2 (paralelogramo)", eslabon_corto: "Eslabón corto (Scott Russell)",
+  perno_barra: "Pernos D3", tornillo: "Tornillo de bloqueo M4"
+};
+const geoms = {}, mats = {};
+for (const [k, m] of Object.entries(GEO.mallas)) {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(m.v, 3));
+  g.setIndex(m.i);
+  g.computeVertexNormals();
+  geoms[k] = g;
+  mats[k] = new THREE.MeshStandardMaterial({ color: GEO.colores[k], metalness: 0.25, roughness: 0.55, flatShading: false });
+}
+const edgeMat = new THREE.LineBasicMaterial({ color: 0x1c2530, transparent: true, opacity: 0.35 });
+const inst = {};
+function add(nombre, pieza) {
+  const grp = new THREE.Group();
+  grp.add(new THREE.Mesh(geoms[pieza], mats[pieza]));
+  if (!pieza.startsWith("perno") && pieza !== "separador")
+    grp.add(new THREE.LineSegments(new THREE.EdgesGeometry(geoms[pieza], 30), edgeMat));
+  scene.add(grp); inst[nombre] = grp;
+}
+const LISTA = [["barra_A","barra_A"],["barra_B","barra_B"],["carro","carro"],["l1","eslabon_largo"],["l2","eslabon_largo"],
+  ["corto","eslabon_corto"],["pQ1","perno_barra"],["pQ2","perno_barra"],["pO","perno_barra"],["pP1","perno_carro"],
+  ["pP2","perno_carro"],["pC","perno_C"],["sC","separador"],["torn","tornillo"]];
+LISTA.forEach(([n, p]) => add(n, p));
+
+function pose(w) {
+  const s = w - 2 * (P.BW - P.E_PIV), p = Math.sqrt(P.L2 ** 2 - s ** 2);
+  const xb = w - P.BW, xq = P.BW - P.E_PIV, xo = xb + P.E_PIV, yc = P.Y0 + p / 2;
+  const aL = Math.atan2(p, s), aC = Math.atan2(p / 2, -s / 2);
+  const set = (n, x, y, z = 0, a = 0) => { inst[n].position.set(x, y, z); inst[n].rotation.set(0, 0, a); };
+  set("barra_A", 0, 0); set("barra_B", xb, 0); set("carro", xb, P.Y0 + p);
+  set("l1", xq, P.Y0, 0, aL); set("l2", xq, P.Y0 + P.DP, 0, aL); set("corto", xo, P.Y0, 0, aC);
+  set("pQ1", xq, P.Y0); set("pQ2", xq, P.Y0 + P.DP); set("pO", xo, P.Y0);
+  set("pP1", xo, P.Y0 + p); set("pP2", xo, P.Y0 + p + P.DP); set("pC", w / 2, yc); set("sC", w / 2, yc);
+  set("torn", xb, P.Y0 + p + P.Y_TORN, P.Z_EJE);
+  return { s, p, ang: aL * 180 / Math.PI };
+}
+
+const wIn = document.getElementById("w");
+const fmt = v => v.toFixed(1) + " mm";
+let center = new THREE.Vector3(35, 95, 6.5);
+function update() {
+  const w = parseFloat(wIn.value), r = pose(w);
+  document.getElementById("wval").innerHTML = w.toFixed(1) + "<small>mm</small>";
+  document.getElementById("d-ejes").textContent = fmt(w - P.BW);
+  document.getElementById("d-s").textContent = fmt(r.s);
+  document.getElementById("d-p").textContent = fmt(r.p);
+  document.getElementById("d-ang").textContent = r.ang.toFixed(1) + "°";
+  document.getElementById("d-esc").textContent = w.toFixed(1);
+  center.set(w / 2, 95, 6.5);
+}
+wIn.addEventListener("input", () => { stopAnim(); update(); });
+
+function setView(kind) {
+  const w = parseFloat(wIn.value), c = new THREE.Vector3(w / 2, 95, 6.5);
+  controls.target.copy(c);
+  const d = 330;
+  if (kind === "top") camera.position.set(c.x, c.y - 0.01, c.z + d);
+  else if (kind === "end") camera.position.set(c.x, c.y - d * 1.1, c.z + 1);
+  else camera.position.set(c.x + 170, c.y - 210, c.z + 190);
+  controls.update();
+}
+document.getElementById("v-iso").onclick = () => setView("iso");
+document.getElementById("v-top").onclick = () => setView("top");
+document.getElementById("v-end").onclick = () => setView("end");
+const ghost = document.getElementById("ghost");
+ghost.onclick = () => {
+  const on = ghost.getAttribute("aria-pressed") !== "true";
+  ghost.setAttribute("aria-pressed", on);
+  for (const k of ["barra_A", "barra_B"]) { mats[k].transparent = on; mats[k].opacity = on ? 0.28 : 1; mats[k].depthWrite = !on; }
+};
+
+let animOn = false, t0 = 0;
+const animBtn = document.getElementById("anim");
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function stopAnim() { animOn = false; animBtn.setAttribute("aria-pressed", "false"); animBtn.textContent = "Animar recorrido"; }
+animBtn.onclick = () => {
+  if (animOn) return stopAnim();
+  animOn = true; t0 = performance.now(); animBtn.setAttribute("aria-pressed", "true"); animBtn.textContent = "Detener";
+};
+
+const legend = document.getElementById("legend");
+for (const [k, txt] of Object.entries(NOMBRES)) {
+  const d = document.createElement("div");
+  d.innerHTML = `<span style="background:${GEO.colores[k]}"></span>${txt}`;
+  legend.appendChild(d);
+}
+
+function resize() {
+  const r = view.getBoundingClientRect();
+  renderer.setSize(r.width, r.height, false);
+  camera.aspect = r.width / r.height; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(view);
+resize(); update(); setView("iso");
+(function loop(now) {
+  if (animOn) {
+    const ph = ((now - t0) / (reduce ? 12000 : 6000)) % 1;
+    wIn.value = (P.W_MIN + (P.W_MAX - P.W_MIN) * (0.5 - 0.5 * Math.cos(ph * 2 * Math.PI))).toFixed(1);
+    update();
+  }
+  controls.update();
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+})(performance.now());
+</script>
