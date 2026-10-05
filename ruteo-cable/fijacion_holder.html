@@ -45,23 +45,26 @@ dd{margin:0}
 <div class="wrap">
 <header>
   <h1>Fijación del holder</h1>
-  <p>Alternativas a la ranura con tornillo para piezas de 7075 mecanizadas por CNC, sin piezas que puedan soltarse, con posición continua o cada 2 mm. Chapa supuesta de 2 mm. Cortes esquemáticos a escala, en mm. En los cortes YZ la izquierda es el canto exterior del chasis; el holder está debajo de la chapa.</p>
+  <p>Alternativas a la ranura con tornillo, para piezas de 7075 mecanizadas por CNC. Condiciones: sin piezas que puedan soltarse, posición continua (o cada 2 mm), sin salir del ancho del chasis ni de los 12 mm de alto. Hoy el nervio de 6 mm del holder corre entre dos chapas de 3 mm. Cortes esquemáticos a escala, en mm. En los cortes YZ la izquierda es el canto exterior del chasis.</p>
 </header>
 
-<div class="rec"><b>Recomendación para posición continua.</b> La <b>1, pletina guía con alivio sobre el borde</b>, accionada con la <b>leva (2)</b> si querés ajustar sin herramienta. El borde deja de trabajar porque la palanca del golpe se cierra sobre el lado macizo. Si se puede mover la ranura, sumá la <b>3</b>. El <b>retén de bola</b> agrega un clic cada 2 mm sin perder la fijación continua.</div>
+<div class="rec"><b>Recomendación.</b> Separar las dos funciones que hoy hace el tornillo:
+  <b>guiar y pivotar</b> con un pin atrapado entre las chapas en <b>ranuras ciegas (1)</b>, sin ningún corte pasante;
+  y <b>fijar</b> con una <b>zapata a cuña (2)</b> dentro del nervio, que se aprieta desde la cara exterior del holder.
+  Todo queda dentro de los 12 mm y del contorno actual. El <b>retén de bola (4)</b> agrega un clic cada 2 mm.
+  La pletina exterior y la leva de la versión anterior quedan descartadas porque salían de los 12 mm.</div>
 
 <div class="legend">
-  <span><i style="background:var(--metal-fill);border-color:var(--metal)"></i>chasis 7075</span>
+  <span><i style="background:var(--metal-fill);border-color:var(--metal)"></i>chapas del chasis</span>
   <span><i style="background:var(--holder-fill);border-color:var(--holder)"></i>holder</span>
   <span><i style="background:var(--new-fill);border-color:var(--new)"></i>lo que agrega o cambia la propuesta</span>
-  <span><i style="background:var(--steel);border-color:var(--steel)"></i>tornillo de acero</span>
+  <span><i style="background:var(--steel);border-color:var(--steel)"></i>acero</span>
 </div>
 
 <div class="grid" id="cards"></div>
 </div>
 
 <script>
-/* ---------- primitives (mm, z up) ---------- */
 const n=v=>+v.toFixed(3);
 const R=(y0,y1,z0,z1,c,extra="")=>`<rect x="${n(y0)}" y="${n(-z1)}" width="${n(y1-y0)}" height="${n(z1-z0)}" class="${c}" ${extra}/>`;
 const P=(pts,c,close=true)=>`<path d="M${pts.map(([y,z])=>`${n(y)},${n(-z)}`).join(" L")}${close?"Z":""}" class="${c}"/>`;
@@ -83,118 +86,75 @@ const STY=`<style>
  .bad{fill:none;stroke:var(--warn);stroke-width:.14;stroke-dasharray:.4 .3}
  .gap{fill:var(--panel);stroke:none}
 </style>`;
-const svg=(vb,body,label)=>`<svg viewBox="${vb}" style="max-width:${+vb.split(" ")[2]*13}px" role="img" aria-label="${label}" xmlns="http://www.w3.org/2000/svg">${STY}${body}</svg>`;
+const svg=(vb,body,label)=>`<svg viewBox="${vb}" style="max-width:${+vb.split(" ")[2]*19}px" role="img" aria-label="${label}" xmlns="http://www.w3.org/2000/svg">${STY}${body}</svg>`;
 
-/* ---------- YZ base: holder under plate, crop at y=-12 ---------- */
-function holderYZ(top=-0.2,y1=3.5){return P([[-12,top],[y1,top],[y1,-12.2],[-12,-12.2]],"hold")+P(zig(-12,-12.2,top),"gap",false)+P(zig(-12,-12.2,top),"lead",false)+T(-6,-7,"holder","lab","middle");}
-function plateYZ(t,edge,inner=15,slot=1.25){return R(edge,-slot,0,t,"metal")+R(slot,inner,0,t,"metal");}
-
-/* ---------- figures ---------- */
+/* ---------- 12 mm stack: bottom plate 0-3, holder rib 3-9, top plate 9-12 ---------- */
+const VB="-14 -17 28 20";
+const holderStack=()=>P([[-12,0],[-3.85,0],[-3.85,3.1],[3.5,3.1],[3.5,8.9],[-3.85,8.9],[-3.85,12],[-12,12]],"hold")
+  +P(zig(-12,0,12),"gap",false)+P(zig(-12,0,12),"lead",false)+T(-8,2.2,"holder","lab","middle");
+const plate=(z0)=>R(-3.55,6.5,z0,z0+3,"metal");
+const plateGroove=(z0,top)=>R(-3.55,-1.3,z0,z0+3,"metal")+R(1.3,6.5,z0,z0+3,"metal")+(top?R(-1.3,1.3,z0+2,z0+3,"metal"):R(-1.3,1.3,z0,z0+1,"metal"));
+const blow=()=>AR(-9,15,-9,12.4)+T(-9,15.6,"golpe","wr","middle");
 const F={};
-F.hoy=svg("-17.5 -7 33.5 21",
-  holderYZ()+plateYZ(2,-3.55)+
-  R(-1.1,1.1,-12.2,2,"steel")+R(-2.1,2.1,2,2.5,"steel")+R(-2.1,2.1,-12.7,-12.2,"steel")+
-  P([[-3.55,-0.9],[-1.25,0],[-1.25,2],[-3.55,1.1]],"bad")+
-  AR(-10,5.6,-10,0.4)+T(-10,6.2,"golpe","wr","middle")+
-  T(-2.4,4.2,"borde 2,3","wr","middle")+L(-2.4,3.6,-2.4,2.6)+
-  T(6,3.2,"chapa","lab")+T(4.5,-2.6,"pin del pivote","sm")+L(4.4,-2.3,1.2,-1.4),
-  "Corte actual: un golpe sobre la parte del holder que sobresale hace palanca, el pin tira hacia abajo de la cabeza y dobla el borde de 2,3 mm fuera del plano.");
-F.nervio=svg("-17.5 -7 33.5 21",
-  holderYZ()+R(-1.25,15,0,2,"metal")+
-  P([[-4.3,0],[-1.25,0],[-1.25,2],[-2.5,2],[-2.5,5],[-4.3,5]],"new")+
-  R(-1.1,1.1,-12.2,2,"steel")+R(-2.1,2.1,2,2.5,"steel")+R(-2.1,2.1,-12.7,-12.2,"steel")+
-  T(-3.4,5.8,"nervio","nw","middle")+T(-9,3.2,"borde 3","nw","middle")+L(-7.4,3.4,-3.6,1.2)+
-  T(6,3.2,"chapa","lab"),
-  "Nervio mecanizado en el canto: el borde pasa de una tira plana a un perfil en L de unos 5 mm de alto, sin bolsillo sobre él.");
 
-F.pletinaYZ=svg("-17.5 -7 33.5 22",
-  holderYZ()+plateYZ(2,-3.55)+
-  R(-3.55,7.5,2.1,4.5,"new")+
-  R(-1.2,1.2,-12.2,2.1,"steel")+R(-1,1,2.1,4.5,"steel")+R(-1.35,1.35,4.5,5.1,"steel")+R(-2.3,2.3,-13.6,-12.2,"steel")+
-  T(8,5,"pletina","nw")+T(1.6,5.6,"punta recalcada","sm")+T(2.6,-13.3,"resalte = pivote","sm")+
-  AR(-12.3,-4,-16.4,-4)+T(-16.6,-2.9,"golpe","wr")+T(9,0.6,"chapa","sm"),
-  "Corte YZ: un tornillo con resalte hace de pivote y rosca en una pletina dentada que apoya sobre los dos lados de la ranura. La punta recalcada impide desarmarlo.");
+F.hoy=svg(VB,
+  holderStack()+plate(0)+
+  P([[-3.55,9],[-1.25,9],[-1.25,10.5],[-3,10.5],[-3,12],[-3.55,12]],"metal")+
+  P([[1.25,9],[6.5,9],[6.5,12],[3,12],[3,10.5],[1.25,10.5]],"metal")+
+  R(-1.8,1.8,3.1,8.9,"steel")+R(-1,1,6,10.5,"steel")+R(-2.6,2.6,10.5,11.7,"steel")+
+  P([[-3.55,9],[-1.25,9],[-1.25,10.5],[-3,10.5],[-3,12],[-3.55,12]],"bad")+
+  T(-2.4,13.6,"borde 2,3 × 1,5","wr","middle")+L(-2.4,13,-2.2,10.9)+
+  T(4.6,6,"inserto","sm")+T(3.2,13.3,"bolsillo","sm")+blow(),
+  "Corte actual: el tornillo entra al inserto del nervio y su cabeza va en un bolsillo de la chapa superior. Junto a la ranura, el borde queda de unos 2,3 por 1,5 mm.");
 
-F.pletinaXZ=svg("-1 -9 26 18",
-  R(0,24,-6,-0.2,"hold")+T(5,-3.6,"holder","lab","middle")+
-  P([[0,0],...teeth(0,24,2,0.8,2,true).map(p=>p),[24,0]],"metal")+
-  P([[0,4.5],[24,4.5],...teeth(0,24,2.15,0.8,2,true).reverse()],"new")+
-  R(11,13,-6,4.5,"steel")+
-  L(4,5.3,6,5.3)+L(4,5,4,5.6)+L(6,5,6,5.6)+T(5,6,"paso 2","nw","middle")+
-  T(17,6,"dientes 90°","sm")+T(0.3,1,"chapa","sm"),
-  "Corte XZ a lo largo de la ranura: los dientes de paso 2 mm de la pletina engranan con los de la chapa, del lado interior y del exterior de la ranura.");
+F.ciega=svg(VB,
+  holderStack()+plateGroove(0,false)+plateGroove(9,true)+
+  R(-1.25,1.25,1.15,10.85,"new")+
+  T(1.6,13.5,"piel 1 mm, sin corte","nw")+L(1.5,13,0.6,11.6)+
+  T(-1.6,-1.6,"ranura ciega en las dos chapas","sm","middle")+L(-0.6,-1,0,0.6)+
+  T(4.4,6,"pin a presión","nw")+L(4.3,6.2,1.3,6.2)+blow(),
+  "Corte en el pivote: un pin a presión en el nervio entra en ranuras ciegas mecanizadas desde adentro en las dos chapas. Las caras exteriores quedan enteras y el pin queda atrapado entre las chapas.");
 
-F.tYZ=svg("-17.5 -7 33.5 21",
-  holderYZ()+
-  P([[-5.5,0],[-1.25,0],[-1.25,1.5],[-2.75,1.5],[-2.75,3],[2.75,3],[2.75,1.5],[1.25,1.5],[1.25,0],[15,0],[15,4],[-5.5,4]],"metal")+
-  R(-2.55,2.55,1.6,2.9,"new")+P(teeth(-2.55,2.55,2.9,0,1,true),"lead",false)+
-  R(-1.2,1.2,-12.2,1.6,"steel")+R(-1,1,1.6,2.9,"steel")+R(-2.3,2.3,-13.6,-12.2,"steel")+
-  T(3.4,2.1,"taco dentado","nw")+T(-0.0,5,"cara superior continua","lab","middle")+
-  T(-10,5,"pared 2,8","nw","middle")+L(-8.4,5,-4.3,2)+
-  AR(-12.3,-4,-16.4,-4)+T(-16.6,-2.9,"golpe","wr"),
-  "Corte YZ de la ranura en T: se mecaniza desde la cara del holder, la cara superior queda entera y el taco roscado queda encerrado.");
+F.zapata=svg(VB,
+  holderStack()+plate(0)+plate(9)+
+  P([[-0.6,7.3],[3.1,7.3],[3.1,8.95],[-1.6,8.95],[-1.6,8.3]],"new")+
+  R(-12.4,-2.3,6.2,7.4,"steel")+P([[-2.3,6.2],[-0.6,6.8],[-2.3,7.4]],"steel")+
+  AR(1.2,7.6,1.2,10.6,"force")+AR(1.2,4.8,1.2,1.4,"force")+
+  T(3.6,7.4,"zapata cautiva","nw")+T(-13.5,-1.6,"tornillo con punta cónica","sm")+L(-7.5,-1,-7.5,6)+
+  T(-13.7,13.5,"acceso desde la cara exterior","sm"),
+  "Corte en la zapata, desplazado en X respecto del pin: la punta cónica empuja la zapata contra la chapa superior y el nervio reacciona contra la inferior. Fricción en dos caras, en cualquier posición.");
 
-F.tXZ=svg("-1 -9 30 17",
-  R(0,28,-6,-0.2,"hold")+T(6,-3.6,"holder","lab","middle")+
-  P([[0,0],[0,4],[28,4],[28,0],[26,0],[26,3],...teeth(2,26,3,0.6,2,false).reverse(),[2,3],[2,0]],"metal")+
-  P([[11,1.6],[17,1.6],...teeth(11,17,2.4,0.6,2,true).reverse()],"new")+
-  R(13,15,-6,2.4,"steel")+
-  T(2.3,4.9,"extremo cerrado","sm")+T(25.7,4.9,"pasador a presión","sm","end")+
-  L(5,-1.1,7,-1.1)+L(5,-1.4,5,-.8)+L(7,-1.4,7,-.8)+T(6,-2.1,"paso 2","nw","middle"),
-  "Corte XZ de la ranura en T: el techo dentado traba el taco cada 2 mm. Los extremos quedan cerrados, así que el taco no puede salir.");
+F.pinza=svg(VB,
+  holderStack()+plate(0)+plate(9)+
+  R(-2.6,3.5,5.85,6.15,"gap")+L(-2.6,5.85,3.5,5.85,"lead")+L(-2.6,6.15,3.5,6.15,"lead")+`<circle cx="-2.6" cy="-6" r=".15" class="new"/>`+
+  R(-12.4,-3.4,5.4,6.6,"steel")+P([[-3.4,5.4],[-2.0,6],[-3.4,6.6]],"steel")+
+  AR(1.5,7.4,1.5,10.6,"force")+AR(1.5,4.6,1.5,1.4,"force")+
+  T(3.9,6.4,"ranura de flexión","nw")+T(-7.5,-1.6,"punta cónica","sm","middle")+L(-7.5,-1,-7.5,5.2),
+  "Corte en la pinza: una ranura a media altura convierte el nervio en dos mordazas. La punta cónica las abre unas décimas y aprietan contra las dos chapas, sin ninguna pieza agregada.");
 
-F.bola=svg("-1 -8 26 14",
-  P([[0,0],[24,0],[24,2],[0,2]],"metal")+
-  (()=>{let s="";for(let x=2;x<=22;x+=2)s+=P([[x-.6,0],[x,.55],[x+.6,0]],"gap")+P([[x-.6,0],[x,.55],[x+.6,0]],"lead",false);return s;})()+
-  R(0,24,-6,-0.2,"hold")+R(10.8,13.2,-5,-0.2,"new")+`<circle cx="12" cy="0.15" r=".75" class="steel"/>`+
-  L(12,-4.6,12,-1.2,"lead")+T(14,-2.6,"émbolo a presión","nw")+T(0.4,3,"conos de centrado cada 2 mm","sm"),
-  "Retén de bola: un émbolo a presión en el holder cae en conos de centrado mecanizados cada 2 mm en la cara de la chapa.");
+F.bola=svg("-1 -14 34 16",
+  R(0,24,0,3,"metal")+R(0,24,3.1,8.9,"hold")+
+  P([[0,9],[24,9],[24,12],[0,12]],"metal")+
+  (()=>{let s="";for(let x=2;x<=22;x+=2)s+=P([[x-.6,9],[x,8.45+1],[x+.6,9]],"gap")+P([[x-.6,9],[x,9.55],[x+.6,9]],"lead",false);return s;})()+
+  R(10.8,13.2,4,8.9,"new")+`<circle cx="12" cy="-8.9" r=".75" class="steel"/>`+
+  T(14,6,"émbolo a presión","nw")+T(0.3,12.8,"conos cada 2 mm, cara interior","sm")+T(0.3,1.2,"chapa inferior","sm")+T(0.3,4,"nervio","sm"),
+  "Retén de bola dentro del nervio: el émbolo a presión cae en conos mecanizados cada 2 mm en la cara interior de la chapa superior. No se ven desde afuera.");
 
-
-/* ---------- continuous options ---------- */
-const BAR=(y0=-3.3,y1=9)=>P([[y0,2.35],[1.3,2.35],[1.3,2],[y1,2],[y1,4.5],[y0,4.5]],"new");
-const SCREW=()=>R(-1.2,1.2,-12.2,2.35,"steel")+R(-1,1,2.35,4.5,"steel")+R(-1.35,1.35,4.5,5.1,"steel");
-F.c1YZ=svg("-17.5 -7 33.5 22",
-  holderYZ()+plateYZ(2,-3.55)+BAR()+SCREW()+R(-2.3,2.3,-13.6,-12.2,"steel")+
-  AR(-10,5.6,-10,0.4)+T(-10,6.2,"golpe","wr","middle")+
-  AR(5.5,6.6,5.5,4.7,"force")+AR(2.6,-3.4,2.6,-0.5,"force")+T(6.3,6.2,"zona maciza","sm")+
-  T(-5,6.2,"alivio 0,3","nw","middle")+L(-4,5.6,-2.4,2.2)+T(9.4,3.7,"pletina","nw")+T(2.6,-13.3,"resalte = pivote","sm"),
-  "Corte YZ: la pletina apoya solo del lado macizo y deja 0,3 mm de luz sobre el borde. La palanca del golpe se cierra entre el extremo del holder y la pletina, sin tocar el borde.");
-F.c1XZ=svg("-1 -9 26 17",
-  R(0,24,-6,-0.2,"hold")+T(5,-3.6,"holder","lab","middle")+
-  L(0,0,24,0,"lead")+L(0,2,24,2,"lead")+T(0.3,0.6,"chapa detrás (corte en la ranura)","sm")+
-  R(3,21,2.35,4.5,"new")+R(3.5,10,0.3,2.35,"new")+R(14,20.5,0.3,2.35,"new")+
-  R(11,13,-6,4.5,"steel")+R(10.65,13.35,4.5,5.1,"steel")+
-  L(3.5,6,20.5,6,"lead")+L(3.5,5.7,3.5,6.3)+L(20.5,5.7,20.5,6.3)+T(12,6.6,"lengüeta en la ranura, 17 mm","nw","middle"),
-  "Corte XZ por el centro de la ranura: la pletina tiene una lengüeta a cada lado del tornillo. El empuje en X o en Y se reparte en unos 17 mm de borde, no en el contacto puntual del pin, y la pletina no gira al apretar.");
-F.leva=svg("-17.5 -9 33.5 26.5",
-  holderYZ()+plateYZ(2,-3.55)+BAR()+SCREW()+
-  `<circle cx="0.8" cy="13.6" r="1.9" class="new"/>`+R(-11,0.8,-15.9,-15,"new")+`<circle cx="0" cy="13.6" r=".55" class="steel"/>`+
-  T(-11,-14.3,"palanca abatible","nw")+T(3.2,-14,"excéntrica","nw")+T(3.2,-15.4,"eje remachado","sm"),
-  "Corte YZ con leva: en lugar de la cabeza del tornillo, una excéntrica con palanca tira del eje y aprieta la pletina contra la chapa. Se traba y destraba a mano y queda plegada contra el holder.");
-F.adentro=svg("-17.5 -7 33.5 21",
-  holderYZ(-0.2,7.5)+R(-3.55,2.25,0,2,"metal")+R(4.75,15,0,2,"metal")+
-  R(2.4,4.6,-12.2,2,"steel")+R(1.4,5.6,2,2.5,"steel")+R(1.4,5.6,-12.7,-12.2,"steel")+
-  T(-6,4.4,"borde 5,8","nw","middle")+L(-4.6,4,-1.5,2.1)+T(8,3.2,"chapa","lab"),
-  "Ranura 3,5 mm más adentro: el borde pasa de 2,3 a 5,8 mm. Su rigidez fuera del plano crece en proporción al ancho y en el plano unas 15 veces.");
-
-/* ---------- cards ---------- */
 const cards=[
- {t:"Hoy",tag:["cur","problema"],figs:[F.hoy],p:"El holder cuelga bajo una chapa fina y sobresale del canto. Un golpe arriba o abajo de esa parte hace palanca sobre el pin, y la cabeza del pin dobla el borde de 2,3 mm. Un empuje hacia afuera también lo carga, en el plano.",dl:[]},
- {t:"1 · Pletina guía con alivio sobre el borde",tag:["pos","continua"],figs:[F.c1YZ,F.c1XZ],
-  p:"El pin pasa a ser un tornillo con resalte, que sigue siendo el eje del giro, y rosca en una pletina de 7075 del otro lado de la chapa. La pletina apoya solo del lado macizo y queda separada 0,3 mm del borde. Así la palanca de un golpe se cierra entre el extremo del holder y la pletina, sobre material entero. Dos lengüetas en la ranura reparten los empujes en X e Y a lo largo de 17 mm y evitan que la pletina gire.",
-  dl:[["Sin piezas","Punta del tornillo recalcada tras el montaje. La pletina es más ancha que la ranura y queda atrapada."],["Fijación","Por fricción, en cualquier posición. Se puede sumar el retén de bola para tener un clic cada 2 mm."],["Giro final","La pletina sigue en la ranura por sus lengüetas y el holder gira sobre el resalte."],["Ancho","La pletina termina 0,25 mm antes del canto de la chapa y la cabeza del tornillo queda bajo el holder. Nada sale del contorno actual."]]},
- {t:"2 · Leva excéntrica en lugar de tornillo",tag:["pos","continua"],figs:[F.leva],
-  p:"Es la misma pletina de la opción 1, pero el tornillo se reemplaza por un eje con excéntrica y palanca bajo el holder. Un cuarto de vuelta aprieta y otro afloja, sin herramienta. La palanca queda plegada contra el holder.",
-  dl:[["Sin piezas","El eje se remacha en la pletina y la leva queda retenida por el eje."],["Ajuste fino","La excéntrica fija la fuerza de apriete: conviene una arandela ondulada o un resalte calibrado para compensar tolerancias."],["Ancho","El eje de la leva va en X y la palanca gira en el plano YZ. Plegada queda dentro de la planta del holder; al abrirla baja, nunca sale hacia afuera."],["Cuidado","La palanca abierta sobresale por debajo mientras se ajusta. Plegada debe quedar en un rebaje del fondo del holder, con un retén de bola para que no se abra con vibración."]]},
- {t:"3 · Ranura más adentro",tag:["aux","refuerzo"],figs:[F.adentro],
-  p:"Si se puede tocar el holder, alejar la ranura del canto es lo más directo. Corriéndola 3,5 mm hacia adentro, el borde pasa de 2,3 a 5,8 mm. Se combina con la opción 1 o la 2.",
-  dl:[["Costo","El pivote se aleja del centro de la bobina: hay que alargar el prisma unos 3,5 mm o aceptar que el holder quede más adentro del chasis."],["Efecto en el giro","La extensión por rotación crece en la misma medida, porque depende de la distancia del pivote al centro."],["Ancho","La ranura y el prisma se mueven hacia adentro: no cambia el ancho."]]},
- {t:"B · Pletina dentada (cada 2 mm)",tag:["aux","discreta"],figs:[F.pletinaYZ,F.pletinaXZ],
-  p:"Es la opción 1 con dientes de paso 2 mm entre la pletina y la chapa: da traba positiva en lugar de fricción. Conviene si un golpe en X no debe poder correr el holder.",dl:[]},
- {t:"D · Retén de bola",tag:["aux","complemento"],figs:[F.bola],
-  p:"Un émbolo de bola a presión en el holder y conos de centrado cada 2 mm en la chapa. Da el clic y sostiene la posición mientras se aprieta la pletina. Se suma a la 1 o la 2.",
-  dl:[["Sin piezas","Émbolo con cuerpo liso a presión y labio recalcado sobre el holder."]]},
+ {t:"Hoy",tag:["cur","problema"],figs:[F.hoy],
+  p:"El nervio de 6 mm corre entre dos chapas de 3 mm. El tornillo entra al inserto del nervio y su cabeza va en un bolsillo de la chapa superior, para no salir de los 12 mm. Ese bolsillo, sumado a la ranura, deja junto al canto un borde de unos 2,3 por 1,5 mm. Un golpe sobre el holder lo dobla.",dl:[]},
+ {t:"1 · Pin en ranuras ciegas",tag:["pos","guía y pivote"],figs:[F.ciega],
+  p:"En lugar de una ranura pasante, cada chapa tiene una ranura ciega mecanizada desde su cara interior, dejando 1 mm de piel. Un pin a presión en el nervio entra en las dos. El borde junto al canto queda unido a la piel y forma un cajón cerrado de 3 mm de alto, mucho más rígido que la tira de 1,5 mm actual. El pin guía en X, retiene en Y y es el eje del giro final.",
+  dl:[["Sin piezas","El pin va a presión en el nervio y queda atrapado entre las dos chapas al armar el chasis. No tiene cabeza ni tuerca."],["12 mm","No hay nada por fuera de las chapas."],["Inserto","Ya no hace falta en el pivote. Si el nervio sigue en 6 mm, sobra lugar para la zapata."],["Mecanizado","Ranura ciega con fresa de 2,5 mm, 2 mm de profundidad, en la cara interior de cada chapa. El extremo de la ranura en el final del chasis queda redondo para el giro."]]},
+ {t:"2 · Zapata a cuña",tag:["pos","continua"],figs:[F.zapata],
+  p:"Un bolsillo en la cara superior del nervio aloja una zapata. Un tornillo con punta cónica, que entra desde la cara exterior del holder, la levanta contra la chapa superior. El nervio reacciona contra la chapa inferior. Aprieta por fricción en dos caras, en cualquier posición, y la carga va a las chapas lejos del canto.",
+  dl:[["Sin piezas","La zapata queda encerrada en su bolsillo entre el nervio y la chapa. El tornillo se retiene con cuello rebajado y no puede salir."],["Acceso","Por la cara exterior de la parte redonda, desplazado en X respecto del agujero central. Conviene que la zapata sea de bronce o con superficie moleteada para que no marque la chapa."],["Ancho","La cabeza del tornillo queda rehundida en la cara exterior del holder."]]},
+ {t:"3 · Pinza expansiva en el nervio",tag:["pos","continua"],figs:[F.pinza],
+  p:"Es una variante sin zapata. Una ranura de flexión a media altura divide el nervio en dos mordazas. La punta cónica las separa unas décimas y aprietan contra las dos chapas. En 7075 la flexión es elástica y vuelve sola al aflojar.",
+  dl:[["Sin piezas","Solo el tornillo, retenido con cuello rebajado."],["Cuidado","El pin del pivote debe ir a presión en una sola mordaza y deslizante en la otra, para no trabar la apertura."],["Frente a 2","Tiene menos piezas, pero se ajusta menos fino y depende de la tolerancia del hueco de 6 mm."]]},
+ {t:"4 · Retén de bola interior",tag:["aux","cada 2 mm"],figs:[F.bola],
+  p:"Un émbolo de bola a presión en el nervio y conos cada 2 mm en la cara interior de una chapa. Da el clic y sostiene la posición mientras se aprieta la zapata. No se ve desde afuera y no debilita el canto.",
+  dl:[["Sin piezas","Émbolo con cuerpo liso a presión y labio recalcado."]]},
 ];
 document.getElementById("cards").innerHTML=cards.map(c=>`
  <article class="card">
