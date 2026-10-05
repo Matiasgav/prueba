@@ -1,0 +1,158 @@
+<title>Traba del holder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: una idea por página. Arriba la frase, al medio el corte suelto/apretado lado a lado, abajo los pasos y la planta. */
+:root{
+  --bg:#eef1ef; --panel:#fafbfa; --ink:#1c2321; --muted:#5a6561; --line:#c6cdc9;
+  --metal:#8b979c; --metal-fill:#dfe5e7; --holder:#3a4247; --holder-fill:#59636a; --steel:#4f6f86;
+  --new:#c0641c; --new-fill:#f3d9c2; --warn:#b0362a; --ok:#2d7a4c;
+  --f-display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#131716; --panel:#1a1f1e; --ink:#e3e8e6; --muted:#97a29e; --line:#353e3b;
+  --metal:#8e9ca2; --metal-fill:#2e373b; --holder:#a9b4ba; --holder-fill:#454e55; --steel:#86aac4;
+  --new:#ec944c; --new-fill:#4a3020; --warn:#ec7a6c; --ok:#6cc495; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#131716; --panel:#1a1f1e; --ink:#e3e8e6; --muted:#97a29e; --line:#353e3b;
+  --metal:#8e9ca2; --metal-fill:#2e373b; --holder:#a9b4ba; --holder-fill:#454e55; --steel:#86aac4;
+  --new:#ec944c; --new-fill:#4a3020; --warn:#ec7a6c; --ok:#6cc495; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:22px 44px;display:grid;gap:20px}
+h1{font-family:var(--f-display);font-weight:700;font-size:2rem;margin:0}
+.lead{font-size:1.15rem;max-width:70ch;margin:.3rem 0 0}
+.lead b{color:var(--new)}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:16px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;min-width:0}
+.panel h2{font-family:var(--f-display);font-weight:600;font-size:1.25rem;margin:0 0 6px;display:flex;gap:10px;align-items:baseline}
+.tag{font-family:var(--f-mono);font-size:.72rem;font-weight:600;padding:1px 7px;border-radius:3px;border:1px solid currentColor}
+.tag.l{color:var(--muted)}.tag.t{color:var(--ok)}
+svg{display:block;width:100%;height:auto}
+.cap{font-size:.85rem;color:var(--muted);margin:6px 0 0}
+.parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px 18px;margin:0;padding:0;list-style:none;font-size:.95rem}
+.parts li{display:flex;gap:8px}
+.parts b{font-family:var(--f-mono);color:var(--new);min-width:1.4em}
+ol.steps{margin:0;padding-left:1.3rem;display:grid;gap:6px;font-size:1rem}
+.why{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.why p{margin:0;font-size:.95rem}
+.why h3{font-family:var(--f-display);font-weight:600;font-size:1.05rem;margin:0 0 4px}
+</style>
+
+<div class="wrap">
+<header>
+  <h1>Traba del holder</h1>
+  <p class="lead">El holder se fija <b>apretándolo entre las dos chapas</b>, como una prensa. Un tornillo empuja una cuña, la cuña levanta un anillo contra la chapa superior y el nervio queda apretado contra la chapa inferior. La fricción lo sostiene. Para moverlo: aflojar, correr o girar, y apretar.</p>
+</header>
+
+<div class="pair">
+  <div class="panel"><h2>Suelto <span class="tag l">se puede mover</span></h2><div id="f1"></div>
+    <p class="cap">Corte por el eje del holder. El anillo queda unas décimas por debajo de la chapa superior; el holder corre en la ranura o gira sobre el pin.</p></div>
+  <div class="panel"><h2>Apretado <span class="tag t">trabado</span></h2><div id="f2"></div>
+    <p class="cap">Al enroscar el tornillo, la cuña avanza hacia el pin y levanta el anillo. El anillo aprieta la chapa de arriba y el cartucho, la de abajo.</p></div>
+</div>
+
+<div class="panel">
+  <h2>Piezas</h2>
+  <ul class="parts">
+    <li><b>1</b><span><b style="color:inherit;font-family:inherit">Tornillo</b> vertical. Se accede desde arriba, en la parte redonda del holder.</span></li>
+    <li><b>2</b><span><b style="color:inherit;font-family:inherit">Cuña</b>. Convierte el empuje del tornillo en empuje hacia arriba.</span></li>
+    <li><b>3</b><span><b style="color:inherit;font-family:inherit">Anillo</b> alrededor del pin. Es lo que aprieta contra la chapa superior.</span></li>
+    <li><b>4</b><span><b style="color:inherit;font-family:inherit">Cartucho metálico</b> dentro del nervio de PEEK. Reemplaza al inserto y apoya en la chapa inferior.</span></li>
+    <li><b>5</b><span><b style="color:inherit;font-family:inherit">Pin</b>. Corre en ranuras ciegas de las dos chapas y es el eje del giro final.</span></li>
+    <li><b>6</b><span><b style="color:inherit;font-family:inherit">Chapas</b> de 7075, sin ningún corte pasante.</span></li>
+  </ul>
+</div>
+
+<div class="pair">
+  <div class="panel">
+    <h2>Cómo se usa</h2>
+    <ol class="steps">
+      <li><b>Aflojar</b> el tornillo un cuarto de vuelta.</li>
+      <li><b>Correr</b> el holder por la ranura hasta la posición. Si hace falta más, al final se gira sobre el pin.</li>
+      <li><b>Apretar</b> el tornillo. Queda fijo en esa posición o en ese ángulo.</li>
+    </ol>
+  </div>
+  <div class="panel"><h2>Dónde está el tornillo</h2><div id="f3" style="max-width:420px"></div>
+    <p class="cap">Vista desde arriba. El tornillo entra por la cara superior de la parte redonda, entre el agujero de la bobina y el canto del chasis.</p></div>
+</div>
+
+<div class="panel why">
+  <div><h3>Por qué no dobla el borde</h3><p>Ya no hay ranura pasante ni bolsillo para una cabeza de tornillo. El pin corre en ranuras ciegas, y el apriete se hace adentro, lejos del canto.</p></div>
+  <div><h3>Por qué sirve también girado</h3><p>El anillo está centrado en el pin. Cuando el holder gira en el extremo, el anillo gira en el lugar y aprieta igual en cualquier ángulo.</p></div>
+  <div><h3>Por qué no se afloja con el PEEK</h3><p>La fuerza va de chapa a anillo, a cuña, a cartucho y a chapa: todo metal. El PEEK no queda apretado, así que no pierde fuerza con el tiempo.</p></div>
+</div>
+</div>
+
+<script>
+const n=v=>+v.toFixed(3);
+const R=(y0,y1,z0,z1,c,x="")=>`<rect x="${n(y0)}" y="${n(-z1)}" width="${n(y1-y0)}" height="${n(z1-z0)}" class="${c}" ${x}/>`;
+const P=(pts,c,close=true)=>`<path d="M${pts.map(([y,z])=>`${n(y)},${n(-z)}`).join(" L")}${close?"Z":""}" class="${c}"/>`;
+const T=(y,z,s,c="lab",a="start")=>`<text x="${n(y)}" y="${n(-z)}" class="${c}" text-anchor="${a}">${s}</text>`;
+const L=(y0,z0,y1,z1,c="lead")=>`<line x1="${n(y0)}" y1="${n(-z0)}" x2="${n(y1)}" y2="${n(-z1)}" class="${c}"/>`;
+const AR=(y0,z0,y1,z1)=>{const a=Math.atan2(z1-z0,y1-y0),h=.9,w=.45;const p1=[y1-h*Math.cos(a)+w*Math.sin(a),z1-h*Math.sin(a)-w*Math.cos(a)],p2=[y1-h*Math.cos(a)-w*Math.sin(a),z1-h*Math.sin(a)+w*Math.cos(a)];
+  return L(y0,z0,y1-h*.8*Math.cos(a),z1-h*.8*Math.sin(a),"force")+P([[y1,z1],p1,p2],"forceh");};
+const NUM=(y,z,k)=>`<circle cx="${n(y)}" cy="${n(-z)}" r=".8" class="num"/>`+T(y,z-0.38,k,"numt","middle");
+const STY=`<style>
+ .lab{font:600 1px var(--f-mono);fill:var(--ink)}.sm{font:400 .85px var(--f-mono);fill:var(--muted)}
+ .metal{fill:var(--metal-fill);stroke:var(--metal);stroke-width:.1}
+ .hold{fill:var(--holder-fill);stroke:var(--holder);stroke-width:.1}
+ .cart{fill:var(--metal-fill);stroke:var(--steel);stroke-width:.14}
+ .new{fill:var(--new-fill);stroke:var(--new);stroke-width:.14}
+ .steel{fill:var(--steel);stroke:var(--steel);stroke-width:.06}
+ .lead{stroke:var(--muted);stroke-width:.07;fill:none}
+ .force{stroke:var(--warn);stroke-width:.2;fill:none}.forceh{fill:var(--warn)}
+ .num{fill:var(--panel);stroke:var(--new);stroke-width:.12}.numt{font:700 1px var(--f-mono);fill:var(--new)}
+ .gap{fill:var(--panel)}
+</style>`;
+function section(locked){
+  const up=locked?0.35:0, wx=locked?0.7:0;
+  let b=STY;
+  // holder: parte redonda (altura completa) + nervio
+  b+=P([[-14,0],[-3.85,0],[-3.85,3.1],[3.5,3.1],[3.5,8.9],[-3.85,8.9],[-3.85,12],[-14,12]],"hold");
+  b+=T(-12.6,1,"holder (PEEK)","sm");
+  // cartucho
+  b+=R(-7.5,2.5,3.1,8.9,"cart");
+  // chapas con ranura ciega
+  const pl=(z0,top)=>R(-3.55,-1.35,z0,z0+3,"metal")+R(1.35,10,z0,z0+3,"metal")+(top?R(-1.35,1.35,z0+2,z0+3,"metal"):R(-1.35,1.35,z0,z0+1,"metal"));
+  b+=pl(0,false)+pl(9,true);
+  // pin
+  b+=R(-1.25,1.25,1.15,10.85,"steel");
+  // anillo (dos lados del corte), con chafle abajo a la izquierda
+  b+=P([[-2.7,7.95+up],[-2.25,7.5+up],[-1.4,7.5+up],[-1.4,8.6+up],[-2.7,8.6+up]],"new")+R(1.4,2.7,7.5+up,8.6+up,"new");
+  // cuña
+  b+=P([[-6.9+wx,6.3],[-2.1+wx,6.3],[-2.1+wx,6.9],[-2.6+wx,7.45],[-5.8+wx,7.45],[-6.9+wx,6.9]],"new");
+  // tornillo vertical con punta cónica
+  const zt=locked?6.6:7.3;
+  b+=R(-7.1,-5.7,zt+0.7,11.6,"steel")+P([[-7.1,zt+0.7],[-6.4,zt],[-5.7,zt+0.7]],"steel")+R(-7.5,-5.3,11.6,12,"steel");
+  // números
+  b+=NUM(-9.2,10.4,"1")+L(-8.4,10.4,-7.2,10.4);
+  b+=NUM(-9.2,5.4,"2")+L(-8.4,5.6,-6.2+wx,6.6);
+  b+=NUM(5.2,7.4,"3")+L(4.4,7.6,2.8,8+up);
+  b+=NUM(5.2,4.6,"4")+L(4.4,4.6,2.6,4.6);
+  b+=NUM(5.2,10.6,"5")+L(4.4,10.6,1.3,10.2);
+  b+=NUM(8.6,13.2,"6")+L(8.6,12.4,8.6,12.05)+L(8.6,0,8.6,-1.2)+NUM(8.6,-2,"6");
+  if(locked){
+    b+=AR(-6.4,14.6,-6.4,12.4)+AR(-4.8,5.6,-2.6,5.6)+AR(0.0,13.6,0.0,12.2);
+    b+=AR(-0.2,-1.6,-0.2,-0.2);
+    b+=T(0.5,13.4,"aprieta","lab")+T(0.5,-1.4,"apoya","lab")+T(-6.2,15,"enroscar","lab");
+  }else{
+    b+=T(-1.6,9.6,"luz","sm","end")+L(-1.5,9,-1.5,8.7);
+  }
+  b+=T(-3.5,13.4,locked?"":"chapa superior","sm")+T(-3.5,-1.4,locked?"":"chapa inferior","sm");
+  return `<svg viewBox="-14.5 -16 26 19" role="img" aria-label="${locked?"Holder trabado: el anillo aprieta la chapa superior y el cartucho apoya en la inferior":"Holder suelto: el anillo no toca la chapa superior"}" xmlns="http://www.w3.org/2000/svg">${b}</svg>`;
+}
+document.getElementById("f1").innerHTML=section(false);
+document.getElementById("f2").innerHTML=section(true);
+// planta
+(()=>{const arc=(cx,cy,r,a0,a1,k=40)=>{const o=[];for(let i=0;i<=k;i++){const t=(a0+(a1-a0)*i/k)*Math.PI/180;o.push([cx+r*Math.cos(t),cy+r*Math.sin(t)]);}return o;};
+  let b=STY;
+  b+=P([[9.5,19],[-9.5,19],[-9.5,0],...arc(0,0,9.5,180,360),[9.5,0]],"hold");
+  b+=R(-14,14,12,22,"metal",'opacity=".55"')+T(-13.5,20.6,"chapas (encima del nervio)","sm");
+  b+=`<circle cx="0" cy="0" r="3.7" class="gap"/>`+T(0,-0.3,"bobina","sm","middle");
+  b+=`<circle cx="5.5" cy="-15.5" r="2.5" class="new"/><circle cx="5.5" cy="-15.5" r="1.25" class="steel"/>`;
+  b+=`<circle cx="5.5" cy="-7.2" r="1.1" class="steel"/>`;
+  b+=NUM(11.8,7.2,"1")+L(11,7.2,6.7,7.2)+NUM(11.8,15.5,"3")+L(11,15.5,8.1,15.5)+T(12.9,6.9,"tornillo","lab")+T(12.9,15.2,"anillo y pin","lab");
+  document.getElementById("f3").innerHTML=`<svg viewBox="-14.5 -23 36 34" role="img" aria-label="Planta: el tornillo está en la cara superior de la parte redonda, entre la bobina y el canto; el anillo rodea al pin bajo las chapas" xmlns="http://www.w3.org/2000/svg">${b}</svg>`;})();
+</script>
