@@ -668,6 +668,225 @@ def tablas_vida_tex(ev):
         fh.write('% Generado por calculo.py (estudio_vida). No editar a mano.\n')
         fh.write('\n'.join(filas) + '\n')
 
+
+# ---------------------------------------------------------------------------
+# 8e. Vida con incertidumbre de parámetros (Monte Carlo)
+# ---------------------------------------------------------------------------
+# Datos confirmados por el usuario: ambos engranajes en voladizo, 100 rpm casi
+# siempre, ida y vuelta frecuente, más de 20 picos por hora, dureza medida con
+# Leeb 550 HLD (patrón 55,2 HRC = 788 HL) en varias lecturas parecidas.
+MC_N = 20000
+MC_SEMILLA = 2489
+VIDA_OBJETIVO_H = 2 * HORAS_ANIO          # 2 años de uso = 576 h
+MC_NIVELES = 40
+HB_MEDIDA, HB_SD = 240.0, 10.0           # 550 HLD -> ~240 HB; sd por conversión y lote
+# Dispersión de la resistencia a fatiga: AGMA K_R / Shigley Y_Z (ec. 15-20):
+# R = 0,50 -> 0,70; 0,90 -> 0,85; 0,99 -> 1,00. Lognormal con mediana
+# sigma_lim/0,70 y sigma_ln = ln(1/0,70)/2,326 = 0,153 (flexión); en picado
+# Z_Z = sqrt(Y_Z): mediana sigma_lim/0,837 y sigma_ln = 0,077.
+SLN_F = math.log(1 / 0.70) / 2.326
+SLN_H = SLN_F / 2
+SLN_METODO = 0.10                         # m 0,5 fuera del rango validado de AGMA
+
+OPCIONES_MC = [  # clave, etiqueta, geometría, material, nitrocarburado, Z_xc (min, max)
+    ('KG', 'KG M50S20 sin tratar', 'KG', 'S45C_medido', False, (1.5, 2.0)),
+    ('KGN', 'KG M50S20 nitrocarburada', 'KG', 'S45C_medido', True, (1.5, 2.0)),
+    ('C0520', 'm0,5 z20 carburizada (geom. KG)', 'KG', 'SCM415 carburizado', False, (1.5, 1.75)),
+    ('C0618', 'm0,6 z18 carburizada', 'm0.6z18', 'SCM415 carburizado', False, (1.5, 1.75)),
+]
+
+
+def _tri(rng, a, m, b, n):
+    return rng.triangular(a, m, b, n)
+
+
+def muestras_mc(n=MC_N, semilla=MC_SEMILLA):
+    """Parámetros inciertos comunes a todas las opciones (mismas muestras)."""
+    rng = np.random.default_rng(semilla)
+    return {
+        'HB': rng.normal(HB_MEDIDA, HB_SD, n),
+        'zF': rng.standard_normal(n), 'zH': rng.standard_normal(n),
+        'metF': np.exp(rng.normal(0, SLN_METODO, n)),
+        'metH': np.exp(rng.normal(0, SLN_METODO, n)),
+        'k_rev': rng.uniform(0.70, 1.00, n),          # Shigley sec. 15-2
+        'f_dir': rng.uniform(0.50, 1.00, n),          # fracción de ciclos por flanco
+        'u_xc': rng.uniform(0, 1, n),                 # Z_xc dentro del rango de cada opción
+        'nitH': _tri(rng, 1.10, 1.30, 1.50, n), 'nitF': _tri(rng, 1.00, 1.20, 1.35, n),
+        'T_max': _tri(rng, 0.18, 0.20, 0.23, n), 'T_pico': _tri(rng, 0.27, 0.30, 0.35, n),
+        'picos_h': rng.uniform(20, 60, n),
+        't_pico': np.exp(rng.uniform(math.log(1.0), math.log(10.0), n)),
+    }
+
+
+def _N_flexion(Y):
+    """Inversa de la ec. (15-15): ciclos para un Y_NT requerido (vectorial)."""
+    N = np.full(Y.shape, np.inf)
+    a = Y > 1.6831 * 1e10 ** -0.0323
+    N[a] = (Y[a] / 1.6831) ** (-1 / 0.0323)
+    b = Y > 1.6831 * 3e6 ** -0.0323
+    N[b] = (Y[b] / 6.1514) ** (-1 / 0.1192)
+    N[Y > 6.1514 * 1e3 ** -0.1192] = 1e2
+    N[Y > 2.7] = 0.0
+    return N
+
+
+def _N_picado(Z):
+    """Inversa de la ec. (15-14)."""
+    N = np.full(Z.shape, np.inf)
+    a = Z > 3.4822 * 1e10 ** -0.0602
+    N[a] = (Z[a] / 3.4822) ** (-1 / 0.0602)
+    N[Z > 2.0] = 0.0
+    return N
+
+
+def vida_mc(clave, esp_motor=False, mu=None):
+    """Vida en horas de cada muestra para una opción. Devuelve horas, modo y
+    los parámetros usados. Mismo modelo que la sec. 8 (Shigley cap. 15, Miner)."""
+    mu = muestras_mc() if mu is None else mu
+    _k, _lab, gk, mk, nit, (zx0, zx1) = next(o for o in OPCIONES_MC if o[0] == clave)
+    g = BASE if gk == 'KG' else geo_medida(0.6, 18)
+    n = len(mu['HB'])
+    if mk == 'S45C_medido':
+        sFlim = 0.30 * mu['HB'] + 14.48              # ec. (15-23)
+        sHlim = 2.35 * mu['HB'] + 162.89             # ec. (15-22)
+        E, nu = 205e3, 0.30
+    else:
+        sFlim = np.full(n, MATERIALES[mk]['sFlim'])
+        sHlim = np.full(n, MATERIALES[mk]['sHlim'])
+        E, nu = MATERIALES[mk]['E'], MATERIALES[mk]['nu']
+    if nit:
+        sFlim, sHlim = sFlim * mu['nitF'], sHlim * mu['nitH']
+    # resistencia efectiva (reemplaza a S/(K_theta Y_Z)): dispersión + método
+    rF = sFlim * np.exp(-SLN_F * mu['zF']) / 0.70 * mu['metF'] * mu['k_rev']
+    rH = sHlim * np.exp(-SLN_H * mu['zH']) / math.sqrt(0.70) * mu['metH']
+    Zxc = zx0 + (zx1 - zx0) * mu['u_xc']
+    f = F_CENTRAL
+    Kv = K_v(g, RPM_VIDA, f['Q_v'])
+    KHb = K_Hb(g['b_ef'], f['K_mb'])
+    ZE = Z_E(E, nu)
+    cF = (2000.0 / g['d']) / g['b_ef'] * Kv / g['m'] * Y_x(g['m']) * KHb / g['J']   # sigma_F / T
+    cH = (2000.0 / g['d']) / (g['b_ef'] * g['d'] * g['I']) * Kv * KHb * Z_x(g['b_ef'])  # sigma_H^2/(Z_E^2 Z_xc T)
+    # espectro: senoide entre T_min y T_max (niveles de igual duración) + picos
+    fases = (np.arange(MC_NIVELES) + 0.5) / MC_NIVELES * 2 * math.pi
+    if esp_motor:
+        T_lv = np.full((n, MC_NIVELES), 0.40)
+        T_pk = np.full(n, 0.50)
+    else:
+        T_min = 0.05
+        T_lv = (T_min + mu['T_max'])[:, None] / 2 + (mu['T_max'] - T_min)[:, None] / 2 * np.sin(fases)[None, :]
+        T_pk = mu['T_pico']
+    frac_pico = np.clip(mu['picos_h'] * mu['t_pico'] / 3600.0, 0, 0.5)
+    ciclos_h = RPM_VIDA * 60.0 * mu['f_dir']
+    n_lv = (ciclos_h * (1 - frac_pico))[:, None] / MC_NIVELES
+    n_pk = ciclos_h * frac_pico
+    out = {}
+    for modo in ('F', 'H'):
+        if modo == 'F':
+            Yl = cF * T_lv / rF[:, None]
+            Yp = cF * T_pk / rF
+            Nl, Np = _N_flexion(Yl), _N_flexion(Yp)
+        else:
+            Zl = ZE * np.sqrt(cH * Zxc[:, None] * T_lv) / rH[:, None]
+            Zp = ZE * np.sqrt(cH * Zxc * T_pk) / rH
+            Nl, Np = _N_picado(Zl), _N_picado(Zp)
+        with np.errstate(divide='ignore'):
+            d = np.sum(np.where(Nl > 0, n_lv / Nl, np.inf), axis=1) + np.where(Np > 0, n_pk / Np, np.inf)
+        with np.errstate(divide='ignore'):
+            out[modo] = np.where(d > 0, 1.0 / d, np.inf)
+    horas = np.minimum(out['F'], out['H'])
+    modo = np.where(out['F'] <= out['H'], 'flexión', 'picado')
+    return horas, modo, out
+
+
+def resumen_mc(horas, modo):
+    h = np.where(np.isfinite(horas), horas, 1e12)
+    p = {q: float(np.percentile(h, q)) for q in (5, 10, 50, 90)}
+    return {'P5': p[5], 'P10': p[10], 'P50': p[50], 'P90': p[90],
+            'prob_objetivo': float(np.mean(h >= VIDA_OBJETIVO_H)),
+            'prob_10_anios': float(np.mean(h >= 10 * HORAS_ANIO)),
+            'frac_picado': float(np.mean(modo == 'picado'))}
+
+
+def _rangos(x):
+    r = np.empty(len(x))
+    r[np.argsort(x, kind='mergesort')] = np.arange(len(x))
+    return r
+
+
+def sensibilidad_mc(horas, mu):
+    """Correlación de rangos (Spearman) entre cada parámetro y la vida."""
+    lh = _rangos(np.where(np.isfinite(horas), horas, 1e12))
+    res = {}
+    for k in ('HB', 'zF', 'zH', 'metF', 'metH', 'k_rev', 'f_dir', 'u_xc', 'nitH', 'nitF',
+              'T_max', 'T_pico', 'picos_h', 't_pico'):
+        res[k] = float(np.corrcoef(_rangos(mu[k]), lh)[0, 1])
+    return res
+
+
+def estudio_mc():
+    mu = muestras_mc()
+    out = {}
+    for clave, lab, *_ in OPCIONES_MC:
+        out[clave] = {'etiqueta': lab}
+        for e, motor in (('real', False), ('motor', True)):
+            h, m, _ = vida_mc(clave, motor, mu)
+            out[clave][e] = dict(resumen_mc(h, m), sens=sensibilidad_mc(h, mu))
+            out[clave][e]['_h'] = h
+    return out, mu
+
+
+def control_mc():
+    """Control: con todas las variables en su valor central y z = 1,2816
+    (R = 0,90), el Monte Carlo debe reproducir la vida de la sec. 8."""
+    n = 1
+    mu = {'HB': np.array([200.0]), 'zF': np.array([1.2816]), 'zH': np.array([1.2816]),
+          'metF': np.ones(n), 'metH': np.ones(n), 'k_rev': np.ones(n), 'f_dir': np.ones(n),
+          'u_xc': np.ones(n), 'nitH': np.ones(n), 'nitF': np.ones(n),
+          'T_max': np.array([0.20]), 'T_pico': np.array([0.30]),
+          'picos_h': np.array([1.0]), 't_pico': np.array([10.0])}
+    h, m, _ = vida_mc('KG', False, mu)
+    return float(h[0]), str(m[0])
+
+
+def fmt_h(h):
+    if h < 1:
+        return r'$<$1'
+    if h >= VIDA_TOPE_H:
+        return r'$>$10$^5$'
+    return f'{h:,.0f}'.replace(',', '.')
+
+
+def tablas_mc_tex(mc):
+    filas = []
+    for clave, v in mc.items():
+        for e, lab in (('real', 'Uso real'), ('motor', 'Motor a pleno')):
+            r = v[e]
+            filas.append(' & '.join([v['etiqueta'] if e == 'real' else '', lab,
+                                     fmt_h(r['P10']), fmt_h(r['P50']), fmt_h(r['P90']),
+                                     f"{100 * r['prob_objetivo']:.0f}\\,\\%",
+                                     f"{100 * r['prob_10_anios']:.0f}\\,\\%",
+                                     f"{100 * r['frac_picado']:.0f}\\,\\%"]) + r'\\')
+            if e == 'motor' and clave != list(mc)[-1]:
+                filas.append(r'\addlinespace')
+    with open(os.path.join(RES, 'tabla_mc.tex'), 'w', encoding='utf-8') as fh:
+        fh.write('% Generado por calculo.py (estudio_mc). No editar a mano.\n' + '\n'.join(filas) + '\n')
+    nombres = {'HB': 'Dureza del S45C', 'zF': 'Resistencia a fatiga del lote, flexión',
+               'zH': 'Resistencia a fatiga del lote, picado', 'metF': 'Método a m\\,0,5, flexión',
+               'metH': 'Método a m\\,0,5, picado', 'k_rev': 'Inversión de sentido (flexión)',
+               'f_dir': 'Fracción de ciclos por flanco', 'u_xc': 'Coronamiento $Z_{xc}$',
+               'nitH': 'Nitrocarburado, picado', 'nitF': 'Nitrocarburado, flexión',
+               'T_max': 'Torque máximo continuo', 'T_pico': 'Torque de pico',
+               'picos_h': 'Picos por hora', 't_pico': 'Duración del pico'}
+    filas = []
+    for k, nom in nombres.items():
+        aplica = {'HB': ('KG', 'KGN'), 'nitH': ('KGN',), 'nitF': ('KGN',)}
+        signo = -1.0 if k in ('zF', 'zH') else 1.0   # z > 0 es un lote más débil
+        celdas = [nom] + [f"{signo * mc[c]['real']['sens'][k]:+.2f}".replace('.', '{,}')
+                          if c in aplica.get(k, tuple(mc)) else '--' for c in mc]
+        filas.append(' & '.join(celdas) + r'\\')
+    with open(os.path.join(RES, 'tabla_mc_sens.tex'), 'w', encoding='utf-8') as fh:
+        fh.write('% Generado por calculo.py (estudio_mc). No editar a mano.\n' + '\n'.join(filas) + '\n')
+
 # ---------------------------------------------------------------------------
 # 9. Figuras
 # ---------------------------------------------------------------------------
@@ -1013,6 +1232,30 @@ def fig_vida_horas(ev):
     fig.tight_layout()
     guardar(fig, 'fig_vida_horas')
 
+
+def fig_mc(mc):
+    """Distribución acumulada de la vida (probabilidad de superar t horas)."""
+    fig, axs = plt.subplots(1, 2, figsize=(8.4, 3.5), sharey=True)
+    cols = [SERIES[1], SERIES[3], SERIES[0], SERIES[2]]
+    for ax, e, tit in zip(axs, ('real', 'motor'), ('Uso real medido', 'Motor a pleno')):
+        for (clave, v), col in zip(mc.items(), cols):
+            h = np.sort(np.clip(np.where(np.isfinite(v[e]['_h']), v[e]['_h'], 1e12), 0.5, 1e7))
+            sup = 1 - np.arange(len(h)) / len(h)
+            ax.plot(h, sup, color=col, lw=1.6, label=v['etiqueta'])
+        ax.axvline(VIDA_OBJETIVO_H, color=TXT, lw=0.9, ls='--')
+        ax.text(VIDA_OBJETIVO_H * 1.1, 0.03, '2 años\n(576 h)', fontsize=7.5, color=TXT)
+        ax.axvline(10 * HORAS_ANIO, color=TXT2, lw=0.7, ls=':')
+        ax.text(10 * HORAS_ANIO * 1.1, 0.03, '10 años', fontsize=7.5, color=TXT2)
+        ax.set_xscale('log')
+        ax.set_xlim(1, 1e6)
+        ax.set_ylim(0, 1.02)
+        ax.set_title(tit, fontsize=9, color=TXT)
+        estilo(ax, 'Vida [h] (100 rpm)', 'Probabilidad de superar la vida' if e == 'real' else None)
+    h, l = axs[0].get_legend_handles_labels()
+    fig.legend(h, l, loc='lower center', ncol=2, fontsize=7.5, frameon=False, bbox_to_anchor=(0.5, -0.1))
+    fig.tight_layout()
+    guardar(fig, 'fig_mc_vida')
+
 # ---------------------------------------------------------------------------
 # 10. Principal
 # ---------------------------------------------------------------------------
@@ -1059,6 +1302,23 @@ def main():
     fig_flexion(fx)
     fig_vida_horas(ev)
     tablas_vida_tex(ev)
+    mc, _mu = estudio_mc()
+    fig_mc(mc)
+    tablas_mc_tex(mc)
+    with open(os.path.join(RES, 'resultados_mc.json'), 'w', encoding='utf-8') as fh:
+        json.dump({'n': MC_N, 'semilla': MC_SEMILLA, 'objetivo_h': VIDA_OBJETIVO_H,
+                   'control_sec8': control_mc(),
+                   'opciones': {k: {'etiqueta': v['etiqueta'],
+                                    **{e: {kk: vv for kk, vv in v[e].items() if kk != '_h'}
+                                       for e in ('real', 'motor')}} for k, v in mc.items()}},
+                  fh, ensure_ascii=False, indent=1)
+    print('CONTROL MC (sec. 8 da 249 h, picado):', control_mc())
+    for k, v in mc.items():
+        for e in ('real', 'motor'):
+            r = v[e]
+            print(f"MC {v['etiqueta']:34s} {e:5s} P10 {r['P10']:10.4g} P50 {r['P50']:10.4g} P90 {r['P90']:10.4g}"
+                  f" P(>=2a) {r['prob_objetivo']:.3f} P(>=10a) {r['prob_10_anios']:.3f} picado {r['frac_picado']:.2f}")
+            print('    sens', {kk: round(vv, 2) for kk, vv in r['sens'].items()})
     comp, pasos = comparacion_kg(), cascada()
     fig_datasheet(comp, pasos)
     with open(os.path.join(RES, 'comparacion_kg.json'), 'w', encoding='utf-8') as fh:

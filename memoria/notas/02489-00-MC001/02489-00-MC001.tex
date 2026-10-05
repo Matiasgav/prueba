@@ -166,7 +166,11 @@ m\,0,6 z17, SCM415 carburizada    & 11,05 & 0,557 & 0,358 & \textbf{0,346} & 0,8
   \item \textbf{Mejora sin cambiar la geometría:} la misma mitra m\,0,5 z20 a medida en SCM440 bonificado (×1,7)
         o en SCM415 carburizado (×3,3). Entra en el mismo lugar que la actual.
   \item \textbf{Máximo dentro de 11,5~mm:} m\,0,6 z17 carburizada (×3,9; 0,346\Nm continuo), pero cambia la distancia de montaje.
-  \item \textbf{Para decidir, vida en horas con un único criterio} (sec.~\ref{sec:vida}, 100~rpm, 24~h por mes): con el uso real medido
+  \item \textbf{Para decidir, vida con incertidumbre} (sec.~\ref{sec:mc}; dureza medida $\approx$240~HB, ida y vuelta frecuente, más de
+        20 picos por hora): probabilidad de llegar a \textbf{2~años (576~h)} con el uso real: KG sin tratar \textbf{50\,\%},
+        KG nitrocarburada \textbf{79\,\%}, carburizadas \textbf{100\,\%}. Con el motor a pleno: m\,0,6 z18 carburizada
+        \textbf{96\,\%}, m\,0,5 z20 carburizada 87\,\%, KG $\le$1\,\%. Con picos frecuentes manda la fatiga a flexión.
+  \item \textbf{Vida en horas con un único criterio} (sec.~\ref{sec:vida}, 100~rpm, 24~h por mes): con el uso real medido
         (0,05--0,20\Nm, picos de 0,30) la KG sin tratar dura $\approx$250~h con 200~HB y no es admisible con 170~HB; nitrocarburada,
         \textbf{$\approx$1100~h (170~HB) a $\approx$7400~h (200~HB)}, al límite (margen $\approx$1). Con el motor a pleno
         (0,40\Nm, picos de 0,50) ninguna mitra KG sirve.
@@ -202,7 +206,7 @@ Carga & BLDC con perfil trapezoidal suave; torque en ambos sentidos & pedido\\
 Picos & 10 s cada uno, 1 por hora de uso (2400 en la vida) & pedido / \textbf{supuesto}\\
 Lubricación y temperatura & Grasa en compartimiento cerrado; 30--40\,°C & pedido\\
 Montaje & Ambos engranajes en voladizo & \textbf{supuesto} (conservador)\\
-Dureza S45C & 170~HB (cota baja) y 200~HB (típico); KG no la especifica & \textbf{a medir}\\
+Dureza S45C & 170~HB (cota baja) y 200~HB (típico); KG no la especifica. Medida después: 550~HLD $\approx$ 240~HB (sec.~\ref{sec:mc}) & supuesto / medido\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -684,6 +688,134 @@ microdureza de la capa (HV\,0,1) y su espesor.
         reemplazan por el espectro medido.
   \item \textbf{Desgaste:} a 0,05~m/s puede limitar antes que el picado y Shigley no lo calcula; depende de la grasa.
   \item \textbf{Eje, prisioneros y rodamientos} no están incluidos: con 0,4--0,5\Nm deben verificarse aparte.
+\end{itemize}
+
+%-----------------------------------------------------------------------
+\section{Vida con incertidumbre de parámetros}\label{sec:mc}
+La sec.~\ref{sec:vida} usa un valor por parámetro. Acá cada parámetro incierto se reemplaza por una distribución y la vida
+se calcula para 20\,000 combinaciones al azar (Monte Carlo, semilla fija). El resultado es la \textbf{probabilidad} de que
+el par dure una cantidad de horas, por picado o por fatiga a flexión, y qué parámetros explican la dispersión.
+
+\subsection{Datos confirmados}
+\begin{table}[H]\centering\small
+\begin{tabularx}{\linewidth}{l X}
+\toprule
+Dato & Valor\\\midrule
+Montaje & Ambos engranajes en voladizo: $K_{mb}=1{,}25$ fijo (ec.~15-11).\\
+Velocidad & $\approx$100~rpm casi siempre: 6000 ciclos por hora por diente.\\
+Sentido de giro & Ida y vuelta frecuente, con tramos de varias vueltas en cada sentido.\\
+Picos de torque & Más de 20 por hora con el uso real.\\
+Dureza del S45C (KG M50S20) & \textbf{Medida:} 550~HLD con durómetro Leeb, varias lecturas parecidas; el patrón de
+                               55,2~HRC da 788~HL. Equivale a $\approx$240~HB.\\
+Vida objetivo & 2~años de uso a 24~h por mes $=$ 576~h.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Distribuciones de los parámetros}
+Cada parámetro incierto, su distribución y su justificación están en la tabla~\ref{tab:distrib}.
+\begin{table}[!htb]\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{2.9cm} >{\raggedright\arraybackslash}p{4.6cm} X}
+\toprule
+Parámetro & Distribución & Justificación\\\midrule
+Dureza del S45C & Normal 240 $\pm$ 10~HB (1$\sigma$) & Conversión HLD → HB y variación entre lotes de barra.
+   Entra en $\sigma_{F\,\lim}$ y $\sigma_{H\,\lim}$ por ec.~(15-23) y (15-22).\\
+Resistencia a fatiga del lote & Lognormal: mediana $\sigma_{F\,\lim}/0{,}70$ y $\sigma_{\ln}=0{,}153$ (flexión);
+   mediana $\sigma_{H\,\lim}/0{,}837$ y $\sigma_{\ln}=0{,}077$ (picado) & Dispersión implícita en el factor de confiabilidad
+   (ec.~15-20, AGMA): $Y_Z=0{,}70$ a $R=0{,}50$, 0,85 a 0,90 y 1,00 a 0,99. En picado $Z_Z=\sqrt{Y_Z}$. Reemplaza a $Y_Z$.\\
+Método a m\,0,5 & Lognormal, mediana 1, $\sigma_{\ln}=0{,}10$, independiente en flexión y picado & AGMA no está validado
+   a este módulo; queda un 20\,\% sin explicar frente al datasheet de KG (sec.~\ref{sec:datasheet}).\\
+Inversión de sentido (flexión) & Uniforme 0,70--1,00 & Shigley sec.~15-2: 0,70 para carga invertida en cada ciclo;
+   1,00 para carga pulsante. La ida y vuelta frecuente queda entre ambos.\\
+Ciclos por flanco & Uniforme 50--100\,\% del total & Cada flanco trabaja solo en un sentido de giro.\\
+Coronamiento $Z_{xc}$ & Uniforme 1,5--2,0 (KG); 1,5--1,75 (a medida) & Ec.~(15-12). KG no lo informa; en la pieza a
+   medida se especifica, con tolerancia de fabricación.\\
+Nitrocarburado & Triangular (1,10; 1,30; 1,50) en $\sigma_{H\,\lim}$ y (1,00; 1,20; 1,35) en $\sigma_{F\,\lim}$ &
+   No está en Shigley; categorías de ISO~6336-5~[5]. Supuesto a validar.\\
+Torque máximo continuo & Triangular (0,18; 0,20; 0,23)~N\,m & Medido: oscila entre 0,05 y 0,20~N\,m.\\
+Torque de pico & Triangular (0,27; 0,30; 0,35)~N\,m & Medido: picos de $\approx$0,30~N\,m.\\
+Picos por hora & Uniforme 20--60 & Informado: más de 20 por hora.\\
+Duración de cada pico & Log-uniforme 1--10~s & \textbf{Supuesto}: no está medida.\\
+\bottomrule
+\end{tabularx}
+\caption{Parámetros inciertos del Monte Carlo. Los fijos son los de la tabla~\ref{tab:criterio}
+($K_A=1$, $Q_v=8$, $K_{mb}=1{,}25$, $S_F=S_H=1$) y la geometría de cada opción.}\label{tab:distrib}
+\end{table}
+
+\paragraph{Modelo.} Es el de la sec.~\ref{sec:vida}: tensiones por ec.~(15-1) y (15-3), curvas de vida por ec.~(15-14) y
+(15-15) invertidas en forma exacta por tramos, y daño acumulado por Miner (sec.~6-15) sobre 40 niveles del torque
+oscilante más los picos. La resistencia de cada muestra es
+\begin{equation}
+\sigma_{FP}=\frac{\sigma_{F\,\lim}\,Y_{NT}}{0{,}70}\,e^{-0{,}153\,z_F}\,m_F\,k_{rev},\qquad
+\sigma_{HP}=\frac{\sigma_{H\,\lim}\,Z_{NT}}{0{,}837}\,e^{-0{,}077\,z_H}\,m_H,
+\end{equation}
+con $z\sim N(0,1)$, $m$ el factor del método y $k_{rev}$ el de inversión. \textbf{Control:} con los valores centrales y
+$z=1{,}2816$ ($R=0{,}90$) el Monte Carlo da 245~h contra 249~h de la sec.~\ref{sec:vida}; la diferencia viene de usar
+40 niveles en lugar de 60.
+
+\subsection{Resultados}
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{4pt}
+\resizebox{\linewidth}{!}{\begin{tabular}{l l rrr ccc}
+\toprule
+ & & \multicolumn{3}{c}{Vida [h]} & \multicolumn{2}{c}{Probabilidad de superar} & \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-7}
+Opción & Carga & P10 & P50 & P90 & 2 años (576 h) & 10 años (2880 h) & Falla por picado\\
+\midrule
+\csname @@input\endcsname tabla_mc.tex
+\bottomrule
+\end{tabular}}
+\caption{Vida con incertidumbre (20\,000 muestras, 100~rpm, 288~h por año). P10: el 90\,\% de los pares supera esa vida
+(equivale a la $L_{10}$ de un rodamiento). P50: mediana. «Falla por picado»: fracción de muestras en que el picado llega
+antes que la fatiga a flexión; el resto falla por flexión.}
+\label{tab:mc}
+\end{table}
+
+\begin{figure}[H]\centering
+  \includegraphics[width=\linewidth]{fig_mc_vida.pdf}
+  \caption{Probabilidad de que el par supere una vida dada. Línea de trazos: objetivo de 2~años (576~h).}
+  \label{fig:mc}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{KG M50S20 sin tratar, uso real:} mediana $\approx$590~h, pero \textbf{solo el 50\,\% llega a 2~años} y el 10\,\%
+        falla antes de $\approx$50~h. Con picos frecuentes \textbf{manda la fatiga a flexión} (80\,\% de las muestras), no el picado.
+  \item \textbf{KG nitrocarburada, uso real:} el \textbf{79\,\%} llega a 2~años (mediana $\approx$3400~h); P10 $\approx$220~h.
+        Mejora mucho, pero no asegura el objetivo: sigue limitada por la flexión del núcleo.
+  \item \textbf{Con el motor a pleno ninguna KG sirve} (1\,\% o menos llega a 2~años).
+  \item \textbf{m\,0,5 z20 carburizada (geometría KG):} uso real, 100\,\% llega a 2 y a 10~años. Motor a pleno, 87\,\% llega a
+        2~años (P10 $\approx$400~h).
+  \item \textbf{m\,0,6 z18 carburizada:} uso real, 100\,\%. Motor a pleno, \textbf{96\,\%} llega a 2~años y 91\,\% a 10~años.
+\end{itemize}
+
+\subsection{Qué parámetros explican la dispersión}
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{4pt}
+\begin{tabular}{l cccc}
+\toprule
+Parámetro & KG sin tratar & KG nitrocarb. & m\,0,5 z20 carb. & m\,0,6 z18 carb.\\
+\midrule
+\csname @@input\endcsname tabla_mc_sens.tex
+\bottomrule
+\end{tabular}
+\caption{Correlación de rangos (Spearman) entre cada parámetro y la vida, uso real. Positivo: al subir el parámetro
+la vida sube. «--»: no aplica a esa opción.}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{La dispersión propia del material} (resistencia a fatiga del lote) es lo que más pesa y no se puede
+        reducir midiendo: es la razón de dar la vida como probabilidad.
+  \item \textbf{Lo que sí se puede reducir:} el efecto real de la inversión de sentido sobre la flexión y el factor del método
+        a m\,0,5 se cierran con un \textbf{ensayo de banco}; la \textbf{duración de los picos} se cierra con el
+        \textbf{registro de torque contra tiempo}.
+  \item \textbf{La dureza pesa poco} una vez medida ($\pm$10~HB). El torque máximo continuo casi no pesa: el daño lo hacen los picos.
+\end{itemize}
+
+\textbf{Limitaciones}
+\begin{itemize}
+  \item \textbf{Distribuciones supuestas:} la dispersión de resistencia sale del factor de confiabilidad de AGMA, no de
+        ensayos de estas mitras; la duración de los picos no está medida.
+  \item \textbf{Extrapolación:} vidas mayores que $10^5$~h ($>$340~años) se informan como tales; superan el rango validado de
+        las curvas de vida y solo indican que ese modo no limita.
+  \item \textbf{Desgaste, eje, prisioneros y rodamientos} no están incluidos.
 \end{itemize}
 
 %-----------------------------------------------------------------------
