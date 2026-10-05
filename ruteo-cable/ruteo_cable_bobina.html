@@ -68,7 +68,7 @@ code{font-family:var(--f-mono);font-size:.84em}
 <div class="wrap">
 <header>
   <h1>Ruteo del cable de bobina</h1>
-  <p>Bucle rodante en el plano XZ, en un carril paralelo a la ranura del lado interior del holder. El cable llega al holder con un gancho a la cara del prisma, al lado del pivote. Cotas en mm. Origen: X0 en X, la línea de la ranura (pivote) en Y y la cara de la chapa donde apoya el holder en Z. +Y apunta hacia adentro del chasis.</p>
+  <p>Bucle rodante en el plano XZ, en un carril paralelo a la ranura, pegado a la cara interior del prisma. El cable sale de la bobina por arriba del holder, junto al borde +X del prisma, hacia +Y, y dobla hacia −X para entrar al carril. Cotas en mm. Origen: X0 en X, la línea de la ranura (pivote) en Y y la cara de la chapa donde apoya el holder en Z. +Y apunta hacia adentro del chasis.</p>
 </header>
 
 <div class="main">
@@ -76,9 +76,9 @@ code{font-family:var(--f-mono);font-size:.84em}
   <fieldset><legend>Holder</legend>
     <div class="row"><label for="D">Diámetro cilindro</label><input id="D" type="number" step="0.5" value="19"></div>
     <div class="row"><label for="h">Altura (Z)</label><input id="h" type="number" step="0.5" value="12"></div>
-    <div class="row"><label for="e">Prisma más allá del radio <small>(+Y)</small></label><input id="e" type="number" step="0.5" value="6"></div>
-    <div class="row"><label for="px">Pivote desde el centro, en X</label><input id="px" type="number" step="0.5" value="6"></div>
-    <div class="row"><label for="py">Pivote desde el centro, en Y</label><input id="py" type="number" step="0.5" value="12"></div>
+    <div class="row"><label for="e">Prisma más allá del radio <small>(+Y)</small></label><input id="e" type="number" step="0.5" value="9.5"></div>
+    <div class="row"><label for="px">Pivote desde el centro, en X</label><input id="px" type="number" step="0.5" value="5.5"></div>
+    <div class="row"><label for="py">Pivote desde el centro, en Y</label><input id="py" type="number" step="0.5" value="15.5"></div>
     <div class="row"><label for="ye">Borde de chapa desde el centro <small>(Y)</small></label><input id="ye" type="number" step="0.5" value="8.5"></div>
   </fieldset>
   <fieldset><legend>Movimiento</legend>
@@ -87,11 +87,12 @@ code{font-family:var(--f-mono);font-size:.84em}
     <div class="row"><label for="th">Rotación al final <small>(°, prisma → −X)</small></label><input id="th" type="number" step="5" value="90"></div>
   </fieldset>
   <fieldset><legend>Cable</legend>
-    <div class="row"><label for="R">Radio dinámico <small>(bucle y gancho)</small></label><input id="R" type="number" step="0.5" value="5"></div>
-    <div class="row"><label for="Rs">Radio estático <small>(entrada al chasis)</small></label><input id="Rs" type="number" step="0.5" value="2"></div>
+    <div class="row"><label for="R">Radio dinámico <small>(bucle y gancho)</small></label><input id="R" type="number" step="0.5" value="3.5"></div>
+    <div class="row"><label for="Rs">Radio estático <small>(entrada al chasis)</small></label><input id="Rs" type="number" step="0.5" value="3.5"></div>
     <div class="row"><label for="d">Diámetro del cable</label><input id="d" type="number" step="0.1" value="1"></div>
     <div class="row"><label for="c">Holgura</label><input id="c" type="number" step="0.1" value="0.5"></div>
-    <div class="row"><label for="ax">Unión en la cara del prisma, X desde el pivote</label><input id="ax" type="number" step="0.5" value="2.5"></div>
+    <div class="row"><label for="ax">Salida del cable U, X desde el pivote</label><input id="ax" type="number" step="0.5" value="3.5"></div>
+    <div class="row"><label for="ay">Salida del cable U, Y desde el pivote</label><input id="ay" type="number" step="0.5" value="-2.5"></div>
   </fieldset>
 </form>
 
@@ -126,22 +127,23 @@ code{font-family:var(--f-mono);font-size:.84em}
 <div class="panel notes">
   <h3>Criterio de la propuesta</h3>
   <ol>
-    <li><b>Carril propio para el cable.</b> El bucle vive en un plano XZ paralelo a la ranura, del lado interior de la cara del prisma, a una distancia R de esa cara. Ahí no se cruza nunca con el holder, así que el bucle puede ocupar la misma altura que el holder. Con R = 5 y cable de Ø1, los dos tramos quedan en z = 1 y z = 11, dentro de los 12 mm del holder.</li>
-    <li><b>Unión al holder con un gancho a la cara del prisma, pegada al pivote.</b> En reposo el gancho es un cuarto de vuelta de radio R, de +X a −Y. Cuando el holder gira 90°, esa cara pasa a mirar hacia −X, de frente al cable. El gancho se abre y queda como una S suave: el cable nunca se enrosca en el holder. Cuanto más cerca de la esquina +X del prisma esté la unión, menor es el desvío de la S.</li>
-    <li><b>Punto fijo F en la mitad de la carrera.</b> Es lo que minimiza el largo de cable. La rotación no agrega recorrido al bucle, lo achica: el punto de unión retrocede unos milímetros y el codo del bucle retrocede la mitad.</li>
+    <li><b>Salida del cable como en el CAD.</b> El cable sale de la bobina por arriba del holder, junto al borde +X del prisma, hacia +Y. Después dobla 90° hacia −X con R 3,5 y entra al carril.</li>
+    <li><b>Carril pegado a la cara interior del prisma.</b> El tramo móvil va justo por encima del holder. El bucle baja 2R = 7 mm en el plano XZ y el tramo fijo vuelve al costado del holder, dentro de su altura.</li>
+    <li><b>La rotación endereza el gancho.</b> Al girar 90°, la salida pasa a apuntar a −X, casi sobre el carril. El codo de 90° se abre hasta quedar casi recto y nunca baja del radio mínimo. El punto de salida retrocede, así que la rotación afloja el bucle en vez de estirarlo.</li>
+    <li><b>Punto fijo F en la mitad de la carrera.</b> Es lo que minimiza el largo de cable. La herramienta verifica que el tramo fijo y el codo no choquen con el holder en ningún momento.</li>
   </ol>
-  <h3>Lectura de las imágenes, a confirmar</h3>
+  <h3>Medidas tomadas de las imágenes, a confirmar</h3>
   <ul>
-    <li>El prisma apunta hacia el interior del chasis (+Y), no hacia +X. El pin del pivote corre en la ranura; medido en la planta, está a unos 5–6 mm del centro en X y a unos 12 mm en Y.</li>
-    <li>La rotación final es de 90° y deja el prisma apuntando a −X. El centro de la bobina avanza p<sub>x</sub> + p<sub>y</sub> ≈ 18 mm más.</li>
-    <li>El holder y el bucle están del mismo lado de la chapa. El cable va hacia adentro de la cara del prisma, como en tu boceto naranja.</li>
+    <li>El pivote está a unos 5,5 mm del centro en X y a unos 15,5 mm en Y. La cara interior del prisma queda a unos 3,5 mm del pivote, lo que da un prisma de unos 9,5 mm más allá del radio.</li>
+    <li>El cable sale a unos 3,5 mm del pivote hacia +X y a unos 2,5 mm hacia afuera (−Y).</li>
+    <li>Todos los radios son de 3,5 mm y el cable es de Ø1.</li>
   </ul>
 </div>
 </div>
 
 <script>
 const $=id=>document.getElementById(id);
-const ids=["D","h","e","px","py","ye","A","S","th","R","Rs","d","c","ax"];
+const ids=["D","h","e","px","py","ye","A","S","th","R","Rs","d","c","ax","ay"];
 const f=(v,n=1)=>(Math.abs(v)<5e-10?0:v).toFixed(n);
 const rad=a=>a*Math.PI/180, deg=a=>a*180/Math.PI;
 const rot=([x,y],a)=>[x*Math.cos(a)-y*Math.sin(a),x*Math.sin(a)+y*Math.cos(a)];
@@ -159,7 +161,7 @@ function outlinePiv(P){
 function state(P,G,u){
   const s=P.S*Math.min(u,1), phi=rad(P.th*Math.max(0,u-1));
   const xP=P.A+P.px+s;
-  const Arel=rot([P.ax,G.dy],phi), Ax=xP+Arel[0], Ay=Arel[1];
+  const Arel=rot([P.ax,P.ay],phi), Ax=xP+Arel[0], Ay=Arel[1];
   const psi=phi-Math.PI/2;                  // heading of cable entering the face
   const Dl=G.yL-Ay, R=P.R, cp=Math.cos(psi);
   let g,sl,rho=R,tight=false;
@@ -181,8 +183,9 @@ function state(P,G,u){
 function solve(P){
   const r=P.D/2, G={r};
   G.dy=r+P.e-P.py;                 // prism inner face, Y from pivot line
-  G.yL=G.dy+P.R;                   // cable lane
-  G.z1=P.c+P.d/2; G.z2=G.z1+2*P.R; // moving / fixed runs
+  G.yL=G.dy+P.c+P.d/2;             // cable lane, just clear of the face
+  G.z1=P.h+P.c+P.d/2;              // moving run, over the holder top
+  G.z2=G.z1-2*P.R;                 // fixed run, beside the holder
   const st=[];for(let i=0;i<=200;i++)st.push(state(P,G,i/100));
   const a=Math.max(...st.map(q=>q.xeff-2*q.xh)), b=Math.max(...st.map(q=>q.xeff));
   G.xF=(b-a)/2; G.K=Math.max((a+b)/2,0);
@@ -193,6 +196,10 @@ function solve(P){
   const loc=outlinePiv(P);let ymax=-1e9;
   for(let i=0;i<=90;i++){const ph=rad(P.th*i/90);loc.forEach(p=>{ymax=Math.max(ymax,rot(p,ph)[1]);});}
   G.ymaxHolder=ymax;
+  // clearance between the fixed run / loop and the holder inside the lane, over the whole motion
+  let clr=1e9;st.forEach((q,i)=>{const xB=G.xB(q),hx=holderW(P,q.s,q.phi).filter(p=>p[1]>G.yL-P.d/2-P.c+1e-6).map(p=>p[0]);
+    if(hx.length&&G.z2-P.d/2<P.h){clr=Math.min(clr,Math.min(...hx)-(Math.max(G.xF+P.Rs,xB)+P.d/2));}});
+  G.laneClr=clr;
   G.Rsw=Math.max(...loc.map(p=>Math.hypot(p[0],p[1])));
   const cEnd=rot([-P.px,-P.py],rad(P.th));G.cEndX=P.A+P.px+P.S+cEnd[0];G.cEndY=cEnd[1];
   return G;
@@ -253,7 +260,7 @@ function draw(){
   $("top").innerHTML=t;
 
   /* ---------- alzado ---------- */
-  const z0=-2.5, z1=Math.max(P.h,G.z2)+3;
+  const z0=-2.5, z1=Math.max(P.h,G.z1,G.z2)+3;
   let e=css+grid(z0,z1);
   e+=`<rect class="plate" x="${f(xlo+1,2)}" y="0" width="${f(plateEnd-xlo-1,2)}" height="1"/>`;
   e+=`<line class="ref" x1="0" x2="0" y1="${f(-z1,2)}" y2="${f(-z0,2)}"/>`+T(0.6,z1-2.2,"X0","lab");
@@ -262,7 +269,7 @@ function draw(){
   e+=`<line x1="${f(q.xP,2)}" x2="${f(q.xP,2)}" y1="${-P.h-1}" y2="1" stroke="var(--holder)" stroke-width=".2" stroke-dasharray="1.5 .5 .3 .5"/>`;
   const zm=(G.z1+G.z2)/2;
   e+=`<path class="cst" stroke-width="${dw}" d="${path([[xB,G.z2],[G.xF+P.Rs,G.z2]])}"/>`;
-  e+=`<path class="cab" stroke-width="${dw}" d="${path([[q.Ax,G.z1],[xB,G.z1],...arc(xB,zm,P.R,-90,-270,36)])}"/>`;
+  e+=`<path class="cab" stroke-width="${dw}" d="${path([[q.Ax,G.z1],[xB,G.z1],...(G.z1>G.z2?arc(xB,zm,P.R,90,270,36):arc(xB,zm,P.R,-90,-270,36))])}"/>`;
   e+=`<circle class="pt" cx="${f(G.xF,2)}" cy="${f(-G.z2,2)}" r=".7"/>`+T(G.xF,G.z2+1.3,"F","fx","middle");
   e+=`<circle class="pt" cx="${f(G.xF+P.Rs,2)}" cy="${f(-G.z2,2)}" r=".7"/>`+T(G.xF+P.Rs+1,G.z2+1.3,"E","fx");
   e+=`<circle class="pt" cx="${f(q.Ax,2)}" cy="${f(-G.z1,2)}" r=".6"/>`+T(q.Ax+1,G.z1+1.1,"U","fx");
@@ -277,7 +284,7 @@ function draw(){
   $("tPts").innerHTML=
     row("Pivote x, reposo → tope",`${f(P.A+P.px)} → ${f(xPend)}`)+
     row("Centro de bobina x, reposo → girado",`${f(P.A)} → ${f(G.cEndX)}`)+
-    row("U · unión al holder, desde el pivote (x, y, z)",`${f(P.ax)}, ${f(G.dy)}, ${f(G.z1)}`)+
+    row("U · salida del cable, desde el pivote (x, y, z)",`${f(P.ax)}, ${f(P.ay)}, ${f(G.z1)}`)+
     row("U · x absoluta en reposo",f(s0.Ax))+
     row("F · fijación al chasis (x, y, z)",`${f(G.xF)}, ${f(G.yL)}, ${f(G.z2)}`)+
     row("E · entrada al chasis por +Y (x, y, z)",`${f(G.xF+P.Rs)}, ≥ ${f(G.yL+P.Rs)}, ${f(G.z2)}`)+
@@ -288,15 +295,14 @@ function draw(){
     row("Retroceso de U al girar (x)",f(s2.Ax-s1.Ax))+
     row("Gancho al girar: desvío lateral de la S",f(G.yL-s2.Ay))+
     row("Radio mínimo del gancho en todo el giro",f(G.minRho))+
-    row("Altura del bucle (holder "+f(P.h)+")",`${f(G.z1-P.d/2)} a ${f(G.z2+P.d/2)}`)+
+    row("Altura del bucle (holder 0 a "+f(P.h)+")",`${f(Math.min(G.z1,G.z2)-P.d/2)} a ${f(Math.max(G.z1,G.z2)+P.d/2)}`)+
     row("Radio barrido por el holder al girar",f(G.Rsw));
   const ck=[];
   ck.push(G.minRho>=P.R-1e-6?["ok",`El gancho mantiene R ≥ ${f(P.R)} en todo el giro.`]:["bad",`El gancho baja a R ${f(G.minRho)} durante el giro. Corré U hacia +X o alejá el carril.`]);
-  ck.push(G.z2+P.d/2<=P.h+1e-9?["ok","El bucle entra en la altura del holder."]:["info",`El bucle sobresale ${f(G.z2+P.d/2-P.h)} mm por encima del holder.`]);
-  const clr=G.yL-P.d/2-G.ymaxHolder;
-  ck.push(clr>=P.c?["ok",`Al girar, la esquina del prisma llega a y = ${f(G.ymaxHolder)}. Quedan ${f(clr)} mm al carril.`]:["bad",`Al girar, la esquina del prisma llega a y = ${f(G.ymaxHolder)} y toca el carril.`]);
+  ck.push(G.z2-P.d/2>=0?["info",`El tramo móvil pasa ${f(G.z1+P.d/2-P.h)} mm por encima del holder; el fijo va a z = ${f(G.z2)}, al costado.`]:["bad",`El tramo fijo quedaría bajo la chapa (z = ${f(G.z2)}). Bajá R.`]);
+  ck.push(G.laneClr>=P.c?["ok",`El tramo fijo y el codo nunca se cruzan con el holder en el carril (luz mín. ${f(G.laneClr)} mm). Al girar, la esquina del prisma invade el carril hasta y = ${f(G.ymaxHolder)}, pero solo bajo el tramo móvil.`]:["bad",`El tramo fijo o el codo chocan con el holder en el carril (luz ${f(G.laneClr)} mm). Corré F hacia −X.`]);
   ck.push(G.xBmin-P.R-P.d/2>=0?["ok",`El bucle queda delante de X0 (codo mín. en x = ${f(G.xBmin-P.R-P.d/2)}).`]:["bad",`El bucle sobresale ${f(-(G.xBmin-P.R-P.d/2))} mm detrás de X0.`]);
-  ck.push(P.ax<=G.r-P.px-P.d/2-P.c+1e-9?["ok","U cae dentro de la cara del prisma."]:["bad",`U queda fuera de la cara del prisma: máximo ${f(G.r-P.px-P.d/2-P.c)} desde el pivote.`]);
+  ck.push(P.ax<=G.r-P.px-P.d/2+1e-9?["ok","U cae dentro del ancho del prisma."]:["bad",`U queda fuera del borde +X del prisma: máximo ${f(G.r-P.px-P.d/2)} desde el pivote.`]);
   $("checks").innerHTML=ck.map(([c,x])=>`<li class="${c}">${x}</li>`).join("");
 }
 
