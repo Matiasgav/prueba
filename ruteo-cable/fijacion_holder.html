@@ -27,6 +27,7 @@ header p{margin:.3rem 0 0;color:var(--muted);max-width:80ch}
 .rec b{font-family:var(--f-display);font-size:1.05rem}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:18px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:grid;gap:10px;align-content:start;min-width:0}
+.card.wide{grid-column:1/-1}
 .card h2{font-family:var(--f-display);font-weight:600;font-size:1.2rem;margin:0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
 .tag{font-family:var(--f-mono);font-size:.7rem;font-weight:600;letter-spacing:.04em;padding:1px 7px;border-radius:3px;border:1px solid currentColor}
 .tag.pos{color:var(--ok)}.tag.cur{color:var(--warn)}.tag.aux{color:var(--steel)}
@@ -50,7 +51,7 @@ dd{margin:0}
 
 <div class="rec"><b>Recomendación.</b> Separar las dos funciones que hoy hace el tornillo:
   <b>guiar y pivotar</b> con un pin atrapado entre las chapas en <b>ranuras ciegas (1)</b>, sin ningún corte pasante;
-  y <b>fijar</b> con una <b>zapata a cuña (2)</b> dentro del nervio, que se aprieta desde la cara exterior del holder.
+  y <b>fijar</b> con una <b>zapata anular (2)</b> alrededor del pin, que se aprieta con un tornillo desde la cara exterior del holder y traba en cualquier punto y en cualquier ángulo.
   Todo queda dentro de los 12 mm y del contorno actual. El <b>retén de bola (4)</b> agrega un clic cada 2 mm.
   La pletina exterior y la leva de la versión anterior quedan descartadas porque salían de los 12 mm.</div>
 
@@ -90,6 +91,7 @@ const svg=(vb,body,label)=>`<svg viewBox="${vb}" style="max-width:${+vb.split(" 
 
 /* ---------- 12 mm stack: bottom plate 0-3, holder rib 3-9, top plate 9-12 ---------- */
 const VB="-14 -17 28 20";
+const arc=(cx,cy,r,a0,a1,k=24)=>{const o=[];for(let i=0;i<=k;i++){const t=(a0+(a1-a0)*i/k)*Math.PI/180;o.push([cx+r*Math.cos(t),cy+r*Math.sin(t)]);}return o;};
 const holderStack=()=>P([[-12,0],[-3.85,0],[-3.85,3.1],[3.5,3.1],[3.5,8.9],[-3.85,8.9],[-3.85,12],[-12,12]],"hold")
   +P(zig(-12,0,12),"gap",false)+P(zig(-12,0,12),"lead",false)+T(-8,2.2,"holder","lab","middle");
 const plate=(z0)=>R(-3.55,6.5,z0,z0+3,"metal");
@@ -116,14 +118,26 @@ F.ciega=svg(VB,
   "Corte en el pivote: un pin a presión en el nervio entra en ranuras ciegas mecanizadas desde adentro en las dos chapas. Las caras exteriores quedan enteras y el pin queda atrapado entre las chapas.");
 
 F.zapata=svg(VB,
-  holderStack()+plate(0)+plate(9)+
-  P([[-0.6,7.3],[3.1,7.3],[3.1,8.95],[-1.6,8.95],[-1.6,8.3]],"new")+
-  R(-12.4,-2.3,6.2,7.4,"steel")+P([[-2.3,6.2],[-0.6,6.8],[-2.3,7.4]],"steel")+
-  AR(1.2,7.6,1.2,10.6,"force")+AR(1.2,4.8,1.2,1.4,"force")+
-  T(3.6,7.4,"zapata cautiva","nw")+T(-13.5,-1.6,"tornillo con punta cónica","sm")+L(-7.5,-1,-7.5,6)+
-  T(-13.7,13.5,"acceso desde la cara exterior","sm"),
-  "Corte en la zapata, desplazado en X respecto del pin: la punta cónica empuja la zapata contra la chapa superior y el nervio reacciona contra la inferior. Fricción en dos caras, en cualquier posición.");
-
+  holderStack()+plateGroove(0,false)+plateGroove(9,true)+
+  R(-1.25,1.25,1.15,10.85,"steel")+
+  P([[-3,8.2],[-2.4,7.6],[-1.3,7.6],[-1.3,8.95],[-3,8.95]],"new")+R(1.3,3,7.6,8.95,"new")+
+  R(-12.4,-3.6,6.9,8.1,"steel")+P([[-3.6,6.9],[-2.5,7.5],[-3.6,8.1]],"steel")+
+  AR(2.2,7.2,2.2,10.6,"force")+AR(2.2,4.8,2.2,1.4,"force")+
+  T(3.5,8,"zapata anular","nw")+T(-13.5,-1.6,"tornillo de punta cónica","sm")+L(-7.5,-1,-7.5,6.7),
+  "Corte en el pivote: la zapata anular rodea el pin en un rebaje del nervio. La punta cónica la levanta contra la chapa superior y el nervio reacciona contra la inferior.");
+F.plan=svg("-17 -26 43 37",
+  R(-17,17,12,25,"metal",'opacity=".6"')+L(-17,12,17,12,"lead")+
+  `<rect x="-17" y="-16.75" width="24.75" height="2.5" rx="1.25" fill="none" stroke="var(--metal)" stroke-width=".18" stroke-dasharray=".7 .5"/>`+
+  P([[9.5,19],[-9.5,19],[-9.5,0],...arc(0,0,9.5,180,360,40),[9.5,0]],"hold")+
+  `<circle cx="0" cy="0" r="3.7" class="gap"/>`+
+  `<circle cx="5.5" cy="-15.5" r="3" class="new"/><circle cx="5.5" cy="-15.5" r="1.25" class="steel"/>`+
+  R(4.6,6.4,-8.2,12.2,"steel")+P([[4.6,12.2],[5.5,12.9],[6.4,12.2]],"steel")+
+  `<circle cx="-4" cy="-14" r=".8" class="new"/>`+
+  T(-16.5,23.6,"chapas del chasis (por encima)","sm")+T(-16.5,12.5,"canto","sm")+
+  T(-16.5,17.5,"ranura ciega","sm")+T(9.2,15.9,"pin + zapata anular","nw")+T(-4,12.6,"bola","nw","middle")+
+  T(0,-0.4,"bobina","sm","middle")+T(7.2,-4,"tornillo cónico","lab")+T(7.2,-5.4,"llave Allen desde afuera","sm")+
+  AR(6.5,-10.6,13.5,-10.6,"lead")+T(10,-9.6,"X","sm","middle"),
+  "Planta del holder en reposo: la zapata anular rodea el pin bajo las chapas. El tornillo cónico entra por la cara exterior de la parte redonda, al costado del agujero de la bobina, y llega a la zapata.");
 F.pinza=svg(VB,
   holderStack()+plate(0)+plate(9)+
   R(-2.6,3.5,5.85,6.15,"gap")+L(-2.6,5.85,3.5,5.85,"lead")+L(-2.6,6.15,3.5,6.15,"lead")+`<circle cx="-2.6" cy="-6" r=".15" class="new"/>`+
@@ -141,14 +155,17 @@ F.bola=svg("-1 -14 34 16",
   "Retén de bola dentro del nervio: el émbolo a presión cae en conos mecanizados cada 2 mm en la cara interior de la chapa superior. No se ven desde afuera.");
 
 const cards=[
+ {t:"Cómo se fija la posición",tag:["pos","resumen"],wide:true,figs:[F.plan],
+  p:"La posición la fija la zapata anular: un anillo alrededor del pin que se aprieta contra la chapa superior con un solo tornillo, accesible desde afuera.<ol style='margin:.4rem 0 0;padding-left:1.2rem'><li><b>Aflojar</b> el tornillo cónico un cuarto de vuelta. La zapata baja y el holder queda libre en X.</li><li><b>Correr</b> el holder hasta la posición. El retén de bola marca cada 2 mm, pero se puede dejar en cualquier punto.</li><li><b>Apretar</b>. El cono levanta la zapata, que aprieta contra la chapa superior, y el nervio contra la inferior.</li><li><b>Para extender</b>: llevarlo al tope con el tornillo flojo, girarlo 90° sobre el pin y apretar. La zapata es concéntrica al pin, así que traba igual en la posición girada.</li></ol>",
+  dl:[["Fuerza","Con un prisionero M2,5 a 0,3 N·m, el cono empuja la zapata con unos 400 N. Con fricción 0,3 en dos caras, el holder resiste unos 240 N en X antes de deslizar. Son estimaciones a validar con un ensayo."],["Ante un golpe","Si el golpe supera esa fuerza, el holder desliza sobre las chapas en vez de doblar algo. El borde ya no está en el camino de la carga."],["Verificar","El tornillo pasa a 0,8 mm del agujero de la bobina, si ese agujero es de Ø7,4. Hay que confirmarlo con la medida real."]]},
  {t:"Hoy",tag:["cur","problema"],figs:[F.hoy],
   p:"El nervio de 6 mm corre entre dos chapas de 3 mm. El tornillo entra al inserto del nervio y su cabeza va en un bolsillo de la chapa superior, para no salir de los 12 mm. Ese bolsillo, sumado a la ranura, deja junto al canto un borde de unos 2,3 por 1,5 mm. Un golpe sobre el holder lo dobla.",dl:[]},
  {t:"1 · Pin en ranuras ciegas",tag:["pos","guía y pivote"],figs:[F.ciega],
   p:"En lugar de una ranura pasante, cada chapa tiene una ranura ciega mecanizada desde su cara interior, dejando 1 mm de piel. Un pin a presión en el nervio entra en las dos. El borde junto al canto queda unido a la piel y forma un cajón cerrado de 3 mm de alto, mucho más rígido que la tira de 1,5 mm actual. El pin guía en X, retiene en Y y es el eje del giro final.",
   dl:[["Sin piezas","El pin va a presión en el nervio y queda atrapado entre las dos chapas al armar el chasis. No tiene cabeza ni tuerca."],["12 mm","No hay nada por fuera de las chapas."],["Inserto","Ya no hace falta en el pivote. Si el nervio sigue en 6 mm, sobra lugar para la zapata."],["Mecanizado","Ranura ciega con fresa de 2,5 mm, 2 mm de profundidad, en la cara interior de cada chapa. El extremo de la ranura en el final del chasis queda redondo para el giro."]]},
- {t:"2 · Zapata a cuña",tag:["pos","continua"],figs:[F.zapata],
-  p:"Un bolsillo en la cara superior del nervio aloja una zapata. Un tornillo con punta cónica, que entra desde la cara exterior del holder, la levanta contra la chapa superior. El nervio reacciona contra la chapa inferior. Aprieta por fricción en dos caras, en cualquier posición, y la carga va a las chapas lejos del canto.",
-  dl:[["Sin piezas","La zapata queda encerrada en su bolsillo entre el nervio y la chapa. El tornillo se retiene con cuello rebajado y no puede salir."],["Acceso","Por la cara exterior de la parte redonda, desplazado en X respecto del agujero central. Conviene que la zapata sea de bronce o con superficie moleteada para que no marque la chapa."],["Ancho","La cabeza del tornillo queda rehundida en la cara exterior del holder."]]},
+ {t:"2 · Zapata anular a cuña",tag:["pos","continua"],figs:[F.zapata],
+  p:"La zapata es un anillo de 7075 alrededor del pin, alojado en un rebaje de la cara superior del nervio. Un tornillo con punta cónica la levanta contra la chapa superior y el nervio reacciona contra la inferior. Como es concéntrica al pivote, traba igual en cualquier punto de la carrera y en cualquier ángulo del giro.",
+  dl:[["Sin piezas","El anillo queda encerrado entre el nervio y la chapa, y el pin lo atraviesa. El tornillo se retiene con cuello rebajado."],["Superficie","Conviene anodizado duro en el anillo y en la chapa, o un anillo de bronce, para que no se engrane aluminio con aluminio."]]},
  {t:"3 · Pinza expansiva en el nervio",tag:["pos","continua"],figs:[F.pinza],
   p:"Es una variante sin zapata. Una ranura de flexión a media altura divide el nervio en dos mordazas. La punta cónica las separa unas décimas y aprietan contra las dos chapas. En 7075 la flexión es elástica y vuelve sola al aflojar.",
   dl:[["Sin piezas","Solo el tornillo, retenido con cuello rebajado."],["Cuidado","El pin del pivote debe ir a presión en una sola mordaza y deslizante en la otra, para no trabar la apertura."],["Frente a 2","Tiene menos piezas, pero se ajusta menos fino y depende de la tolerancia del hueco de 6 mm."]]},
@@ -157,7 +174,7 @@ const cards=[
   dl:[["Sin piezas","Émbolo con cuerpo liso a presión y labio recalcado."]]},
 ];
 document.getElementById("cards").innerHTML=cards.map(c=>`
- <article class="card">
+ <article class="card${c.wide?" wide":""}">
   <h2>${c.t}<span class="tag ${c.tag[0]}">${c.tag[1]}</span></h2>
   <div class="figs">${c.figs.map(s=>{const lab=s.match(/aria-label="([^"]+)"/)[1];return `<figure>${s}<figcaption>${lab}</figcaption></figure>`;}).join("")}</div>
   <p>${c.p}</p>
