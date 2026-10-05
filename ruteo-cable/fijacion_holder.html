@@ -28,6 +28,10 @@ header p{margin:.3rem 0 0;color:var(--muted);max-width:80ch}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:18px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:grid;gap:10px;align-content:start;min-width:0}
 .card.wide{grid-column:1/-1}
+svg .ghost2{fill:none;stroke:var(--holder);stroke-width:.15;stroke-dasharray:.8 .6}
+svg .pathc{fill:none;stroke:var(--new);stroke-width:.2}
+svg .stp{fill:var(--new)}
+svg .stp2{fill:var(--new);stroke:var(--ink);stroke-width:.1}
 svg .spring{fill:none;stroke:var(--new);stroke-width:.18}
 .tw{overflow-x:auto}
 table.cmp{border-collapse:collapse;width:100%;font-size:.86rem;min-width:720px}
@@ -57,7 +61,7 @@ dd{margin:0}
   <p>Alternativas a la ranura con tornillo, para piezas de 7075 mecanizadas por CNC. Condiciones: sin piezas que puedan soltarse, posición continua (o cada 2 mm), sin salir del ancho del chasis ni de los 12 mm de alto. Hoy el nervio de 6 mm del holder corre entre dos chapas de 3 mm. Cortes esquemáticos a escala, en mm. En los cortes YZ la izquierda es el canto exterior del chasis.</p>
 </header>
 
-<div class="rec"><b>Recomendación.</b> Todas comparten la misma base: pin en ranuras ciegas y un cartucho metálico en el nervio. Si alcanza con pasos de 1 o 2 mm, la mejor es la <b>L5, pestillo dentado con pulsador</b>: queda trabado en reposo, la traba es positiva, no hace falta herramienta y un golpe no lo corre. Si tiene que ser continua: <b>L2, anillo con cuña y tornillo desde arriba</b>, con herramienta y buena retención; o <b>L3, freno a resorte con pulsador</b>, sin herramienta pero con menos retención. La <b>L6, husillo</b>, es la de mejor desempeño, pero también la más compleja.</div>
+<div class="rec"><b>Recomendación, con la extensión por rotación.</b> La traba tiene que fijar los 30 mm de la ranura y también cualquier ángulo del giro final. Eso favorece las trabas con <b>anillo concéntrico al pin</b>, que trabajan igual en los dos tramos. Con herramienta: <b>L2, anillo con cuña y tornillo desde arriba</b>. Sin herramienta: <b>L3, freno a resorte con pulsador</b>. Si además querés traba positiva en la ranura, se le suma el pestillo dentado (L5), y el giro queda tomado por el anillo. El husillo (L6) no cubre el giro.</div>
 
 <div class="legend">
   <span><i style="background:var(--metal-fill);border-color:var(--metal)"></i>chapas del chasis</span>
@@ -224,21 +228,42 @@ F.husillo=svg("-36 -26 60 37",
   T(10,9.5,"la rosca termina antes del tope:","sm")+T(10,8.2,"la tuerca sale y el holder gira","sm"),
   "Planta: un husillo M3 corre entre las dos chapas, a la altura media del nervio, y la tuerca va en el cartucho. El pin del pivote queda partido en dos tramos, uno arriba y otro abajo del husillo.");
 
+
+/* ---------- extensión por rotación ---------- */
+const ROT=(()=>{const px=5.5,py=15.5,r=9.5;
+  const loc=[[r,0],[r,19],[-r,19],[-r,0],...arc(0,0,r,180,360,40)].map(([x,y])=>[x-px,y-py]);
+  const rt=(pts,d)=>{const a=d*Math.PI/180,c=Math.cos(a),s=Math.sin(a);return pts.map(([x,y])=>[x*c-y*s,x*s+y*c]);};
+  const steps=[0,7.2,14.3,21.3,28.3,35.4,42.8,50.7,59.2,69.0,81.4,90];
+  let b=R(-21,5,-3.55,9,"metal",'opacity=".6"')+L(-21,-3.55,5,-3.55,"lead")+L(5,-3.55,5,9,"lead");
+  b+=L(-21,-25,31,-25,"lead")+T(30.5,-24.3,"ancho actual","sm","end");
+  [0,30,60].forEach(d=>b+=P(rt(loc,d),"ghost2"));
+  b+=P(rt(loc,90),"hold");
+  b+=P(arc(0,0,Math.hypot(px,py),250.5,340.5,60),"pathc",false);
+  steps.forEach((d,i)=>{const [cx,cy]=rt([[-px,-py]],d)[0];b+=`<circle cx="${n(cx)}" cy="${n(-cy)}" r=".45" class="${i==steps.length-1?"stp2":"stp"}"/>`;
+    if(i%2==0&&i<steps.length-1)b+=T(cx+(i<4?0:0.9),cy+(i<4?-1.8:-0.4),(2*i)+" mm","sm",i<4?"middle":"start");});
+  b+=`<circle cx="0" cy="0" r="1.5" class="steel"/>`+T(1.2,1.8,"pivote al final de la ranura","sm");
+  b+=T(-20.5,7.5,"chapas","sm")+T(-20.5,-28,"0,95 mm afuera a los 20°","wr");
+  b+=T(8,-12,"holder girado 90°","lab")+T(21,-4,"21 mm","nw","middle");
+  return svg("-21 -9 52 39.5",b,"Planta del giro en el extremo: el centro de la bobina recorre un arco alrededor del pivote y avanza 21 mm en X. Los puntos marcan cada 2 mm de avance: al principio alcanzan 7° de giro y al final hacen falta más de 12°.");})();
+F.rot=ROT;
 const TABLE=`<div class="tw"><table class="cmp">
-<thead><tr><th>Traba</th><th>Posición</th><th>Cómo se acciona</th><th>Retención en X</th><th>Tipo</th><th>Posición girada</th><th>Complejidad</th></tr></thead>
+<thead><tr><th>Traba</th><th>Posición</th><th>Cómo se acciona</th><th>Retención en X</th><th>Tipo</th><th>En el giro final</th><th>Complejidad</th></tr></thead>
 <tbody>
-<tr><td>L1 · Anillo con tornillo lateral</td><td>continua</td><td>llave Allen, cara exterior</td><td>≈ 240 N</td><td>fricción</td><td>sí</td><td>baja</td></tr>
-<tr><td>L2 · Anillo con tornillo vertical y cuña</td><td>continua</td><td>llave Allen, cara superior</td><td>≈ 300 N</td><td>fricción</td><td>sí</td><td>media</td></tr>
-<tr><td>L3 · Freno a resorte con pulsador</td><td>continua</td><td>a mano, trabado en reposo</td><td>≈ 70 N</td><td>fricción</td><td>sí</td><td>media</td></tr>
-<tr><td>L4 · Palanca sobre-centro</td><td>continua</td><td>a mano</td><td>≈ 150 N</td><td>fricción</td><td>sí</td><td>media-alta</td></tr>
-<tr class="hi"><td>L5 · Pestillo dentado con pulsador</td><td>cada 2 mm, o 1 mm con doble pestillo</td><td>a mano, trabado en reposo</td><td>&gt; 500 N</td><td>positiva</td><td>con una muesca más</td><td>media</td></tr>
-<tr><td>L6 · Husillo</td><td>continua</td><td>llave o rueda en el chasis</td><td>&gt; 1 kN, no retrocede</td><td>positiva</td><td>la tuerca sale de la rosca</td><td>alta</td></tr>
-<tr><td>L7 · Retén de bola</td><td>cada 2 mm</td><td>a mano</td><td>≈ 15 N</td><td>elástica</td><td>sí</td><td>baja, complemento</td></tr>
+<tr><td>L1 · Anillo con tornillo lateral</td><td>continua</td><td>llave Allen, cara exterior</td><td>≈ 240 N</td><td>fricción</td><td>sí, en cualquier ángulo</td><td>baja</td></tr>
+<tr><td>L2 · Anillo con tornillo vertical y cuña</td><td>continua</td><td>llave Allen, cara superior</td><td>≈ 300 N</td><td>fricción</td><td>sí, en cualquier ángulo</td><td>media</td></tr>
+<tr><td>L3 · Freno a resorte con pulsador</td><td>continua</td><td>a mano, trabado en reposo</td><td>≈ 70 N</td><td>fricción</td><td>sí, en cualquier ángulo</td><td>media</td></tr>
+<tr><td>L4 · Palanca sobre-centro</td><td>continua</td><td>a mano</td><td>≈ 150 N</td><td>fricción</td><td>sí, en cualquier ángulo</td><td>media-alta</td></tr>
+<tr class="hi"><td>L5 · Pestillo dentado con pulsador</td><td>cada 2 mm, o 1 mm con doble pestillo</td><td>a mano, trabado en reposo</td><td>&gt; 500 N</td><td>positiva</td><td>solo pasos gruesos (0°, 45°, 90°)</td><td>media</td></tr>
+<tr><td>L6 · Husillo</td><td>continua</td><td>llave o rueda en el chasis</td><td>&gt; 1 kN, no retrocede</td><td>positiva</td><td>no: hace falta otra traba</td><td>alta</td></tr>
+<tr><td>L7 · Retén de bola</td><td>cada 2 mm</td><td>a mano</td><td>≈ 15 N</td><td>elástica</td><td>pocos pasos</td><td>baja, complemento</td></tr>
 </tbody></table></div>
 <p class="note">Retenciones estimadas con fricción 0,3 en dos caras. Hay que validarlas con un ensayo. En todas, la fuerza de apriete se cierra dentro del cartucho metálico y las chapas: el PEEK no queda cargado.</p>`;
 
 const cards=[
  {t:"Comparación",tag:["aux","resumen"],wide:true,figs:[],p:TABLE,dl:[]},
+ {t:"Extensión por rotación en el extremo",tag:["pos","condición de diseño"],wide:true,figs:[F.rot],
+  p:"<p>Al llegar al final de la ranura, el holder gira 90° sobre el pin y el centro de la bobina avanza 21 mm más en X. En total son 30 mm de carrera más 21 mm de giro, y la traba tiene que poder fijar cualquier punto de los dos tramos. El avance por grado no es uniforme: los primeros 2 mm se cubren con 7° de giro y los últimos 2 mm piden más de 12°.</p><div class='tw'><table class='cmp' style='min-width:560px'><thead><tr><th>Avance extra</th><th>0</th><th>2</th><th>4</th><th>6</th><th>8</th><th>10</th><th>12</th><th>14</th><th>16</th><th>18</th><th>20</th><th>21 mm</th></tr></thead><tbody><tr><td>Giro</td><td>0°</td><td>7°</td><td>14°</td><td>21°</td><td>28°</td><td>35°</td><td>43°</td><td>51°</td><td>59°</td><td>69°</td><td>81°</td><td>90°</td></tr></tbody></table></div>",
+  dl:[["Qué implica","La traba tiene que actuar sobre el pivote y en cualquier ángulo. Las del anillo concéntrico al pin (L1 a L4) lo hacen sin cambios: el anillo gira con el holder sobre la misma zona de chapa."],["Trabas positivas","En el pestillo (L5), los 2 mm del principio del giro equivalen a 7°. A los 3,5 mm de radio que permite el cartucho, eso es un arco de 0,44 mm entre muescas: no se puede mecanizar. En el giro solo admite pasos gruesos. El husillo (L6) no actúa durante el giro."],["Chapas","Alrededor del final de la ranura la chapa tiene que cubrir al menos 3 mm en todas las direcciones, para que el anillo apoye en cualquier ángulo."],["Ancho","Con el pivote a 5,5 mm del centro en X, a los 20° de giro la bobina sale 0,95 mm más afuera que en reposo, cerca del final del chasis. Con el pivote alineado con el centro en X no sale, pero la extensión baja de 21 a 15,5 mm."]]},
  {t:"Hoy",tag:["cur","problema"],figs:[F.hoy],
   p:"El nervio de 6 mm corre entre dos chapas de 3 mm. El tornillo entra al inserto Accu HTFBI M3 y su cabeza va en un bolsillo de la chapa superior. Ese bolsillo, sumado a la ranura, deja junto al canto un borde de unos 2,3 × 1,5 mm, que se dobla con un golpe.",dl:[]},
  {t:"Base común · pin en ranuras ciegas y cartucho",tag:["pos","guía y pivote"],figs:[F.ciega],
@@ -257,10 +282,10 @@ const cards=[
   dl:[["A favor","Aprieta fuerte sin herramienta y se ve si está trabada o no."],["En contra","Tiene más piezas y el ajuste del punto muerto depende de las tolerancias. Necesita una regulación, por ejemplo una varilla roscada fijada con adhesivo."]]},
  {t:"L5 · Pestillo dentado con pulsador",tag:["pos","cada 1–2 mm · a mano"],figs:[F.pestYZ,F.pestXZ],
   p:"La cara interior de la chapa superior lleva una cremallera de paso 2 mm, ciega y lejos del canto. Un pestillo de 7075 con dos dientes, empujado por un resorte, engrana en ella. El pulsador lo baja para correr el holder; al soltarlo engrana solo. Con dos pestillos corridos 1 mm, siempre traba uno de los dos y la resolución pasa a 1 mm.",
-  dl:[["A favor","Traba positiva: un golpe en X no lo mueve, la carga va al diente y no a la fricción. No se afloja con vibración y no hace falta herramienta."],["En contra","La posición es por pasos. Para la posición girada hace falta una muesca más en la chapa, donde cae el pestillo después del giro."]]},
+  dl:[["A favor","Traba positiva: un golpe en X no lo mueve, la carga va al diente y no a la fricción. No se afloja con vibración y no hace falta herramienta."],["En contra","La posición es por pasos. En el giro solo puede trabar en 0°, 45° y 90°, porque las muescas quedarían a menos de 0,5 mm entre sí. Para cubrir el giro de forma continua hay que sumarle el anillo de L3."]]},
  {t:"L6 · Husillo",tag:["pos","continua · positiva"],figs:[F.husillo],
   p:"Un husillo M3 corre entre las chapas, a la altura media del nervio, apoyado atrás en un bloque fijo. La tuerca va en el cartucho y el pin queda partido en dos tramos, arriba y abajo del husillo. Girando el husillo, el holder avanza 0,5 mm por vuelta y no puede retroceder solo.",
-  dl:[["A favor","Ajuste fino y continuo, con traba positiva y la mayor retención."],["En contra","Es la más compleja. Para girar, la tuerca tiene que salir del final de la rosca, y al volver hay que reenhebrarla. El acceso al husillo tiene que quedar dentro del ancho, por una ventana o por la cara trasera."]]},
+  dl:[["A favor","Ajuste fino y continuo, con traba positiva y la mayor retención."],["En contra","Es la más compleja. No traba durante el giro: el tramo de extensión por rotación necesita además el anillo de L1 o L2. Para girar, la tuerca tiene que salir del final de la rosca, y al volver hay que reenhebrarla. El acceso al husillo tiene que quedar dentro del ancho, por una ventana o por la cara trasera."]]},
  {t:"L7 · Retén de bola",tag:["aux","complemento"],figs:[F.bola],
   p:"Un émbolo de bola en el cartucho cae en conos cada 2 mm de la cara interior de una chapa. Da el clic y referencia la posición. Solo, no aguanta un golpe: va con L1, L2 o L4.",dl:[]},
 ];
