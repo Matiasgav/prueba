@@ -1,0 +1,146 @@
+<title>Ideas para el holder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: catálogo de ideas en tarjetas iguales, de la más simple a la más elaborada; cada una con un corte chico y su ficha. */
+:root{
+  --bg:#eef1ef; --panel:#fafbfa; --ink:#1c2321; --muted:#5a6561; --line:#c6cdc9;
+  --metal:#8b979c; --metal-fill:#dfe5e7; --holder:#3a4247; --holder-fill:#59636a; --steel:#4f6f86;
+  --new:#c0641c; --new-fill:#f3d9c2; --warn:#b0362a; --ok:#2d7a4c;
+  --f-display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#131716; --panel:#1a1f1e; --ink:#e3e8e6; --muted:#97a29e; --line:#353e3b;
+  --metal:#8e9ca2; --metal-fill:#2e373b; --holder:#a9b4ba; --holder-fill:#454e55; --steel:#86aac4;
+  --new:#ec944c; --new-fill:#4a3020; --warn:#ec7a6c; --ok:#6cc495; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#131716; --panel:#1a1f1e; --ink:#e3e8e6; --muted:#97a29e; --line:#353e3b;
+  --metal:#8e9ca2; --metal-fill:#2e373b; --holder:#a9b4ba; --holder-fill:#454e55; --steel:#86aac4;
+  --new:#ec944c; --new-fill:#4a3020; --warn:#ec7a6c; --ok:#6cc495; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:22px 44px;display:grid;gap:18px}
+h1{font-family:var(--f-display);font-weight:700;font-size:1.9rem;margin:0}
+header p{margin:.3rem 0 0;color:var(--muted);max-width:85ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,350px),1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:grid;gap:8px;align-content:start;min-width:0}
+.card h2{font-family:var(--f-display);font-weight:600;font-size:1.15rem;margin:0;display:flex;gap:8px;align-items:baseline}
+.card h2 span.k{font-family:var(--f-mono);font-size:.85rem;color:var(--new)}
+.one{margin:0;font-weight:600}
+.card p{margin:0;font-size:.92rem}
+svg{display:block;width:100%;height:auto;max-width:360px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--f-mono);font-size:.7rem;padding:1px 7px;border-radius:3px;border:1px solid var(--line);color:var(--muted)}
+.chip.g{border-color:var(--ok);color:var(--ok)}.chip.r{border-color:var(--warn);color:var(--warn)}
+.pc{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:.86rem;margin:0}
+.pc dt{font-family:var(--f-display);font-weight:600;text-transform:uppercase;font-size:.7rem;letter-spacing:.07em;color:var(--muted);padding-top:3px}
+.pc dd{margin:0}
+.rec{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--new);border-radius:6px;padding:12px 16px;max-width:95ch}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:10px;vertical-align:middle;margin-right:5px;border:1px solid}
+</style>
+
+<div class="wrap">
+<header>
+  <h1>Ideas para el holder</h1>
+  <p>Siete formas de dejar de doblar el borde y fijar la posición. Están ordenadas de la más simple a la más elaborada, y todas respetan los 12 mm, el ancho del chasis, el holder de PEEK y el giro final sobre el pivote. Cortes esquemáticos por el pivote: a la izquierda, el canto del chasis.</p>
+</header>
+
+<div class="rec"><b>Mi elección:</b> la <b>1</b> o la <b>2</b>, si se mantiene el tornillo actual. Ninguna agrega piezas: son cambios de mecanizado. Si se quiere ajustar a mano y sin herramienta, la <b>4</b>: elimina la ranura pasante y el tornillo, y el holder hace clic cada 2 mm.</div>
+
+<div class="legend">
+  <span><i style="background:var(--metal-fill);border-color:var(--metal)"></i>chapas 7075</span>
+  <span><i style="background:var(--holder-fill);border-color:var(--holder)"></i>holder PEEK</span>
+  <span><i style="background:var(--new-fill);border-color:var(--new)"></i>lo que cambia</span>
+  <span><i style="background:var(--steel);border-color:var(--steel)"></i>acero o latón</span>
+</div>
+
+<div class="grid" id="g"></div>
+</div>
+
+<script>
+const n=v=>+v.toFixed(3);
+const R=(y0,y1,z0,z1,c,x="")=>`<rect x="${n(y0)}" y="${n(-z1)}" width="${n(y1-y0)}" height="${n(z1-z0)}" class="${c}" ${x}/>`;
+const P=(pts,c,close=true)=>`<path d="M${pts.map(([y,z])=>`${n(y)},${n(-z)}`).join(" L")}${close?"Z":""}" class="${c}"/>`;
+const T=(y,z,s,c="lab",a="start")=>`<text x="${n(y)}" y="${n(-z)}" class="${c}" text-anchor="${a}">${s}</text>`;
+const L=(y0,z0,y1,z1,c="lead")=>`<line x1="${n(y0)}" y1="${n(-z0)}" x2="${n(y1)}" y2="${n(-z1)}" class="${c}"/>`;
+const zig=(y,z0,z1,w=.5,k=6)=>{const p=[];for(let i=0;i<=k;i++)p.push([y+(i%2?w:-w),z0+(z1-z0)*i/k]);return p;};
+const STY=`<style>
+ .lab{font:600 1px var(--f-mono);fill:var(--ink)}.nw{font:600 1px var(--f-mono);fill:var(--new)}.sm{font:400 .85px var(--f-mono);fill:var(--muted)}
+ .metal{fill:var(--metal-fill);stroke:var(--metal);stroke-width:.1}
+ .hold{fill:var(--holder-fill);stroke:var(--holder);stroke-width:.1}
+ .new{fill:var(--new-fill);stroke:var(--new);stroke-width:.14}
+ .steel{fill:var(--steel);stroke:var(--steel);stroke-width:.06}
+ .lead{stroke:var(--muted);stroke-width:.07;fill:none}
+ .spr{fill:none;stroke:var(--new);stroke-width:.16}
+ .gap{fill:var(--panel)}
+</style>`;
+const svg=(b,label)=>`<svg viewBox="-10.5 -14.5 22 17" role="img" aria-label="${label}" xmlns="http://www.w3.org/2000/svg">${STY}${b}</svg>`;
+/* holder: zona de altura completa a la izquierda de yH, nervio hasta yN */
+const holder=(yH=-3.85,yN=3.5)=>P([[-10.5,0],[yH,0],[yH,3.1],[yN,3.1],[yN,8.9],[yH,8.9],[yH,12],[-10.5,12]],"hold");
+/* chapa con ranura pasante y bolsillo (chapa superior) */
+const topSlot=(edge=-3.55,pk=2.9,depth=1.5,cls="metal")=>
+  P([[edge,9],[-1.25,9],[-1.25,12-depth],[-pk,12-depth],[-pk,12],[edge,12]],cls)+
+  P([[1.25,9],[11.5,9],[11.5,12],[pk,12],[pk,12-depth],[1.25,12-depth]],"metal");
+const bottom=(edge=-3.55)=>R(edge,11.5,0,3,"metal");
+const screw=(dz=1.5)=>R(-1.8,1.8,3.1,8.9,"steel","opacity='.55'")+R(-1.25,1.25,4,12-dz,"steel")+R(-2.6,2.6,12-dz,12-dz+1.2,"steel");
+
+const ideas=[
+ {k:"1",t:"Ranura 2 mm más adentro",one:"El mismo tornillo, en otro lugar.",
+  fig:svg(holder(-5.85,5.5)+bottom(-5.55)+topSlot(-5.55)+screw()+T(-3.4,13.2,"borde 4,3","nw","middle")+L(-3.4,12.6,-3.4,12.1)+T(4.2,6,"nervio +2","nw"),"Ranura y pivote corridos 2 mm hacia adentro; el borde pasa de 2,3 a 4,3 mm"),
+  p:"La ranura y el pivote se corren 2 mm hacia el interior y el nervio se alarga 2 mm para acompañarlos. El borde pasa de 2,3 a 4,3 mm. Con un tornillo de cabeza baja, el bolsillo es menos profundo.",
+  chips:[["g","0 piezas nuevas"],["g","tornillo actual"],["","continua"]],
+  pc:[["A favor","Es el cambio mínimo. El borde queda unas 6 veces más rígido en el plano, y el giro final gana 2 mm de extensión."],["En contra","Sigue habiendo ranura pasante y bolsillo. El borde mejora, pero sigue siendo el punto más débil."]]},
+ {k:"2",t:"Labio en el canto",one:"El borde se dobla en L hacia adentro del chasis, sin salir de los 12 mm.",
+  fig:svg(P([[-10.5,0],[-3.85,0],[-3.85,3.1],[-2.35,3.1],[-2.35,5.2],[-1.65,5.2],[-1.65,3.1],[3.5,3.1],[3.5,8.9],[-1.65,8.9],[-1.65,6.8],[-2.35,6.8],[-2.35,8.9],[-3.85,8.9],[-3.85,12],[-10.5,12]],"hold")+
+    P([[-3.55,0],[11.5,0],[11.5,3],[-2.45,3],[-2.45,5],[-3.55,5]],"metal")+P([[-3.55,5],[-2.45,5],[-2.45,3],[-3.55,3]],"new")+
+    topSlot()+P([[-3.55,9],[-2.45,9],[-2.45,7],[-3.55,7]],"new")+screw()+T(-6,13.2,"labio","nw","middle")+L(-5.2,12.8,-3,8),"Las dos chapas tienen un labio en el canto que entra 2 mm en el hueco; el nervio tiene una ranura donde corre el labio"),
+  p:"Cada chapa deja en el canto un labio de 1 × 2 mm que entra en el hueco de 6 mm. El nervio tiene dos canaletas por donde corre ese labio. El borde pasa a ser un perfil en L, mucho más rígido, y el labio guía al holder y toma los golpes.",
+  chips:[["g","0 piezas nuevas"],["g","tornillo actual"],["","continua"]],
+  pc:[["A favor","El borde queda unas 10 veces más rígido ante golpes de arriba o abajo. El labio también sostiene el holder: los golpes no pasan solo por el tornillo."],["En contra","El labio tiene que terminar antes del final del chasis para que el holder pueda girar. Además, son dos canaletas más en el PEEK."]]},
+ {k:"3",t:"Bolsillo de un solo lado",one:"El bolsillo de la cabeza se corre hacia adentro y el borde queda con sus 3 mm.",
+  fig:svg(holder()+bottom()+P([[-3.55,9],[-1.25,9],[-1.25,12],[-3.55,12]],"metal")+P([[1.25,9],[11.5,9],[11.5,12],[5.2,12],[5.2,10.5],[1.25,10.5]],"metal")+
+    R(-1.5,5,10.5,11.2,"new")+R(-1.8,1.8,3.1,8.9,"steel","opacity='.55'")+R(-1.25,1.25,4,11.2,"steel")+R(-1.25,1.25,11.2,11.95,"steel")+
+    T(-2.4,13.2,"borde entero","nw","middle")+L(-2.4,12.6,-2.4,12.1)+T(6,13.2,"patín","nw")+L(5.8,12.8,4,11.2),"El bolsillo sólo existe del lado interior; un patín metálico apoya en ese lado y la cabeza del tornillo apoya sobre el patín"),
+  p:"El bolsillo deja de ser simétrico y solo rebaja el lado interior de la ranura. Debajo de la cabeza va un patín metálico que apoya en ese lado y corre con el tornillo. El lado del canto conserva los 3 mm de chapa hasta la ranura.",
+  chips:[["","1 pieza cautiva"],["g","tornillo actual"],["","continua"]],
+  pc:[["A favor","El borde exterior queda unas 4 veces más fuerte sin tocar el holder."],["En contra","Suma el patín, que queda atrapado entre la cabeza y la chapa. El apriete queda descentrado, aunque el momento es chico."]]},
+ {k:"4",t:"Clic en el PEEK",one:"Sin tornillo: el nervio tiene una lengüeta elástica que cae en hoyuelos cada 2 mm.",
+  fig:svg(holder()+R(-3.55,-1.25,0,3,"metal")+R(1.25,11.5,0,3,"metal")+R(-1.25,1.25,0,1,"metal")+R(-3.55,-1.25,9,12,"metal")+R(1.25,11.5,9,12,"metal")+R(-1.25,1.25,11,12,"metal")+
+    R(-1.25,1.25,1.15,10.85,"steel")+
+    R(3.5,3.5,0,0,"gap")+P([[2.2,8.9],[2.2,6.5],[5.2,6.5]],"lead",false)+P([[3.0,8.9],[3.6,9.5],[4.2,8.9]],"new")+
+    `<path d="M2.95,-9 A.65,.65 0 0 1 4.25,-9" class="gap"/>`+T(5.5,6,"lengüeta","nw")+T(5.5,10.5,"hoyuelo","nw")+T(-1.4,13.2,"ranura ciega","sm","middle"),"El pin corre en ranuras ciegas; una lengüeta del nervio con una nariz entra en hoyuelos mecanizados en la cara interior de la chapa superior"),
+  p:"El pin queda atrapado en ranuras ciegas de las dos chapas, sin corte pasante. El nervio tiene una lengüeta mecanizada con una nariz que entra en hoyuelos cada 2 mm de la chapa superior. Se empuja el holder con la mano y hace clic de posición en posición. En el extremo, un arco de hoyuelos da los pasos del giro.",
+  chips:[["g","0 piezas nuevas"],["g","sin herramienta"],["","cada 2 mm"],["g","sin ranura pasante"]],
+  pc:[["A favor","Es lo más simple de usar y elimina el borde débil. Ante un golpe fuerte, el holder salta de posición en lugar de doblar la chapa."],["En contra","Retiene poco, unos 20–40 N. El PEEK solo trabaja mientras pasa de un hoyuelo a otro, así que casi no sufre fluencia, pero hay que verificar el desgaste de la nariz."]]},
+ {k:"5",t:"Fleje de acero con nariz",one:"Como la 4, pero el resorte es una lámina de acero inoxidable.",
+  fig:svg(holder()+R(-3.55,-1.25,0,3,"metal")+R(1.25,11.5,0,3,"metal")+R(-1.25,1.25,0,1,"metal")+R(-3.55,-1.25,9,12,"metal")+R(1.25,11.5,9,12,"metal")+R(-1.25,1.25,11,12,"metal")+
+    R(-1.25,1.25,1.15,10.85,"steel")+R(1.8,6,7.6,8.9,"gap")+P([[1.9,7.8],[3,7.8],[3.6,9.4],[4.2,7.8],[5.9,7.8]],"spr",false)+
+    `<path d="M2.95,-9 A.65,.65 0 0 1 4.25,-9" class="gap"/>`+T(6.4,7.6,"fleje","nw"),"Una lámina de acero inoxidable alojada en el nervio hace de resorte y su nariz entra en los hoyuelos de la chapa"),
+  p:"Una lámina de inoxidable va alojada en un rebaje del nervio, atrapada entre el nervio y la chapa, y hace de resorte. Su nariz cae en los hoyuelos cada 2 mm. El acero no pierde fuerza con el tiempo y permite un clic más firme.",
+  chips:[["","1 pieza cautiva"],["g","sin herramienta"],["","cada 2 mm"],["g","sin ranura pasante"]],
+  pc:[["A favor","Retiene más que la 4, unos 40–80 N, y no depende del PEEK."],["En contra","Suma una pieza. Igual que la 4, ante un golpe fuerte salta de posición."]]},
+ {k:"6",t:"Tornillo con freno de disco",one:"El tornillo de hoy, con arandelas Belleville bajo la cabeza: nunca queda flojo.",
+  fig:svg(holder(-5.85,5.5)+bottom(-5.55)+topSlot(-5.55,2.9,2.4)+R(-1.8,1.8,3.1,8.9,"steel","opacity='.55'")+R(-1.25,1.25,4,10.8,"steel")+R(-2.6,2.6,10.8,11.9,"steel")+
+    P(zig(-2,9.6,10.7,.35,4),"spr",false)+P(zig(2,9.6,10.7,.35,4),"spr",false)+T(3.4,13.2,"Belleville","nw")+L(3.6,12.6,2.3,10.4),"Arandelas Belleville bajo la cabeza del tornillo mantienen una fuerza de apriete fija"),
+  p:"El tornillo se aprieta una sola vez hasta el tope. Las arandelas Belleville bajo la cabeza dejan una fuerza fija: el holder se corre con la mano, con un esfuerzo firme, y se queda donde se lo deja. Conviene combinarlo con la idea 1.",
+  chips:[["","1 pieza cautiva"],["g","sin herramienta"],["","continua"]],
+  pc:[["A favor","Es continua, no requiere herramienta y la fuerza no depende del operario."],["En contra","Retiene solo lo que da el resorte. El bolsillo es más profundo por las arandelas, así que hay que hacerlo junto con la 1."]]},
+ {k:"7",t:"Ranura en L, giro guiado",one:"Dos pines: la ranura dobla 90° al final y conduce el giro.",
+  fig:svg(holder()+R(-3.55,-1.25,0,3,"metal")+R(1.25,11.5,0,3,"metal")+R(-1.25,1.25,0,1,"metal")+R(-3.55,-1.25,9,12,"metal")+R(1.25,11.5,9,12,"metal")+R(-1.25,1.25,11,12,"metal")+
+    R(-1.25,1.25,1.15,10.85,"steel")+T(2,13.2,"ver visor 3D","sm"),"Corte con el pin en ranuras ciegas; la forma en L de la ranura se ve en el visor 3D"),
+  p:"El holder lleva dos pines en una ranura ciega que al final dobla 90° hacia adentro. El trasero hace de pivote y el delantero recorre el arco, así que el giro sigue un camino fijo. La fijación se resuelve con cualquiera de las ideas 4, 5 o 6.",
+  chips:[["","pines a presión"],["g","sin ranura pasante"],["","giro guiado"]],
+  pc:[["A favor","Durante la carrera no puede girar, y en el giro casi no sale del ancho (0,13 mm)."],["En contra","Pierde unos 3,5 mm de extensión y es la que más cambia la pieza."]]},
+];
+document.getElementById("g").innerHTML=ideas.map(i=>`
+<article class="card">
+  <h2><span class="k">${i.k}</span>${i.t}</h2>
+  <p class="one">${i.one}</p>
+  ${i.fig}
+  <div class="chips">${i.chips.map(([c,t])=>`<span class="chip ${c}">${t}</span>`).join("")}</div>
+  <p>${i.p}</p>
+  <dl class="pc">${i.pc.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join("")}</dl>
+</article>`).join("");
+</script>
