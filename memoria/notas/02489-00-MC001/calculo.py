@@ -772,7 +772,7 @@ def vida_mc(clave, esp_motor=False, mu=None):
         T_lv = np.full((n, MC_NIVELES), 0.40)
         T_pk = np.full(n, 0.50)
     else:
-        T_min = 0.05
+        T_min = mu.get('T_min', 0.05)
         T_lv = (T_min + mu['T_max'])[:, None] / 2 + (mu['T_max'] - T_min)[:, None] / 2 * np.sin(fases)[None, :]
         T_pk = mu['T_pico']
     frac_pico = np.clip(mu['picos_h'] * mu['t_pico'] / 3600.0, 0, 0.5)
@@ -886,6 +886,57 @@ def tablas_mc_tex(mc):
         filas.append(' & '.join(celdas) + r'\\')
     with open(os.path.join(RES, 'tabla_mc_sens.tex'), 'w', encoding='utf-8') as fh:
         fh.write('% Generado por calculo.py (estudio_mc). No editar a mano.\n' + '\n'.join(filas) + '\n')
+
+
+# ---------------------------------------------------------------------------
+# 8f. Límite de torque del driver: 0,2 y 0,3 N m (caso B)
+# ---------------------------------------------------------------------------
+# Espectro medido en los ensayos del robot (figura ensayos_torque): el torque
+# continuo oscila entre ~0,02 y 0,10-0,15 N m; los picos los recorta el límite
+# del driver. Caso B: uso como en los ensayos, con cada pico llegando al límite.
+LIMITES = [0.20, 0.30]
+
+
+def muestras_limite(L, mu):
+    rng = np.random.default_rng(MC_SEMILLA + 1)
+    n = len(mu['HB'])
+    m = dict(mu)
+    m['T_min'] = 0.02
+    m['T_max'] = np.minimum(rng.triangular(0.10, 0.12, 0.15, n), L)
+    m['T_pico'] = np.full(n, L)
+    m['picos_h'] = rng.uniform(20, 60, n)
+    m['t_pico'] = np.exp(rng.uniform(math.log(0.5), math.log(10.0), n))
+    return m
+
+
+def estudio_limites():
+    mu = muestras_mc()
+    out = {}
+    for L in LIMITES:
+        mL = muestras_limite(L, mu)
+        out[L] = {}
+        for clave, lab, *_ in OPCIONES_MC:
+            h, m, _ = vida_mc(clave, False, mL)
+            out[L][clave] = dict(resumen_mc(h, m), etiqueta=lab, _h=h)
+    return out
+
+
+def tabla_limites_tex(el):
+    filas = []
+    for L, d in el.items():
+        primero = True
+        for clave, r in d.items():
+            celdas = [fmt_c(L, 1) + r'\Nm' if primero else '', r['etiqueta'],
+                      fmt_h(r['P10']), fmt_h(r['P50']),
+                      f"{100 * r['prob_objetivo']:.1f}".replace('.', '{,}') + r'\,\%',
+                      f"{100 * r['prob_10_anios']:.0f}" + r'\,\%',
+                      f"{100 * r['frac_picado']:.0f}" + r'\,\%']
+            filas.append(' & '.join(celdas) + r'\\')
+            primero = False
+        if L != LIMITES[-1]:
+            filas.append(r'\addlinespace')
+    with open(os.path.join(RES, 'tabla_limites.tex'), 'w', encoding='utf-8') as fh:
+        fh.write('% Generado por calculo.py (estudio_limites). No editar a mano.\n' + '\n'.join(filas) + '\n')
 
 # ---------------------------------------------------------------------------
 # 9. Figuras
@@ -1256,6 +1307,28 @@ def fig_mc(mc):
     fig.tight_layout()
     guardar(fig, 'fig_mc_vida')
 
+
+def fig_limites(el):
+    fig, axs = plt.subplots(1, len(LIMITES), figsize=(8.4, 3.4), sharey=True)
+    cols = [SERIES[1], SERIES[3], SERIES[0], SERIES[2]]
+    for ax, L in zip(axs, LIMITES):
+        for (clave, r), col in zip(el[L].items(), cols):
+            h = np.sort(np.clip(np.where(np.isfinite(r['_h']), r['_h'], 1e12), 0.5, 1e7))
+            ax.plot(h, 1 - np.arange(len(h)) / len(h), color=col, lw=1.6, label=r['etiqueta'])
+        ax.axvline(VIDA_OBJETIVO_H, color=TXT, lw=0.9, ls='--')
+        ax.text(VIDA_OBJETIVO_H * 1.1, 0.03, '2 años\n(576 h)', fontsize=7.5, color=TXT)
+        ax.axvline(10 * HORAS_ANIO, color=TXT2, lw=0.7, ls=':')
+        ax.text(10 * HORAS_ANIO * 1.1, 0.03, '10 años', fontsize=7.5, color=TXT2)
+        ax.set_xscale('log')
+        ax.set_xlim(10, 1e6)
+        ax.set_ylim(0, 1.02)
+        ax.set_title(f'Límite {L:.1f} N·m'.replace('.', ','), fontsize=9, color=TXT)
+        estilo(ax, 'Vida [h] (100 rpm)', 'Probabilidad de superar la vida' if L == LIMITES[0] else None)
+    h, l = axs[0].get_legend_handles_labels()
+    fig.legend(h, l, loc='lower center', ncol=2, fontsize=7.5, frameon=False, bbox_to_anchor=(0.5, -0.1))
+    fig.tight_layout()
+    guardar(fig, 'fig_limites')
+
 # ---------------------------------------------------------------------------
 # 10. Principal
 # ---------------------------------------------------------------------------
@@ -1305,6 +1378,13 @@ def main():
     mc, _mu = estudio_mc()
     fig_mc(mc)
     tablas_mc_tex(mc)
+    el = estudio_limites()
+    fig_limites(el)
+    tabla_limites_tex(el)
+    for L, d in el.items():
+        for k, r in d.items():
+            print(f"LIM {L:.2f} {r['etiqueta']:34s} P10 {r['P10']:10.4g} P50 {r['P50']:10.4g}"
+                  f" P(>=2a) {r['prob_objetivo']:.4f} P(>=10a) {r['prob_10_anios']:.3f} picado {r['frac_picado']:.2f}")
     with open(os.path.join(RES, 'resultados_mc.json'), 'w', encoding='utf-8') as fh:
         json.dump({'n': MC_N, 'semilla': MC_SEMILLA, 'objetivo_h': VIDA_OBJETIVO_H,
                    'control_sec8': control_mc(),

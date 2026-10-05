@@ -166,6 +166,9 @@ m\,0,6 z17, SCM415 carburizada    & 11,05 & 0,557 & 0,358 & \textbf{0,346} & 0,8
   \item \textbf{Mejora sin cambiar la geometría:} la misma mitra m\,0,5 z20 a medida en SCM440 bonificado (×1,7)
         o en SCM415 carburizado (×3,3). Entra en el mismo lugar que la actual.
   \item \textbf{Máximo dentro de 11,5~mm:} m\,0,6 z17 carburizada (×3,9; 0,346\Nm continuo), pero cambia la distancia de montaje.
+  \item \textbf{Límite de torque del driver} (sec.~\ref{sec:limite}, espectro medido en los ensayos, picos al límite):
+        con \textbf{0,2\Nm la KG M50S20 de stock llega a 2~años en el 98\,\%} de los casos (90\,\% a 10~años). Con
+        \textbf{0,3\Nm solo el 65\,\%}: hacen falta las mitras carburizadas (100\,\%).
   \item \textbf{Para decidir, vida con incertidumbre} (sec.~\ref{sec:mc}; dureza medida $\approx$240~HB, ida y vuelta frecuente, más de
         20 picos por hora): probabilidad de llegar a \textbf{2~años (576~h)} con el uso real: KG sin tratar \textbf{50\,\%},
         KG nitrocarburada \textbf{79\,\%}, carburizadas \textbf{100\,\%}. Con el motor a pleno: m\,0,6 z18 carburizada
@@ -816,6 +819,98 @@ la vida sube. «--»: no aplica a esa opción.}
   \item \textbf{Extrapolación:} vidas mayores que $10^5$~h ($>$340~años) se informan como tales; superan el rango validado de
         las curvas de vida y solo indican que ese modo no limita.
   \item \textbf{Desgaste, eje, prisioneros y rodamientos} no están incluidos.
+\end{itemize}
+
+%-----------------------------------------------------------------------
+\section{Límite de torque del driver: 0,2 y 0,3 N\,m}\label{sec:limite}
+El driver del motor va a limitar el torque que llega a la transmisión a \textbf{0,2\Nm} o a \textbf{0,3\Nm}. Esta sección
+da la vida de cada opción con esos límites, con el \textbf{espectro medido en los ensayos del robot} y con la misma
+incertidumbre de la sec.~\ref{sec:mc}.
+
+\subsection{Espectro medido}
+\begin{figure}[H]\centering
+  \includegraphics[width=\linewidth]{ensayos_torque.png}
+  \caption{Torque que llega a la transmisión a 90° en los ensayos 3 a 21 (izquierda en rojo, derecha en azul; línea:
+  máximo posible; banda: hasta el mínimo probable). \emph{Fuente: ensayos del robot, provistos por el usuario.}}
+  \label{fig:ensayos}
+\end{figure}
+
+Valores leídos de la fig.~\ref{fig:ensayos}, tomando siempre la línea de máximo posible:
+\begin{itemize}
+  \item \textbf{En el aire} (ensayos 7 a 9): $\approx$0,02--0,03\Nm.
+  \item \textbf{Rodando apoyado} a 10--80~mm/s (ensayos 3 a 6, 10 a 12, 14 y 15): oscila entre $\approx$0,02 y
+        \textbf{0,10--0,13\Nm}.
+  \item \textbf{Picos:} $\approx$0,15--0,17\Nm, cortos y aislados (ensayos 3, 5, 6, 10, 11 y 15).
+  \item \textbf{Escalones con límite de 500~mA} (ensayos 16 a 21): el torque queda recortado en $\approx$0,14\Nm (meseta en 20 y 21).
+  \item La rueda izquierda lleva casi siempre más torque que la derecha; el cálculo vale para la más cargada.
+  \item El ensayo 13 (robot levantado) está descartado.
+\end{itemize}
+
+\paragraph{Caso de carga (caso B).} El robot trabaja como en los ensayos y cada pico llega al límite del driver:
+\begin{itemize}
+  \item torque continuo oscilante entre 0,02\Nm y un máximo triangular (0,10; 0,12; 0,15)\Nm, recortado al límite;
+  \item picos al valor del límite, 20 a 60 por hora (uniforme), de 0,5 a 10~s cada uno (log-uniforme, \textbf{supuesto});
+  \item 100~rpm (conservador: a 10--80~mm/s la rueda probablemente gira más lento) y 24~h por mes;
+  \item el resto de los parámetros y su incertidumbre, como en la tabla~\ref{tab:distrib}.
+\end{itemize}
+
+\subsection{Resultados}
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{4pt}
+\resizebox{\linewidth}{!}{\begin{tabular}{l l rr ccc}
+\toprule
+ & & \multicolumn{2}{c}{Vida [h]} & \multicolumn{2}{c}{Probabilidad de superar} & \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Límite & Opción & P10 & P50 & 2 años (576 h) & 10 años (2880 h) & Falla por picado\\
+\midrule
+\csname @@input\endcsname tabla_limites.tex
+\bottomrule
+\end{tabular}}
+\caption{Vida con el límite de torque del driver (caso B, 20\,000 muestras, 100~rpm, 288~h por año). P10: el 90\,\% de los
+pares supera esa vida. El resto de las fallas es por fatiga a flexión.}
+\label{tab:limites}
+\end{table}
+
+\begin{figure}[H]\centering
+  \includegraphics[width=\linewidth]{fig_limites.pdf}
+  \caption{Probabilidad de superar una vida dada con cada límite de torque.}
+  \label{fig:limites}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Límite 0,2\Nm con la KG M50S20 sin tratar: 98\,\% llega a 2~años} y 90\,\% a 10~años; P10 $\approx$2800~h
+        ($\approx$10~años de uso). \textbf{Asegura el objetivo con la mitra de stock.}
+  \item \textbf{Límite 0,2\Nm con la KG nitrocarburada:} 99,7\,\% a 2~años y 98\,\% a 10~años.
+  \item \textbf{Límite 0,3\Nm con la KG sin tratar: solo 65\,\% llega a 2~años} (P10 $\approx$100~h). \textbf{No asegura el
+        objetivo.} Nitrocarburada, 87\,\%: tampoco.
+  \item \textbf{Con 0,3\Nm hacen falta las mitras carburizadas:} m\,0,5 z20 (geometría KG) o m\,0,6 z18, 100\,\% a 2 y a 10~años.
+  \item Con picos frecuentes manda la fatiga a flexión; el picado decide entre un 0 y un 44\,\% de los casos según la opción.
+\end{itemize}
+
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{4pt}
+\begin{tabular}{l cc}
+\toprule
+ & Límite 0,2\Nm & Límite 0,3\Nm\\\midrule
+Mitra necesaria para 2~años & KG M50S20 de stock & Carburizada (m\,0,5 z20 o m\,0,6 z18)\\
+Corriente aproximada del driver & $\approx$710~mA & $\approx$1070~mA\\
+Corte en el eje de 3~mm, $\tau=16T/(\pi d^3)$ & 38~MPa & 57~MPa\\
+\bottomrule
+\end{tabular}
+\caption{Resumen de los dos límites.}
+\end{table}
+
+\paragraph{Corriente.} En los ensayos 20 y 21 el límite de 500~mA recorta el torque en $\approx$0,14\Nm: $\approx$0,28\Nm/A
+en la transmisión. Suponiendo proporcionalidad, 0,2\Nm $\approx$ 710~mA y 0,3\Nm $\approx$ 1070~mA.
+\textbf{Verificar con un ensayo a rotor bloqueado a dos corrientes}: la fricción y el rendimiento pueden correr la relación.
+
+\textbf{Limitaciones}
+\begin{itemize}
+  \item \textbf{El límite tiene que ser firme} (en el driver, no por software de alto nivel) y aplicarse en cada motor.
+  \item \textbf{Si el robot queda empujando contra un obstáculo durante horas}, con el torque pegado al límite todo el
+        tiempo, la vida baja mucho: con 0,2\Nm la KG sin tratar llega a 2~años solo en $\approx$60\,\% de los casos.
+        Conviene que el control corte o baje el torque tras unos segundos de trabado.
+  \item \textbf{Duración de los picos:} supuesta; se cierra con el registro de torque contra tiempo.
+  \item \textbf{Velocidad:} 100~rpm es conservador; con el diámetro de la rueda se ajustan los ciclos por hora.
+  \item \textbf{Fijación al eje} (prisioneros sobre plano), rodamientos y desgaste no están incluidos.
 \end{itemize}
 
 %-----------------------------------------------------------------------
