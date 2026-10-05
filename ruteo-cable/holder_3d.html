@@ -1,0 +1,305 @@
+<title>Holder en 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: visor 3D grande a la izquierda, panel de control y ficha técnica a la derecha; se apilan en pantallas angostas. */
+:root{
+  --bg:#eef1ef; --panel:#fafbfa; --ink:#1c2321; --muted:#5a6561; --line:#c6cdc9;
+  --new:#c0641c; --new-fill:#f3d9c2; --warn:#b0362a; --ok:#2d7a4c; --view:#dfe6e8;
+  --f-display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#131716; --panel:#1a1f1e; --ink:#e3e8e6; --muted:#97a29e; --line:#353e3b;
+  --new:#ec944c; --new-fill:#4a3020; --warn:#ec7a6c; --ok:#6cc495; --view:#1f2628; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#131716; --panel:#1a1f1e; --ink:#e3e8e6; --muted:#97a29e; --line:#353e3b;
+  --new:#ec944c; --new-fill:#4a3020; --warn:#ec7a6c; --ok:#6cc495; --view:#1f2628; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1320px;margin:0 auto;padding-inline:16px;padding-block:20px 40px;display:grid;gap:16px}
+h1{font-family:var(--f-display);font-weight:700;font-size:1.9rem;margin:0}
+header p{margin:.25rem 0 0;color:var(--muted);max-width:85ch}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start}
+@media (max-width:900px){.main{grid-template-columns:minmax(0,1fr)}}
+.viewer{position:relative;background:var(--view);border:1px solid var(--line);border-radius:6px;overflow:hidden;aspect-ratio:16/10;min-height:340px;max-width:100%}
+.viewer canvas{display:block;width:100%;height:100%}
+.hud{position:absolute;left:10px;bottom:8px;font-family:var(--f-mono);font-size:.75rem;color:var(--muted);pointer-events:none}
+.legend{position:absolute;right:10px;top:8px;display:grid;gap:3px;font-size:.75rem;color:var(--ink);background:color-mix(in srgb,var(--panel) 85%,transparent);padding:6px 9px;border-radius:4px;border:1px solid var(--line)}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;display:grid;gap:12px}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.seg button{font-family:var(--f-display);font-weight:600;font-size:.95rem;padding:7px 6px;border:0;background:var(--bg);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--new);color:#fff}
+label.l{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.07em;font-size:.74rem;color:var(--muted)}
+.row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+input[type=range]{width:100%;accent-color:var(--new)}
+.val{font-family:var(--f-mono);font-size:.82rem;min-width:9ch;text-align:right}
+button.b{font-family:var(--f-display);font-weight:600;font-size:.9rem;padding:4px 12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:4px;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--new);outline-offset:1px}
+.checks{display:flex;flex-wrap:wrap;gap:12px;font-size:.88rem}
+table{border-collapse:collapse;width:100%;font-size:.86rem}
+td{padding:4px 2px;border-bottom:1px solid var(--line);vertical-align:top}
+td:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+td.ok{color:var(--ok)} td.bad{color:var(--warn)}
+h2{font-family:var(--f-display);font-weight:600;font-size:1.15rem;margin:0}
+.desc{font-size:.92rem;margin:0}
+.notes{max-width:90ch;font-size:.92rem}
+.notes h3{font-family:var(--f-display);font-weight:600;font-size:1.05rem;margin:0 0 4px}
+.notes ul{margin:.2rem 0 .6rem;padding-left:1.2rem}
+#err[hidden]{display:none}
+#err{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:.95rem;padding:20px;text-align:center}
+</style>
+
+<div class="wrap">
+<header>
+  <h1>Holder en 3D</h1>
+  <p>Visor de las dos guías candidatas, con la traba de anillo concéntrico al pivote. El nervio de PEEK corre entre las dos chapas de 7075; la chapa superior es semitransparente. Arrastrá para girar la vista, usá la rueda para acercar y el control de posición para recorrer la carrera y el giro final.</p>
+</header>
+
+<div class="main">
+  <div class="viewer" id="viewer">
+    <div class="legend">
+      <span><i style="background:#c3ccd0"></i>chapas 7075</span>
+      <span><i style="background:#3d4348"></i>holder PEEK</span>
+      <span><i style="background:#9aa6ad"></i>cartucho y pines</span>
+      <span><i style="background:#d07a2c"></i>anillo, cuña y tornillo</span>
+    </div>
+    <div class="hud" id="hud"></div>
+    <div id="err" hidden>El visor 3D necesita WebGL, que este navegador no tiene activo.</div>
+  </div>
+
+  <div class="panel">
+    <div>
+      <label class="l">Guía</label>
+      <div class="seg" role="group" aria-label="Guía">
+        <button type="button" id="altA" aria-pressed="true">A · Ranura recta</button>
+        <button type="button" id="altB" aria-pressed="false">B · Ranura en L</button>
+      </div>
+    </div>
+    <div>
+      <label class="l" for="u">Posición</label>
+      <div class="row"><button type="button" class="b" id="play">Animar</button><input type="range" id="u" min="0" max="2" step="0.005" value="0"><span class="val" id="uv"></span></div>
+    </div>
+    <div id="dRow">
+      <label class="l" for="d">Separación entre pines (B)</label>
+      <div class="row"><span></span><input type="range" id="d" min="3" max="5.5" step="0.5" value="3.5"><span class="val" id="dv"></span></div>
+    </div>
+    <div class="checks">
+      <label><input type="checkbox" id="hideTop"> Ocultar chapa superior</label>
+      <label><input type="checkbox" id="lift"> Separar chapa superior</label>
+      <button type="button" class="b" id="reset">Vista inicial</button>
+    </div>
+    <h2 id="title"></h2>
+    <p class="desc" id="desc"></p>
+    <table id="tab"></table>
+  </div>
+</div>
+
+<div class="panel notes">
+  <h3>¿Y la ranura a 90°?</h3>
+  <ul>
+    <li><b>Sí, y resuelve dos cosas.</b> En la guía B el holder lleva dos pines en la misma ranura ciega. Al final, la ranura dobla 90° hacia adentro del chasis, con un arco centrado en el final del tramo recto. El pin trasero se detiene y hace de pivote; el delantero sigue por el arco y obliga al holder a girar por un camino fijo. Mientras corre por el tramo recto, los dos pines impiden que gire.</li>
+    <li><b>El costo es extensión.</b> El pivote pasa a ser el pin trasero, que queda más cerca del centro de la bobina. Con pines separados 3,5 mm, la extensión baja de 21 a 17,5 mm. A cambio, la salida hacia afuera durante el giro baja de 0,95 a 0,13 mm.</li>
+    <li><b>El arco tiene que entrar en la chapa sin chocar con el holder al girar.</b> La parte del holder de altura completa no puede pasar por donde está la chapa. Por eso las dos guías llevan el final de la chapa redondeado alrededor del pivote. En B, además, la zona de altura completa se rebaja a 9,5 mm del centro, justo sobre el círculo, para que el arco quepa.</li>
+  </ul>
+  <h3>Traba en las dos guías</h3>
+  <ul>
+    <li>Un anillo concéntrico al pivote se levanta contra la chapa superior con una cuña. Un tornillo vertical, que entra por la cara superior de la parte redonda, empuja la cuña. Traba en cualquier punto de la ranura y en cualquier ángulo del giro. Todo va en un cartucho metálico dentro del nervio, y el PEEK no queda en el camino de la fuerza.</li>
+    <li>Es la traba L2 de la página de alternativas. Las cotas del pivote son las que medí en tus capturas y conviene confirmarlas.</li>
+  </ul>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+/* ---------- geometría base (mm). Marco del holder: centro de la bobina en el origen, +Y hacia el chasis ---------- */
+const R=9.5, PRISM=19, PIN_X=5.5, PIN_Y=15.5, S=30, PE=30, EDGE_W=-3.55; // canto de chapa en y mundo
+const st={alt:"A",d:3.5,u:0,hideTop:false,lift:false};
+function cfg(){
+  const A=st.alt==="A";
+  const px=A?PIN_X:PIN_X-st.d;            // x del pivote en el marco del holder
+  const yF=A?11.7:9.5;                    // límite de la zona de altura completa
+  const pins=A?[PIN_X]:[PIN_X-st.d,PIN_X]; const pinR=A?1.5:1.25;
+  const rc=Math.min(PIN_Y-yF,Math.hypot(px,PIN_Y)-R); // luz mínima del pivote a la zona de altura completa
+  const Rp=rc-0.3;                        // radio del final de chapa
+  return {A,px,yF,pins,pinR,rc,Rp};
+}
+let C=cfg();
+
+/* ---------- three.js ---------- */
+if(!window.THREE){$("err").hidden=false;$("err").textContent="No se pudo cargar el motor 3D. Revisá la conexión y recargá la página.";return;}
+const view=$("viewer");
+let renderer;
+try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});}catch(e){$("err").hidden=false;return;}
+renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+view.prepend(renderer.domElement);
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(32,1.6,1,2000);
+cam.up.set(0,0,1);
+const ctl=new THREE.OrbitControls(cam,renderer.domElement);
+function resetView(){cam.position.set(PE+30,-52,44);ctl.target.set(PE-4,-2,5);ctl.update();}
+resetView();
+scene.add(new THREE.HemisphereLight(0xffffff,0x6b7378,0.75));
+const dl=new THREE.DirectionalLight(0xffffff,0.75);dl.position.set(40,-60,90);scene.add(dl);
+const dl2=new THREE.DirectionalLight(0xffffff,0.3);dl2.position.set(-60,50,40);scene.add(dl2);
+
+const M={
+  plate:new THREE.MeshStandardMaterial({color:0xc3ccd0,metalness:.55,roughness:.45}),
+  plateT:new THREE.MeshStandardMaterial({color:0xc3ccd0,metalness:.55,roughness:.45,transparent:true,opacity:.38,depthWrite:false}),
+  peek:new THREE.MeshStandardMaterial({color:0x3d4348,metalness:.05,roughness:.7}),
+  cart:new THREE.MeshStandardMaterial({color:0x9aa6ad,metalness:.7,roughness:.35,transparent:true,opacity:.85}),
+  pin:new THREE.MeshStandardMaterial({color:0x7e8a93,metalness:.8,roughness:.3}),
+  acc:new THREE.MeshStandardMaterial({color:0xd07a2c,metalness:.3,roughness:.45}),
+  coil:new THREE.MeshStandardMaterial({color:0xb87333,metalness:.6,roughness:.35}),
+};
+const edgesMat=new THREE.LineBasicMaterial({color:0x1d2326,transparent:true,opacity:.35});
+
+function extrude(shape,depth,z,mat,edges=true){
+  const g=new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:false,curveSegments:40});
+  const m=new THREE.Mesh(g,mat);m.position.z=z;
+  if(edges){const e=new THREE.LineSegments(new THREE.EdgesGeometry(g,25),edgesMat);m.add(e);}
+  return m;
+}
+function cyl(r,h,x,y,z,mat,seg=32){const g=new THREE.CylinderGeometry(r,r,h,seg);const m=new THREE.Mesh(g,mat);m.rotation.x=Math.PI/2;m.position.set(x,y,z+h/2);return m;}
+
+/* ---------- chapas ---------- */
+function plateOutline(Rp){
+  const s=new THREE.Shape();s.moveTo(-40,EDGE_W);s.lineTo(PE,EDGE_W);
+  // final de chapa redondeado alrededor del pivote en el extremo
+  const a0=Math.asin(Math.max(-1,Math.min(1,EDGE_W/Rp)));
+  s.absarc(PE,0,Rp,a0,Math.PI/2*0.999,false);
+  s.lineTo(PE,26);s.lineTo(-40,26);s.closePath();return s;
+}
+function groovePts(){
+  // línea central de la ranura (pin delantero en B), en coordenadas mundo
+  const pts=[];const x0=PE-S-(C.A?0:0);
+  const front=C.A?0:st.d;
+  pts.push([x0+ (C.A?0:0),0]);pts.push([PE+front,0]);
+  if(!C.A){for(let i=1;i<=24;i++){const a=Math.PI/2*i/24;pts.push([PE+st.d*Math.cos(a),st.d*Math.sin(a)]);}}
+  return pts;
+}
+function grooveShape(hw){
+  const c=groovePts();const L=[],Rr=[];
+  for(let i=0;i<c.length;i++){
+    const p=c[i],q=c[Math.min(i+1,c.length-1)],o=c[Math.max(i-1,0)];
+    let tx=q[0]-o[0],ty=q[1]-o[1];const l=Math.hypot(tx,ty)||1;tx/=l;ty/=l;
+    L.push([p[0]-ty*hw,p[1]+tx*hw]);Rr.push([p[0]+ty*hw,p[1]-tx*hw]);
+  }
+  const s=new THREE.Path();
+  // tapa trasera
+  const st0=c[0],t0=[1,0];
+  s.moveTo(Rr[0][0],Rr[0][1]);
+  for(let i=1;i<c.length;i++)s.lineTo(Rr[i][0],Rr[i][1]);
+  const e=c[c.length-1],en=c[c.length-2];let ex=e[0]-en[0],ey=e[1]-en[1];const el=Math.hypot(ex,ey);ex/=el;ey/=el;
+  const ang=Math.atan2(ey,ex);
+  s.absarc(e[0],e[1],hw,ang-Math.PI/2,ang+Math.PI/2,false);
+  for(let i=c.length-1;i>=0;i--)s.lineTo(L[i][0],L[i][1]);
+  s.absarc(st0[0],st0[1],hw,Math.PI/2,Math.PI*1.5,false);
+  return s;
+}
+let plates=new THREE.Group();scene.add(plates);let topGroup;
+function buildPlates(){
+  scene.remove(plates);plates=new THREE.Group();
+  const hw=C.pinR+0.1;
+  const skin=plateOutline(C.Rp);
+  const layer=plateOutline(C.Rp);layer.holes.push(grooveShape(hw));
+  plates.add(extrude(skin,1,0,M.plate));plates.add(extrude(layer,2,1,M.plate));
+  topGroup=new THREE.Group();
+  topGroup.add(extrude(layer,2,9,M.plateT));topGroup.add(extrude(skin,1,11,M.plateT));
+  plates.add(topGroup);scene.add(plates);
+}
+
+/* ---------- holder ---------- */
+let holder=new THREE.Group();scene.add(holder);
+function buildHolder(){
+  scene.remove(holder);holder=new THREE.Group();
+  const ox=-C.px,oy=-PIN_Y; // origen local en el pivote
+  const P=(x,y)=>[x+ox,y+oy];
+  // zona de altura completa: círculo + rectángulo hasta yF
+  const f=new THREE.Shape();let p=P(-R,C.yF);f.moveTo(...p);p=P(-R,0);f.lineTo(...p);
+  f.absarc(ox,oy,R,Math.PI,2*Math.PI,false);p=P(R,C.yF);f.lineTo(...p);f.closePath();
+  const hole=new THREE.Path();hole.absarc(ox,oy,3.7,0,2*Math.PI,true);f.holes.push(hole);
+  holder.add(extrude(f,12,0,M.peek));
+  // nervio de 6 mm entre chapas
+  const nv=new THREE.Shape();p=P(-R,C.yF);nv.moveTo(...p);p=P(R,C.yF);nv.lineTo(...p);p=P(R,PRISM);nv.lineTo(...p);p=P(-R,PRISM);nv.lineTo(...p);nv.closePath();
+  holder.add(extrude(nv,5.8,3.1,M.peek));
+  // bobina (referencia)
+  holder.add(cyl(3.5,11,ox,oy,0.5,M.coil));
+  // cartucho metálico
+  const xs=C.pins.map(x=>x);const cx0=Math.min(...xs)-2,cx1=Math.max(...xs)+3;
+  const cb=new THREE.Shape();p=P(cx0,Math.max(C.yF,12));cb.moveTo(...p);p=P(cx1,Math.max(C.yF,12));cb.lineTo(...p);p=P(cx1,18);cb.lineTo(...p);p=P(cx0,18);cb.lineTo(...p);cb.closePath();
+  holder.add(extrude(cb,5.84,3.08,M.cart));
+  // pines
+  C.pins.forEach(x=>{const q=P(x,PIN_Y);holder.add(cyl(C.pinR,9.7,q[0],q[1],1.15,M.pin));});
+  // anillo concéntrico al pivote
+  const ring=new THREE.Shape();ring.absarc(0,0,2.5,0,2*Math.PI,false);const rh=new THREE.Path();rh.absarc(0,0,C.pinR+0.1,0,2*Math.PI,true);ring.holes.push(rh);
+  holder.add(extrude(ring,1.3,7.62,M.acc));
+  // cuña y tornillo vertical desde la cara superior
+  const sx=C.px, sy=7.2; const s=P(sx,sy);
+  holder.add(cyl(1.25,5.6,s[0],s[1],6.4,M.acc));
+  holder.add(cyl(2.0,0.4,s[0],s[1],11.6,M.acc));
+  const w=new THREE.Shape();let q=P(sx-1.2,sy-1.2);w.moveTo(...q);q=P(sx+1.2,sy-1.2);w.lineTo(...q);q=P(sx+1.2,PIN_Y-2.3);w.lineTo(...q);q=P(sx-1.2,PIN_Y-2.3);w.lineTo(...q);w.closePath();
+  holder.add(extrude(w,1.2,6.25,M.acc));
+  scene.add(holder);
+}
+
+/* ---------- cinemática ---------- */
+function centreAt(u){const s=S*Math.min(u,1),ph=Math.PI/2*Math.max(0,u-1);const xP=PE-S+s;
+  return [xP+(-C.px)*Math.cos(ph)-(-PIN_Y)*Math.sin(ph),(-C.px)*Math.sin(ph)+(-PIN_Y)*Math.cos(ph)];}
+function excursion(){let m=0;const pts=[];for(let i=0;i<=72;i++){const a=Math.PI+Math.PI*i/72;pts.push([R*Math.cos(a)-C.px,R*Math.sin(a)-PIN_Y]);}
+  const home=Math.min(...pts.map(p=>p[1]));
+  for(let k=0;k<=90;k++){const ph=k*Math.PI/180;const y=Math.min(...pts.map(([x,yy])=>x*Math.sin(ph)+yy*Math.cos(ph)));m=Math.max(m,home-y);}return m;}
+function place(){
+  const s=S*Math.min(st.u,1),ph=Math.PI/2*Math.max(0,st.u-1);
+  holder.position.set(PE-S+s,0,0);holder.rotation.z=ph;
+  topGroup.visible=!st.hideTop;topGroup.position.z=st.lift?14:0;
+  const c0=centreAt(0),c=centreAt(st.u);
+  $("uv").textContent=st.u<=1?`carrera ${s.toFixed(1)}`:`giro ${(ph*180/Math.PI).toFixed(0)}°`;
+  $("hud").textContent=`avance del centro de la bobina: ${(c[0]-c0[0]).toFixed(1)} mm`;
+}
+function info(){
+  const ext=C.px+PIN_Y, exc=excursion();
+  const fit=C.A?true:(st.d+C.pinR+0.5<=C.Rp);
+  $("title").textContent=C.A?"A · Ranura recta con giro libre":"B · Ranura en L con giro guiado";
+  $("desc").textContent=C.A?
+    "Un solo pin hace de guía y de pivote. Durante la carrera, la parte redonda del holder roza el canto y no lo deja girar. Al final, la chapa redondeada lo libera y gira 90° sobre el pin.":
+    "Dos pines en la misma ranura. Al final, el trasero se detiene y hace de pivote, y el delantero entra en el arco de 90°. El giro sigue un camino fijo y en la carrera no puede girar. La zona de altura completa se rebaja a 9,5 mm para dejar lugar al arco.";
+  const row=(a,b,cls="")=>`<tr><td>${a}</td><td class="${cls}">${b}</td></tr>`;
+  $("tab").innerHTML=
+    row("Carrera en la ranura",`${S} mm`)+
+    row("Extensión por giro",`${ext.toFixed(1)} mm`)+
+    row("Avance total del centro",`${(S+ext).toFixed(1)} mm`)+
+    row("Salida hacia afuera durante el giro",`${exc.toFixed(2)} mm`,exc<0.3?"ok":"bad")+
+    row("Pivote desde el centro (x, y)",`${C.px.toFixed(1)}, ${PIN_Y}`)+
+    row("Radio libre alrededor del pivote",`${C.rc.toFixed(1)} mm`)+
+    row("Radio del final de chapa",`${C.Rp.toFixed(1)} mm`)+
+    (C.A?row("Anillo Ø5 entra en la chapa",C.Rp>=2.8?"sí":"no",C.Rp>=2.8?"ok":"bad"):
+      row("Arco del pin delantero entra en la chapa",fit?"sí":"no: bajá la separación",fit?"ok":"bad"))+
+    row("Giro guiado",C.A?"no, libre al final":"sí, por el arco",C.A?"":"ok");
+}
+function rebuild(){C=cfg();buildPlates();buildHolder();place();info();$("dRow").hidden=C.A;$("dv").textContent=st.d.toFixed(1)+" mm";}
+
+function resize(){const w=view.clientWidth,h=view.clientHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();}
+new ResizeObserver(resize).observe(view);resize();
+let raf;(function loop(){ctl.update();renderer.render(scene,cam);raf=requestAnimationFrame(loop);})();
+
+/* ---------- controles ---------- */
+const setAlt=a=>{st.alt=a;$("altA").setAttribute("aria-pressed",a==="A");$("altB").setAttribute("aria-pressed",a==="B");rebuild();};
+$("altA").onclick=()=>setAlt("A");$("altB").onclick=()=>setAlt("B");
+$("u").oninput=e=>{st.u=+e.target.value;place();};
+$("d").oninput=e=>{st.d=+e.target.value;rebuild();};
+$("hideTop").onchange=e=>{st.hideTop=e.target.checked;place();};
+$("lift").onchange=e=>{st.lift=e.target.checked;place();};
+$("reset").onclick=resetView;
+let anim=null,dir=1;
+$("play").onclick=()=>{if(anim){cancelAnimationFrame(anim);anim=null;$("play").textContent="Animar";return;}
+  $("play").textContent="Pausa";let last=performance.now();
+  const step=t=>{const dt=(t-last)/1000;last=t;st.u+=dir*dt*0.35;if(st.u>=2){st.u=2;dir=-1}if(st.u<=0){st.u=0;dir=1}$("u").value=st.u;place();anim=requestAnimationFrame(step);};
+  anim=requestAnimationFrame(step);};
+rebuild();
+})();
+</script>
