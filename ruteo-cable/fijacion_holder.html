@@ -28,6 +28,14 @@ header p{margin:.3rem 0 0;color:var(--muted);max-width:80ch}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:18px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:grid;gap:10px;align-content:start;min-width:0}
 .card.wide{grid-column:1/-1}
+svg .spring{fill:none;stroke:var(--new);stroke-width:.18}
+.tw{overflow-x:auto}
+table.cmp{border-collapse:collapse;width:100%;font-size:.86rem;min-width:720px}
+.cmp th{font-family:var(--f-display);font-weight:600;text-align:left;color:var(--muted);text-transform:uppercase;font-size:.72rem;letter-spacing:.06em;padding:6px 8px;border-bottom:2px solid var(--line)}
+.cmp td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.cmp td:first-child{font-weight:600;white-space:nowrap}
+.cmp tr.hi td{background:var(--new-fill)}
+.note{font-size:.8rem;color:var(--muted);margin:0}
 .card h2{font-family:var(--f-display);font-weight:600;font-size:1.2rem;margin:0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
 .tag{font-family:var(--f-mono);font-size:.7rem;font-weight:600;letter-spacing:.04em;padding:1px 7px;border-radius:3px;border:1px solid currentColor}
 .tag.pos{color:var(--ok)}.tag.cur{color:var(--warn)}.tag.aux{color:var(--steel)}
@@ -49,11 +57,7 @@ dd{margin:0}
   <p>Alternativas a la ranura con tornillo, para piezas de 7075 mecanizadas por CNC. Condiciones: sin piezas que puedan soltarse, posición continua (o cada 2 mm), sin salir del ancho del chasis ni de los 12 mm de alto. Hoy el nervio de 6 mm del holder corre entre dos chapas de 3 mm. Cortes esquemáticos a escala, en mm. En los cortes YZ la izquierda es el canto exterior del chasis.</p>
 </header>
 
-<div class="rec"><b>Recomendación.</b> Separar las dos funciones que hoy hace el tornillo:
-  <b>guiar y pivotar</b> con un pin atrapado entre las chapas en <b>ranuras ciegas (1)</b>, sin ningún corte pasante;
-  y <b>fijar</b> con una <b>zapata anular (2)</b> alrededor del pin, que se aprieta con un tornillo desde la cara exterior del holder y traba en cualquier punto y en cualquier ángulo.
-  Como el holder es de PEEK, el pin, la rosca y la zapata van en un cartucho metálico que reemplaza al inserto actual: el apriete se cierra metal con metal y no se pierde por fluencia. Todo queda dentro de los 12 mm y del contorno actual. El <b>retén de bola (4)</b> agrega un clic cada 2 mm.
-  La pletina exterior y la leva de la versión anterior quedan descartadas porque salían de los 12 mm.</div>
+<div class="rec"><b>Recomendación.</b> Todas comparten la misma base: pin en ranuras ciegas y un cartucho metálico en el nervio. Si alcanza con pasos de 1 o 2 mm, la mejor es la <b>L5, pestillo dentado con pulsador</b>: queda trabado en reposo, la traba es positiva, no hace falta herramienta y un golpe no lo corre. Si tiene que ser continua: <b>L2, anillo con cuña y tornillo desde arriba</b>, con herramienta y buena retención; o <b>L3, freno a resorte con pulsador</b>, sin herramienta pero con menos retención. La <b>L6, husillo</b>, es la de mejor desempeño, pero también la más compleja.</div>
 
 <div class="legend">
   <span><i style="background:var(--metal-fill);border-color:var(--metal)"></i>chapas del chasis</span>
@@ -90,7 +94,7 @@ const STY=`<style>
 const svg=(vb,body,label)=>`<svg viewBox="${vb}" style="max-width:${+vb.split(" ")[2]*19}px" role="img" aria-label="${label}" xmlns="http://www.w3.org/2000/svg">${STY}${body}</svg>`;
 
 /* ---------- 12 mm stack: bottom plate 0-3, holder rib 3-9, top plate 9-12 ---------- */
-const VB="-14 -17 28 20";
+const VB="-14 -17 33 20";
 const arc=(cx,cy,r,a0,a1,k=24)=>{const o=[];for(let i=0;i<=k;i++){const t=(a0+(a1-a0)*i/k)*Math.PI/180;o.push([cx+r*Math.cos(t),cy+r*Math.sin(t)]);}return o;};
 const holderStack=()=>P([[-12,0],[-3.85,0],[-3.85,3.1],[3.5,3.1],[3.5,8.9],[-3.85,8.9],[-3.85,12],[-12,12]],"hold")
   +P(zig(-12,0,12),"gap",false)+P(zig(-12,0,12),"lead",false)+T(-8,2.2,"holder","lab","middle");
@@ -154,30 +158,117 @@ F.bola=svg("-1 -14 34 16",
   T(14,6,"émbolo a presión","nw")+T(0.3,12.8,"conos cada 2 mm, cara interior","sm")+T(0.3,1.2,"chapa inferior","sm")+T(0.3,4,"nervio","sm"),
   "Retén de bola dentro del nervio: el émbolo a presión cae en conos mecanizados cada 2 mm en la cara interior de la chapa superior. No se ven desde afuera.");
 
+/* ---------- más alternativas de traba ---------- */
+const CART2=()=>R(-7.5,2.5,3.1,8.9,"metal",'style="stroke:var(--new);stroke-dasharray:.5 .3;stroke-width:.2"');
+const SPR=(y,z0,z1)=>P(zig(y,z0,z1),"spring",false);
+const PIN=()=>R(-1.25,1.25,1.15,10.85,"steel");
+
+F.cunaV=svg(VB,
+  holderStack()+CART2()+plateGroove(0,false)+plateGroove(9,true)+PIN()+
+  R(-2.5,-1.6,7.6,8.95,"new")+R(1.6,2.5,7.6,8.95,"new")+
+  P([[-6.6,6.2],[-1.7,6.2],[-1.7,7.5],[-5.4,7.5],[-6.6,6.9]],"new")+
+  R(-6.4,-5,7.2,11.4,"steel")+R(-6.8,-4.6,11.4,12,"steel")+
+  AR(-3.4,5.4,-1.9,5.4,"force")+AR(-2.05,9.4,-2.05,10.9,"force")+
+  T(-4.3,13.4,"tornillo desde la cara superior","sm","middle")+L(-5.7,12.8,-5.7,12.1)+
+  T(3.6,8.2,"anillo","nw")+T(3.6,5.6,"cuña","nw")+L(3.5,5.8,-1.8,6.8),
+  "Corte en el pivote: un tornillo vertical, que entra por la cara superior de la parte redonda, empuja una cuña horizontal que levanta el anillo contra la chapa superior.");
+
+F.resorte=svg(VB,
+  holderStack()+CART2()+plateGroove(0,false)+plateGroove(9,true)+PIN()+
+  R(-6.6,-1.6,7.6,8.95,"new")+R(1.6,2.5,7.6,8.95,"new")+
+  SPR(-2.1,3.3,7.6)+SPR(2.05,3.3,7.6)+
+  R(-7.3,-5.1,9.1,11.9,"new")+
+  AR(-6.2,15,-6.2,12.3,"force")+T(-6.2,15.6,"pulsar para soltar","wr","middle")+
+  T(3.6,8.2,"anillo","nw")+T(3.6,5,"Belleville","nw")+L(3.5,5.2,2.6,5.2)+T(-13.5,13.2,"pulsador","nw")+L(-10.6,12.9,-7.4,11.2),
+  "Corte en el pivote: arandelas Belleville empujan el anillo hacia arriba y lo dejan trabado siempre. El pulsador, en la cara superior, baja el brazo del anillo y lo libera mientras se mantiene apretado.");
+
+F.rodillera=svg(VB,
+  holderStack()+CART2()+plateGroove(0,false)+plateGroove(9,true)+PIN()+
+  R(-6.6,-1.6,3.05,4.4,"new")+R(1.6,2.5,3.05,4.4,"new")+
+  R(-6.3,-5.5,4.4,10.4,"steel")+
+  R(-12,-4.4,10.6,11.6,"new")+`<circle cx="-5.9" cy="-11.1" r=".7" class="steel"/>`+
+  AR(-2.05,2.6,-2.05,0.6,"force")+
+  T(-13.5,13.3,"palanca plegada, sobre-centro","nw")+L(-8.2,12.7,-8.2,11.7)+
+  T(3.6,3.6,"anillo inferior","nw")+T(-4.9,7,"varilla","sm"),
+  "Corte en el pivote: una palanca embutida en la cara superior empuja una varilla que aprieta el anillo inferior contra la chapa de abajo. Al plegarla pasa el punto muerto y queda trabada sola.");
+
+F.pestYZ=svg(VB,
+  holderStack()+CART2()+plate(0)+P([[-3.55,9],[6.5,9],[6.5,12],[-3.55,12]],"metal")+
+  R(-1,2.5,7.4,8.95,"new")+R(-6.6,-1,7.6,8.6,"new")+SPR(0.75,3.3,7.4)+
+  R(-7.3,-5.1,9.1,11.9,"new")+
+  AR(-6.2,15,-6.2,12.3,"force")+T(-6.2,15.6,"pulsar para correr","wr","middle")+
+  T(3.6,8.2,"pestillo dentado","nw")+T(3.6,5,"resorte","nw")+L(3.5,5.2,1.3,5.2)+
+  T(1.2,13.4,"cremallera en la cara interior","sm","middle")+L(1.2,12.8,1,9.2),
+  "Corte en el pestillo, desplazado en X respecto del pin: un resorte empuja el pestillo dentado hacia la cremallera de la chapa superior. El pulsador lo baja para correr el holder.");
+
+F.pestXZ=svg("-1 -14 27 13",
+  P([[0,12],[24,12],[24,9],...teeth(0,24,9,0.8,2,true).reverse(),[0,9]],"metal")+
+  R(0,24,3.1,8.9,"hold")+
+  P([[9,7.4],[15,7.4],...teeth(9,15,8.95,0,1,true).slice(0,0),[15,8.95],...teeth(9,15,8.95,0.8,2,true).reverse().slice(1),[9,8.95]],"new")+
+  SPR(12,3.6,7.4)+
+  P([[16,7.4],[22,7.4],[22,9.75],[16,9.75]],"bad")+
+  L(1,10.8,3,10.8,"lead")+L(1,10.5,1,11.1)+L(3,10.5,3,11.1)+T(2,11.6,"paso 2","nw","middle")+
+  T(16.2,6.4,"segundo pestillo","sm")+T(16.2,5.3,"corrido 1 mm","sm")+T(0.4,4.2,"nervio","sm"),
+  "Corte XZ: el pestillo engrana dos dientes en la cremallera de paso 2 mm. Un segundo pestillo corrido 1 mm, como un nonio, da posiciones cada 1 mm: siempre traba uno de los dos.");
+
+F.husillo=svg("-36 -26 60 37",
+  R(-36,24,12,25,"metal",'opacity=".6"')+L(-36,12,24,12,"lead")+
+  R(-34,-30,13.5,17.5,"metal",'style="stroke:var(--new);stroke-width:.2"')+
+  R(-34,4.5,14.75,16.25,"steel")+
+  P([[9.5,19],[-9.5,19],[-9.5,0],...arc(0,0,9.5,180,360,40),[9.5,0]],"hold")+
+  `<circle cx="0" cy="0" r="3.7" class="gap"/>`+
+  R(1.5,8.5,8,18,"metal",'style="stroke:var(--new);stroke-dasharray:.5 .3;stroke-width:.2"')+
+  R(1.5,8.5,13.8,17.2,"new")+`<circle cx="5.5" cy="-15.5" r="1.5" fill="none" stroke="var(--steel)" stroke-width=".25" stroke-dasharray=".4 .3"/>`+
+  T(-35.5,23.6,"chapas del chasis","sm")+T(-35.5,20,"apoyo y acceso al husillo","nw")+
+  T(-20,13,"husillo M3 entre las chapas","sm","middle")+T(10,17,"tuerca en el cartucho","nw")+
+  T(10,9.5,"la rosca termina antes del tope:","sm")+T(10,8.2,"la tuerca sale y el holder gira","sm"),
+  "Planta: un husillo M3 corre entre las dos chapas, a la altura media del nervio, y la tuerca va en el cartucho. El pin del pivote queda partido en dos tramos, uno arriba y otro abajo del husillo.");
+
+const TABLE=`<div class="tw"><table class="cmp">
+<thead><tr><th>Traba</th><th>Posición</th><th>Cómo se acciona</th><th>Retención en X</th><th>Tipo</th><th>Posición girada</th><th>Complejidad</th></tr></thead>
+<tbody>
+<tr><td>L1 · Anillo con tornillo lateral</td><td>continua</td><td>llave Allen, cara exterior</td><td>≈ 240 N</td><td>fricción</td><td>sí</td><td>baja</td></tr>
+<tr><td>L2 · Anillo con tornillo vertical y cuña</td><td>continua</td><td>llave Allen, cara superior</td><td>≈ 300 N</td><td>fricción</td><td>sí</td><td>media</td></tr>
+<tr><td>L3 · Freno a resorte con pulsador</td><td>continua</td><td>a mano, trabado en reposo</td><td>≈ 70 N</td><td>fricción</td><td>sí</td><td>media</td></tr>
+<tr><td>L4 · Palanca sobre-centro</td><td>continua</td><td>a mano</td><td>≈ 150 N</td><td>fricción</td><td>sí</td><td>media-alta</td></tr>
+<tr class="hi"><td>L5 · Pestillo dentado con pulsador</td><td>cada 2 mm, o 1 mm con doble pestillo</td><td>a mano, trabado en reposo</td><td>&gt; 500 N</td><td>positiva</td><td>con una muesca más</td><td>media</td></tr>
+<tr><td>L6 · Husillo</td><td>continua</td><td>llave o rueda en el chasis</td><td>&gt; 1 kN, no retrocede</td><td>positiva</td><td>la tuerca sale de la rosca</td><td>alta</td></tr>
+<tr><td>L7 · Retén de bola</td><td>cada 2 mm</td><td>a mano</td><td>≈ 15 N</td><td>elástica</td><td>sí</td><td>baja, complemento</td></tr>
+</tbody></table></div>
+<p class="note">Retenciones estimadas con fricción 0,3 en dos caras. Hay que validarlas con un ensayo. En todas, la fuerza de apriete se cierra dentro del cartucho metálico y las chapas: el PEEK no queda cargado.</p>`;
+
 const cards=[
- {t:"Cómo se fija la posición",tag:["pos","resumen"],wide:true,figs:[F.plan],
-  p:"La posición la fija la zapata anular: un anillo alrededor del pin que se aprieta contra la chapa superior con un solo tornillo, accesible desde afuera.<ol style='margin:.4rem 0 0;padding-left:1.2rem'><li><b>Aflojar</b> el tornillo cónico un cuarto de vuelta. La zapata baja y el holder queda libre en X.</li><li><b>Correr</b> el holder hasta la posición. El retén de bola marca cada 2 mm, pero se puede dejar en cualquier punto.</li><li><b>Apretar</b>. El cono levanta la zapata, que aprieta contra la chapa superior, y el nervio contra la inferior.</li><li><b>Para extender</b>: llevarlo al tope con el tornillo flojo, girarlo 90° sobre el pin y apretar. La zapata es concéntrica al pin, así que traba igual en la posición girada.</li></ol>",
-  dl:[["Cartucho","Bloque de 7075 o inoxidable de 7 × 10 × 6 mm, a presión en un alojamiento del nervio: de 1,5 a 8,5 en X y de 8 a 18 en Y, medido desde el centro de la bobina. Lleva el pin de Ø3 a presión, el rebaje del anillo (Ø5) y una rosca M2,5 de 4,5 mm de largo para el tornillo cónico. No necesita retención propia: queda encerrado entre las dos chapas."],["PEEK","El PEEK fluye bajo carga sostenida, así que no puede quedar dentro del apriete. El pin, la rosca del tornillo, el anillo y el retén van en un cartucho de 7075 o acero de 6 mm de alto, que reemplaza al inserto actual. La fuerza se cierra chapa superior, anillo, cono, cartucho, chapa inferior: todo metal. El PEEK solo sostiene el cartucho y guía."],["Fuerza","Con un prisionero M2,5 a 0,3 N·m, el cono empuja la zapata con unos 400 N. Con fricción 0,3 en dos caras, el holder resiste unos 240 N en X antes de deslizar. Son estimaciones a validar con un ensayo."],["Ante un golpe","Si el golpe supera esa fuerza, el holder desliza sobre las chapas en vez de doblar algo. El borde ya no está en el camino de la carga."],["Verificar","El tornillo pasa a 0,8 mm del agujero de la bobina, si ese agujero es de Ø7,4. Hay que confirmarlo con la medida real."]]},
+ {t:"Comparación",tag:["aux","resumen"],wide:true,figs:[],p:TABLE,dl:[]},
  {t:"Hoy",tag:["cur","problema"],figs:[F.hoy],
-  p:"El nervio de 6 mm corre entre dos chapas de 3 mm. El tornillo entra al inserto del nervio (Accu 845141-HTFBI-M3-BR: M3 de latón termoinsertado, 5,7 mm de largo, agujero de Ø4) y su cabeza va en un bolsillo de la chapa superior, para no salir de los 12 mm. Ese bolsillo, sumado a la ranura, deja junto al canto un borde de unos 2,3 por 1,5 mm. Un golpe sobre el holder lo dobla.",dl:[]},
- {t:"1 · Pin en ranuras ciegas",tag:["pos","guía y pivote"],figs:[F.ciega],
-  p:"En lugar de una ranura pasante, cada chapa tiene una ranura ciega mecanizada desde su cara interior, dejando 1 mm de piel. Un pin a presión en el cartucho metálico del nervio entra en las dos. El borde junto al canto queda unido a la piel y forma un cajón cerrado de 3 mm de alto, mucho más rígido que la tira de 1,5 mm actual. El pin guía en X, retiene en Y y es el eje del giro final.",
-  dl:[["Sin piezas","El pin va a presión en el nervio y queda atrapado entre las dos chapas al armar el chasis. No tiene cabeza ni tuerca."],["12 mm","No hay nada por fuera de las chapas."],["Inserto","Ya no hace falta en el pivote. Si el nervio sigue en 6 mm, sobra lugar para la zapata."],["Mecanizado","Ranura ciega con fresa de 2,5 mm, 2 mm de profundidad, en la cara interior de cada chapa. El extremo de la ranura en el final del chasis queda redondo para el giro."]]},
- {t:"2 · Zapata anular a cuña",tag:["pos","continua"],figs:[F.zapata],
-  p:"La zapata es un anillo de 7075 alrededor del pin, alojado en un rebaje del cartucho metálico que va dentro del nervio de PEEK. Un tornillo con punta cónica la levanta contra la chapa superior y el nervio reacciona contra la inferior. Como es concéntrica al pivote, traba igual en cualquier punto de la carrera y en cualquier ángulo del giro.",
-  dl:[["Sin piezas","El anillo queda encerrado entre el nervio y la chapa, y el pin lo atraviesa. El tornillo se retiene con cuello rebajado."],["Superficie","Conviene anodizado duro en el anillo y en la chapa, o un anillo de bronce, para que no se engrane aluminio con aluminio."]]},
- {t:"3 · Pinza expansiva en el nervio",tag:["cur","descartada en PEEK"],figs:[F.pinza],
-  p:"Es una variante sin zapata. Una ranura de flexión a media altura divide el nervio en dos mordazas. La punta cónica las separa unas décimas y aprietan contra las dos chapas. En 7075 la flexión es elástica y vuelve sola al aflojar.",
-  dl:[["PEEK","Las mordazas quedarían cargadas siempre y perderían apriete por fluencia en semanas. Solo sirve si el nervio fuera metálico."],["Sin piezas","Solo el tornillo, retenido con cuello rebajado."],["Cuidado","El pin del pivote debe ir a presión en una sola mordaza y deslizante en la otra, para no trabar la apertura."],["Frente a 2","Tiene menos piezas, pero se ajusta menos fino y depende de la tolerancia del hueco de 6 mm."]]},
- {t:"4 · Retén de bola interior",tag:["aux","cada 2 mm"],figs:[F.bola],
-  p:"Un émbolo de bola a presión en el nervio y conos cada 2 mm en la cara interior de una chapa. Da el clic y sostiene la posición mientras se aprieta la zapata. No se ve desde afuera y no debilita el canto.",
-  dl:[["Sin piezas","Émbolo con cuerpo liso a presión y labio recalcado, montado en el cartucho metálico y no en el PEEK, para que no se afloje."]]},
+  p:"El nervio de 6 mm corre entre dos chapas de 3 mm. El tornillo entra al inserto Accu HTFBI M3 y su cabeza va en un bolsillo de la chapa superior. Ese bolsillo, sumado a la ranura, deja junto al canto un borde de unos 2,3 × 1,5 mm, que se dobla con un golpe.",dl:[]},
+ {t:"Base común · pin en ranuras ciegas y cartucho",tag:["pos","guía y pivote"],figs:[F.ciega],
+  p:"Las siete trabas comparten esta base. Un pin de Ø3 entra en ranuras ciegas mecanizadas en la cara interior de las dos chapas, sin corte pasante. El pin, la traba y su rosca van en un cartucho de 7075 o inoxidable de 7 × 10 × 6 mm, que reemplaza al inserto y queda encerrado entre las chapas. Durante la carrera, la parte redonda del holder choca con el canto y no lo deja girar. Al llegar al final del chasis queda libre para girar 90° sobre el pin.",dl:[]},
+ {t:"L1 · Anillo con tornillo lateral",tag:["pos","continua · llave"],figs:[F.plan,F.zapata],
+  p:"Un anillo alrededor del pin se levanta contra la chapa superior con un prisionero de punta cónica, que entra por la cara exterior de la parte redonda. Como es concéntrico al pin, traba en cualquier punto y también girado.",
+  dl:[["A favor","Es la más simple y tiene buena retención."],["En contra","Necesita llave. El tornillo pasa cerca del agujero de la bobina: hay que verificar la pared."]]},
+ {t:"L2 · Anillo con tornillo vertical y cuña",tag:["pos","continua · llave"],figs:[F.cunaV],
+  p:"Es el mismo anillo, pero el tornillo entra por la cara superior de la parte redonda, entre el agujero de la bobina y el canto, y empuja una cuña que lo levanta. La cuña multiplica la fuerza y aleja el tornillo del agujero.",
+  dl:[["A favor","Se accede desde arriba, que suele ser más cómodo, y no hay conflicto con el agujero de la bobina."],["En contra","Suma una pieza, la cuña, que va encerrada en el cartucho."]]},
+ {t:"L3 · Freno a resorte con pulsador",tag:["pos","continua · a mano"],figs:[F.resorte],
+  p:"Dos o tres arandelas Belleville de acero empujan el anillo contra la chapa: el holder está trabado siempre. Para moverlo se aprieta un pulsador en la cara superior, que baja un brazo del anillo. Al soltarlo, vuelve a trabar solo.",
+  dl:[["A favor","No se puede olvidar de apretar y no hace falta herramienta. La fuerza la define el resorte, no el operario."],["En contra","Tiene poca retención, unos 70 N con el espacio disponible. Ante un golpe fuerte desliza. Se puede sumar dentado para hacerla positiva, como en L5."]]},
+ {t:"L4 · Palanca sobre-centro",tag:["pos","continua · a mano"],figs:[F.rodillera],
+  p:"Una palanca plana, embutida en la cara superior de la parte redonda, empuja una varilla que aprieta un anillo inferior contra la chapa de abajo. Al plegarla pasa el punto muerto y queda trabada, al ras de la cara.",
+  dl:[["A favor","Aprieta fuerte sin herramienta y se ve si está trabada o no."],["En contra","Tiene más piezas y el ajuste del punto muerto depende de las tolerancias. Necesita una regulación, por ejemplo una varilla roscada fijada con adhesivo."]]},
+ {t:"L5 · Pestillo dentado con pulsador",tag:["pos","cada 1–2 mm · a mano"],figs:[F.pestYZ,F.pestXZ],
+  p:"La cara interior de la chapa superior lleva una cremallera de paso 2 mm, ciega y lejos del canto. Un pestillo de 7075 con dos dientes, empujado por un resorte, engrana en ella. El pulsador lo baja para correr el holder; al soltarlo engrana solo. Con dos pestillos corridos 1 mm, siempre traba uno de los dos y la resolución pasa a 1 mm.",
+  dl:[["A favor","Traba positiva: un golpe en X no lo mueve, la carga va al diente y no a la fricción. No se afloja con vibración y no hace falta herramienta."],["En contra","La posición es por pasos. Para la posición girada hace falta una muesca más en la chapa, donde cae el pestillo después del giro."]]},
+ {t:"L6 · Husillo",tag:["pos","continua · positiva"],figs:[F.husillo],
+  p:"Un husillo M3 corre entre las chapas, a la altura media del nervio, apoyado atrás en un bloque fijo. La tuerca va en el cartucho y el pin queda partido en dos tramos, arriba y abajo del husillo. Girando el husillo, el holder avanza 0,5 mm por vuelta y no puede retroceder solo.",
+  dl:[["A favor","Ajuste fino y continuo, con traba positiva y la mayor retención."],["En contra","Es la más compleja. Para girar, la tuerca tiene que salir del final de la rosca, y al volver hay que reenhebrarla. El acceso al husillo tiene que quedar dentro del ancho, por una ventana o por la cara trasera."]]},
+ {t:"L7 · Retén de bola",tag:["aux","complemento"],figs:[F.bola],
+  p:"Un émbolo de bola en el cartucho cae en conos cada 2 mm de la cara interior de una chapa. Da el clic y referencia la posición. Solo, no aguanta un golpe: va con L1, L2 o L4.",dl:[]},
 ];
 document.getElementById("cards").innerHTML=cards.map(c=>`
  <article class="card${c.wide?" wide":""}">
   <h2>${c.t}<span class="tag ${c.tag[0]}">${c.tag[1]}</span></h2>
-  <div class="figs">${c.figs.map(s=>{const lab=s.match(/aria-label="([^"]+)"/)[1];return `<figure>${s}<figcaption>${lab}</figcaption></figure>`;}).join("")}</div>
-  <p>${c.p}</p>
+  ${c.figs.length?`<div class="figs">${c.figs.map(s=>{const lab=s.match(/aria-label="([^"]+)"/)[1];return `<figure>${s}<figcaption>${lab}</figcaption></figure>`;}).join("")}</div>`:""}
+  ${c.p.startsWith("<")?c.p:`<p>${c.p}</p>`}
   ${c.dl.length?`<dl>${c.dl.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join("")}</dl>`:""}
  </article>`).join("");
 </script>
