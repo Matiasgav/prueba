@@ -1,0 +1,177 @@
+<title>Fijación del holder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: tarjetas de alternativas, cada una con cortes a escala (mm) y su ficha; recomendación arriba. */
+:root{
+  --bg:#eef1ef; --panel:#fafbfa; --ink:#1c2321; --muted:#5a6561; --line:#c6cdc9;
+  --metal:#8b979c; --metal-fill:#dfe5e7; --holder:#3a4247; --holder-fill:#59636a; --steel:#4f6f86;
+  --new:#c0641c; --new-fill:#f3d9c2; --warn:#b0362a; --ok:#2d7a4c;
+  --f-display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#131716; --panel:#1a1f1e; --ink:#e3e8e6; --muted:#97a29e; --line:#353e3b;
+  --metal:#8e9ca2; --metal-fill:#2e373b; --holder:#a9b4ba; --holder-fill:#454e55; --steel:#86aac4;
+  --new:#ec944c; --new-fill:#4a3020; --warn:#ec7a6c; --ok:#6cc495; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#131716; --panel:#1a1f1e; --ink:#e3e8e6; --muted:#97a29e; --line:#353e3b;
+  --metal:#8e9ca2; --metal-fill:#2e373b; --holder:#a9b4ba; --holder-fill:#454e55; --steel:#86aac4;
+  --new:#ec944c; --new-fill:#4a3020; --warn:#ec7a6c; --ok:#6cc495; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:22px 44px;display:grid;gap:20px}
+h1{font-family:var(--f-display);font-weight:700;font-size:1.9rem;margin:0;text-wrap:balance}
+header p{margin:.3rem 0 0;color:var(--muted);max-width:80ch}
+.rec{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--new);border-radius:6px;padding:12px 16px;max-width:90ch}
+.rec b{font-family:var(--f-display);font-size:1.05rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:grid;gap:10px;align-content:start;min-width:0}
+.card h2{font-family:var(--f-display);font-weight:600;font-size:1.2rem;margin:0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.tag{font-family:var(--f-mono);font-size:.7rem;font-weight:600;letter-spacing:.04em;padding:1px 7px;border-radius:3px;border:1px solid currentColor}
+.tag.pos{color:var(--ok)}.tag.cur{color:var(--warn)}.tag.aux{color:var(--steel)}
+figure{margin:0;display:grid;gap:4px}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+svg{display:block;width:100%;height:auto;max-width:100%}
+figcaption{font-size:.8rem;color:var(--muted)}
+.card p{margin:0;max-width:72ch}
+dl{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:0;font-size:.88rem}
+dt{font-family:var(--f-display);font-weight:600;color:var(--muted);text-transform:uppercase;font-size:.74rem;letter-spacing:.07em;padding-top:2px}
+dd{margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:10px;vertical-align:middle;margin-right:5px;border:1px solid}
+</style>
+
+<div class="wrap">
+<header>
+  <h1>Fijación del holder</h1>
+  <p>Alternativas a la ranura con tornillo para piezas de 7075 mecanizadas por CNC, sin piezas que puedan soltarse y con posiciones cada 2 mm. Cortes esquemáticos a escala, en mm. En los cortes YZ la izquierda es el canto exterior del chasis; el holder está debajo de la chapa.</p>
+</header>
+
+<div class="rec"><b>Recomendación.</b> Si la chapa puede tener 4 mm o más en la zona de la guía, la mejor es la <b>C, ranura en T cerrada con taco dentado</b>: no hay corte pasante que llegue a la cara superior y la traba es positiva cada 2 mm. Si la chapa es más fina, la <b>B, pletina dentada imperdible</b>, más el <b>nervio en el canto (A)</b>. El retén de bola (D) se suma a cualquiera de las dos para sentir el clic al ajustar.</div>
+
+<div class="legend">
+  <span><i style="background:var(--metal-fill);border-color:var(--metal)"></i>chasis 7075</span>
+  <span><i style="background:var(--holder-fill);border-color:var(--holder)"></i>holder</span>
+  <span><i style="background:var(--new-fill);border-color:var(--new)"></i>lo que agrega o cambia la propuesta</span>
+  <span><i style="background:var(--steel);border-color:var(--steel)"></i>tornillo de acero</span>
+</div>
+
+<div class="grid" id="cards"></div>
+</div>
+
+<script>
+/* ---------- primitives (mm, z up) ---------- */
+const n=v=>+v.toFixed(3);
+const R=(y0,y1,z0,z1,c,extra="")=>`<rect x="${n(y0)}" y="${n(-z1)}" width="${n(y1-y0)}" height="${n(z1-z0)}" class="${c}" ${extra}/>`;
+const P=(pts,c,close=true)=>`<path d="M${pts.map(([y,z])=>`${n(y)},${n(-z)}`).join(" L")}${close?"Z":""}" class="${c}"/>`;
+const T=(y,z,s,c="lab",a="start")=>`<text x="${n(y)}" y="${n(-z)}" class="${c}" text-anchor="${a}">${s}</text>`;
+const L=(y0,z0,y1,z1,c="lead")=>`<line x1="${n(y0)}" y1="${n(-z0)}" x2="${n(y1)}" y2="${n(-z1)}" class="${c}"/>`;
+const AR=(y0,z0,y1,z1,c="force")=>{const a=Math.atan2(z1-z0,y1-y0),h=1.1,w=.55;
+  const p1=[y1-h*Math.cos(a)+w*Math.sin(a),z1-h*Math.sin(a)-w*Math.cos(a)],p2=[y1-h*Math.cos(a)-w*Math.sin(a),z1-h*Math.sin(a)+w*Math.cos(a)];
+  return L(y0,z0,y1-h*.8*Math.cos(a),z1-h*.8*Math.sin(a),c)+P([[y1,z1],p1,p2],c+"h");};
+const zig=(y,z0,z1)=>{const pts=[];const k=6;for(let i=0;i<=k;i++)pts.push([y+(i%2?.5:-.5),z0+(z1-z0)*i/k]);return pts;};
+const teeth=(x0,x1,z,dep,pitch,up)=>{const p=[];for(let x=x0;x<x1-1e-9;x+=pitch){p.push([x,z],[x+pitch/2,z+(up?dep:-dep)]);}p.push([x1,z]);return p;};
+const STY=`<style>
+ .lab{font:600 1.15px var(--f-mono);fill:var(--ink)}.sm{font:400 1px var(--f-mono);fill:var(--muted)}.nw{font:600 1.15px var(--f-mono);fill:var(--new)}.wr{font:600 1.15px var(--f-mono);fill:var(--warn)}
+ .metal{fill:var(--metal-fill);stroke:var(--metal);stroke-width:.12}
+ .hold{fill:var(--holder-fill);stroke:var(--holder);stroke-width:.12}
+ .new{fill:var(--new-fill);stroke:var(--new);stroke-width:.16}
+ .steel{fill:var(--steel);stroke:var(--steel);stroke-width:.08}
+ .lead{stroke:var(--muted);stroke-width:.08;fill:none}
+ .force{stroke:var(--warn);stroke-width:.22;fill:none}.forceh{fill:var(--warn)}
+ .bad{fill:none;stroke:var(--warn);stroke-width:.14;stroke-dasharray:.4 .3}
+ .gap{fill:var(--panel);stroke:none}
+</style>`;
+const svg=(vb,body,label)=>`<svg viewBox="${vb}" style="max-width:${+vb.split(" ")[2]*13}px" role="img" aria-label="${label}" xmlns="http://www.w3.org/2000/svg">${STY}${body}</svg>`;
+
+/* ---------- YZ base: holder under plate, crop at y=-12 ---------- */
+function holderYZ(top=-0.2,y1=3.5){return P([[-12,top],[y1,top],[y1,-12.2],[-12,-12.2]],"hold")+P(zig(-12,-12.2,top),"gap",false)+P(zig(-12,-12.2,top),"lead",false)+T(-6,-7,"holder","lab","middle");}
+function plateYZ(t,edge,inner=15,slot=1.25){return R(edge,-slot,0,t,"metal")+R(slot,inner,0,t,"metal");}
+
+/* ---------- figures ---------- */
+const F={};
+F.hoy=svg("-17.5 -7 33.5 21",
+  holderYZ()+plateYZ(2,-3.55)+
+  R(-1.1,1.1,-12.2,2,"steel")+R(-2.1,2.1,2,2.5,"steel")+R(-2.1,2.1,-12.7,-12.2,"steel")+
+  P([[-3.55,0],[-1.25,0],[-1.6,2],[-4.3,2]],"bad")+
+  AR(-12.3,-4,-16.4,-4)+T(-16.6,-2.9,"golpe","wr")+
+  T(-2.4,4.2,"borde 2,3","wr","middle")+L(-2.4,3.6,-2.4,2.1)+
+  T(6,3.2,"chapa","lab")+T(4.5,-2.6,"pin del pivote","sm")+L(4.4,-2.3,1.2,-1.4),
+  "Corte actual: el borde entre la ranura y el canto mide unos 2,3 mm y el pin lo empuja hacia afuera cuando el holder recibe un golpe.");
+
+F.nervio=svg("-17.5 -7 33.5 21",
+  holderYZ()+R(-1.25,15,0,2,"metal")+
+  P([[-4.3,0],[-1.25,0],[-1.25,2],[-2.5,2],[-2.5,5],[-4.3,5]],"new")+
+  R(-1.1,1.1,-12.2,2,"steel")+R(-2.1,2.1,2,2.5,"steel")+R(-2.1,2.1,-12.7,-12.2,"steel")+
+  T(-3.4,5.8,"nervio","nw","middle")+T(-9,3.2,"borde 3","nw","middle")+L(-7.4,3.4,-3.6,1.2)+
+  T(6,3.2,"chapa","lab"),
+  "Nervio mecanizado en el canto: el borde pasa de una tira plana a un perfil en L de unos 5 mm de alto, sin bolsillo sobre él.");
+
+F.pletinaYZ=svg("-17.5 -7 33.5 22",
+  holderYZ()+plateYZ(2,-3.55)+
+  R(-3.55,7.5,2.1,4.5,"new")+
+  R(-1.2,1.2,-12.2,2.1,"steel")+R(-1,1,2.1,4.5,"steel")+R(-1.35,1.35,4.5,5.1,"steel")+R(-2.3,2.3,-13.6,-12.2,"steel")+
+  T(8,5,"pletina","nw")+T(1.6,5.6,"punta recalcada","sm")+T(2.6,-13.3,"resalte = pivote","sm")+
+  AR(-12.3,-4,-16.4,-4)+T(-16.6,-2.9,"golpe","wr")+T(9,0.6,"chapa","sm"),
+  "Corte YZ: un tornillo con resalte hace de pivote y rosca en una pletina dentada que apoya sobre los dos lados de la ranura. La punta recalcada impide desarmarlo.");
+
+F.pletinaXZ=svg("-1 -9 26 18",
+  R(0,24,-6,-0.2,"hold")+T(5,-3.6,"holder","lab","middle")+
+  P([[0,0],...teeth(0,24,2,0.8,2,true).map(p=>p),[24,0]],"metal")+
+  P([[0,4.5],[24,4.5],...teeth(0,24,2.15,0.8,2,true).reverse()],"new")+
+  R(11,13,-6,4.5,"steel")+
+  L(4,5.3,6,5.3)+L(4,5,4,5.6)+L(6,5,6,5.6)+T(5,6,"paso 2","nw","middle")+
+  T(17,6,"dientes 90°","sm")+T(0.3,1,"chapa","sm"),
+  "Corte XZ a lo largo de la ranura: los dientes de paso 2 mm de la pletina engranan con los de la chapa, del lado interior y del exterior de la ranura.");
+
+F.tYZ=svg("-17.5 -7 33.5 21",
+  holderYZ()+
+  P([[-5.5,0],[-1.25,0],[-1.25,1.5],[-2.75,1.5],[-2.75,3],[2.75,3],[2.75,1.5],[1.25,1.5],[1.25,0],[15,0],[15,4],[-5.5,4]],"metal")+
+  R(-2.55,2.55,1.6,2.9,"new")+P(teeth(-2.55,2.55,2.9,0,1,true),"lead",false)+
+  R(-1.2,1.2,-12.2,1.6,"steel")+R(-1,1,1.6,2.9,"steel")+R(-2.3,2.3,-13.6,-12.2,"steel")+
+  T(3.4,2.1,"taco dentado","nw")+T(-0.0,5,"cara superior continua","lab","middle")+
+  T(-10,5,"pared 2,8","nw","middle")+L(-8.4,5,-4.3,2)+
+  AR(-12.3,-4,-16.4,-4)+T(-16.6,-2.9,"golpe","wr"),
+  "Corte YZ de la ranura en T: se mecaniza desde la cara del holder, la cara superior queda entera y el taco roscado queda encerrado.");
+
+F.tXZ=svg("-1 -9 30 17",
+  R(0,28,-6,-0.2,"hold")+T(6,-3.6,"holder","lab","middle")+
+  P([[0,0],[0,4],[28,4],[28,0],[26,0],[26,3],...teeth(2,26,3,0.6,2,false).reverse(),[2,3],[2,0]],"metal")+
+  P([[11,1.6],[17,1.6],...teeth(11,17,2.4,0.6,2,true).reverse()],"new")+
+  R(13,15,-6,2.4,"steel")+
+  T(2.3,4.9,"extremo cerrado","sm")+T(25.7,4.9,"pasador a presión","sm","end")+
+  L(5,-1.1,7,-1.1)+L(5,-1.4,5,-.8)+L(7,-1.4,7,-.8)+T(6,-2.1,"paso 2","nw","middle"),
+  "Corte XZ de la ranura en T: el techo dentado traba el taco cada 2 mm. Los extremos quedan cerrados, así que el taco no puede salir.");
+
+F.bola=svg("-1 -8 26 14",
+  P([[0,0],[24,0],[24,2],[0,2]],"metal")+
+  (()=>{let s="";for(let x=2;x<=22;x+=2)s+=P([[x-.6,0],[x,.55],[x+.6,0]],"gap")+P([[x-.6,0],[x,.55],[x+.6,0]],"lead",false);return s;})()+
+  R(0,24,-6,-0.2,"hold")+R(10.8,13.2,-5,-0.2,"new")+`<circle cx="12" cy="0.15" r=".75" class="steel"/>`+
+  L(12,-4.6,12,-1.2,"lead")+T(14,-2.6,"émbolo a presión","nw")+T(0.4,3,"conos de centrado cada 2 mm","sm"),
+  "Retén de bola: un émbolo a presión en el holder cae en conos de centrado mecanizados cada 2 mm en la cara de la chapa.");
+
+/* ---------- cards ---------- */
+const cards=[
+ {t:"Hoy",tag:["cur","problema"],figs:[F.hoy],p:"El pin del pivote apoya contra un borde de unos 2,3 mm. Un golpe que empuja el holder hacia afuera carga ese borde en flexión, como una viga larga y angosta.",dl:[]},
+ {t:"A · Nervio en el canto",tag:["aux","refuerzo"],figs:[F.nervio],
+  p:"Dejás material en el canto, del lado opuesto al holder, y no pasás el bolsillo de la ranura sobre ese borde. Si además corrés la ranura 0,7 mm hacia adentro, el borde llega a 3 mm.",
+  dl:[["Sin piezas","Es material de la misma pieza."],["Rigidez","Con chapa de 2 mm y un nervio de 5 mm de alto, el borde es unas 15 veces más rígido fuera del plano y 2–3 veces en el plano."],["Cuidado","Revisar que el nervio no choque con el cable ni con el holder al girar."]]},
+ {t:"B · Pletina dentada imperdible",tag:["pos","cada 2 mm"],figs:[F.pletinaYZ,F.pletinaXZ],
+  p:"El pin pasa a ser un tornillo con resalte. El resalte corre en la ranura y es el eje del giro, y la rosca entra en una pletina de 7075 apoyada del otro lado de la chapa. Al apretar, los dientes de paso 2 mm de la pletina engranan con los de la chapa a los dos lados de la ranura. El golpe va a los dientes del lado interior, que es macizo, y no al borde.",
+  dl:[["Sin piezas","La punta del tornillo se recalca después del montaje. La pletina es más ancha que la ranura y no puede pasar. Aflojando, todo desliza pero nada se suelta."],["Ajuste","Aflojar media vuelta, correr, apretar. En el tope se afloja igual para girar el holder."],["Mecanizado","Dentado a 90° con fresa de chaflán o de grabado, paso 2, 0,8 de profundidad. Conviene anodizado duro por desgaste."]]},
+ {t:"C · Ranura en T cerrada con taco dentado",tag:["pos","cada 2 mm"],figs:[F.tYZ,F.tXZ],
+  p:"La ranura se mecaniza desde la cara del holder con fresa en T, y no atraviesa la cara superior. El borde exterior queda unido a esa cara entera, como un cajón cerrado, y no como una tira suelta. El taco roscado vive adentro y su cara dentada traba contra el techo de la ranura cada 2 mm.",
+  dl:[["Sin piezas","El taco queda encerrado: un extremo de la ranura es ciego y el otro se cierra con un pasador a presión después de meterlo. El tornillo se retiene con cuello rebajado en el holder."],["Requisito","Chapa de 4 mm o más en esa zona, y la ranura 2 mm más adentro para dejar 2,8 de pared."],["Ventaja","No hay ningún corte visible del lado de la cara superior, que queda lisa."]]},
+ {t:"D · Retén de bola cada 2 mm",tag:["aux","complemento"],figs:[F.bola],
+  p:"Un émbolo de bola a presión en el holder y una fila de conos de centrado cada 2 mm en la chapa, del lado macizo. Da el clic y sostiene la posición mientras se aprieta. Solo, no aguanta un golpe fuerte: va junto con B o C.",
+  dl:[["Sin piezas","Émbolo con cuerpo liso a presión y labio recalcado sobre el holder."],["Mecanizado","Conos con mecha de centrar a 90°, uno por posición."]]},
+];
+document.getElementById("cards").innerHTML=cards.map(c=>`
+ <article class="card">
+  <h2>${c.t}<span class="tag ${c.tag[0]}">${c.tag[1]}</span></h2>
+  <div class="figs">${c.figs.map(s=>{const lab=s.match(/aria-label="([^"]+)"/)[1];return `<figure>${s}<figcaption>${lab}</figcaption></figure>`;}).join("")}</div>
+  <p>${c.p}</p>
+  ${c.dl.length?`<dl>${c.dl.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join("")}</dl>`:""}
+ </article>`).join("");
+</script>
