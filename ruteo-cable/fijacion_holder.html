@@ -45,10 +45,10 @@ dd{margin:0}
 <div class="wrap">
 <header>
   <h1>Fijación del holder</h1>
-  <p>Alternativas a la ranura con tornillo para piezas de 7075 mecanizadas por CNC, sin piezas que puedan soltarse y con posiciones cada 2 mm. Cortes esquemáticos a escala, en mm. En los cortes YZ la izquierda es el canto exterior del chasis; el holder está debajo de la chapa.</p>
+  <p>Alternativas a la ranura con tornillo para piezas de 7075 mecanizadas por CNC, sin piezas que puedan soltarse, con posición continua o cada 2 mm. Chapa supuesta de 2 mm. Cortes esquemáticos a escala, en mm. En los cortes YZ la izquierda es el canto exterior del chasis; el holder está debajo de la chapa.</p>
 </header>
 
-<div class="rec"><b>Recomendación.</b> Si la chapa puede tener 4 mm o más en la zona de la guía, la mejor es la <b>C, ranura en T cerrada con taco dentado</b>: no hay corte pasante que llegue a la cara superior y la traba es positiva cada 2 mm. Si la chapa es más fina, la <b>B, pletina dentada imperdible</b>, más el <b>nervio en el canto (A)</b>. El retén de bola (D) se suma a cualquiera de las dos para sentir el clic al ajustar.</div>
+<div class="rec"><b>Recomendación para posición continua.</b> La <b>1, pletina guía con alivio sobre el borde</b>, accionada con la <b>leva (2)</b> si querés ajustar sin herramienta. El borde deja de trabajar porque la palanca del golpe se cierra sobre el lado macizo. Si se puede mover la ranura, sumá la <b>3</b>. El <b>retén de bola</b> agrega un clic cada 2 mm sin perder la fijación continua.</div>
 
 <div class="legend">
   <span><i style="background:var(--metal-fill);border-color:var(--metal)"></i>chasis 7075</span>
@@ -94,12 +94,11 @@ const F={};
 F.hoy=svg("-17.5 -7 33.5 21",
   holderYZ()+plateYZ(2,-3.55)+
   R(-1.1,1.1,-12.2,2,"steel")+R(-2.1,2.1,2,2.5,"steel")+R(-2.1,2.1,-12.7,-12.2,"steel")+
-  P([[-3.55,0],[-1.25,0],[-1.6,2],[-4.3,2]],"bad")+
-  AR(-12.3,-4,-16.4,-4)+T(-16.6,-2.9,"golpe","wr")+
-  T(-2.4,4.2,"borde 2,3","wr","middle")+L(-2.4,3.6,-2.4,2.1)+
+  P([[-3.55,-0.9],[-1.25,0],[-1.25,2],[-3.55,1.1]],"bad")+
+  AR(-10,5.6,-10,0.4)+T(-10,6.2,"golpe","wr","middle")+
+  T(-2.4,4.2,"borde 2,3","wr","middle")+L(-2.4,3.6,-2.4,2.6)+
   T(6,3.2,"chapa","lab")+T(4.5,-2.6,"pin del pivote","sm")+L(4.4,-2.3,1.2,-1.4),
-  "Corte actual: el borde entre la ranura y el canto mide unos 2,3 mm y el pin lo empuja hacia afuera cuando el holder recibe un golpe.");
-
+  "Corte actual: un golpe sobre la parte del holder que sobresale hace palanca, el pin tira hacia abajo de la cabeza y dobla el borde de 2,3 mm fuera del plano.");
 F.nervio=svg("-17.5 -7 33.5 21",
   holderYZ()+R(-1.25,15,0,2,"metal")+
   P([[-4.3,0],[-1.25,0],[-1.25,2],[-2.5,2],[-2.5,5],[-4.3,5]],"new")+
@@ -151,21 +150,51 @@ F.bola=svg("-1 -8 26 14",
   L(12,-4.6,12,-1.2,"lead")+T(14,-2.6,"émbolo a presión","nw")+T(0.4,3,"conos de centrado cada 2 mm","sm"),
   "Retén de bola: un émbolo a presión en el holder cae en conos de centrado mecanizados cada 2 mm en la cara de la chapa.");
 
+
+/* ---------- continuous options ---------- */
+const BAR=(y0=-3.3,y1=9)=>P([[y0,2.35],[1.3,2.35],[1.3,2],[y1,2],[y1,4.5],[y0,4.5]],"new");
+const SCREW=()=>R(-1.2,1.2,-12.2,2.35,"steel")+R(-1,1,2.35,4.5,"steel")+R(-1.35,1.35,4.5,5.1,"steel");
+F.c1YZ=svg("-17.5 -7 33.5 22",
+  holderYZ()+plateYZ(2,-3.55)+BAR()+SCREW()+R(-2.3,2.3,-13.6,-12.2,"steel")+
+  AR(-10,5.6,-10,0.4)+T(-10,6.2,"golpe","wr","middle")+
+  AR(5.5,6.6,5.5,4.7,"force")+AR(2.6,-3.4,2.6,-0.5,"force")+T(6.3,6.2,"zona maciza","sm")+
+  T(-5,6.2,"alivio 0,3","nw","middle")+L(-4,5.6,-2.4,2.2)+T(9.4,3.7,"pletina","nw")+T(2.6,-13.3,"resalte = pivote","sm"),
+  "Corte YZ: la pletina apoya solo del lado macizo y deja 0,3 mm de luz sobre el borde. La palanca del golpe se cierra entre el extremo del holder y la pletina, sin tocar el borde.");
+F.c1XZ=svg("-1 -9 26 17",
+  R(0,24,-6,-0.2,"hold")+T(5,-3.6,"holder","lab","middle")+
+  L(0,0,24,0,"lead")+L(0,2,24,2,"lead")+T(0.3,0.6,"chapa detrás (corte en la ranura)","sm")+
+  R(3,21,2.35,4.5,"new")+R(3.5,10,0.3,2.35,"new")+R(14,20.5,0.3,2.35,"new")+
+  R(11,13,-6,4.5,"steel")+R(10.65,13.35,4.5,5.1,"steel")+
+  L(3.5,6,20.5,6,"lead")+L(3.5,5.7,3.5,6.3)+L(20.5,5.7,20.5,6.3)+T(12,6.6,"lengüeta en la ranura, 17 mm","nw","middle"),
+  "Corte XZ por el centro de la ranura: la pletina tiene una lengüeta a cada lado del tornillo. El empuje en X o en Y se reparte en unos 17 mm de borde, no en el contacto puntual del pin, y la pletina no gira al apretar.");
+F.leva=svg("-17.5 -9 33.5 26.5",
+  holderYZ()+plateYZ(2,-3.55)+BAR()+SCREW()+
+  `<circle cx="0.8" cy="13.6" r="1.9" class="new"/>`+R(-11,0.8,-15.9,-15,"new")+`<circle cx="0" cy="13.6" r=".55" class="steel"/>`+
+  T(-11,-14.3,"palanca abatible","nw")+T(3.2,-14,"excéntrica","nw")+T(3.2,-15.4,"eje remachado","sm"),
+  "Corte YZ con leva: en lugar de la cabeza del tornillo, una excéntrica con palanca tira del eje y aprieta la pletina contra la chapa. Se traba y destraba a mano y queda plegada contra el holder.");
+F.adentro=svg("-17.5 -7 33.5 21",
+  holderYZ(-0.2,7.5)+R(-3.55,2.25,0,2,"metal")+R(4.75,15,0,2,"metal")+
+  R(2.4,4.6,-12.2,2,"steel")+R(1.4,5.6,2,2.5,"steel")+R(1.4,5.6,-12.7,-12.2,"steel")+
+  T(-6,4.4,"borde 5,8","nw","middle")+L(-4.6,4,-1.5,2.1)+T(8,3.2,"chapa","lab"),
+  "Ranura 3,5 mm más adentro: el borde pasa de 2,3 a 5,8 mm. Su rigidez fuera del plano crece en proporción al ancho y en el plano unas 15 veces.");
+
 /* ---------- cards ---------- */
 const cards=[
- {t:"Hoy",tag:["cur","problema"],figs:[F.hoy],p:"El pin del pivote apoya contra un borde de unos 2,3 mm. Un golpe que empuja el holder hacia afuera carga ese borde en flexión, como una viga larga y angosta.",dl:[]},
- {t:"A · Nervio en el canto",tag:["aux","refuerzo"],figs:[F.nervio],
-  p:"Dejás material en el canto, del lado opuesto al holder, y no pasás el bolsillo de la ranura sobre ese borde. Si además corrés la ranura 0,7 mm hacia adentro, el borde llega a 3 mm.",
-  dl:[["Sin piezas","Es material de la misma pieza."],["Rigidez","Con chapa de 2 mm y un nervio de 5 mm de alto, el borde es unas 15 veces más rígido fuera del plano y 2–3 veces en el plano."],["Cuidado","Revisar que el nervio no choque con el cable ni con el holder al girar."]]},
- {t:"B · Pletina dentada imperdible",tag:["pos","cada 2 mm"],figs:[F.pletinaYZ,F.pletinaXZ],
-  p:"El pin pasa a ser un tornillo con resalte. El resalte corre en la ranura y es el eje del giro, y la rosca entra en una pletina de 7075 apoyada del otro lado de la chapa. Al apretar, los dientes de paso 2 mm de la pletina engranan con los de la chapa a los dos lados de la ranura. El golpe va a los dientes del lado interior, que es macizo, y no al borde.",
-  dl:[["Sin piezas","La punta del tornillo se recalca después del montaje. La pletina es más ancha que la ranura y no puede pasar. Aflojando, todo desliza pero nada se suelta."],["Ajuste","Aflojar media vuelta, correr, apretar. En el tope se afloja igual para girar el holder."],["Mecanizado","Dentado a 90° con fresa de chaflán o de grabado, paso 2, 0,8 de profundidad. Conviene anodizado duro por desgaste."]]},
- {t:"C · Ranura en T cerrada con taco dentado",tag:["pos","cada 2 mm"],figs:[F.tYZ,F.tXZ],
-  p:"La ranura se mecaniza desde la cara del holder con fresa en T, y no atraviesa la cara superior. El borde exterior queda unido a esa cara entera, como un cajón cerrado, y no como una tira suelta. El taco roscado vive adentro y su cara dentada traba contra el techo de la ranura cada 2 mm.",
-  dl:[["Sin piezas","El taco queda encerrado: un extremo de la ranura es ciego y el otro se cierra con un pasador a presión después de meterlo. El tornillo se retiene con cuello rebajado en el holder."],["Requisito","Chapa de 4 mm o más en esa zona, y la ranura 2 mm más adentro para dejar 2,8 de pared."],["Ventaja","No hay ningún corte visible del lado de la cara superior, que queda lisa."]]},
- {t:"D · Retén de bola cada 2 mm",tag:["aux","complemento"],figs:[F.bola],
-  p:"Un émbolo de bola a presión en el holder y una fila de conos de centrado cada 2 mm en la chapa, del lado macizo. Da el clic y sostiene la posición mientras se aprieta. Solo, no aguanta un golpe fuerte: va junto con B o C.",
-  dl:[["Sin piezas","Émbolo con cuerpo liso a presión y labio recalcado sobre el holder."],["Mecanizado","Conos con mecha de centrar a 90°, uno por posición."]]},
+ {t:"Hoy",tag:["cur","problema"],figs:[F.hoy],p:"El holder cuelga bajo una chapa fina y sobresale del canto. Un golpe arriba o abajo de esa parte hace palanca sobre el pin, y la cabeza del pin dobla el borde de 2,3 mm. Un empuje hacia afuera también lo carga, en el plano.",dl:[]},
+ {t:"1 · Pletina guía con alivio sobre el borde",tag:["pos","continua"],figs:[F.c1YZ,F.c1XZ],
+  p:"El pin pasa a ser un tornillo con resalte, que sigue siendo el eje del giro, y rosca en una pletina de 7075 del otro lado de la chapa. La pletina apoya solo del lado macizo y queda separada 0,3 mm del borde. Así la palanca de un golpe se cierra entre el extremo del holder y la pletina, sobre material entero. Dos lengüetas en la ranura reparten los empujes en X e Y a lo largo de 17 mm y evitan que la pletina gire.",
+  dl:[["Sin piezas","Punta del tornillo recalcada tras el montaje. La pletina es más ancha que la ranura y queda atrapada."],["Fijación","Por fricción, en cualquier posición. Se puede sumar el retén de bola para tener un clic cada 2 mm."],["Giro final","La pletina sigue en la ranura por sus lengüetas y el holder gira sobre el resalte."]]},
+ {t:"2 · Leva excéntrica en lugar de tornillo",tag:["pos","continua"],figs:[F.leva],
+  p:"Es la misma pletina de la opción 1, pero el tornillo se reemplaza por un eje con excéntrica y palanca bajo el holder. Un cuarto de vuelta aprieta y otro afloja, sin herramienta. La palanca queda plegada contra el holder.",
+  dl:[["Sin piezas","El eje se remacha en la pletina y la leva queda retenida por el eje."],["Ajuste fino","La excéntrica fija la fuerza de apriete: conviene una arandela ondulada o un resalte calibrado para compensar tolerancias."],["Cuidado","Que la palanca plegada no sobresalga del holder ni se abra con vibración. Le va bien un pequeño retén de bola."]]},
+ {t:"3 · Ranura más adentro",tag:["aux","refuerzo"],figs:[F.adentro],
+  p:"Si se puede tocar el holder, alejar la ranura del canto es lo más directo. Corriéndola 3,5 mm hacia adentro, el borde pasa de 2,3 a 5,8 mm. Se combina con la opción 1 o la 2.",
+  dl:[["Costo","El pivote se aleja del centro de la bobina: hay que alargar el prisma unos 3,5 mm o aceptar que el holder quede más adentro del chasis."],["Efecto en el giro","La extensión por rotación crece en la misma medida, porque depende de la distancia del pivote al centro."]]},
+ {t:"B · Pletina dentada (cada 2 mm)",tag:["aux","discreta"],figs:[F.pletinaYZ,F.pletinaXZ],
+  p:"Es la opción 1 con dientes de paso 2 mm entre la pletina y la chapa: da traba positiva en lugar de fricción. Conviene si un golpe en X no debe poder correr el holder.",dl:[]},
+ {t:"D · Retén de bola",tag:["aux","complemento"],figs:[F.bola],
+  p:"Un émbolo de bola a presión en el holder y conos de centrado cada 2 mm en la chapa. Da el clic y sostiene la posición mientras se aprieta la pletina. Se suma a la 1 o la 2.",
+  dl:[["Sin piezas","Émbolo con cuerpo liso a presión y labio recalcado sobre el holder."]]},
 ];
 document.getElementById("cards").innerHTML=cards.map(c=>`
  <article class="card">
