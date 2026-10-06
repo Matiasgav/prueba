@@ -69,8 +69,8 @@ dd { margin: 0; font: 14px var(--f-mono); font-variant-numeric: tabular-nums; te
 
 <div class="wrap">
   <header>
-    <h1>Eslabón de ancho regulable · doble Scott Russell · v2 reforzada</h1>
-    <p>190 × 13 mm, ancho de 35 a 105 mm, aluminio 7075-T651 mecanizado y pernos templados en doble corte. Mové el ancho para ver el mecanismo y cuánta carga aguanta entre ejes en esa posición.</p>
+    <h1>Eslabón de ancho regulable · doble Scott Russell · v3</h1>
+    <p>190 × 13 mm, ancho de 35 a 105 mm, aluminio 7075-T651 mecanizado, pivotes Ø5 templados en doble corte y precargados con arandela ondulada. Mové el ancho para ver el mecanismo y cuánta carga aguanta entre ejes en esa posición.</p>
   </header>
   <div class="main">
     <div class="view" id="view">
@@ -140,8 +140,8 @@ const fill = new THREE.DirectionalLight(0xffffff, 0.25); fill.position.set(200, 
 
 const NOMBRES = {
   barra_A: "Barra A (lado fijo)", barra_B: "Barra B (columna y canal)", carro: "Carro",
-  trinquete: "Trinquete dentado", eslabon_1: "Eslabón largo 1 con quilla", eslabon_2: "Eslabón largo 2",
-  placa_corta_inf: "Eslabón corto (2 placas)", perno: "Pernos D4 templados", tornillo: "Tornillo cónico M4"
+  trinquete: "Trinquete dentado", eslabon_1: "Eslabón largo 1 (vientre hacia B)", eslabon_2: "Eslabón largo 2 (vientre hacia A)",
+  placa_corta_inf: "Eslabón corto (2 placas)", perno: "Pernos Ø5 templados", arandela: "Arandelas de precarga", tornillo: "Tornillo cónico M4"
 };
 const geoms = {}, mats = {};
 for (const [k, m] of Object.entries(GEO.mallas)) {
@@ -157,12 +157,13 @@ const inst = {};
 function add(nombre, pieza) {
   const grp = new THREE.Group();
   grp.add(new THREE.Mesh(geoms[pieza], mats[pieza]));
-  if (pieza !== "perno" && pieza !== "barra_B") grp.add(new THREE.LineSegments(new THREE.EdgesGeometry(geoms[pieza], 30), edgeMat));
+  if (pieza !== "perno" && pieza !== "arandela" && pieza !== "barra_B") grp.add(new THREE.LineSegments(new THREE.EdgesGeometry(geoms[pieza], 30), edgeMat));
   scene.add(grp); inst[nombre] = grp;
 }
 [["barra_A","barra_A"],["barra_B","barra_B"],["carro","carro"],["trinquete","trinquete"],["tornillo","tornillo"],
  ["l1","eslabon_1"],["l2","eslabon_2"],["ci","placa_corta_inf"],["cs","placa_corta_sup"],
- ["pQ1","perno"],["pQ2","perno"],["pP1","perno"],["pP2","perno"],["pC","perno"],["pO","perno"]].forEach(([n, p]) => add(n, p));
+ ["pQ1","perno"],["pQ2","perno"],["pP1","perno"],["pP2","perno"],["pC","perno"],["pO","perno"],
+ ["aQ1","arandela"],["aQ2","arandela"],["aP1","arandela"],["aP2","arandela"],["aC","arandela"],["aO","arandela"]].forEach(([n, p]) => add(n, p));
 
 function pose(w) {
   const xq = P.D_A, xo = w - P.D_B, s = xo - xq, p = Math.sqrt(P.L2 ** 2 - s ** 2), xb = w - P.BWB;
@@ -175,6 +176,8 @@ function pose(w) {
   set("ci", O[0], O[1], aC); set("cs", O[0], O[1], aC);
   set("pQ1", ...Q1); set("pQ2", xq, P.Y0 + P.DP); set("pP1", ...P1); set("pP2", xo, P1[1] + P.DP);
   set("pC", ...C); set("pO", ...O);
+  set("aQ1", ...Q1); set("aQ2", xq, P.Y0 + P.DP); set("aP1", ...P1); set("aP2", xo, P1[1] + P.DP); set("aC", ...C); set("aO", ...O);
+  inst.aO.position.z = P.DZ_O;
   return { s, p, ang: aL * 180 / Math.PI };
 }
 

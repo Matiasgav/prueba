@@ -31,8 +31,9 @@ import secciones as S
 # ---------------------------------------------------------------- materiales
 AL = dict(nombre="7075-T651", Sy=503.0, Su=572.0, E=71700.0)
 AL["tau_y"] = 0.577 * AL["Sy"]
-PERNO = dict(nombre="ISO 8734 4m6 templado", d=4.0,
-             corte_doble_rotura=19.7e3,      # carga mínima de corte doble según ISO 8734
+_CORTE_ISO8734 = {4.0: 19.7e3, 5.0: 30.8e3, 6.0: 44.2e3}   # corte doble mínimo de rotura, ISO 8734
+PERNO = dict(nombre=f"pasador templado Ø{E.D_PERNO:g}", d=E.D_PERNO,
+             corte_doble_rotura=_CORTE_ISO8734[E.D_PERNO],
              sigma_flexion=1500.0)           # admisible a flexión (acero templado 550-650 HV)
 PERNO["corte_doble_fluencia"] = 0.75 * PERNO["corte_doble_rotura"]
 F_BRY_MAX = 1.5                               # aplastamiento admisible máximo = 1,5 Sy (e/D >= 1,5)
