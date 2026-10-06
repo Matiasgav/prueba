@@ -56,10 +56,14 @@ HOLG_PLANO = 0.3              # juego en el plano entre piezas que se mueven
 
 # capas
 Z_MED = (3.0, 10.0)                       # eslabones largos
-PIEL = 0.6                                # piel de las barras que tapa los rebajes del eslabón corto
-Z_PLACA = ((PIEL, 2.8), (10.2, ESP - PIEL))  # placas del eslabón corto, hundidas bajo la piel
+ALA = 1.5                                 # alas del riel de B: tapan el carro y trabajan con la columna
+Z_CANAL = (ALA, ESP - ALA)                 # interior del riel
+Z_CARRO = (ALA + HOLG, ESP - ALA - HOLG)   # el carro corre entre las alas
+Z_CORTO = (4.2, 8.8)                       # eslabón corto de una pieza, embutido en el eslabón 1
+Z_EMBOC = (Z_CORTO[0] - HOLG, Z_CORTO[1] + HOLG)
+Z_VIENTRE = (Z_CARRO[0], Z_CARRO[1])       # el vientre del eslabón 1 se engrosa cerca de C
 Z_MED_CORTE = (Z_MED[0] - HOLG, Z_MED[1] + HOLG)
-Z_PLACA_CORTE = ((PIEL - HOLG, Z_PLACA[0][1] + HOLG), (Z_PLACA[1][0] - HOLG, ESP - PIEL + HOLG))
+Z_PLACA_CORTE = (Z_EMBOC,)                 # el corto barre solo la capa central
 
 # Geometría principal. configurar() recalcula todo lo que depende de estos valores.
 #   D_A      línea de pivotes Q1-Q2, medida desde la cara exterior de A
@@ -71,7 +75,7 @@ COLA = 7.0                                 # carro por encima de P2: solo cierra
 Y_FIN_CARRO = 185.0                        # el canal corre por dentro del eje de acople (otra zona de la columna)
 R_OJO_MAX = 4.5                            # ojo máximo: deja nervio en el fondo de las horquillas
 Y0 = 15.0                                  # recta O-Q1
-R_CORTO = 4.5                              # semiancho de las placas cortas (ojo igual a los largos)
+R_CORTO = 4.5                              # semiancho del eslabón corto (ojo igual a los largos)
 # Vientres de los eslabones largos (arco R_GOTA tangente a los ojos). Profundidades máximas
 # halladas con ajuste_vientres.py: el eslabón 1 no toca la columna de B a W mínimo y el 2 no
 # come la barra A más allá del fondo que ya deja el ojo.
@@ -85,7 +89,7 @@ ARANDELA = dict(d_int=D_PERNO + 0.2, d_ext=7.9, rebaje=0.15, alto=0.25)
 
 def configurar(d_a=6.5, e_b=6.3, columna=10.5, gap_min=0.8, margen_l2=4.0):
     global D_A, E_B, COLUMNA, GAP_MIN, C_CARRO, BWB, BWA, D_B, S_MIN, L2, L1, P_MAX, DP
-    global SEP_MIN, R_OJO, CARRO_Y, TRINQ_Y
+    global SEP_MIN, R_OJO, CARRO_Y, TRINQ_Y, X_LLAVE
     D_A, E_B, COLUMNA, GAP_MIN = d_a, e_b, columna, gap_min
     C_CARRO = E_B + R_ANILLO + 0.6
     BWB = C_CARRO + COLUMNA
@@ -102,6 +106,7 @@ def configurar(d_a=6.5, e_b=6.3, columna=10.5, gap_min=0.8, margen_l2=4.0):
     CARRO_Y = (-6.0, DP + COLA)
     # trinquete justo arriba de P1, del lado de la columna: zona que ningún eslabón barre
     TRINQ_Y = (R_OJO + HOLG_PLANO + 1.2, R_OJO + HOLG_PLANO + 1.2 + TRINQ_LARGO)
+    X_LLAVE = C_CARRO - TRINQ_PROF - 1.5
 
 
 TRINQ_PROF = 4.0
@@ -109,6 +114,7 @@ TRINQ_Z = (3.8, 9.2)
 PASO_DIENTE = 0.5
 ALTO_DIENTE = 0.3
 GANCHO = 2.9                               # cuánto entran los ganchos del carro en la columna
+ANCHO_RANURA = 3.2                         # ranura del ala superior para la llave del tornillo cónico
 
 
 def cinematica(w):
@@ -429,37 +435,54 @@ def barra_a():
 
 
 def barra_b():
+    """Columna + riel en C: las alas de 1,5 mm tapan el carro y trabajan con la columna.
+    El canal se abre en la punta de y = 190 para meter el carro y se cierra con una tapa."""
     b = barra_base(BWB, exterior_izq=False)
     b = agujeros_acople(b, BWB - X_ACOPLE)
     huella = box(-1, -1, BWB + 1, LARGO + 1)
-    y0c, y1c = canal_carro()
-    b = b.cut(caja(-1, C_CARRO + HOLG, y0c, y1c, -1, ESP + 1))
-    # alojamiento de los ganchos del carro (abajo y arriba, simétricos)
+    y0c, _ = canal_carro()
     c = C_CARRO
-    # canal de los ganchos: cuello pegado a la cara (abajo y arriba) + bolsillo del pie;
-    # entre ambos queda el labio de la columna (x c+0,1..c+1,6), que cuelga de la capa media
-    for (zc0, zc1), (zp0, zp1) in (((-1, 1.7), (-1, 3.0)), ((ESP - 1.7, ESP + 1), (ESP - 3.0, ESP + 1))):
-        b = b.cut(caja(-1, c + GANCHO + 0.1, y0c, y1c, zc0, zc1))
-        b = b.cut(caja(c + 1.6, c + GANCHO + 0.1, y0c, y1c, zp0, zp1))
+    b = b.cut(caja(-1, c + HOLG, y0c, LARGO + 1, *Z_CANAL))
+    # ganchos del carro por debajo de las alas: cuello + bolsillo del pie; queda el labio de la columna
+    for (zc0, zc1), (zp0, zp1) in (((Z_CANAL[0], Z_CANAL[0] + 1.0), (Z_CANAL[0], Z_CANAL[0] + 1.9)),
+                                   ((Z_CANAL[1] - 1.0, Z_CANAL[1]), (Z_CANAL[1] - 1.9, Z_CANAL[1]))):
+        b = b.cut(caja(-1, c + GANCHO + 0.1, y0c, LARGO + 1, zc0, zc1))
+        b = b.cut(caja(c + 1.6, c + GANCHO + 0.1, y0c, LARGO + 1, zp0, zp1))
     # cremallera en la cara de la columna (capa media)
-    b = b.cut(dientes(c + HOLG, y0c, y1c, *TRINQ_Z, +1))
+    b = b.cut(dientes(c + HOLG, y0c, LARGO, *TRINQ_Z, +1))
     b = cortar(b, barrido(["eslabon1", "eslabon2"], "B").intersection(huella), [Z_MED_CORTE])
-    # en el bloque de O la barra es casi maciza: el rebaje se redondea con más radio para que no quede la V
+    # alojamiento del eslabón corto en el bloque de O (capa central, oculto)
     corto = barrido(["corto"], "B", 5.0).intersection(huella)
     corto = redondear_con_cara(corto, box(-10, -5, 0, LARGO + 5), 4.0).intersection(huella)
-    b = cortar(b, corto, Z_PLACA_CORTE)   # rebaje interior, tapado por la piel de las caras
+    b = cortar(b, corto, Z_PLACA_CORTE)
     b = b.cut(cil_z(E_B, Y0, D_PERNO, -1, ESP + 1))
-    b = rebaje_arandela(b, E_B, Y0, Z_PLACA_CORTE[1][0])
-    return b
+    # ranura fina en el ala superior para la llave del tornillo cónico
+    ys = [Y0 + cinematica(w)["p"] + sum(TRINQ_Y) / 2 for w in (W_MIN, W_MAX)]
+    ranura = (cq.Workplane("XY").workplane(offset=Z_CANAL[1] - 0.5)
+              .center(X_LLAVE, (ys[0] + ys[1]) / 2).slot2D(abs(ys[0] - ys[1]) + ANCHO_RANURA, ANCHO_RANURA, 90)
+              .extrude(ALA + 1.0))
+    return b.cut(ranura)
+
+
+def tapa():
+    """Cierra la boca del riel en la punta de y = 190 (va atornillada a la columna)."""
+    c = C_CARRO
+    y0 = canal_carro()[1] + 0.2
+    t = caja(0, c + HOLG, y0, LARGO, *Z_CANAL)
+    for (zc0, zc1), (zp0, zp1) in (((Z_CANAL[0], Z_CANAL[0] + 1.0), (Z_CANAL[0], Z_CANAL[0] + 1.9)),
+                                   ((Z_CANAL[1] - 1.0, Z_CANAL[1]), (Z_CANAL[1] - 1.9, Z_CANAL[1]))):
+        t = t.union(caja(c, c + GANCHO + 0.1, y0, LARGO, zc0, zc1))
+        t = t.union(caja(c + 1.6, c + GANCHO + 0.1, y0, LARGO, zp0, zp1))
+    return t
 
 
 def carro():
     c = C_CARRO
-    k = caja(0, c, CARRO_Y[0], CARRO_Y[1], 0, ESP)
+    k = caja(0, c, CARRO_Y[0], CARRO_Y[1], *Z_CARRO)
     k = k.edges("|Z").edges("<X").fillet(R_PUNTA)
-    k = k.edges("|Y").edges("<X").chamfer(CANTO)
-    # ganchos: cuello en la cara (abajo y arriba) y pie que sube detrás del labio de la columna
-    for (zc0, zc1), (zp0, zp1) in (((0, 1.6), (0, 2.9)), ((ESP - 1.6, ESP), (ESP - 2.9, ESP))):
+    # ganchos: cuello pegado al ala y pie que sube detrás del labio de la columna
+    for (zc0, zc1), (zp0, zp1) in (((Z_CARRO[0], Z_CARRO[0] + 0.8), (Z_CARRO[0], Z_CARRO[0] + 1.7)),
+                                   ((Z_CARRO[1] - 0.8, Z_CARRO[1]), (Z_CARRO[1] - 1.7, Z_CARRO[1]))):
         k = k.union(caja(c - 0.01, c + GANCHO, CARRO_Y[0], CARRO_Y[1], zc0, zc1))
         k = k.union(caja(c + 1.7, c + GANCHO, CARRO_Y[0], CARRO_Y[1], zp0, zp1))
     huella = box(-1, CARRO_Y[0] - 1, c + 3, CARRO_Y[1] + 1)
@@ -467,9 +490,9 @@ def carro():
     k = cortar(k, barrido(["corto"], "carro", SUAVE).intersection(huella), Z_PLACA_CORTE)
     for y in (0.0, DP):
         k = k.cut(cil_z(E_B, y, D_PERNO, -1, ESP + 1))
-    # alojamiento del trinquete y tornillo cónico
+    # alojamiento del trinquete y tornillo cónico (se aprieta desde arriba por la ranura del ala)
     k = k.cut(caja(c - TRINQ_PROF - 0.1, c + 1, *TRINQ_Y, TRINQ_Z[0] - 0.1, TRINQ_Z[1] + 0.1))
-    k = k.cut(cil_z(c - TRINQ_PROF - 1.5, sum(TRINQ_Y) / 2, 4.0, TRINQ_Z[0], ESP + 1))
+    k = k.cut(cil_z(X_LLAVE, sum(TRINQ_Y) / 2, 4.0, TRINQ_Z[0], ESP + 1))
     return k
 
 
@@ -478,16 +501,15 @@ def trinquete():
     c = C_CARRO
     y0, y1 = TRINQ_Y[0] + 0.1, TRINQ_Y[1] - 0.1
     t = caja(c - TRINQ_PROF, c - ALTO_DIENTE - 0.05, y0, y1, *TRINQ_Z)
-    t = t.union(dientes(c - ALTO_DIENTE - 0.05, y0, y1, *TRINQ_Z, +1, fase=0.25).translate((0, 0, 0)))
-    t = t.cut(cil_z(c - TRINQ_PROF - 1.5, sum(TRINQ_Y) / 2, 4.1, TRINQ_Z[0] - 1, ESP))
+    t = t.union(dientes(c - ALTO_DIENTE - 0.05, y0, y1, *TRINQ_Z, +1, fase=0.25))
+    t = t.cut(cil_z(X_LLAVE, sum(TRINQ_Y) / 2, 4.1, TRINQ_Z[0] - 1, ESP))
     return t
 
 
 def tornillo_conico():
     y = sum(TRINQ_Y) / 2
-    x = C_CARRO - TRINQ_PROF - 1.5
-    cuerpo = cil_z(x, y, 4.0, 6.0, ESP - 0.5)
-    punta = cq.Workplane("XY").workplane(offset=4.0).center(x, y).circle(0.5).workplane(offset=2.0).circle(2.0).loft()
+    cuerpo = cil_z(X_LLAVE, y, 4.0, 6.0, Z_CARRO[1] - 0.1)
+    punta = cq.Workplane("XY").workplane(offset=4.0).center(X_LLAVE, y).circle(0.5).workplane(offset=2.0).circle(2.0).loft()
     return cuerpo.union(punta)
 
 
@@ -513,9 +535,38 @@ def rebaje_arandela(sol, x, y, z_cara):
     return sol.cut(anillo)
 
 
+LARGO_VIENTRE = 22.0       # semilargo de la zona gruesa del vientre, a cada lado de C
+
+
+def zona_vientre():
+    """Parte del vientre del eslabón 1 que se engrosa (lado de B, lejos del eje y cerca de C)."""
+    lado = -LADO_VIENTRE1
+    franja = box(L1 - LARGO_VIENTRE, -40, L1 + LARGO_VIENTRE, -(R_OJO + HOLG_PLANO)) if LADO_VIENTRE1 < 0 else \
+        box(L1 - LARGO_VIENTRE, R_OJO + HOLG_PLANO, L1 + LARGO_VIENTRE, 40)
+    return perfil_eslabon1().intersection(franja).buffer(-0.01)
+
+
+def embocadura():
+    """Barrido del eslabón corto en el marco del eslabón 1: hueco central donde se embute."""
+    polys = []
+    for w in ANCHOS_BARRIDO:
+        k = cinematica(w)
+        corto = colocar(perfil_corto(), k["O"], k["ang_corto"])
+        loc = affinity.rotate(affinity.translate(corto, -k["Q1"][0], -k["Q1"][1]), -k["ang_largo"],
+                              origin=(0, 0), use_radians=True)
+        polys.append(loc)
+    return unary_union(polys).buffer(HOLG_PLANO, 16).simplify(0.01)
+
+
 def eslabon1():
     sol = pieza_miembro(lambda wp: _tramos_a_cq(wp, tramos_eslabon1()), Z_MED, [0.0, L1, L2])
+    zona = extruir(zona_vientre(), *Z_VIENTRE)
+    if zona is not None:
+        sol = sol.union(zona)
+    sol = cortar(sol, embocadura().intersection(perfil_eslabon1().buffer(1)), [Z_EMBOC])
     for x in (0.0, L1, L2):
+        sol = sol.cut(cil_z(x, 0, D_PERNO, -1, ESP + 1))
+    for x in (0.0, L2):
         sol = rebaje_arandela(sol, x, 0, Z_MED[1])
     return sol
 
@@ -534,8 +585,12 @@ def arandela():
             .circle(a["d_int"] / 2 + 0.05).extrude(a["alto"] - 0.01))
 
 
-def placa_corta(z):
-    return pieza_miembro(_contorno_estadio(L1, R_CORTO), z, [0.0, L1])
+def eslabon_corto():
+    """Eslabón corto de una pieza, embutido en el eslabón 1 (C) y en la horquilla de B (O)."""
+    sol = pieza_miembro(_contorno_estadio(L1, R_CORTO), Z_CORTO, [0.0, L1])
+    for x in (0.0, L1):
+        sol = rebaje_arandela(sol, x, 0, Z_CORTO[1])
+    return sol
 
 
 def perno():
@@ -543,8 +598,13 @@ def perno():
 
 
 def perno_c():
-    """Perno de C: queda entre las placas hundidas, sin llegar a la piel de las barras."""
-    return cil_z(0, 0, D_PERNO, Z_PLACA[0][0], Z_PLACA[1][1])
+    """Perno de C: atraviesa las dos alas de la embocadura del eslabón 1."""
+    return cil_z(0, 0, D_PERNO, Z_MED[0], Z_MED[1])
+
+
+def perno_p():
+    """Pernos P1 y P2: ocultos bajo las alas del riel."""
+    return cil_z(0, 0, D_PERNO, Z_CARRO[0], Z_CARRO[1])
 
 
 def perno_a():
@@ -562,8 +622,9 @@ PIEZAS = {
     "tornillo": tornillo_conico,
     "eslabon_1": eslabon1,
     "eslabon_2": eslabon2,
-    "placa_corta_inf": lambda: placa_corta(Z_PLACA[0]),
-    "placa_corta_sup": lambda: placa_corta(Z_PLACA[1]),
+    "eslabon_corto": eslabon_corto,
+    "tapa": tapa,
+    "perno_P": perno_p,
     "perno": perno,
     "perno_A": perno_a,
     "perno_C": perno_c,
@@ -574,7 +635,7 @@ COLORES = {
     "barra_A": (0.55, 0.60, 0.66), "barra_B": (0.55, 0.60, 0.66),
     "carro": (0.85, 0.45, 0.15), "trinquete": (0.95, 0.75, 0.25), "tornillo": (0.20, 0.20, 0.22),
     "eslabon_1": (0.20, 0.45, 0.80), "eslabon_2": (0.35, 0.60, 0.90),
-    "placa_corta_inf": (0.15, 0.65, 0.45), "placa_corta_sup": (0.15, 0.65, 0.45),
+    "eslabon_corto": (0.15, 0.65, 0.45), "tapa": (0.55, 0.60, 0.66), "perno_P": (0.85, 0.85, 0.85),
     "perno": (0.85, 0.85, 0.85), "perno_A": (0.85, 0.85, 0.85), "perno_C": (0.85, 0.85, 0.85), "arandela": (0.70, 0.72, 0.75),
 }
 
@@ -593,13 +654,13 @@ def poses(w):
         ("tornillo", "tornillo", (xb, yc, 0), 0),
         ("eslabon_1", "eslabon_1", (*k["Q1"], 0), al),
         ("eslabon_2", "eslabon_2", (*k["Q2"], 0), al),
-        ("placa_corta_inf", "placa_corta_inf", (*k["O"], 0), ac),
-        ("placa_corta_sup", "placa_corta_sup", (*k["O"], 0), ac),
+        ("eslabon_corto", "eslabon_corto", (*k["O"], 0), ac),
+        ("tapa", "tapa", (xb, 0, 0), 0),
     ]
     for n in ("Q1", "Q2", "P1", "P2", "C", "O"):
-        tipo = "perno_A" if n in ("Q1", "Q2") else ("perno_C" if n == "C" else "perno")
+        tipo = {"Q1": "perno_A", "Q2": "perno_A", "C": "perno_C", "P1": "perno_P", "P2": "perno_P"}.get(n, "perno")
         r.append((f"perno_{n}", tipo, (*k[n], 0), 0))
-        dz = Z_PLACA_CORTE[1][0] - Z_MED[1] if n == "O" else 0.0
+        dz = Z_CORTO[1] - Z_MED[1] if n in ("C", "O") else 0.0
         r.append((f"arandela_{n}", "arandela", (*k[n], dz), 0))
     return r
 
@@ -670,7 +731,7 @@ if __name__ == "__main__":
         geo = {
             "param": {"LARGO": LARGO, "ESP": ESP, "W_MIN": W_MIN, "W_MAX": W_MAX, "BWA": BWA, "BWB": BWB,
                       "D_A": D_A, "D_B": D_B, "L2": L2, "Y0": Y0, "DP": DP, "PASO": PASO_DIENTE,
-                      "X_ACOPLE": X_ACOPLE, "DZ_O": Z_PLACA_CORTE[1][0] - Z_MED[1]},
+                      "X_ACOPLE": X_ACOPLE, "DZ_O": Z_CORTO[1] - Z_MED[1]},
             "colores": {k: "#%02x%02x%02x" % tuple(int(c * 255) for c in v) for k, v in COLORES.items()},
             "mallas": {k: malla_json(f) for k, f in piezas.items()},
         }
