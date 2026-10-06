@@ -165,12 +165,13 @@ for (const [k, m] of Object.entries(GEO.mallas)) {
   geoms[k] = g;
   mats[k] = new THREE.MeshStandardMaterial({ color: GEO.colores[k], metalness: 0.25, roughness: 0.55 });
 }
-/* acabado real: barras y carro de 7075 anodizado gris oscuro, eslabones de 17-4PH, pernos templados */
+/* acabado real: barras, carro y tapa de 7075 anodizado natural granallado (gris claro);
+   eslabones de 17-4PH pavonados (óxido negro); pernos templados y arandelas de acero */
 const ACABADO = {
-  barra_A: [0x3b4048, 0.35, 0.45], barra_B: [0x3b4048, 0.35, 0.45], tapa: [0x3b4048, 0.35, 0.45], carro: [0x3b4048, 0.35, 0.45],
-  eslabon_1: [0xc9ccd1, 0.75, 0.28], eslabon_2: [0xc9ccd1, 0.75, 0.28], eslabon_corto: [0xc9ccd1, 0.75, 0.28],
-  perno: [0xe4e6e9, 0.8, 0.2], perno_A: [0xe4e6e9, 0.8, 0.2], perno_C: [0xe4e6e9, 0.8, 0.2], perno_P: [0xe4e6e9, 0.8, 0.2],
-  arandela: [0xb8bcc2, 0.7, 0.3]
+  barra_A: [0x9aa0a8, 0.5, 0.45], barra_B: [0x9aa0a8, 0.5, 0.45], tapa: [0x9aa0a8, 0.5, 0.45], carro: [0x9aa0a8, 0.5, 0.45],
+  eslabon_1: [0x232528, 0.45, 0.5], eslabon_2: [0x232528, 0.45, 0.5], eslabon_corto: [0x232528, 0.45, 0.5],
+  perno: [0x6f747a, 0.8, 0.3], perno_A: [0x6f747a, 0.8, 0.3], perno_C: [0x6f747a, 0.8, 0.3], perno_P: [0x6f747a, 0.8, 0.3],
+  arandela: [0x5c6066, 0.7, 0.35]
 };
 const edgeMat = new THREE.LineBasicMaterial({ color: 0x1c2530, transparent: true, opacity: 0.3 });
 const inst = {};

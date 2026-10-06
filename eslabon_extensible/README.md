@@ -1,6 +1,6 @@
 # Eslabón de ancho regulable (doble Scott Russell) — v9
 
-Modelo 3D paramétrico en CadQuery de un eslabón de **190 × 13 mm** (barra B de 190, barra A de 165) cuyo **ancho se regula a mano entre 35 y 105 mm**. Está pensado para mecanizar: barras y carro en **aluminio 7075-T651**, eslabones en **acero inoxidable 17-4PH**, con pivotes templados y precargados.
+Modelo 3D paramétrico en CadQuery de un eslabón de **190 × 13 mm** (barra B de 190, barra A de 165) cuyo **ancho se regula a mano entre 35 y 105 mm**. Está pensado para mecanizar: barras y carro en **aluminio 7075-T651** anodizado natural granallado (gris claro), eslabones en **acero inoxidable 17-4PH pavonado negro** (óxido negro), con pivotes templados y precargados.
 
 ![Isométrica a W = 35 mm, barras transparentes](img/iso_W35.png)
 ![Cable a W = 70 mm](img/cable_W70.png)
@@ -32,7 +32,7 @@ El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) 
 - **Pivotes Ø5 en doble corte, precargados.** Pasador rectificado g6, a presión en las mejillas. Una arandela ondulada de acero, en un rebaje de 0,15 mm del ojo, elimina el juego axial y mantiene las caras en contacto, lo que hace al conjunto firme contra el alabeo.
 - **Cable Ø4 oculto, de largo fijo.** Entra por el lateral de B, rodea O, sigue el lado de afuera del eslabón corto, pasa por encima de C, baja por el lado de afuera del eslabón 1, rodea Q1 y sale por el lateral de A. En los tres pivotes gira por afuera a R 7: los giros suman siempre 180°, así que el largo es 124,8 mm en todo el recorrido. Dentro de las barras hace curvas fijas de R 5. Los ojos de los eslabones hacen de polea. Ver [el esquema](img/cable_recorrido.png).
 - **Lateral exterior en semicilindro R 6,5** a todo lo largo de las dos barras; las puntas (caras de 13 × ancho) son planas. Los pernos Q1 y Q2 quedan al ras de la superficie curva.
-- **Terminación:** bisel de 0,3 mm en las aristas exteriores y agujeros de acople avellanados.
+- **Terminación:** bisel de 0,3 mm en las aristas exteriores y agujeros de acople avellanados. Barras, carro y tapa con anodizado natural sobre granallado; eslabones pavonados en negro (óxido negro, acabado estándar del proveedor, 0 a 30 µm: no afecta los ajustes).
 
 ## Requisitos
 
