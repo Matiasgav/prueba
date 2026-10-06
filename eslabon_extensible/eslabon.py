@@ -18,7 +18,7 @@ de anchos, así se quita solo el material imprescindible.
 Piezas:
   barra A        lado fijo, pivotes Q1 y Q2
   barra B        columna exterior + bloque del pivote O + canal del carro con cremallera
-  carro          corre en el canal de B, retenido por ganchos; lleva P1 y P2 y el trinquete
+  carro          corre en el canal de B, retenido por ganchos; lleva P1 y P2 y, entre ellos, el trinquete
   eslabón 1      lado del paralelogramo con vientre en gota hacia B (trabaja a flexión), agujero en C
   eslabón 2      lado del paralelogramo (biela), vientre hacia A
   placa corta    x2, eslabón corto del Scott Russell (O-C)
@@ -66,7 +66,7 @@ Z_PLACA_CORTE = ((-1.0, Z_PLACA[0][1] + HOLG), (Z_PLACA[1][0] - HOLG, ESP + 1.0)
 #   COLUMNA  ancho de la columna maciza de B detrás del carro
 #   GAP_MIN  luz entre barras a W mínimo
 TRINQ_LARGO = 6.0                          # trinquete: 11 dientes de paso 0,5
-COLA = 14.0                                # carro por encima de P2: ojo, trinquete y pared final
+COLA = 7.0                                 # carro por encima de P2: solo cierra el ojo de P2
 Y_FIN_CARRO = 185.0                        # el canal corre por dentro del eje de acople (otra zona de la columna)
 R_OJO_MAX = 4.5                            # ojo máximo: deja nervio en el fondo de las horquillas
 Y0 = 15.0                                  # recta O-Q1
@@ -99,7 +99,8 @@ def configurar(d_a=5.5, e_b=6.3, columna=10.5, gap_min=0.8, margen_l2=4.0):
     SEP_MIN = DP * S_MIN / L2
     R_OJO = min(R_OJO_MAX, math.floor((SEP_MIN - 0.5) / 2 * 20) / 20)
     CARRO_Y = (-6.0, DP + COLA)
-    TRINQ_Y = (DP + 6.0, DP + 6.0 + TRINQ_LARGO)
+    # trinquete justo arriba de P1, del lado de la columna: zona que ningún eslabón barre
+    TRINQ_Y = (R_OJO + HOLG_PLANO + 1.2, R_OJO + HOLG_PLANO + 1.2 + TRINQ_LARGO)
 
 
 TRINQ_PROF = 4.0

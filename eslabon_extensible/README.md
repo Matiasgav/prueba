@@ -11,19 +11,19 @@ Fuerza entre los ejes de acople hasta la primera fluencia, tanto en tracción co
 
 | W | 35 | 45 | 50 | 70 | 105 mm |
 |---|---:|---:|---:|---:|---:|
-| Carga a fluencia | 762 | 1.089 | 1.227 | 1.413 | 1.520 N |
-| Carga de trabajo estática (÷ 1,5) | 508 | 726 | 818 | 942 | 1.014 N |
-| Flexibilidad entre ejes | 20,7 | 10,2 | 8,2 | 4,6 | 2,9 mm/kN |
+| Carga a fluencia | 762 | 1.089 | 1.227 | 1.521 | 1.634 N |
+| Carga de trabajo estática (÷ 1,5) | 508 | 726 | 818 | 1.014 | 1.089 N |
+| Flexibilidad entre ejes | 16,5 | 8,4 | 6,8 | 4,0 | 2,6 mm/kN |
 
 El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) está en **[ANALISIS.md](ANALISIS.md)**.
 
 ## Diseño
 
-- **Paralelogramo** de dos eslabones largos (88 mm entre centros), con pivotes separados 69 mm: Q1 y Q2 en la barra A, P1 y P2 en un carro que corre en la barra B.
+- **Paralelogramo** de dos eslabones largos (88 mm entre centros), con pivotes separados 76 mm: Q1 y Q2 en la barra A, P1 y P2 en un carro que corre en la barra B.
 - **Eslabón corto** del Scott Russell (44 mm, dos placas): une el pivote O de B con el punto medio C del eslabón 1. Así Q1 se mueve en línea recta perpendicular a B, y la barra A se traslada sin girar.
 - **Eslabones largos con vientre en arco** (R 60, tangente a los ojos). El eslabón 1 tiene forma de gota hacia B, donde trabaja a flexión. El eslabón 2 es de la misma familia y tiene el vientre hacia A.
 - **Pivotes Ø5 en doble corte, precargados.** Pasador rectificado g6, a presión en las dos mejillas. Una arandela ondulada de acero, en un rebaje de 0,15 mm del ojo, elimina el juego axial y mantiene las caras en contacto, lo que hace al conjunto firme contra el alabeo.
-- **Traba de forma.** Cremallera de 60° y paso 0,5 mm en la columna de B, y trinquete de 11 dientes en el carro, que se aprieta con un tornillo cónico M4 desde arriba. El carro se retiene en X con ganchos en L detrás de un labio de la columna.
+- **Traba de forma.** Cremallera de 60° y paso 0,5 mm en la columna de B, y trinquete de 11 dientes en el carro, entre P1 y P2 y junto a P1, que se aprieta con un tornillo cónico M4 desde arriba. El carro se retiene en X con ganchos en L detrás de un labio de la columna.
 - **Terminación.**
   - Puntas R 4, el mismo radio que los ojos.
   - Bisel de 0,3 mm en las aristas exteriores (el de un rebabado normal).
@@ -45,7 +45,7 @@ El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) 
 |---|---:|---|
 | Barra A | 1 | 12,3 × 190 × 13. Horquillas en Q1 y Q2 (mejillas de 2,9 mm). |
 | Barra B | 1 | 21,9 × 190 × 13. Columna maciza de 10,5 mm con cremallera y labio de retención, canal del carro y lengüeta del pivote O. |
-| Carro | 1 | 11,4 mm de ancho + ganchos. Horquillas en P1 y P2 (69 mm entre centros) y alojamiento del trinquete. |
+| Carro | 1 | 11,4 mm de ancho + ganchos. Horquillas en P1 y P2 (76 mm entre centros) y, entre ellas, el alojamiento del trinquete. |
 | Trinquete | 1 | 11 dientes de 60° y paso 0,5 mm. 7075 o acero. |
 | Tornillo cónico | 1 | M4, prisionero 12.9 con punta cónica. |
 | Eslabón 1 | 1 | 88 mm entre centros, 7 mm de espesor, ojos R 4,5, vientre de 13 mm hacia B. |
