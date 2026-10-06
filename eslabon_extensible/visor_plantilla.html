@@ -79,6 +79,7 @@ dd { margin: 0; font: 14px var(--f-mono); font-variant-numeric: tabular-nums; te
         <button type="button" id="v-top">Planta</button>
         <button type="button" id="v-end">Extremo</button>
         <button type="button" id="ghost" aria-pressed="false">Barras transparentes</button>
+        <button type="button" id="real" aria-pressed="false">Acabado real</button>
       </div>
       <div class="hint">Arrastrar para girar · rueda para zoom</div>
     </div>
@@ -135,6 +136,18 @@ camera.up.set(0, 0, 1);
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 scene.add(new THREE.HemisphereLight(0xffffff, 0x8090a0, 0.75));
+/* entorno suave para que los metales reflejen algo (estudio con dos ventanas de luz) */
+{
+  const env = new THREE.Scene();
+  const caja = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.MeshBasicMaterial({ color: 0x9aa3ad, side: THREE.BackSide }));
+  env.add(caja);
+  for (const [x, y, z, s] of [[0, 0, 4.9, 1.0], [4.9, 2, 1, 0.7], [-4.9, -2, 2, 0.5]]) {
+    const p = new THREE.Mesh(new THREE.PlaneGeometry(6, 3), new THREE.MeshBasicMaterial({ color: new THREE.Color(s, s, s).multiplyScalar(2.2), side: THREE.DoubleSide }));
+    p.position.set(x, y, z); p.lookAt(0, 0, 0); env.add(p);
+  }
+  const pm = new THREE.PMREMGenerator(renderer);
+  scene.environment = pm.fromScene(env, 0.04).texture;
+}
 const sun = new THREE.DirectionalLight(0xffffff, 0.65); sun.position.set(-150, -200, 300); scene.add(sun);
 const fill = new THREE.DirectionalLight(0xffffff, 0.25); fill.position.set(200, 250, 100); scene.add(fill);
 
@@ -152,6 +165,13 @@ for (const [k, m] of Object.entries(GEO.mallas)) {
   geoms[k] = g;
   mats[k] = new THREE.MeshStandardMaterial({ color: GEO.colores[k], metalness: 0.25, roughness: 0.55 });
 }
+/* acabado real: barras y carro de 7075 anodizado gris oscuro, eslabones de 17-4PH, pernos templados */
+const ACABADO = {
+  barra_A: [0x3b4048, 0.35, 0.45], barra_B: [0x3b4048, 0.35, 0.45], tapa: [0x3b4048, 0.35, 0.45], carro: [0x3b4048, 0.35, 0.45],
+  eslabon_1: [0xc9ccd1, 0.75, 0.28], eslabon_2: [0xc9ccd1, 0.75, 0.28], eslabon_corto: [0xc9ccd1, 0.75, 0.28],
+  perno: [0xe4e6e9, 0.8, 0.2], perno_A: [0xe4e6e9, 0.8, 0.2], perno_C: [0xe4e6e9, 0.8, 0.2], perno_P: [0xe4e6e9, 0.8, 0.2],
+  arandela: [0xb8bcc2, 0.7, 0.3]
+};
 const edgeMat = new THREE.LineBasicMaterial({ color: 0x1c2530, transparent: true, opacity: 0.3 });
 const inst = {};
 function add(nombre, pieza) {
@@ -316,6 +336,17 @@ function setView(kind) {
 document.getElementById("v-iso").onclick = () => setView("iso");
 document.getElementById("v-top").onclick = () => setView("top");
 document.getElementById("v-end").onclick = () => setView("end");
+const real = document.getElementById("real");
+real.onclick = () => {
+  const on = real.getAttribute("aria-pressed") !== "true";
+  real.setAttribute("aria-pressed", on);
+  for (const [k, m] of Object.entries(mats)) {
+    const a = ACABADO[k];
+    if (on && a) { m.color.setHex(a[0]); m.metalness = a[1]; m.roughness = a[2]; }
+    else { m.color.set(GEO.colores[k]); m.metalness = 0.25; m.roughness = 0.55; }
+  }
+  edgeMat.opacity = on ? 0.12 : 0.3;
+};
 const ghost = document.getElementById("ghost");
 ghost.onclick = () => {
   const on = ghost.getAttribute("aria-pressed") !== "true";
