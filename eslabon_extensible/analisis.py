@@ -6,8 +6,8 @@ Caso de carga: fuerza F entre los ejes de acople, en la dirección del ancho (X)
   La carga entra repartida en partes iguales por los dos agujeros de cada barra (y = 5 y y = 185).
 
 Con el carro trabado el mecanismo es isostático: la estática da todas las fuerzas internas.
-La traba todavía no está definida: se supone una traba ideal en el frente del carro, contra la
-cara de la columna, y se informa la fuerza que tiene que aguantar (traba_por_N).
+La traba todavía no está definida: se supone una traba ideal en el medio del carro (entre P1 y P2),
+contra la cara de la columna, y se informa la fuerza que tiene que aguantar (traba_por_N).
 Para cada pieza se calcula la tensión por newton de carga y la capacidad es
   F_admisible = tensión admisible / tensión por newton
 en cada modo de falla. Se informa el mínimo y qué lo gobierna.
@@ -50,7 +50,7 @@ T_MED = E.Z_MED[1] - E.Z_MED[0]                          # eslabones largos
 T_CORTO = E.Z_CORTO[1] - E.Z_CORTO[0]               # eslabón corto (una pieza)
 T_MEJ = E.Z_MED_CORTE[0]                                 # mejillas de A
 T_MEJ_K = E.Z_MED_CORTE[0] - E.Z_CARRO[0]                 # mejillas del carro (bajo las alas de B)
-T_ALA_C = E.Z_EMBOC[0] - E.Z_VIENTRE[0]                    # alas del eslabón 1 a cada lado de la embocadura
+T_ALA_C = E.Z_EMBOC[0] - E.Z_MED[0]                        # alas del eslabón 1 a cada lado de la embocadura
 T_MEJ_O = E.Z_EMBOC[0]                                   # B a cada lado del corto en O
 
 
@@ -76,7 +76,7 @@ def estatica(w, F=1.0):
     # carro: recibe -FP1 y -f2*u; B lo sostiene con los ganchos (X repartida) y la traba (Y)
     G1, G2 = -FP1, -f2 * u
     y_c0, y_c1 = Y_CARRO_GLOBAL(k)
-    y_tr = y_c0
+    y_tr = E.Y0 + k["p"] + E.DP / 2      # traba supuesta en el medio del carro, entre P1 y P2
     x_tr = k["xb"] + E.C_CARRO
     Fp = -(G1[1] + G2[1])
     # reparto lineal q(y) = a + b (y - ym) sobre [y_c0, y_c1]; equilibrio en X y de momentos
@@ -352,13 +352,14 @@ class Modelo:
         caps["carro: flexión + axial"] = AL["Sy"] / s
         rig += integ
 
-        # ganchos (arriba y abajo) cuando B tira del carro hacia A, carga q [N/mm] repartida:
-        #   pie del carro (1,2 de espesor, brazo 0,5), cuello del carro (0,8), labio de B (1,5, brazo 0,5)
+        # labios de las alas (arriba y abajo) cuando los eslabones tiran del carro hacia A, carga q [N/mm]:
+        #   cada labio es un voladizo de LABIO_Z que cuelga del ala, ancho LABIO_X, cargado a media altura
         a, b, y0, y1, ym, xg = est["q"]
         qmax = max(abs(a + b * (y0 - ym)), abs(a + b * (y1 - ym)))
         if qmax > 1e-12:
-            q_adm = 2 * min(AL["Sy"] * 1.2 ** 2 / 6 / 0.5, AL["Sy"] * 0.8, AL["Sy"] * 1.5 ** 2 / 6 / 0.5)
-            caps["ganchos del carro"] = q_adm / qmax
+            q_flex = AL["Sy"] * E.LABIO_X ** 2 / 6 / (E.LABIO_Z / 2)
+            q_corte = AL["tau_y"] * E.LABIO_X
+            caps["labios de las alas"] = 2 * min(q_flex, q_corte) / qmax
         # agujeros de acople D5 x 10
         caps["acople: aplastamiento"] = f_bry(1.5) / (0.5 / (E.D_ACOPLE * E.P_ACOPLE))
         return caps, rig, est

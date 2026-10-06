@@ -61,9 +61,9 @@ Z_MED = (3.0, 10.0)                       # eslabones largos
 ALA = 1.5                                 # alas del riel de B: tapan el carro y trabajan con la columna
 Z_CANAL = (ALA, ESP - ALA)                 # interior del riel
 Z_CARRO = (ALA + HOLG, ESP - ALA - HOLG)   # el carro corre entre las alas
-Z_CORTO = (4.2, 8.8)                       # eslabón corto de una pieza, embutido en el eslabón 1
+T_CORTO = 2.5                              # espesor del eslabón corto (solo trabaja a tracción y compresión)
+Z_CORTO = (ESP / 2 - T_CORTO / 2, ESP / 2 + T_CORTO / 2)   # centrado, embutido en el eslabón 1
 Z_EMBOC = (Z_CORTO[0] - HOLG, Z_CORTO[1] + HOLG)
-Z_VIENTRE = (Z_CARRO[0], Z_CARRO[1])       # el vientre del eslabón 1 se engrosa cerca de C
 Z_MED_CORTE = (Z_MED[0] - HOLG, Z_MED[1] + HOLG)
 Z_PLACA_CORTE = (Z_EMBOC,)                 # el corto barre solo la capa central
 
@@ -81,9 +81,9 @@ R_CORTO = 4.5                              # semiancho del eslabón corto (ojo i
 # halladas con ajuste_vientres.py: el eslabón 1 no toca la columna de B a W mínimo y el 2 no
 # come la barra A más allá del fondo que ya deja el ojo.
 R_GOTA = 60.0
-DX_GOTA1 = -12.0                           # el vientre del eslabón 1 se corre hacia Q1 (gota)
-QUILLA = 12.5                              # profundidad del vientre del eslabón 1 (hacia B)
-PANZA_2 = 10.6                             # profundidad del vientre del eslabón 2 (hacia A)
+DX_GOTA1 = 0.0                             # vientre simétrico: los dos eslabones largos son iguales, espejados
+QUILLA = 10.6                              # profundidad del vientre (eslabón 1 hacia B, eslabón 2 hacia A)
+PANZA_2 = QUILLA
 # pivote precargado: arandela ondulada de acero en un rebaje de la cara superior del ojo
 ARANDELA = dict(d_int=D_PERNO + 0.2, d_ext=7.9, rebaje=0.15, alto=0.25)
 
@@ -107,7 +107,10 @@ def configurar(d_a=6.5, e_b=6.3, columna=10.5, gap_min=0.8, margen_l2=4.0):
     CARRO_Y = (-6.0, DP + COLA)
 
 
-GANCHO = 2.9                               # cuánto entran los ganchos del carro en la columna
+# Guía del carro: las alas de B terminan en un labio que baja junto a la cara interior y
+# retiene al carro cuando los eslabones lo tiran hacia A. No hay guía mecanizada en la columna.
+LABIO_X = 1.5                              # ancho del labio (desde la cara interior de B)
+LABIO_Z = 0.9                              # cuánto baja el labio desde el ala
 
 
 def cinematica(w):
@@ -245,8 +248,8 @@ def tramos_eslabon1():
 
 
 def tramos_eslabon2():
-    """Misma familia, vientre hacia el lado libre (+y local, hacia A)."""
-    return _casco([(0.0, 0.0, R_OJO), (L2, 0.0, R_OJO), (L1, PANZA_2 - R_GOTA, R_GOTA)])
+    """Espejo del eslabón 1 respecto de su eje: vientre hacia A (+y local)."""
+    return _casco([(0.0, 0.0, R_OJO), (L2, 0.0, R_OJO), (L1 + DX_GOTA1, PANZA_2 - R_GOTA, R_GOTA)])
 
 
 def perfil_eslabon1():
@@ -271,7 +274,6 @@ def miembros(w):
         "eslabon1": colocar(perfil_eslabon1(), k["Q1"], k["ang_largo"]),
         "eslabon2": colocar(perfil_eslabon2(), k["Q2"], k["ang_largo"]),
         "corto": colocar(perfil_corto(), k["O"], k["ang_corto"]),
-        "vientre1": colocar(zona_vientre(), k["Q1"], k["ang_largo"]),
     }
 
 
@@ -409,7 +411,7 @@ def barra_a():
     b = cortar(b, barrido(["eslabon1", "eslabon2"], "A").intersection(huella), [Z_MED_CORTE])
     corto = barrido(["corto"], "A", SUAVE).intersection(huella)
     b = cortar(b, corto, Z_PLACA_CORTE)
-    b = cortar(b, barrido(["vientre1"], "A").intersection(huella), [Z_CANAL])
+
     for y in (Y0, Y0 + DP):
         b = b.cut(cil_z(D_A, y, D_PERNO, -1, ESP + 1))
     return b
@@ -424,14 +426,9 @@ def barra_b():
     y0c, _ = canal_carro()
     c = C_CARRO
     b = b.cut(caja(-1, c + HOLG, y0c, LARGO + 1, *Z_CANAL))
-    # ganchos del carro por debajo de las alas: cuello + bolsillo del pie; queda el labio de la columna
-    for (zc0, zc1), (zp0, zp1) in (((Z_CANAL[0], Z_CANAL[0] + 1.0), (Z_CANAL[0], Z_CANAL[0] + 1.9)),
-                                   ((Z_CANAL[1] - 1.0, Z_CANAL[1]), (Z_CANAL[1] - 1.9, Z_CANAL[1]))):
-        b = b.cut(caja(-1, c + GANCHO + 0.1, y0c, LARGO + 1, zc0, zc1))
-        b = b.cut(caja(c + 1.6, c + GANCHO + 0.1, y0c, LARGO + 1, zp0, zp1))
+    for z0, z1 in labios():
+        b = b.union(caja(0, LABIO_X, y0c, LARGO, z0, z1))
     b = cortar(b, barrido(["eslabon1", "eslabon2"], "B").intersection(huella), [Z_MED_CORTE])
-    # el vientre grueso del eslabón 1 entra en la boca del riel a W mínimo (bajo las alas)
-    b = cortar(b, barrido(["vientre1"], "B").intersection(huella), [Z_CANAL])
     # alojamiento del eslabón corto en el bloque de O (capa central, oculto)
     corto = barrido(["corto"], "B", 5.0).intersection(huella)
     corto = redondear_con_cara(corto, box(-10, -5, 0, LARGO + 5), 4.0).intersection(huella)
@@ -440,28 +437,33 @@ def barra_b():
     return b
 
 
+def labios():
+    """Franjas en z de los dos labios de las alas de B."""
+    return ((Z_CANAL[0], Z_CANAL[0] + LABIO_Z), (Z_CANAL[1] - LABIO_Z, Z_CANAL[1]))
+
+
+def _sin_labios(sol, y0, y1):
+    """Quita a una pieza que corre en el riel el lugar de los labios (con juego)."""
+    for z0, z1 in labios():
+        sol = sol.cut(caja(-1, LABIO_X + HOLG_PLANO, y0 - 1, y1 + 1, z0 - 1 if z0 < ESP / 2 else z0 - HOLG,
+                           z1 + HOLG if z0 < ESP / 2 else z1 + 1))
+    return sol
+
+
 def tapa():
-    """Cierra la boca del riel en la punta de y = 190 (va atornillada a la columna)."""
+    """Cierra la boca del riel en la punta de y = 190 (entra como el carro, bajo los labios)."""
     c = C_CARRO
     y0 = canal_carro()[1] + 0.2
-    t = caja(0, c + HOLG, y0, LARGO, *Z_CANAL)
-    for (zc0, zc1), (zp0, zp1) in (((Z_CANAL[0], Z_CANAL[0] + 1.0), (Z_CANAL[0], Z_CANAL[0] + 1.9)),
-                                   ((Z_CANAL[1] - 1.0, Z_CANAL[1]), (Z_CANAL[1] - 1.9, Z_CANAL[1]))):
-        t = t.union(caja(c, c + GANCHO + 0.1, y0, LARGO, zc0, zc1))
-        t = t.union(caja(c + 1.6, c + GANCHO + 0.1, y0, LARGO, zp0, zp1))
-    return t
+    return _sin_labios(caja(0, c + HOLG, y0, LARGO, *Z_CANAL), y0, LARGO)
 
 
 def carro():
+    """Corre entre las alas de B: las alas lo guían en z, la columna y los labios en x."""
     c = C_CARRO
     k = caja(0, c, CARRO_Y[0], CARRO_Y[1], *Z_CARRO)
     k = k.edges("|Z").edges("<X").fillet(R_PUNTA)
-    # ganchos: cuello pegado al ala y pie que sube detrás del labio de la columna
-    for (zc0, zc1), (zp0, zp1) in (((Z_CARRO[0], Z_CARRO[0] + 0.8), (Z_CARRO[0], Z_CARRO[0] + 1.7)),
-                                   ((Z_CARRO[1] - 0.8, Z_CARRO[1]), (Z_CARRO[1] - 1.7, Z_CARRO[1]))):
-        k = k.union(caja(c - 0.01, c + GANCHO, CARRO_Y[0], CARRO_Y[1], zc0, zc1))
-        k = k.union(caja(c + 1.7, c + GANCHO, CARRO_Y[0], CARRO_Y[1], zp0, zp1))
-    huella = box(-1, CARRO_Y[0] - 1, c + 3, CARRO_Y[1] + 1)
+    k = _sin_labios(k, *CARRO_Y)
+    huella = box(-1, CARRO_Y[0] - 1, c + 1, CARRO_Y[1] + 1)
     k = cortar(k, barrido(["eslabon1", "eslabon2"], "carro").intersection(huella), [Z_MED_CORTE])
     k = cortar(k, barrido(["corto"], "carro", SUAVE).intersection(huella), Z_PLACA_CORTE)
     for y in (0.0, DP):
@@ -491,16 +493,6 @@ def rebaje_arandela(sol, x, y, z_cara):
     return sol.cut(anillo)
 
 
-LARGO_VIENTRE = 22.0       # semilargo de la zona gruesa del vientre, a cada lado de C
-
-
-def zona_vientre():
-    """Zona gruesa del eslabón 1 alrededor de C (todo el ancho del perfil, a cada lado de C).
-    Le da alas de 2,5 mm a la embocadura del corto donde el momento es máximo."""
-    franja = box(L1 - LARGO_VIENTRE, -40, L1 + LARGO_VIENTRE, 40)
-    return perfil_eslabon1().intersection(franja).buffer(-0.01)
-
-
 def embocadura():
     """Barrido del eslabón corto en el marco del eslabón 1: hueco central donde se embute."""
     polys = []
@@ -515,9 +507,6 @@ def embocadura():
 
 def eslabon1():
     sol = pieza_miembro(lambda wp: _tramos_a_cq(wp, tramos_eslabon1()), Z_MED, [0.0, L1, L2])
-    zona = extruir(zona_vientre(), *Z_VIENTRE)
-    if zona is not None:
-        sol = sol.union(zona)
     sol = cortar(sol, embocadura().intersection(perfil_eslabon1().buffer(1)), [Z_EMBOC])
     for x in (0.0, L1, L2):
         sol = sol.cut(cil_z(x, 0, D_PERNO, -1, ESP + 1))
@@ -554,7 +543,7 @@ def perno():
 
 def perno_c():
     """Perno de C: atraviesa las dos alas de la embocadura del eslabón 1."""
-    return cil_z(0, 0, D_PERNO, Z_VIENTRE[0], Z_VIENTRE[1])
+    return cil_z(0, 0, D_PERNO, Z_MED[0], Z_MED[1])
 
 
 def perno_p():
