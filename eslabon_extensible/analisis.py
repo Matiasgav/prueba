@@ -50,8 +50,9 @@ T_MED = E.Z_MED[1] - E.Z_MED[0]                          # eslabones largos
 T_CORTO = E.Z_CORTO[1] - E.Z_CORTO[0]               # eslabón corto (una pieza)
 T_MEJ = E.Z_MED_CORTE[0]                                 # mejillas de A
 T_MEJ_K = E.Z_MED_CORTE[0] - E.Z_CARRO[0]                 # mejillas del carro (bajo las alas de B)
-T_ALA_C = E.Z_EMBOC[0] - E.Z_MED[0]                        # alas del eslabón 1 a cada lado de la embocadura
-T_MEJ_O = E.Z_EMBOC[0]                                   # B a cada lado del corto en O
+_Z_HUECO = min(E.Z_EMBOC[0], E.Z_CABLE - E.CORTE_CABLE[-1][1])  # piso del hueco central (corto o cable)
+T_ALA_C = _Z_HUECO - E.Z_MED[0]                      # alas del eslabón 1 a cada lado de la embocadura
+T_MEJ_O = _Z_HUECO                                       # B a cada lado del corto en O
 
 
 # ---------------------------------------------------------------- estática
@@ -271,7 +272,7 @@ class Modelo:
         zi = T_MEJ / 2
         self.cA = contorno_capa(self.A, zi)
         self.cK = contorno_capa(self.K, (E.Z_CARRO[0] + E.Z_MED_CORTE[0]) / 2)
-        self.cB_O = contorno_capa(self.B, E.Z_EMBOC[0] - 0.6)
+        self.cB_O = contorno_capa(self.B, _Z_HUECO - 0.4)
         self.e1 = E.perfil_eslabon1()
         self.e2 = E.perfil_eslabon2()
         self.ec = E.perfil_corto()

@@ -1,4 +1,4 @@
-# Análisis de resistencia: eslabón regulable v6
+# Análisis de resistencia: eslabón regulable v7
 
 Cuánta fuerza aguanta el eslabón entre sus ejes de acople y qué pieza falla primero, en todo el rango de ancho de 35 a 105 mm. El cálculo lo hace `analisis.py` sobre la geometría real del CAD (`eslabon.py`). Los resultados quedan en `salida/capacidad.json`.
 
@@ -10,13 +10,13 @@ Carga entre ejes hasta la primera fluencia, sin coeficiente de seguridad. Es el 
 
 | Ancho W [mm] | Carga a fluencia [N] | Carga de trabajo estática, ÷ 1,5 [N] | Limita | Flexibilidad entre ejes [mm/kN] | Fuerza sobre la traba [N por N] |
 |---:|---:|---:|---|---:|---:|
-| 35 | 547 | 365 | flexión del eslabón 1 | 9,1 | 6,66 |
-| 45 | 733 | 488 | flexión del eslabón 1 | 5,0 | 3,66 |
-| 50 | 804 | 536 | flexión del eslabón 1 | 4,3 | 2,95 |
-| 60 | 938 | 625 | flexión del eslabón 1 | 3,5 | 2,06 |
-| 70 | 1.083 | 722 | flexión del eslabón 1 | 3,1 | 1,51 |
-| 90 | 1.214 | 809 | flexión de la barra A | 2,5 | 0,80 |
-| 105 | 1.256 | 838 | flexión de la barra A | 2,2 | 0,31 |
+| 35 | 480 | 320 | flexión del eslabón 1 | 10,7 | 7,48 |
+| 45 | 653 | 435 | flexión del eslabón 1 | 5,0 | 3,88 |
+| 50 | 716 | 477 | flexión del eslabón 1 | 4,1 | 3,09 |
+| 60 | 831 | 554 | flexión del eslabón 1 | 3,1 | 2,13 |
+| 70 | 955 | 637 | flexión del eslabón 1 | 2,6 | 1,55 |
+| 90 | 1.078 | 719 | flexión de la barra A | 1,8 | 0,81 |
+| 105 | 1.152 | 768 | flexión de la barra A | 1,5 | 0,32 |
 
 Comparación:
 
@@ -27,11 +27,26 @@ Comparación:
 | v3 | 762 N | 1.227 N | 1.521 N | 1.634 N |
 | v4 (lateral semicilíndrico) | 597 N* | 981 N* | 1.126 N* | 1.244 N* |
 | v5 (riel en C, corto embutido, eslabón 1 engrosado) | 673 N | 1.004 N | 1.156 N | 1.256 N |
-| **v6 (eslabones largos iguales y planos, corto de 2,5)** | **547 N** | **804 N** | **1.083 N** | **1.256 N** |
+| v6 (eslabones largos iguales y planos, corto de 2,5) | 547 N | 804 N | 1.083 N | 1.256 N |
+| **v7 (cable Ø4 oculto de largo fijo)** | **480 N** | **716 N** | **955 N** | **1.152 N** |
 
 \* Las cifras de la v4 y anteriores se calcularon con un error en la lectura del contorno de las piezas (`contorno_capa` armaba el polígono con tramos en orden inconsistente). Afectaba sobre todo las mejillas del carro y de las barras. Está corregido en la v5; las versiones anteriores no se recalcularon.
 
 Para cargas cíclicas (vibración, ciclos de arranque y parada), usá **menos de un tercio** de la carga a fluencia. El 7075 tiene baja resistencia a la fatiga con concentradores, y los agujeros de los pernos en ligamentos finos lo son.
+
+## Qué cambió en la v7: cable Ø4 oculto
+
+![Recorrido del cable](img/cable_recorrido.png)
+
+- **Recorrido.** El cable entra por el lateral de B, rodea O, sigue el lado de afuera del eslabón corto, pasa por encima de C, baja por el lado de afuera del eslabón 1, rodea Q1 y sale por el lateral de A. Dentro de cada barra hace una curva fija de R 5.
+- **Largo fijo.** En O, C y Q1 el cable gira siempre por el lado de afuera y al mismo radio (R 7 al eje del cable). Los tres giros suman siempre 180°, así que el largo no cambia: 128,0 mm entre laterales en todo el recorrido (verificado cada 0,25 mm de ancho). El radio mínimo de curvatura es 5 mm (curvas fijas en A y B); en los pivotes es 7.
+- **Por qué R 7.** El cable va en la capa del medio (z 4,3 a 8,7), la misma de los ojos de los eslabones (R 4,5). A R 7 le quedan 0,3 mm a cada ojo. Los ojos hacen de polea.
+- **Lo que costó en geometría** (el ancho total y el espesor no cambian):
+  - Q1 y Q2 a 10 mm de la cara exterior de A (antes 6,5), para que el cable rodee Q1 por dentro del semicilindro. A pasa a 14,2 mm y B a 20,0 mm (columna de 8,6). La relación s/p a W = 35 empeora un poco (s mínimo 11,3 en lugar de 12,9).
+  - O y Q1 suben a y = 20 (antes 15) para que el cable pase por encima de los agujeros de acople. El paralelogramo baja de 77 a 73 mm entre pivotes.
+  - Vientre de los eslabones largos de 9,9 mm (antes 10,6), lo que entra con la geometría nueva.
+- **Túneles.** El cable pasa por dentro del eslabón 1 alrededor de C (del lado de P1) y por dentro de A y B alrededor de Q1 y O. Las secciones se midieron sobre el sólido real con esos huecos.
+- **Costo:** entre 8 y 12 % menos que la v6 en todo el rango. A W = 35 limitan casi juntos el eslabón 1 (480 N), los ojos del corto (497 N) y la barra A (578 N): no queda una mejora geométrica barata. Si hace falta más, el paso siguiente es el material de los eslabones (acero inoxidable 17-4PH o titanio).
 
 ## Qué cambió en la v6
 
@@ -87,14 +102,14 @@ Fuerzas internas por cada newton entre ejes:
 
 | W [mm] | Eslabón largo 1 (en Q1) | Eslabón largo 2 | Eslabón corto | Traba del carro |
 |---:|---:|---:|---:|---:|
-| 35 | 6,9 N | 7,0 N | 6,7 N | 6,7 N |
-| 50 | 3,1 N | 3,2 N | 3,1 N | 2,9 N |
+| 35 | 7,7 N | 7,8 N | 7,5 N | 7,5 N |
+| 50 | 3,2 N | 3,3 N | 3,2 N | 3,1 N |
 | 70 | 1,6 N | 1,9 N | 1,8 N | 1,5 N |
 | 105 | 0,3 N | 1,1 N | 1,0 N | 0,3 N |
 
 1. **A anchos chicos los eslabones largos quedan casi paralelos a las barras.** A W = 35 solo una fracción chica de su fuerza axial empuja en X, y el Scott Russell amplifica igual: el carro recibe p/s veces la carga. Esto viene del recorrido pedido (35 a 105) en 190 mm de largo.
-2. **El paralelogramo se agarra de A solo en la mitad inferior** (Q1 a 15 mm, Q2 a 92 mm). La carga del acople de y = 185 recorre la barra como un voladizo. Por eso la barra A limita desde W = 55.
-3. **Todo vive en 13 mm de espesor:** 7 mm de eslabón, 1,5 de ala y 1,3 de mejilla del carro. En C el eslabón 1 tiene dos alas de 2,15 mm alrededor del corto.
+2. **El paralelogramo se agarra de A solo en la mitad inferior** (Q1 a 20 mm, Q2 a 93 mm). La carga del acople de y = 185 recorre la barra como un voladizo. Por eso la barra A limita desde W = 55.
+3. **Todo vive en 13 mm de espesor:** 7 mm de eslabón, 1,5 de ala y 1,3 de mejilla del carro. En C el eslabón 1 tiene dos alas de 2,15 mm alrededor del corto, y de 1,3 mm donde pasa el cable.
 
 ## Hipótesis
 
@@ -118,32 +133,34 @@ Carga entre ejes [N] que lleva cada modo a la fluencia, ordenados por W = 35. Es
 
 | Modo de falla | W = 35 | W = 50 | W = 70 | W = 105 |
 |---|---:|---:|---:|---:|
-| eslabón 1: flexión + axial | 547 | 804 | 1.083 | 2.467 |
-| eslabón corto ojo O: desgarro | 557 | 1.204 | 2.068 | 3.578 |
-| eslabón corto ojo C: desgarro | 557 | 1.204 | 2.068 | 3.578 |
-| eslabón corto fuera del plano: pandeo | 652 | 1.410 | 2.421 | 4.190 |
-| eslabón corto ojo O: tracción neta | 747 | 1.615 | 2.773 | 4.798 |
-| eslabón corto ojo C: tracción neta | 747 | 1.615 | 2.773 | 4.798 |
-| eslabón corto ojo O: aplastamiento | 840 | 1.817 | 3.119 | 5.398 |
-| eslabón corto ojo C: aplastamiento | 840 | 1.817 | 3.119 | 5.398 |
-| barra A: flexión + axial | 862 | 1.056 | 1.156 | 1.256 |
-| carro mejilla P2: tracción neta | 880 | 2.076 | 4.514 | 23.228 |
-| carro: flexión + axial | 967 | 2.357 | 3.871 | 6.123 |
-| carro mejilla P2: desgarro | 1.113 | 2.554 | 5.003 | 3.883 |
-| carro mejilla P2: aplastamiento | 1.323 | 2.987 | 5.204 | 5.664 |
-| eslabón 2 ojo Q2: desgarro | 1.500 | 3.243 | 5.568 | 9.637 |
-| eslabón 2 ojo P2: desgarro | 1.500 | 3.243 | 5.568 | 9.637 |
-| eslabón 1 ojo Q1: desgarro | 1.517 | 3.424 | 6.670 | 31.910 |
-| perno Q2: flexión | 1.594 | 3.447 | 5.919 | 10.244 |
-| perno Q1: flexión | 1.612 | 3.640 | 7.092 | 33.916 |
-| perno O: flexión | 1.656 | 3.582 | 6.149 | 10.643 |
-| barra B: flexión + axial | 1.715 | 2.711 | 3.821 | 5.297 |
-| eslabón 2 ojo Q2: tracción neta | 2.040 | 4.411 | 7.574 | 13.107 |
-| eslabón 2 ojo P2: tracción neta | 2.040 | 4.411 | 7.574 | 13.107 |
+| eslabón 1: flexión + axial | 480 | 716 | 955 | 2.235 |
+| eslabón corto ojo O: desgarro | 497 | 1.157 | 2.036 | 3.575 |
+| eslabón corto ojo C: desgarro | 497 | 1.157 | 2.036 | 3.575 |
+| barra A: flexión + axial | 578 | 833 | 984 | 1.152 |
+| eslabón corto fuera del plano: pandeo | 604 | 1.406 | 2.475 | 4.345 |
+| eslabón corto ojo O: tracción neta | 666 | 1.551 | 2.730 | 4.794 |
+| eslabón corto ojo C: tracción neta | 666 | 1.551 | 2.730 | 4.794 |
+| eslabón corto ojo O: aplastamiento | 750 | 1.745 | 3.072 | 5.393 |
+| eslabón corto ojo C: aplastamiento | 750 | 1.745 | 3.072 | 5.393 |
+| carro mejilla P2: tracción neta | 790 | 1.998 | 4.443 | 23.290 |
+| carro: flexión + axial | 870 | 2.290 | 4.131 | 6.806 |
+| carro mejilla P2: desgarro | 1.002 | 2.465 | 5.083 | 3.929 |
+| carro mejilla P2: aplastamiento | 1.191 | 2.888 | 5.182 | 5.728 |
+| eslabón 1 alas en C: aplastamiento | 1.299 | 3.024 | 3.504 | 9.349 |
+| eslabón 2 ojo P2: desgarro | 1.353 | 3.149 | 5.544 | 9.735 |
+| eslabón 2 ojo Q2: desgarro | 1.353 | 3.149 | 5.544 | 9.735 |
+| eslabón 1 ojo Q1: desgarro | 1.365 | 3.311 | 6.601 | 32.078 |
+| perno Q2: flexión | 1.438 | 3.348 | 5.894 | 10.350 |
+| perno Q1: flexión | 1.451 | 3.519 | 7.017 | 34.078 |
+| barra B: flexión + axial | 1.481 | 2.451 | 3.507 | 4.427 |
+| perno O: flexión | 1.696 | 3.948 | 6.951 | 12.205 |
+| eslabón 1 alas en C: tracción neta | 1.709 | 4.956 | 18.062 | 15.165 |
 
 ## Cómo subir más la capacidad
 
 Cualquiera de estas opciones cambia algo de lo especificado, así que la decisión es tuya:
+
+- **Eslabones en acero o titanio.** Con los dos largos y el corto en 17-4PH H900 (fluencia ≈ 1.170 MPa) dejan de limitar y manda la barra A: ≈ 578 N a W = 35. Escalado por fluencia, sin recalcular.
 
 - **Ancho mínimo mayor (45 mm).** La peor posición pasa a ser la de hoy a W = 45 (≈ 0,9 kN). No lo calculé reoptimizado.
 - **Más espesor (16 a 20 mm).** Permite eslabones dobles en caja, que es lo que más rigidez a torsión da. No lo calculé.

@@ -141,7 +141,7 @@ const fill = new THREE.DirectionalLight(0xffffff, 0.25); fill.position.set(200, 
 const NOMBRES = {
   barra_A: "Barra A (lado fijo)", barra_B: "Barra B (columna y riel en C)", tapa: "Tapa del riel", carro: "Carro",
   eslabon_1: "Eslabón largo 1 (embocadura en C)", eslabon_2: "Eslabón largo 2 (vientre hacia A)",
-  eslabon_corto: "Eslabón corto (una pieza)", perno: "Pernos Ø5 templados", arandela: "Arandelas de precarga"
+  eslabon_corto: "Eslabón corto (una pieza)", cable: "Cable Ø4 (largo fijo)", perno: "Pernos Ø5 templados", arandela: "Arandelas de precarga"
 };
 const geoms = {}, mats = {};
 for (const [k, m] of Object.entries(GEO.mallas)) {
@@ -165,6 +165,39 @@ function add(nombre, pieza) {
  ["pQ1","perno_A"],["pQ2","perno_A"],["pP1","perno_P"],["pP2","perno_P"],["pC","perno_C"],["pO","perno"],
  ["aQ1","arandela"],["aQ2","arandela"],["aP1","arandela"],["aP2","arandela"],["aC","arandela"],["aO","arandela"]].forEach(([n, p]) => add(n, p));
 
+/* cable: rodea O, C y Q1 por afuera al mismo radio (los giros suman 180°: largo fijo) */
+const cableMat = new THREE.MeshStandardMaterial({ color: GEO.colores.cable, metalness: 0.1, roughness: 0.7 });
+let cableMesh = null;
+function arcoPts(c, a0, a1, r, ccw, out) {
+  const T = 2 * Math.PI, d = ccw ? ((a1 - a0) % T + T) % T : -(((a0 - a1) % T + T) % T);
+  const n = Math.max(2, Math.ceil(Math.abs(d) * r / 0.5) + 1);
+  for (let i = 0; i < n; i++) { const t = a0 + d * i / (n - 1); out.push([c[0] + r * Math.cos(t), c[1] + r * Math.sin(t)]); }
+}
+function rutaCable(O, C, Q) {
+  const R = P.R_CABLE, Rc = P.R_CURVA, h = Math.PI / 2, pts = [];
+  const hO = Math.atan2(C[1] - O[1], C[0] - O[0]), hC = Math.atan2(Q[1] - C[1], Q[0] - C[0]);
+  const cb = [O[0] + R + Rc, O[1]], ca = [Q[0] - R - Rc, Q[1]];
+  pts.push([cb[0] + 2.5, cb[1] - Rc]);
+  arcoPts(cb, -h, -Math.PI, Rc, false, pts);
+  arcoPts(O, 0, hO - h, R, true, pts);
+  arcoPts(C, hO - h, hC - h, R, true, pts);
+  arcoPts(Q, hC - h, Math.PI, R, true, pts);
+  arcoPts(ca, 0, -h, Rc, false, pts);
+  pts.push([ca[0] - 2.5, ca[1] - Rc]);
+  return pts;
+}
+function setCable(O, C, Q) {
+  const pts = rutaCable(O, C, Q), path = new THREE.CurvePath();
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1], b = pts[i];
+    if (Math.hypot(b[0] - a[0], b[1] - a[1]) < 1e-6) continue;
+    path.add(new THREE.LineCurve3(new THREE.Vector3(a[0], a[1], P.Z_CABLE), new THREE.Vector3(b[0], b[1], P.Z_CABLE)));
+  }
+  const g = new THREE.TubeGeometry(path, pts.length * 2, P.D_CABLE / 2, 12, false);
+  if (cableMesh) { cableMesh.geometry.dispose(); cableMesh.geometry = g; }
+  else { cableMesh = new THREE.Mesh(g, cableMat); scene.add(cableMesh); }
+}
+
 function pose(w) {
   const xq = P.D_A, xo = w - P.D_B, s = xo - xq, p = Math.sqrt(P.L2 ** 2 - s ** 2), xb = w - P.BWB;
   const Q1 = [xq, P.Y0], P1 = [xo, P.Y0 + p], C = [(xq + xo) / 2, P.Y0 + p / 2], O = [xo, P.Y0];
@@ -178,6 +211,7 @@ function pose(w) {
   set("pC", ...C); set("pO", ...O);
   set("aQ1", ...Q1); set("aQ2", xq, P.Y0 + P.DP); set("aP1", ...P1); set("aP2", xo, P1[1] + P.DP); set("aC", ...C); set("aO", ...O);
   inst.aO.position.z = P.DZ_O; inst.aC.position.z = P.DZ_O;
+  setCable(O, C, Q1);
   return { s, p, ang: aL * 180 / Math.PI };
 }
 

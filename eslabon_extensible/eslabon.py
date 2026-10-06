@@ -39,7 +39,7 @@ import os
 import cadquery as cq
 import numpy as np
 from shapely import affinity
-from shapely.geometry import Point, Polygon, box
+from shapely.geometry import LineString, Point, Polygon, box
 from shapely.ops import unary_union
 
 # ---------------------------------------------------------------- parámetros
@@ -75,20 +75,20 @@ Z_PLACA_CORTE = (Z_EMBOC,)                 # el corto barre solo la capa central
 COLA = 7.0                                 # carro por encima de P2: solo cierra el ojo de P2
 Y_FIN_CARRO = 185.0                        # el canal corre por dentro del eje de acople (otra zona de la columna)
 R_OJO_MAX = 4.5                            # ojo máximo: deja nervio en el fondo de las horquillas
-Y0 = 15.0                                  # recta O-Q1
+Y0 = 20.0                                  # recta O-Q1 (deja lugar al cable por encima de los acoples)
 R_CORTO = 4.5                              # semiancho del eslabón corto (ojo igual a los largos)
 # Vientres de los eslabones largos (arco R_GOTA tangente a los ojos). Profundidades máximas
 # halladas con ajuste_vientres.py: el eslabón 1 no toca la columna de B a W mínimo y el 2 no
 # come la barra A más allá del fondo que ya deja el ojo.
 R_GOTA = 60.0
 DX_GOTA1 = 0.0                             # vientre simétrico: los dos eslabones largos son iguales, espejados
-QUILLA = 10.6                              # profundidad del vientre (eslabón 1 hacia B, eslabón 2 hacia A)
+QUILLA = 9.9                               # profundidad del vientre (eslabón 1 hacia B, eslabón 2 hacia A)
 PANZA_2 = QUILLA
 # pivote precargado: arandela ondulada de acero en un rebaje de la cara superior del ojo
 ARANDELA = dict(d_int=D_PERNO + 0.2, d_ext=7.9, rebaje=0.15, alto=0.25)
 
 
-def configurar(d_a=6.5, e_b=6.3, columna=10.5, gap_min=0.8, margen_l2=4.0):
+def configurar(d_a=10.0, e_b=6.3, columna=8.6, gap_min=0.8, margen_l2=4.0):
     global D_A, E_B, COLUMNA, GAP_MIN, C_CARRO, BWB, BWA, D_B, S_MIN, L2, L1, P_MAX, DP
     global SEP_MIN, R_OJO, CARRO_Y
     D_A, E_B, COLUMNA, GAP_MIN = d_a, e_b, columna, gap_min
@@ -414,7 +414,7 @@ def barra_a():
 
     for y in (Y0, Y0 + DP):
         b = b.cut(cil_z(D_A, y, D_PERNO, -1, ESP + 1))
-    return b
+    return cortar_cable(b, "A", box(-5, -1, BWA + 1, LARGO + 1))
 
 
 def barra_b():
@@ -434,7 +434,7 @@ def barra_b():
     corto = redondear_con_cara(corto, box(-10, -5, 0, LARGO + 5), 4.0).intersection(huella)
     b = cortar(b, corto, Z_PLACA_CORTE)
     b = b.cut(cil_z(E_B, Y0, D_PERNO, -1, ESP + 1))
-    return b
+    return cortar_cable(b, "B", box(-1, -1, BWB + 5, LARGO + 1))
 
 
 def labios():
@@ -512,7 +512,7 @@ def eslabon1():
         sol = sol.cut(cil_z(x, 0, D_PERNO, -1, ESP + 1))
     for x in (0.0, L2):
         sol = rebaje_arandela(sol, x, 0, Z_MED[1])
-    return sol
+    return cortar_cable(sol, "eslabon1", perfil_eslabon1().buffer(1))
 
 
 def eslabon2():
@@ -558,6 +558,85 @@ def perno_a():
     return p.translate((-D_A, -y, 0))
 
 
+# ---------------------------------------------------------------- cable Ø4 de largo fijo
+# El cable rodea O, C y Q1 siempre por el lado de afuera del recorrido y al mismo radio. Los giros
+# en esos pivotes suman siempre 180°, así que el largo no cambia con el ancho. Dentro de cada barra
+# el recorrido es fijo: entra por el lateral de B y sale por el lateral de A, con curvas de R 5.
+D_CABLE = 4.0
+R_CABLE = R_OJO + HOLG_PLANO + D_CABLE / 2 + 0.2    # radio de giro alrededor de los pivotes (7,0)
+R_CURVA = 5.0                                       # curvas fijas dentro de las barras
+Z_CABLE = ESP / 2
+# sección del corte del cable, en escalones que contienen un círculo de R 2,2: (semiancho, semialto)
+CORTE_CABLE = ((2.2, 1.0), (1.95, 1.7), (1.4, 2.2))
+SOLIDO_CABLE = ((2.0, 1.0), (1.73, 1.6), (1.2, 2.0))  # el cable, para verificar choques
+
+
+def _arco(c, a0, a1, r, ccw=True, paso=0.4):
+    d = (a1 - a0) % (2 * math.pi) if ccw else -((a0 - a1) % (2 * math.pi))
+    n = max(2, int(abs(d) * r / paso) + 1)
+    return [np.asarray(c) + r * np.array([math.cos(t), math.sin(t)]) for t in np.linspace(a0, a0 + d, n)]
+
+
+def ruta_cable(w):
+    """Eje del cable en coordenadas globales, de B (lateral exterior) a A (lateral exterior)."""
+    k = cinematica(w)
+    O, C, Q = k["O"], k["C"], k["Q1"]
+    hO = math.atan2(*(C - O)[::-1])
+    hC = math.atan2(*(Q - C)[::-1])
+    R, Rc, h = R_CABLE, R_CURVA, math.pi / 2
+    cb = O + np.array([R + Rc, 0.0])                    # curva fija de B: llega a O subiendo
+    pts = [cb + np.array([2.5, -Rc])]                     # afuera del lateral de B
+    pts += _arco(cb, -h, -math.pi, Rc, ccw=False)
+    pts += _arco(O, 0.0, hO - h, R)
+    pts += _arco(C, hO - h, hC - h, R)
+    pts += _arco(Q, hC - h, math.pi, R)                   # baja por el lado exterior de Q1
+    ca = Q + np.array([-R - Rc, 0.0])                     # curva fija de A: sale por el lateral
+    pts += _arco(ca, 0.0, -h, Rc, ccw=False)
+    pts.append(ca + np.array([-2.5, -Rc]))
+    return np.array(pts)
+
+
+def largo_cable(w):
+    p = ruta_cable(w)
+    return float(np.sum(np.linalg.norm(np.diff(p, axis=0), axis=1)))
+
+
+def _al_marco(pts, pieza, w):
+    k = cinematica(w)
+    if pieza in ("A", "B", "carro"):
+        dx, dy = marco(pieza, w)
+        return pts + np.array([dx, dy])
+    org, ang = {"eslabon1": (k["Q1"], k["ang_largo"]), "eslabon2": (k["Q2"], k["ang_largo"]),
+                "corto": (k["O"], k["ang_corto"])}[pieza]
+    c, s_ = math.cos(-ang), math.sin(-ang)
+    q = pts - org
+    return np.c_[q[:, 0] * c - q[:, 1] * s_, q[:, 0] * s_ + q[:, 1] * c]
+
+
+def barrido_cable(pieza, semiancho):
+    """Lugar que ocupa el cable (eje engrosado) en el marco de una pieza, en todo el rango de anchos."""
+    polys = [LineString(_al_marco(ruta_cable(w), pieza, w)).simplify(0.01).buffer(semiancho, 12)
+             for w in ANCHOS_BARRIDO[::2]]
+    return unary_union(polys).buffer(0.02).buffer(-0.02).simplify(0.01)
+
+
+def cortar_cable(sol, pieza, huella):
+    for semiancho, semialto in CORTE_CABLE:
+        g = barrido_cable(pieza, semiancho).intersection(huella)
+        if not g.is_empty:
+            sol = cortar(sol, g, [(Z_CABLE - semialto, Z_CABLE + semialto)])
+    return sol
+
+
+def solido_cable(w):
+    linea = LineString(ruta_cable(w))
+    sol = None
+    for semiancho, semialto in SOLIDO_CABLE:
+        e = extruir(linea.buffer(semiancho, 16), Z_CABLE - semialto, Z_CABLE + semialto)
+        sol = e if sol is None else sol.union(e)
+    return sol
+
+
 PIEZAS = {
     "barra_A": barra_a,
     "barra_B": barra_b,
@@ -578,6 +657,7 @@ COLORES = {
     "carro": (0.85, 0.45, 0.15),
     "eslabon_1": (0.20, 0.45, 0.80), "eslabon_2": (0.35, 0.60, 0.90),
     "eslabon_corto": (0.15, 0.65, 0.45), "tapa": (0.55, 0.60, 0.66), "perno_P": (0.85, 0.85, 0.85),
+    "cable": (0.10, 0.10, 0.11),
     "perno": (0.85, 0.85, 0.85), "perno_A": (0.85, 0.85, 0.85), "perno_C": (0.85, 0.85, 0.85), "arandela": (0.70, 0.72, 0.75),
 }
 
@@ -610,6 +690,7 @@ def ensamble(w, piezas):
     for nombre, pieza, (x, y, z), ang in poses(w):
         loc = cq.Location(cq.Vector(x, y, z), cq.Vector(0, 0, 1), ang)
         a.add(piezas[pieza], name=nombre, loc=loc, color=cq.Color(*COLORES[pieza]))
+    a.add(solido_cable(w), name="cable", color=cq.Color(*COLORES["cable"]))
     return a
 
 
@@ -622,7 +703,7 @@ def solidos(w, piezas):
 
 
 def interferencias(w, piezas):
-    sol = solidos(w, piezas)
+    sol = solidos(w, piezas) + [("cable", solido_cable(w).val())]
     res = []
     for i in range(len(sol)):
         bi = sol[i][1].BoundingBox()
@@ -671,7 +752,8 @@ if __name__ == "__main__":
         geo = {
             "param": {"LARGO": LARGO, "ESP": ESP, "W_MIN": W_MIN, "W_MAX": W_MAX, "BWA": BWA, "BWB": BWB,
                       "D_A": D_A, "D_B": D_B, "L2": L2, "Y0": Y0, "DP": DP, 
-                      "X_ACOPLE": X_ACOPLE, "DZ_O": Z_CORTO[1] - Z_MED[1]},
+                      "X_ACOPLE": X_ACOPLE, "DZ_O": Z_CORTO[1] - Z_MED[1],
+                      "R_CABLE": R_CABLE, "R_CURVA": R_CURVA, "D_CABLE": D_CABLE, "Z_CABLE": Z_CABLE},
             "colores": {k: "#%02x%02x%02x" % tuple(int(c * 255) for c in v) for k, v in COLORES.items()},
             "mallas": {k: malla_json(f) for k, f in piezas.items()},
         }
