@@ -248,7 +248,7 @@ const fmtN = v => Math.round(v).toLocaleString("es-AR") + " N";
 function update() {
   const w = parseFloat(wIn.value), r = pose(w);
   document.getElementById("wval").innerHTML = w.toFixed(1) + "<small>mm</small>";
-  document.getElementById("d-ejes").textContent = fmt(w - P.BWA / 2 - P.BWB / 2);
+  document.getElementById("d-ejes").textContent = fmt(w - 2 * P.X_ACOPLE);
   document.getElementById("d-s").textContent = fmt(r.s);
   document.getElementById("d-p").textContent = fmt(r.p);
   document.getElementById("d-ang").textContent = r.ang.toFixed(1) + "°";

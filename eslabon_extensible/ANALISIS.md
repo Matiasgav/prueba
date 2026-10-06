@@ -1,5 +1,7 @@
 # Análisis de resistencia: eslabón regulable v2
 
+> **Pendiente de recalcular.** Estos resultados son anteriores a mover los ejes de acople a 5 mm de la cara exterior de cada barra (antes estaban en el centro de cada barra) y a la terminación estética. El código ya tiene la posición nueva.
+
 Cuánta fuerza aguanta el eslabón entre sus ejes de acople y qué pieza falla primero, en todo el rango de ancho de 35 a 105 mm. El cálculo lo hace `analisis.py` sobre la geometría real del CAD (`eslabon.py`). Los resultados quedan en `salida/capacidad.json`.
 
 ## Resultado
@@ -49,7 +51,7 @@ Las fuerzas internas por cada newton entre ejes dependen fuertemente del ancho:
 
 ## Hipótesis
 
-- **Carga:** F en la dirección del ancho (X), repartida mitad y mitad entre los dos agujeros de acople de cada barra (y = 5 y y = 185). Se analizan tracción y compresión.
+- **Carga:** F en la dirección del ancho (X), repartida mitad y mitad entre los dos agujeros de acople de cada barra (y = 5 y y = 185), sobre el eje de cada agujero. Se analizan tracción y compresión.
 - **Material:** 7075-T651, valores típicos: Sy = 503 MPa, Su = 572 MPa, E = 71,7 GPa, τy = 0,577 Sy. El admisible de aplastamiento es Sy·e/D, con un máximo de 1,5 Sy.
 - **Pernos:** ISO 8734 4m6 templados (550 a 650 HV). El corte doble de fluencia se toma como 0,75 × 19,7 kN de rotura mínima normalizada. A flexión se admiten 1500 MPa, con el momento de horquilla F/2·(t_mejilla/2 + juego + t_medio/4).
 - **Mecanismo:** con el carro trabado es isostático, y la estática da todas las fuerzas.

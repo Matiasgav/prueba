@@ -55,8 +55,8 @@ def estatica(w, F=1.0):
     u = np.array([k["s"], k["p"]]) / E.L2
     v = (k["C"] - k["O"]) / np.linalg.norm(k["C"] - k["O"])
     cr = lambda a, b: a[0] * b[1] - a[1] * b[0]
-    acA = [(np.array([E.BWA / 2, y]), np.array([-F / 2, 0.0])) for y in (5.0, 185.0)]
-    acB = [(np.array([k["xb"] + E.BWB / 2, y]), np.array([F / 2, 0.0])) for y in (5.0, 185.0)]
+    acA = [(np.array([E.X_ACOPLE, y]), np.array([-F / 2, 0.0])) for y in (5.0, 185.0)]
+    acB = [(np.array([k["xb"] + E.BWB - E.X_ACOPLE, y]), np.array([F / 2, 0.0])) for y in (5.0, 185.0)]
     Q1, Q2, P1, P2, C, O = (k[n] for n in ("Q1", "Q2", "P1", "P2", "C", "O"))
     # barra A: FQ1 (2 incógnitas) + f2*u en Q2
     Ft = sum(f for _, f in acA)

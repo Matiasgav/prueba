@@ -14,7 +14,17 @@ Fuerza entre los ejes de acople hasta la primera fluencia, tanto en tracción co
 | Carga de trabajo estática (÷ 1,5) | 400 | 680 | 780 | 860 | 940 N |
 | Flexibilidad entre ejes | 20,5 | 10,5 | 8,5 | 5,1 | 3,5 mm/kN |
 
-La v1 patinaba en la traba con 25 a 100 N. El detalle (todas las piezas, hipótesis, por qué no da más y qué cambiar para subirla) está en **[ANALISIS.md](ANALISIS.md)**.
+Estos valores son de la ronda de cálculo anterior a mover los agujeros de acople a 5 mm de la cara exterior; falta recalcular. La v1 patinaba en la traba con 25 a 100 N. El detalle (todas las piezas, hipótesis, por qué no da más y qué cambiar para subirla) está en **[ANALISIS.md](ANALISIS.md)**.
+
+## Terminación
+
+Pensada para quedar a la vista, sin quitar material de las zonas que trabajan:
+- puntas de las barras redondeadas en planta (R 3);
+- aristas exteriores con bisel de 0,3 mm, el mismo que dejaría un rebabado normal;
+- eslabones y placas con contorno de arcos verdaderos y bisel de 0,3 mm (los agujeros de perno no se biselan);
+- rebajes del eslabón corto alisados y unidos con la boca del canal del carro en las caras superior e inferior.
+
+Comparado con la versión sin terminación, la sección de las barras y del carro en las zonas cargadas queda igual: el módulo resistente mínimo pasa de 127 a 127 mm³ en A, de 173 a 172 mm³ en B y de 168 a 167 mm³ en el carro. Las mejillas de los pernos quedan completas.
 
 ## Requisitos
 
@@ -22,7 +32,7 @@ La v1 patinaba en la traba con 25 a 100 N. El detalle (todas las piezas, hipóte
 |---|---|
 | Largo 190, espesor 13 | La envolvente es W × 190 × 13 en todo el recorrido. No sobresale nada. |
 | Ancho 35 a 105 regulable | La barra B se traslada en X respecto de la barra A, sin girar. |
-| 4 agujeros D5 × 10 | Dos por barra, uno en cada cara extrema. Cada par es coaxial, paralelo al largo y centrado en el espesor (z = 6,5) y en el ancho de su barra. |
+| 4 agujeros D5 × 10 | Dos por barra, uno en cada cara extrema. Cada par es coaxial, paralelo al largo, centrado en el espesor (z = 6,5) y a 5 mm de la cara exterior de su barra, igual en las dos. Distancia entre ejes: W − 10 (25 a 95 mm). Entrada avellanada 0,3 × 45°. |
 | Doble Scott Russell | Paralelogramo de dos eslabones largos (2L = 88,4 mm): Q1 y Q2 en A, P1 y P2 en un carro que corre en B. Un eslabón corto (L = 44,2 mm, dos placas) une el pivote O de B con el punto medio C del eslabón 1. |
 | Regulación manual | Se afloja el tornillo cónico M4 desde arriba del carro, se lleva el ancho a mano y se vuelve a apretar. El trinquete engrana en la cremallera de paso 0,5 mm de la columna de B (122 posiciones en todo el recorrido). Un diente equivale a un cambio de ancho de 3 mm a W = 35, 0,35 mm a W = 70 y 0,16 mm a W = 105, porque el Scott Russell amplifica más cerca del ancho mínimo. |
 

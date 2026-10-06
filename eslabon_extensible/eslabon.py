@@ -45,6 +45,7 @@ ESP = 13.0
 W_MIN, W_MAX = 35.0, 105.0
 
 D_ACOPLE, P_ACOPLE = 5.0, 10.0
+X_ACOPLE = 5.0               # eje de acople a 5 mm de la cara exterior de cada barra
 Z_EJE = ESP / 2
 
 D_PERNO = 4.0                 # pasador templado ISO 8734 4m6
@@ -164,17 +165,26 @@ def marco(pieza, w):
     raise ValueError(pieza)
 
 
-ANCHOS_BARRIDO = np.linspace(W_MIN, W_MAX, 141)
+ANCHOS_BARRIDO = np.linspace(W_MIN, W_MAX, 561)
+SUAVE = 1.5        # cierre morfológico que alisa los rebajes del eslabón corto (los visibles en las caras)
+CANTO = 0.3        # bisel de las aristas exteriores de barras y carro
+R_PUNTA = 3.0      # redondeo en planta de las puntas de las barras
+CANTO_ESL = 0.3    # bisel del contorno de eslabones y placas (no se biselan los agujeros)
 
 
-def barrido(nombres, pieza):
+def barrido(nombres, pieza, suave=0.0):
     polys = []
     for w in ANCHOS_BARRIDO:
         m = miembros(w)
         dx, dy = marco(pieza, w)
         for n in nombres:
             polys.append(affinity.translate(m[n], dx, dy))
-    return unary_union(polys).buffer(HOLG_PLANO, 16).simplify(0.02)
+    # el cierre (agrandar y achicar) rellena los serruchos entre posiciones sucesivas:
+    # el hueco queda con bordes continuos y nunca más chico que el barrido real
+    u = unary_union(polys)
+    if suave > 0:
+        return u.buffer(HOLG_PLANO + suave, 32).buffer(-suave, 32).simplify(0.01)
+    return u.buffer(HOLG_PLANO, 16).simplify(0.01)
 
 
 # ---------------------------------------------------------------- shapely -> CadQuery
@@ -214,7 +224,18 @@ def agujeros_acople(sol, x):
         h = (cq.Workplane("XZ", origin=(0, y0, 0)).center(x, Z_EJE)
              .circle(D_ACOPLE / 2).extrude(-sentido * P_ACOPLE))
         sol = sol.cut(h)
+        # avellanado de entrada 0,5 x 45°
+        cono = cq.Solid.makeCone(D_ACOPLE / 2 + CANTO + 0.5, D_ACOPLE / 2 - 0.5, CANTO + 1.0,
+                                 cq.Vector(x, y0 - sentido * 0.5, Z_EJE), cq.Vector(0, sentido, 0))
+        sol = sol.cut(cq.Workplane().add(cono))
     return sol
+
+
+def barra_base(ancho):
+    """Barra maciza con puntas redondeadas en planta y aristas biseladas."""
+    b = caja(0, ancho, 0, LARGO, 0, ESP)
+    b = b.edges("|Z").fillet(R_PUNTA)
+    return b.faces(">Z or <Z").chamfer(CANTO)
 
 
 def dientes(x_cara, y0, y1, z0, z1, hacia, fase=0.0):
@@ -238,19 +259,19 @@ def canal_carro():
 
 
 def barra_a():
-    b = caja(0, BWA, 0, LARGO, 0, ESP)
-    b = agujeros_acople(b, BWA / 2)
+    b = barra_base(BWA)
+    b = agujeros_acople(b, X_ACOPLE)
     huella = box(-1, -1, BWA + 1, LARGO + 1)
     b = cortar(b, barrido(["eslabon1", "eslabon2"], "A").intersection(huella), [Z_MED_CORTE])
-    b = cortar(b, barrido(["corto"], "A").intersection(huella), Z_PLACA_CORTE)
+    b = cortar(b, barrido(["corto"], "A", SUAVE).intersection(huella), Z_PLACA_CORTE)
     for y in (Y0, Y0 + DP):
         b = b.cut(cil_z(D_A, y, D_PERNO, -1, ESP + 1))
     return b
 
 
 def barra_b():
-    b = caja(0, BWB, 0, LARGO, 0, ESP)
-    b = agujeros_acople(b, BWB / 2)
+    b = barra_base(BWB)
+    b = agujeros_acople(b, BWB - X_ACOPLE)
     huella = box(-1, -1, BWB + 1, LARGO + 1)
     y0c, y1c = canal_carro()
     b = b.cut(caja(-1, C_CARRO + HOLG, y0c, y1c, -1, ESP + 1))
@@ -264,7 +285,14 @@ def barra_b():
     # cremallera en la cara de la columna (capa media)
     b = b.cut(dientes(c + HOLG, y0c, y1c, *TRINQ_Z, +1))
     b = cortar(b, barrido(["eslabon1", "eslabon2"], "B").intersection(huella), [Z_MED_CORTE])
-    b = cortar(b, barrido(["corto"], "B").intersection(huella), Z_PLACA_CORTE)
+    corto = barrido(["corto"], "B", SUAVE).intersection(huella)
+    b = cortar(b, corto, Z_PLACA_CORTE)
+    # transición estética en las caras: une el rebaje del eslabón corto con la boca del canal
+    # y la ranura del cuello, solo hasta la profundidad de esa ranura (1,7 mm)
+    boca = box(-1, y0c, C_CARRO + GANCHO + 0.1, y0c + 12)
+    transicion = unary_union([corto, boca]).buffer(4, 32).buffer(-4, 32)
+    transicion = transicion.intersection(box(-1, 0, C_CARRO + GANCHO + 0.1, y0c + 12))
+    b = cortar(b, transicion, [(-1, 1.7), (ESP - 1.7, ESP + 1)])
     b = b.cut(cil_z(E_B, Y0, D_PERNO, -1, ESP + 1))
     return b
 
@@ -272,13 +300,15 @@ def barra_b():
 def carro():
     c = C_CARRO
     k = caja(0, c, CARRO_Y[0], CARRO_Y[1], 0, ESP)
+    k = k.edges("|Z").edges("<X").fillet(1.5)
+    k = k.edges("|Y").edges("<X").chamfer(CANTO)
     # ganchos: cuello en la cara (abajo y arriba) y pie que sube detrás del labio de la columna
     for (zc0, zc1), (zp0, zp1) in (((0, 1.6), (0, 2.9)), ((ESP - 1.6, ESP), (ESP - 2.9, ESP))):
         k = k.union(caja(c - 0.01, c + GANCHO, CARRO_Y[0], CARRO_Y[1], zc0, zc1))
         k = k.union(caja(c + 1.7, c + GANCHO, CARRO_Y[0], CARRO_Y[1], zp0, zp1))
     huella = box(-1, CARRO_Y[0] - 1, c + 3, CARRO_Y[1] + 1)
     k = cortar(k, barrido(["eslabon1", "eslabon2"], "carro").intersection(huella), [Z_MED_CORTE])
-    k = cortar(k, barrido(["corto"], "carro").intersection(huella), Z_PLACA_CORTE)
+    k = cortar(k, barrido(["corto"], "carro", SUAVE).intersection(huella), Z_PLACA_CORTE)
     for y in (0.0, DP):
         k = k.cut(cil_z(E_B, y, D_PERNO, -1, ESP + 1))
     # alojamiento del trinquete y tornillo cónico
@@ -305,26 +335,36 @@ def tornillo_conico():
     return cuerpo.union(punta)
 
 
-def pieza_miembro(perfil, zs, agujeros):
-    sol = None
-    for z0, z1 in zs:
-        s = extruir(perfil, z0, z1)
-        sol = s if sol is None else sol.union(s)
+def pieza_miembro(contorno, z, agujeros):
+    """Eslabón con contorno de arcos verdaderos, bisel exterior y agujeros sin biselar."""
+    z0, z1 = z
+    sol = contorno(cq.Workplane("XY").workplane(offset=z0)).extrude(z1 - z0)
+    sol = sol.faces(">Z or <Z").chamfer(CANTO_ESL)
     for x in agujeros:
-        sol = sol.cut(cil_z(x, 0, D_PERNO, -1, ESP + 1))
+        sol = sol.cut(cil_z(x, 0, D_PERNO, z0 - 1, z1 + 1))
     return sol
 
 
+def _contorno_estadio(largo, r):
+    return lambda wp: wp.center(largo / 2, 0).slot2D(largo + 2 * r, 2 * r)
+
+
+def _contorno_eslabon1(wp):
+    # envolvente convexa de tres círculos iguales = triángulo de los centros desplazado R_OJO
+    tri = [(0.0, 0.0), (L2, 0.0), (L1, -(QUILLA - R_OJO))]
+    return wp.polyline(tri).close().offset2D(R_OJO)
+
+
 def eslabon1():
-    return pieza_miembro(perfil_eslabon1(), [Z_MED], [0.0, L1, L2])
+    return pieza_miembro(_contorno_eslabon1, Z_MED, [0.0, L1, L2])
 
 
 def eslabon2():
-    return pieza_miembro(perfil_eslabon2(), [Z_MED], [0.0, L2])
+    return pieza_miembro(_contorno_estadio(L2, R_OJO), Z_MED, [0.0, L2])
 
 
 def placa_corta(z):
-    return pieza_miembro(perfil_corto(), [z], [0.0, L1])
+    return pieza_miembro(_contorno_estadio(L1, R_CORTO), z, [0.0, L1])
 
 
 def perno():
@@ -440,7 +480,8 @@ if __name__ == "__main__":
     if not rapido:
         geo = {
             "param": {"LARGO": LARGO, "ESP": ESP, "W_MIN": W_MIN, "W_MAX": W_MAX, "BWA": BWA, "BWB": BWB,
-                      "D_A": D_A, "D_B": D_B, "L2": L2, "Y0": Y0, "DP": DP, "PASO": PASO_DIENTE},
+                      "D_A": D_A, "D_B": D_B, "L2": L2, "Y0": Y0, "DP": DP, "PASO": PASO_DIENTE,
+                      "X_ACOPLE": X_ACOPLE},
             "colores": {k: "#%02x%02x%02x" % tuple(int(c * 255) for c in v) for k, v in COLORES.items()},
             "mallas": {k: malla_json(f) for k, f in piezas.items()},
         }
