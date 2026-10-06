@@ -102,14 +102,16 @@ Cálculo fuera del plano con `torsion.py` (emparrillado de vigas con secciones m
 
 | W [mm] | Mx: rigidez [N·m/°] | Mx: capacidad a fluencia [N·m] | My: rigidez [N·m/°] | My: capacidad a fluencia [N·m] |
 |---:|---:|---:|---:|---:|
-| 35 | 24,1 | 26,7 (eslabón corto) | 2,9 | 3,0 (eslabón 2) |
-| 50 | 21,7 | 20,8 (eslabón 2) | 3,1 | 3,3 (eslabón 2) |
-| 70 | 17,6 | 13,5 (eslabón 2) | 3,5 | 4,3 (eslabón 2) |
-| 90 | 13,4 | 9,6 (eslabón 2) | 4,0 | 6,4 (eslabón 2) |
-| 105 | 10,6 | 7,8 (eslabón 2) | 4,7 | 11,2 (barra A) |
+| 35 | 24,1 | 77,8 (eslabón corto) | 2,9 | 8,3 (eslabón 1) |
+| 50 | 21,7 | 44,9 (barra A) | 3,1 | 9,6 (eslabón 1) |
+| 70 | 17,6 | 28,6 (barra A) | 3,5 | 11,2 (barra A) |
+| 90 | 13,4 | 20,3 (barra A) | 4,0 | 11,2 (barra A) |
+| 105 | 10,6 | 15,9 (barra A) | 4,7 | 11,2 (barra A) |
 
-- **Deformación.** Con Mx, a W = 70, cada N·m gira 0,057° (0,18 mm de desnivel entre las puntas de A, en 180 mm). A la capacidad, 13,5 N·m, son 0,77° (2,4 mm). Con My cada N·m gira 0,28° a 0,34°: es la dirección floja.
-- **Qué cede.** Los eslabones largos, que son planos de 7 mm, a flexión fuera del plano y a torsión, sobre todo junto a los ojos. Las barras casi no participan. El eslabón 2 manda porque es una biela sin más apoyo; el eslabón 1 lo ayuda el corto.
+Las tensiones de los eslabones se evalúan fuera de los agujeros de los pasadores: ahí el momento lo toma el pasador. Verificación aparte de ojos y pasadores con 3 N·m: la peor articulación pasa unos 2,3 N·m, lo que da unos 490 N de cupla sobre el pasador. Eso es unos 80 MPa de flexión en el pasador templado, unos 45 MPa de aplastamiento en el ojo y unos 75 MPa en las mejillas del carro: todo con margen amplio.
+
+- **Deformación.** Con Mx, a W = 70, cada N·m gira 0,057° (0,18 mm de desnivel entre las puntas de A, en 180 mm). Con My cada N·m gira 0,21° a 0,34°: es la dirección floja. Con 3 N·m gira 0,6° a 1,0°, más el juego de las articulaciones.
+- **Qué cede.** Los eslabones largos, que son planos de 7 mm, a flexión fuera del plano y a torsión, sobre todo junto a los ojos. Las barras casi no participan. En My, a anchos chicos los eslabones quedan casi paralelos a las barras y trabajan a torsión: dos placas de 7 mm. Ahí está la flexibilidad.
 - **Hipótesis que hay que tener presentes:**
   - Los pivotes se suponen rígidos fuera del plano. Eso vale con la arandela de precarga y el pasador ajustado.
   - Juego adicional sin carga, estimado: hasta unos 0,2° por articulación por el juego del pasador (H7/g6: 4 a 24 µm en 7 mm de ojo) y unos 0,13° del carro entre las alas (0,1 mm por lado). Se suma a lo de la tabla hasta que el juego se cierra.

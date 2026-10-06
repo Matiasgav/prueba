@@ -133,8 +133,14 @@ def resolver(w, caso):
     for info,M1,M2,T in m.fuerzas_elem(u):
         if info is None: continue
         nombre,s_,d=info
+        if "eslabón" in nombre:
+            # los cortes que pasan por el agujero del pasador no cuentan: ahí el momento lo toma el pasador
+            L = E.L1 if nombre == "eslabón corto" else E.L2
+            huecos = [0.0, L] + ([E.L1] if nombre == "eslabón 1" else [])
+            if min(abs(s_ - h) for h in huecos) < E.R_OJO:
+                continue
         sig=max(M1,M2)*d["cz"]/d["Iout"]
-        tmin=min(7.0,d["cz"]*2) if "eslabón" in nombre else 13.0
+        tmin=(E.T_CORTO if nombre=="eslabón corto" else 7.0) if "eslabón" in nombre else 13.0
         tau=T*tmin/d["J"]
         vm=math.sqrt(sig**2+3*tau**2)
         if vm>peor.get(nombre,(0,))[0]: peor[nombre]=(vm,s_,max(M1,M2),T)

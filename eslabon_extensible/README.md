@@ -18,7 +18,7 @@ Fuerza entre los ejes de acople hasta la primera fluencia, tanto en tracción co
 | Carga de trabajo estática (÷ 1,5) | 320 | 435 | 477 | 637 | 768 N |
 | Flexibilidad entre ejes | 10,7 | 5,0 | 4,1 | 2,6 | 1,5 mm/kN |
 
-Alabeo entre ejes (cupla alrededor del ancho, Mx): rigidez de 24 a 11 N·m/° y capacidad de 27 a 8 N·m según el ancho. Alrededor del largo (My) es la dirección floja: unos 3 a 5 N·m/° y de 3 a 11 N·m.
+Alabeo entre ejes (cupla alrededor del ancho, Mx): rigidez de 24 a 11 N·m/° y capacidad a fluencia de 78 a 16 N·m según el ancho. Alrededor del largo (My) es la dirección floja: de 2,9 a 4,7 N·m/° y de 8 a 11 N·m.
 
 El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) está en **[ANALISIS.md](ANALISIS.md)**.
 
