@@ -2,14 +2,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: visor 3D a la izquierda, panel de regulación y cotas a la derecha; en teléfono se apilan. */
+/* Layout: visor 3D a la izquierda; a la derecha ancho, capacidad con su curva, cotas y piezas. En teléfono se apilan. */
 :root {
   --bg: #eef1f4;
   --panel: #f8fafb;
   --fg: #1c2530;
   --muted: #5d6b79;
   --line: #cfd7df;
+  --grid: #e1e6eb;
   --accent: #c8601c;
+  --serie: #2f6db3;
   --view: #dde3e9;
   --f-display: "Barlow Condensed", "Arial Narrow", sans-serif;
   --f-body: "Barlow", "Segoe UI", system-ui, sans-serif;
@@ -17,21 +19,21 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #12171d; --panel: #192028; --fg: #e3e8ed; --muted: #93a1af;
-    --line: #2c3742; --accent: #ec8a48; --view: #0d1116; color-scheme: dark;
+    --bg: #12171d; --panel: #192028; --fg: #e3e8ed; --muted: #93a1af; --line: #2c3742; --grid: #222b34;
+    --accent: #ec8a48; --serie: #6aa5e8; --view: #0d1116; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #12171d; --panel: #192028; --fg: #e3e8ed; --muted: #93a1af;
-  --line: #2c3742; --accent: #ec8a48; --view: #0d1116; color-scheme: dark;
+  --bg: #12171d; --panel: #192028; --fg: #e3e8ed; --muted: #93a1af; --line: #2c3742; --grid: #222b34;
+  --accent: #ec8a48; --serie: #6aa5e8; --view: #0d1116; color-scheme: dark;
 }
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--f-body); padding: 16px; padding-block: 20px; }
-.wrap { max-width: 1280px; margin: 0 auto; display: grid; gap: 16px; }
+.wrap { max-width: 1320px; margin: 0 auto; display: grid; gap: 16px; }
 header h1 { font: 600 1.9rem/1.1 var(--f-display); margin: 0; letter-spacing: .01em; text-wrap: balance; }
-header p { margin: 4px 0 0; color: var(--muted); max-width: 70ch; }
-.main { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; }
-@media (max-width: 860px) { .main { grid-template-columns: minmax(0, 1fr); } }
+header p { margin: 4px 0 0; color: var(--muted); max-width: 75ch; }
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px; }
+@media (max-width: 900px) { .main { grid-template-columns: minmax(0, 1fr); } }
 .view { position: relative; background: var(--view); border: 1px solid var(--line); border-radius: 6px; min-height: 420px; aspect-ratio: 4 / 3; max-width: 100%; overflow: hidden; }
 .view canvas { display: block; width: 100%; height: 100%; }
 .vbtns { position: absolute; left: 10px; top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
@@ -41,10 +43,14 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 button[aria-pressed="true"] { background: var(--accent); color: var(--panel); border-color: var(--accent); }
 .hint { position: absolute; right: 10px; bottom: 8px; font: 12px var(--f-body); color: var(--muted); }
 aside { display: grid; gap: 14px; align-content: start; min-width: 0; }
-.box { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; display: grid; gap: 10px; }
+.box { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; display: grid; gap: 10px; min-width: 0; }
 .box h2 { font: 600 .8rem var(--f-body); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0; }
 .big { font: 500 2.6rem/1 var(--f-mono); font-variant-numeric: tabular-nums; }
 .big small { font-size: 1rem; color: var(--muted); margin-left: 4px; }
+.cap { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.cap .num { font: 600 2rem/1 var(--f-body); font-variant-numeric: tabular-nums; }
+.cap .unit { color: var(--muted); }
+.modo { font-size: 13px; color: var(--muted); }
 input[type=range] { width: 100%; accent-color: var(--accent); }
 .scale { display: flex; justify-content: space-between; font: 11px var(--f-mono); color: var(--muted); }
 .row { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -54,12 +60,17 @@ dd { margin: 0; font: 14px var(--f-mono); font-variant-numeric: tabular-nums; te
 .legend { display: grid; gap: 4px; font-size: 13px; }
 .legend span { display: inline-block; width: 11px; height: 11px; border-radius: 2px; margin-right: 8px; vertical-align: -1px; }
 .note { font-size: 13px; color: var(--muted); margin: 0; }
+.chart { position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font: 11px var(--f-mono); fill: var(--muted); }
+.tip { position: absolute; pointer-events: none; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; font: 12px var(--f-body); color: var(--fg); white-space: nowrap; box-shadow: 0 2px 8px rgb(0 0 0 / .12); }
+.tip b { font-family: var(--f-mono); font-weight: 500; }
 </style>
 
 <div class="wrap">
   <header>
-    <h1>Eslabón de ancho regulable · doble Scott Russell</h1>
-    <p>190 × 13 mm, ancho de 35 a 105 mm. Mové el ancho y mirá cómo el carro corre sobre la barra B mientras la barra A se traslada sin girar.</p>
+    <h1>Eslabón de ancho regulable · doble Scott Russell · v2 reforzada</h1>
+    <p>190 × 13 mm, ancho de 35 a 105 mm, aluminio 7075-T651 mecanizado y pernos templados en doble corte. Mové el ancho para ver el mecanismo y cuánta carga aguanta entre ejes en esa posición.</p>
   </header>
   <div class="main">
     <div class="view" id="view">
@@ -77,20 +88,28 @@ dd { margin: 0; font: 14px var(--f-mono); font-variant-numeric: tabular-nums; te
         <div class="big" id="wval">70.0<small>mm</small></div>
         <input type="range" id="w" min="35" max="105" step="0.5" value="70" aria-label="Ancho total en milímetros">
         <div class="scale"><span>35</span><span>70</span><span>105</span></div>
-        <div class="row">
-          <button type="button" id="anim" aria-pressed="false">Animar recorrido</button>
-        </div>
+        <div class="row"><button type="button" id="anim" aria-pressed="false">Animar recorrido</button></div>
       </section>
       <section class="box">
-        <h2>Cotas a este ancho</h2>
+        <h2>Carga entre ejes a este ancho</h2>
+        <div class="cap"><span class="num" id="c-cap">–</span><span class="unit">N hasta la fluencia</span></div>
+        <div class="modo" id="c-modo"></div>
+        <dl>
+          <dt>Carga de trabajo (÷ 1,5)</dt><dd id="c-trab"></dd>
+          <dt>Flexibilidad entre ejes</dt><dd id="c-rig"></dd>
+        </dl>
+        <div class="chart" id="chart" aria-label="Carga admisible entre ejes según el ancho"></div>
+        <p class="note">Mínimo entre tracción y compresión, sin coeficiente de seguridad. Para cargas cíclicas, usar menos de un tercio.</p>
+      </section>
+      <section class="box">
+        <h2>Geometría a este ancho</h2>
         <dl>
           <dt>Distancia entre ejes de acople</dt><dd id="d-ejes"></dd>
           <dt>Entre rectas de pivotes, s</dt><dd id="d-s"></dd>
           <dt>Posición del carro O–P1, p</dt><dd id="d-p"></dd>
           <dt>Ángulo de eslabones largos</dt><dd id="d-ang"></dd>
-          <dt>Lectura en la escala de B</dt><dd id="d-esc"></dd>
+          <dt>Cambio de ancho por diente de la traba</dt><dd id="d-paso"></dd>
         </dl>
-        <p class="note">s² + p² = (2L)² con 2L = 92 mm. El punto Q1 de la barra A recorre una recta perpendicular a B: eso es el Scott Russell.</p>
       </section>
       <section class="box">
         <h2>Piezas</h2>
@@ -105,6 +124,7 @@ dd { margin: 0; font: 14px var(--f-mono); font-variant-numeric: tabular-nums; te
 <script>
 const GEO = /*GEOMETRIA*/null;
 const P = GEO.param;
+const CAP = GEO.capacidad || [];
 const view = document.getElementById("view");
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -119,9 +139,9 @@ const sun = new THREE.DirectionalLight(0xffffff, 0.65); sun.position.set(-150, -
 const fill = new THREE.DirectionalLight(0xffffff, 0.25); fill.position.set(200, 250, 100); scene.add(fill);
 
 const NOMBRES = {
-  barra_A: "Barra A (lado fijo)", barra_B: "Barra B (guía del carro)", carro: "Carro",
-  eslabon_largo: "Eslabón largo ×2 (paralelogramo)", eslabon_corto: "Eslabón corto (Scott Russell)",
-  perno_barra: "Pernos D3", tornillo: "Tornillo de bloqueo M4"
+  barra_A: "Barra A (lado fijo)", barra_B: "Barra B (columna y canal)", carro: "Carro",
+  trinquete: "Trinquete dentado", eslabon_1: "Eslabón largo 1 con quilla", eslabon_2: "Eslabón largo 2",
+  placa_corta_inf: "Eslabón corto (2 placas)", perno: "Pernos D4 templados", tornillo: "Tornillo cónico M4"
 };
 const geoms = {}, mats = {};
 for (const [k, m] of Object.entries(GEO.mallas)) {
@@ -130,47 +150,117 @@ for (const [k, m] of Object.entries(GEO.mallas)) {
   g.setIndex(m.i);
   g.computeVertexNormals();
   geoms[k] = g;
-  mats[k] = new THREE.MeshStandardMaterial({ color: GEO.colores[k], metalness: 0.25, roughness: 0.55, flatShading: false });
+  mats[k] = new THREE.MeshStandardMaterial({ color: GEO.colores[k], metalness: 0.25, roughness: 0.55 });
 }
-const edgeMat = new THREE.LineBasicMaterial({ color: 0x1c2530, transparent: true, opacity: 0.35 });
+const edgeMat = new THREE.LineBasicMaterial({ color: 0x1c2530, transparent: true, opacity: 0.3 });
 const inst = {};
 function add(nombre, pieza) {
   const grp = new THREE.Group();
   grp.add(new THREE.Mesh(geoms[pieza], mats[pieza]));
-  if (!pieza.startsWith("perno") && pieza !== "separador")
-    grp.add(new THREE.LineSegments(new THREE.EdgesGeometry(geoms[pieza], 30), edgeMat));
+  if (pieza !== "perno" && pieza !== "barra_B") grp.add(new THREE.LineSegments(new THREE.EdgesGeometry(geoms[pieza], 30), edgeMat));
   scene.add(grp); inst[nombre] = grp;
 }
-const LISTA = [["barra_A","barra_A"],["barra_B","barra_B"],["carro","carro"],["l1","eslabon_largo"],["l2","eslabon_largo"],
-  ["corto","eslabon_corto"],["pQ1","perno_barra"],["pQ2","perno_barra"],["pO","perno_barra"],["pP1","perno_carro"],
-  ["pP2","perno_carro"],["pC","perno_C"],["sC","separador"],["torn","tornillo"]];
-LISTA.forEach(([n, p]) => add(n, p));
+[["barra_A","barra_A"],["barra_B","barra_B"],["carro","carro"],["trinquete","trinquete"],["tornillo","tornillo"],
+ ["l1","eslabon_1"],["l2","eslabon_2"],["ci","placa_corta_inf"],["cs","placa_corta_sup"],
+ ["pQ1","perno"],["pQ2","perno"],["pP1","perno"],["pP2","perno"],["pC","perno"],["pO","perno"]].forEach(([n, p]) => add(n, p));
 
 function pose(w) {
-  const s = w - 2 * (P.BW - P.E_PIV), p = Math.sqrt(P.L2 ** 2 - s ** 2);
-  const xb = w - P.BW, xq = P.BW - P.E_PIV, xo = xb + P.E_PIV, yc = P.Y0 + p / 2;
-  const aL = Math.atan2(p, s), aC = Math.atan2(p / 2, -s / 2);
-  const set = (n, x, y, z = 0, a = 0) => { inst[n].position.set(x, y, z); inst[n].rotation.set(0, 0, a); };
-  set("barra_A", 0, 0); set("barra_B", xb, 0); set("carro", xb, P.Y0 + p);
-  set("l1", xq, P.Y0, 0, aL); set("l2", xq, P.Y0 + P.DP, 0, aL); set("corto", xo, P.Y0, 0, aC);
-  set("pQ1", xq, P.Y0); set("pQ2", xq, P.Y0 + P.DP); set("pO", xo, P.Y0);
-  set("pP1", xo, P.Y0 + p); set("pP2", xo, P.Y0 + p + P.DP); set("pC", w / 2, yc); set("sC", w / 2, yc);
-  set("torn", xb, P.Y0 + p + P.Y_TORN, P.Z_EJE);
+  const xq = P.D_A, xo = w - P.D_B, s = xo - xq, p = Math.sqrt(P.L2 ** 2 - s ** 2), xb = w - P.BWB;
+  const Q1 = [xq, P.Y0], P1 = [xo, P.Y0 + p], C = [(xq + xo) / 2, P.Y0 + p / 2], O = [xo, P.Y0];
+  const aL = Math.atan2(p, s), aC = Math.atan2(C[1] - O[1], C[0] - O[0]);
+  const set = (n, x, y, a = 0) => { inst[n].position.set(x, y, 0); inst[n].rotation.set(0, 0, a); };
+  set("barra_A", 0, 0); set("barra_B", xb, 0);
+  for (const n of ["carro", "trinquete", "tornillo"]) set(n, xb, P.Y0 + p);
+  set("l1", Q1[0], Q1[1], aL); set("l2", xq, P.Y0 + P.DP, aL);
+  set("ci", O[0], O[1], aC); set("cs", O[0], O[1], aC);
+  set("pQ1", ...Q1); set("pQ2", xq, P.Y0 + P.DP); set("pP1", ...P1); set("pP2", xo, P1[1] + P.DP);
+  set("pC", ...C); set("pO", ...O);
   return { s, p, ang: aL * 180 / Math.PI };
+}
+
+function capEn(w) {
+  if (!CAP.length) return null;
+  let i = 0; while (i < CAP.length - 2 && CAP[i + 1].W < w) i++;
+  const a = CAP[i], b = CAP[i + 1], t = Math.min(1, Math.max(0, (w - a.W) / (b.W - a.W)));
+  const lerp = (x, y) => x + (y - x) * t;
+  const ca = Math.min(a.traccion, a.compresion), cb = Math.min(b.traccion, b.compresion);
+  const near = t < 0.5 ? a : b;
+  const modo = near.traccion <= near.compresion ? near.modo_traccion + " (tracción)" : near.modo_compresion + " (compresión)";
+  return { cap: lerp(ca, cb), rig: lerp(a.rigidez_mm_por_kN, b.rigidez_mm_por_kN), modo };
+}
+
+/* --- curva de capacidad --- */
+const chart = document.getElementById("chart");
+const CW = 320, CH = 150, ML = 40, MR = 10, MT = 10, MB = 24;
+let marker, tip;
+function niceMax(v) { const e = Math.pow(10, Math.floor(Math.log10(v))); return Math.ceil(v / e * 2) / 2 * e; }
+function dibujarCurva() {
+  if (!CAP.length) { chart.hidden = true; return; }
+  const ys = CAP.map(c => Math.min(c.traccion, c.compresion));
+  const ymax = niceMax(Math.max(...ys) * 1.05);
+  const X = w => ML + (w - P.W_MIN) / (P.W_MAX - P.W_MIN) * (CW - ML - MR);
+  const Y = v => MT + (1 - v / ymax) * (CH - MT - MB);
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", `0 0 ${CW} ${CH}`);
+  let html = "";
+  const paso = ymax / 4;
+  for (let v = 0; v <= ymax + 1e-6; v += paso) {
+    html += `<line x1="${ML}" x2="${CW - MR}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)" stroke-width="1"/>`;
+    html += `<text x="${ML - 6}" y="${Y(v) + 4}" text-anchor="end">${Math.round(v).toLocaleString("es-AR")}</text>`;
+  }
+  for (const w of [35, 50, 70, 90, 105]) html += `<text x="${X(w)}" y="${CH - 6}" text-anchor="middle">${w}</text>`;
+  const pts = CAP.map((c, i) => `${X(c.W)},${Y(ys[i])}`).join(" ");
+  html += `<polygon points="${X(CAP[0].W)},${Y(0)} ${pts} ${X(CAP[CAP.length - 1].W)},${Y(0)}" fill="var(--serie)" fill-opacity="0.1"/>`;
+  html += `<polyline points="${pts}" fill="none" stroke="var(--serie)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  html += `<line id="cross" y1="${MT}" y2="${CH - MB}" stroke="var(--muted)" stroke-width="1" visibility="hidden"/>`;
+  html += `<circle id="mk" r="5" fill="var(--accent)" stroke="var(--panel)" stroke-width="2"/>`;
+  html += `<rect id="hit" x="${ML}" y="${MT}" width="${CW - ML - MR}" height="${CH - MT - MB}" fill="transparent"/>`;
+  svg.innerHTML = html;
+  chart.appendChild(svg);
+  tip = document.createElement("div"); tip.className = "tip"; tip.hidden = true; chart.appendChild(tip);
+  marker = (w, v) => { const m = svg.querySelector("#mk"); m.setAttribute("cx", X(w)); m.setAttribute("cy", Y(v)); };
+  const cross = svg.querySelector("#cross");
+  const hit = svg.querySelector("#hit");
+  hit.addEventListener("pointermove", ev => {
+    const r = svg.getBoundingClientRect();
+    const xs = (ev.clientX - r.left) / r.width * CW;
+    const w = Math.min(P.W_MAX, Math.max(P.W_MIN, P.W_MIN + (xs - ML) / (CW - ML - MR) * (P.W_MAX - P.W_MIN)));
+    const c = capEn(w);
+    cross.setAttribute("x1", X(w)); cross.setAttribute("x2", X(w)); cross.setAttribute("visibility", "visible");
+    tip.innerHTML = `W ${w.toFixed(1)} mm · <b>${Math.round(c.cap).toLocaleString("es-AR")} N</b>`;
+    tip.hidden = false;
+    const left = Math.min(chart.clientWidth - tip.offsetWidth, Math.max(0, X(w) / CW * chart.clientWidth - tip.offsetWidth / 2));
+    tip.style.left = left + "px"; tip.style.top = "-30px";
+  });
+  hit.addEventListener("pointerleave", () => { cross.setAttribute("visibility", "hidden"); tip.hidden = true; });
+  hit.addEventListener("click", ev => {
+    const r = svg.getBoundingClientRect();
+    const xs = (ev.clientX - r.left) / r.width * CW;
+    wIn.value = Math.min(P.W_MAX, Math.max(P.W_MIN, P.W_MIN + (xs - ML) / (CW - ML - MR) * (P.W_MAX - P.W_MIN))).toFixed(1);
+    stopAnim(); update();
+  });
 }
 
 const wIn = document.getElementById("w");
 const fmt = v => v.toFixed(1) + " mm";
-let center = new THREE.Vector3(35, 95, 6.5);
+const fmtN = v => Math.round(v).toLocaleString("es-AR") + " N";
 function update() {
   const w = parseFloat(wIn.value), r = pose(w);
   document.getElementById("wval").innerHTML = w.toFixed(1) + "<small>mm</small>";
-  document.getElementById("d-ejes").textContent = fmt(w - P.BW);
+  document.getElementById("d-ejes").textContent = fmt(w - P.BWA / 2 - P.BWB / 2);
   document.getElementById("d-s").textContent = fmt(r.s);
   document.getElementById("d-p").textContent = fmt(r.p);
   document.getElementById("d-ang").textContent = r.ang.toFixed(1) + "°";
-  document.getElementById("d-esc").textContent = w.toFixed(1);
-  center.set(w / 2, 95, 6.5);
+  document.getElementById("d-paso").textContent = (P.PASO * r.p / r.s).toFixed(2) + " mm";
+  const c = capEn(w);
+  if (c) {
+    document.getElementById("c-cap").textContent = Math.round(c.cap).toLocaleString("es-AR");
+    document.getElementById("c-modo").textContent = "Limita: " + c.modo;
+    document.getElementById("c-trab").textContent = fmtN(c.cap / 1.5);
+    document.getElementById("c-rig").textContent = c.rig.toFixed(2) + " mm/kN";
+    if (marker) marker(w, c.cap);
+  }
 }
 wIn.addEventListener("input", () => { stopAnim(); update(); });
 
@@ -190,7 +280,7 @@ const ghost = document.getElementById("ghost");
 ghost.onclick = () => {
   const on = ghost.getAttribute("aria-pressed") !== "true";
   ghost.setAttribute("aria-pressed", on);
-  for (const k of ["barra_A", "barra_B"]) { mats[k].transparent = on; mats[k].opacity = on ? 0.28 : 1; mats[k].depthWrite = !on; }
+  for (const k of ["barra_A", "barra_B"]) { mats[k].transparent = on; mats[k].opacity = on ? 0.25 : 1; mats[k].depthWrite = !on; }
 };
 
 let animOn = false, t0 = 0;
@@ -215,6 +305,7 @@ function resize() {
   camera.aspect = r.width / r.height; camera.updateProjectionMatrix();
 }
 new ResizeObserver(resize).observe(view);
+dibujarCurva();
 resize(); update(); setView("iso");
 (function loop(now) {
   if (animOn) {

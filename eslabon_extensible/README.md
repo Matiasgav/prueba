@@ -1,55 +1,56 @@
-# Eslabón de ancho regulable (doble Scott Russell)
+# Eslabón de ancho regulable (doble Scott Russell) — v2 reforzada
 
-Modelo 3D paramétrico (CadQuery) de un eslabón de **190 × 13 mm** cuyo **ancho se regula a mano entre 35 y 105 mm**.
+Modelo 3D paramétrico en CadQuery de un eslabón de **190 × 13 mm** cuyo **ancho se regula a mano entre 35 y 105 mm**. Está pensado para mecanizar en **aluminio 7075-T651**, con pasadores templados en todas las articulaciones.
 
 ![Planta a W = 70 mm](img/planta_W70.png)
 
-## Requisitos cumplidos
+## Cuánto aguanta
+
+Fuerza entre los ejes de acople hasta la primera fluencia, tanto en tracción como en compresión:
+
+| W | 35 | 45 | 50 | 70 | 105 mm |
+|---|---:|---:|---:|---:|---:|
+| Carga a fluencia | 605 | 1.025 | 1.165 | 1.284 | 1.409 N |
+| Carga de trabajo estática (÷ 1,5) | 400 | 680 | 780 | 860 | 940 N |
+| Flexibilidad entre ejes | 20,5 | 10,5 | 8,5 | 5,1 | 3,5 mm/kN |
+
+La v1 patinaba en la traba con 25 a 100 N. El detalle (todas las piezas, hipótesis, por qué no da más y qué cambiar para subirla) está en **[ANALISIS.md](ANALISIS.md)**.
+
+## Requisitos
 
 | Requisito | Cómo se resolvió |
 |---|---|
-| Largo 190, espesor 13 | Envolvente verificada: X 0…W, Y 0…190, Z 0…13 en todo el recorrido (solo sale la perilla del tornillo de bloqueo, 7 mm hacia afuera de la barra B). |
-| Ancho 35…105 regulable | La barra B se traslada en X respecto de la barra A sin girar. |
-| 4 agujeros D5 × 10 | Dos por barra, uno en cada cara extrema. Cada par es coaxial, paralelo al largo de 190 y centrado en el espesor (z = 6,5) y en el ancho de la barra. Distancia entre ejes de acople = W − 14. |
-| Doble Scott Russell | Paralelogramo de dos eslabones largos (2L = 92) articulados en A (Q1, Q2) y en un carro que corre sobre B (P1, P2). Un eslabón corto (L = 46) une un pivote fijo O de B con el punto medio C del eslabón largo 1. |
-| Regulación manual | El carro se desliza en un canal de B y se fija con un tornillo M4 de perilla que pasa por una ranura de la pared exterior. Esa pared lleva una escala grabada de 35 a 105 mm (marca cada 5, número cada 10). |
+| Largo 190, espesor 13 | La envolvente es W × 190 × 13 en todo el recorrido. No sobresale nada. |
+| Ancho 35 a 105 regulable | La barra B se traslada en X respecto de la barra A, sin girar. |
+| 4 agujeros D5 × 10 | Dos por barra, uno en cada cara extrema. Cada par es coaxial, paralelo al largo y centrado en el espesor (z = 6,5) y en el ancho de su barra. |
+| Doble Scott Russell | Paralelogramo de dos eslabones largos (2L = 88,4 mm): Q1 y Q2 en A, P1 y P2 en un carro que corre en B. Un eslabón corto (L = 44,2 mm, dos placas) une el pivote O de B con el punto medio C del eslabón 1. |
+| Regulación manual | Se afloja el tornillo cónico M4 desde arriba del carro, se lleva el ancho a mano y se vuelve a apretar. El trinquete engrana en la cremallera de paso 0,5 mm de la columna de B (122 posiciones en todo el recorrido). Un diente equivale a un cambio de ancho de 3 mm a W = 35, 0,35 mm a W = 70 y 0,16 mm a W = 105, porque el Scott Russell amplifica más cerca del ancho mínimo. |
 
-## Cinemática
-
-- s = W − 20: distancia entre la recta de pivotes de A (Q1, Q2) y la de B (O, P1, P2).
-- p = √(92² − s²): posición del carro, distancia O–P1 a lo largo de B.
-- O y Q1 están a la misma altura Y (22 mm), así que el eslabón corto OC (con |OC| = L) obliga a Q1 a moverse en una recta perpendicular a B. Ese es el Scott Russell. El paralelogramo mantiene A paralela a B.
-
-| W [mm] | s [mm] | p [mm] | Ángulo de los eslabones largos |
-|---:|---:|---:|---:|
-| 35 | 15,0 | 90,8 | 80,6° |
-| 70 | 50,0 | 77,2 | 57,1° |
-| 105 | 85,0 | 35,2 | 22,5° |
-
-El carro recorre 55,6 mm. El script verifica que no haya interferencia entre ningún par de piezas, cada 2,5 mm de ancho, entre 35 y 105.
-
-## Piezas
+## Piezas (7075-T651 salvo indicación)
 
 | Pieza | Cant. | Notas |
 |---|---:|---|
-| Barra A | 1 | 14 × 190 × 13. Horquilla en la capa de los eslabones largos (z 4…7,5). |
-| Barra B | 1 | 14 × 190 × 13. Canal del carro (z 1,5…11,5), horquilla del eslabón corto, ranura y escala. |
-| Carro | 1 | 10,8 × 65 × 9,6. Pivotes P1 y P2 separados 48 mm. Agujero roscado M4. |
-| Eslabón largo | 2 | 92 entre centros, ancho 7, espesor 3,5, agujero central para C. |
-| Eslabón corto | 1 | 46 entre centros, ancho 7, espesor 3 (capa z 8,5…11,5). |
-| Perno D3 | 6 | 3 de 13 mm (Q1, Q2, O), 2 de 9,6 mm (P1, P2), 1 de 7,5 mm (C). |
-| Separador en C | 1 | D6 × 1. |
-| Tornillo M4 con perilla | 1 | Bloqueo del carro. |
+| Barra A | 1 | 12,8 × 190 × 13. Horquillas en Q1 y Q2 (mejillas de 2,9 mm). |
+| Barra B | 1 | 21,4 × 190 × 13. Columna maciza de 10,5 mm con cremallera y labios de retención, canal del carro y lengüeta del pivote O. |
+| Carro | 1 | 10,9 mm de ancho + ganchos. Horquillas en P1 y P2 (52 mm entre centros) y alojamiento del trinquete. |
+| Trinquete | 1 | 22 dientes de 60° y paso 0,5 mm. Se recomienda 7075 o acero. |
+| Tornillo cónico | 1 | M4, prisionero 12.9 con punta cónica. |
+| Eslabón 1 | 1 | 88,4 mm entre centros, 7 mm de espesor, ojos R 3,95, quilla de 11,4 mm hacia B. |
+| Eslabón 2 | 1 | 88,4 mm entre centros, 7 mm de espesor, ojos R 3,95. |
+| Placa corta | 2 | 44,2 mm entre centros, 2,8 mm de espesor, R 4. Van arriba y abajo del eslabón 1. |
+| Pasador D4 × 13 | 6 | ISO 8734 4m6, templado. Ajuste m6/H7 en eslabones y placas. |
 
 ## Archivos
 
 | Archivo | Contenido |
 |---|---|
-| `eslabon.py` | Modelo paramétrico. Todas las cotas están al principio del archivo. |
-| `visor.html` | Visor 3D interactivo con control deslizante de ancho (lo genera el script). |
-| `visor_plantilla.html` | Plantilla del visor. |
-| `salida/ensamble_W35.step`, `_W70`, `_W105` | Ensamble completo en tres posiciones. |
-| `salida/piezas/*.step`, `*.stl` | Cada pieza suelta, para CAD o impresión 3D. |
-| `img/` | Capturas del visor. |
+| `eslabon.py` | Modelo paramétrico. `configurar()` fija la geometría principal y los huecos salen de barrer los eslabones por todo el rango. |
+| `analisis.py` | Estática y verificación de cada pieza en tracción y compresión a lo largo de todo el recorrido. |
+| `secciones.py` | Propiedades de sección medidas sobre los sólidos del CAD. |
+| `ANALISIS.md` | Informe de resistencia. |
+| `visor.html` | Visor 3D con la carga admisible a cada ancho. Lo genera `eslabon.py`. |
+| `salida/capacidad.json` | Capacidad por modo de falla cada 2,5 mm de ancho. |
+| `salida/ensamble_W35.step`, `ensamble_W70.step`, `ensamble_W105.step` | Ensambles en tres posiciones. |
+| `salida/piezas/*.step`, `*.stl` | Cada pieza suelta. |
 
-Para regenerar todo: `pip install cadquery` y después `python eslabon.py`.
+Para regenerar todo: `pip install cadquery shapely` y después `python analisis.py && python eslabon.py`. El script verifica que no haya choques entre piezas cada 2,5 mm de ancho.
