@@ -18,6 +18,8 @@ Fuerza entre los ejes de acople hasta la primera fluencia, tanto en tracción co
 | Carga de trabajo estática (÷ 1,5) | 320 | 435 | 477 | 637 | 768 N |
 | Flexibilidad entre ejes | 10,7 | 5,0 | 4,1 | 2,6 | 1,5 mm/kN |
 
+Alabeo entre ejes (cupla alrededor del ancho, Mx): rigidez de 24 a 11 N·m/° y capacidad de 27 a 8 N·m según el ancho. Alrededor del largo (My) es la dirección floja: unos 3 a 5 N·m/° y de 3 a 11 N·m.
+
 El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) está en **[ANALISIS.md](ANALISIS.md)**.
 
 ## Diseño
@@ -63,6 +65,7 @@ El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) 
 | `eslabon.py` | Modelo paramétrico. `configurar()` fija la geometría principal y los huecos salen de barrer los eslabones por todo el rango. |
 | `analisis.py` | Estática y verificación de cada pieza en tracción y compresión, en todo el recorrido. |
 | `secciones.py` | Propiedades de sección medidas sobre los sólidos del CAD. |
+| `torsion.py` | Rigidez y resistencia al alabeo entre ejes (fuera del plano), en `salida/torsion.json`. |
 | `ajuste_vientres.py` | Busca la profundidad máxima de los vientres de los eslabones largos. |
 | `ANALISIS.md` | Informe de resistencia. |
 | `visor.html` | Visor 3D con la carga admisible a cada ancho. Lo genera `eslabon.py`. |

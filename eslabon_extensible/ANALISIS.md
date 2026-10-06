@@ -95,13 +95,27 @@ Para cargas cíclicas (vibración, ciclos de arranque y parada), usá **menos de
 
 ## Torsión y alabeo entre ejes
 
-Entre A y B solo hay pivotes de eje vertical. Un giro relativo de los ejes (alabeo) lo resisten tres cosas: la flexión de los eslabones fuera del plano, el apoyo cara contra cara en cada horquilla y la separación entre los apoyos. La v3 mejora las tres:
+Cálculo fuera del plano con `torsion.py` (emparrillado de vigas con secciones medidas sobre el CAD; resultados en `salida/torsion.json`). B empotrada en sus dos acoples y una cupla aplicada en los acoples de A:
 
-- **Juego axial cero** gracias a la precarga. Con 0,05 mm de juego, cada articulación de la v2 podía inclinarse unos ±0,4° sin carga.
-- **Eslabones más anchos en el plano.** Su rigidez fuera del plano crece con el ancho: el eslabón 2 pasa de 7,9 a 15,4 mm en el medio.
-- **Base más ancha:** 76 mm entre los lados del paralelogramo, antes 52.
+- **Mx, alrededor del ancho:** una punta de A sube y la otra baja respecto de B. Es el alabeo típico del marco.
+- **My, alrededor del largo:** A gira sobre su propio eje de acople respecto de B.
 
-La rigidez a torsión **no está calculada todavía**: el análisis actual es en el plano. Si es un caso de carga relevante, conviene definir el momento esperado y verificarlo con un modelo 3D.
+| W [mm] | Mx: rigidez [N·m/°] | Mx: capacidad a fluencia [N·m] | My: rigidez [N·m/°] | My: capacidad a fluencia [N·m] |
+|---:|---:|---:|---:|---:|
+| 35 | 24,1 | 26,7 (eslabón corto) | 2,9 | 3,0 (eslabón 2) |
+| 50 | 21,7 | 20,8 (eslabón 2) | 3,1 | 3,3 (eslabón 2) |
+| 70 | 17,6 | 13,5 (eslabón 2) | 3,5 | 4,3 (eslabón 2) |
+| 90 | 13,4 | 9,6 (eslabón 2) | 4,0 | 6,4 (eslabón 2) |
+| 105 | 10,6 | 7,8 (eslabón 2) | 4,7 | 11,2 (barra A) |
+
+- **Deformación.** Con Mx, a W = 70, cada N·m gira 0,057° (0,18 mm de desnivel entre las puntas de A, en 180 mm). A la capacidad, 13,5 N·m, son 0,77° (2,4 mm). Con My cada N·m gira 0,28° a 0,34°: es la dirección floja.
+- **Qué cede.** Los eslabones largos, que son planos de 7 mm, a flexión fuera del plano y a torsión, sobre todo junto a los ojos. Las barras casi no participan. El eslabón 2 manda porque es una biela sin más apoyo; el eslabón 1 lo ayuda el corto.
+- **Hipótesis que hay que tener presentes:**
+  - Los pivotes se suponen rígidos fuera del plano. Eso vale con la arandela de precarga y el pasador ajustado.
+  - Juego adicional sin carga, estimado: hasta unos 0,2° por articulación por el juego del pasador (H7/g6: 4 a 24 µm en 7 mm de ojo) y unos 0,13° del carro entre las alas (0,1 mm por lado). Se suma a lo de la tabla hasta que el juego se cierra.
+  - La torsión de cada sección se aproxima como sección maciza (A⁴/40 Ip), con un error esperable de ±30 %.
+  - No incluye pandeo lateral ni concentración de tensiones.
+- **Qué la subiría:** eslabones más altos en z (hoy 7 mm; la rigidez fuera del plano crece con el cubo del espesor) o en material más rígido. Con acero, la rigidez sube unas 2,8 veces por el módulo, y la capacidad con la fluencia.
 
 ## Por qué no da más: la geometría manda
 
@@ -131,7 +145,7 @@ Fuerzas internas por cada newton entre ejes:
 - **Pandeo:** Euler o Johnson para las piezas comprimidas, articulado en ambos extremos.
 - **Rigidez:** energía de deformación (axial y flexión) de eslabones, barras y carro, sin el juego radial de los pernos (H7/g6: hasta unos 0,02 mm por articulación).
 - **Qué no se analiza:**
-  - Cargas fuera del plano y torsión (ver la sección anterior).
+  - Cargas fuera del plano y torsión: van aparte, en `torsion.py` (ver la sección «Torsión y alabeo entre ejes»).
   - Concentración de tensiones en los agujeros (Kt): no cambia la fluencia estática de un material dúctil, pero sí la fatiga.
 
 ## Todos los modos de falla
