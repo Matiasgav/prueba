@@ -56,9 +56,10 @@ HOLG_PLANO = 0.3              # juego en el plano entre piezas que se mueven
 
 # capas
 Z_MED = (3.0, 10.0)                       # eslabones largos
-Z_PLACA = ((0.0, 2.8), (10.2, ESP))       # placas del eslabón corto
+PIEL = 0.6                                # piel de las barras que tapa los rebajes del eslabón corto
+Z_PLACA = ((PIEL, 2.8), (10.2, ESP - PIEL))  # placas del eslabón corto, hundidas bajo la piel
 Z_MED_CORTE = (Z_MED[0] - HOLG, Z_MED[1] + HOLG)
-Z_PLACA_CORTE = ((-1.0, Z_PLACA[0][1] + HOLG), (Z_PLACA[1][0] - HOLG, ESP + 1.0))
+Z_PLACA_CORTE = ((PIEL - HOLG, Z_PLACA[0][1] + HOLG), (Z_PLACA[1][0] - HOLG, ESP - PIEL + HOLG))
 
 # Geometría principal. configurar() recalcula todo lo que depende de estos valores.
 #   D_A      línea de pivotes Q1-Q2, medida desde la cara exterior de A
@@ -76,13 +77,13 @@ R_CORTO = 4.5                              # semiancho de las placas cortas (ojo
 # come la barra A más allá del fondo que ya deja el ojo.
 R_GOTA = 60.0
 DX_GOTA1 = -12.0                           # el vientre del eslabón 1 se corre hacia Q1 (gota)
-QUILLA = 13.0                              # profundidad del vientre del eslabón 1 (hacia B)
-PANZA_2 = 10.9                             # profundidad del vientre del eslabón 2 (hacia A)
+QUILLA = 12.5                              # profundidad del vientre del eslabón 1 (hacia B)
+PANZA_2 = 10.6                             # profundidad del vientre del eslabón 2 (hacia A)
 # pivote precargado: arandela ondulada de acero en un rebaje de la cara superior del ojo
 ARANDELA = dict(d_int=D_PERNO + 0.2, d_ext=7.9, rebaje=0.15, alto=0.25)
 
 
-def configurar(d_a=5.5, e_b=6.3, columna=10.5, gap_min=0.8, margen_l2=4.0):
+def configurar(d_a=6.5, e_b=6.3, columna=10.5, gap_min=0.8, margen_l2=4.0):
     global D_A, E_B, COLUMNA, GAP_MIN, C_CARRO, BWB, BWA, D_B, S_MIN, L2, L1, P_MAX, DP
     global SEP_MIN, R_OJO, CARRO_Y, TRINQ_Y
     D_A, E_B, COLUMNA, GAP_MIN = d_a, e_b, columna, gap_min
@@ -366,11 +367,33 @@ def agujeros_acople(sol, x):
     return sol
 
 
-def barra_base(ancho):
-    """Barra maciza con puntas redondeadas en planta y aristas biseladas."""
-    b = caja(0, ancho, 0, LARGO, 0, ESP)
-    b = b.edges("|Z").fillet(R_PUNTA)
-    return b.faces(">Z or <Z").chamfer(CANTO)
+R_LATERAL = ESP / 2   # lateral exterior en semicilindro (R 6,5) y puntas con el mismo radio
+
+
+def barra_base(ancho, exterior_izq=True):
+    """Barra con el lateral exterior en semicilindro R 6,5 a todo lo largo, puntas cerradas
+    con el mismo radio (semicilindro transversal y cuarto de esfera en la esquina) y la cara
+    interior plana con un redondeo de 0,3 en sus aristas."""
+    r = R_LATERAL
+    piezas = [
+        cq.Solid.makeBox(ancho - r, LARGO - 2 * r, ESP, cq.Vector(r, r, 0)),
+        cq.Solid.makeCylinder(r, LARGO - 2 * r, cq.Vector(r, r, r), cq.Vector(0, 1, 0)),
+        cq.Solid.makeCylinder(r, ancho - r, cq.Vector(r, r, r), cq.Vector(1, 0, 0)),
+        cq.Solid.makeCylinder(r, ancho - r, cq.Vector(r, LARGO - r, r), cq.Vector(1, 0, 0)),
+        cq.Solid.makeSphere(r, cq.Vector(r, r, r), angleDegrees1=-90, angleDegrees2=90),
+        cq.Solid.makeSphere(r, cq.Vector(r, LARGO - r, r), angleDegrees1=-90, angleDegrees2=90),
+    ]
+    b = cq.Workplane().add(piezas[0])
+    for p in piezas[1:]:
+        b = b.union(cq.Workplane().add(p))
+    b = b.intersect(caja(0, ancho, 0, LARGO, 0, ESP))
+    if not exterior_izq:
+        b = b.mirror("YZ").translate((ancho, 0, 0))
+    try:
+        b = b.faces(">X" if exterior_izq else "<X").edges().fillet(CANTO)
+    except Exception:
+        pass
+    return b
 
 
 def dientes(x_cara, y0, y1, z0, z1, hacia, fase=0.0):
@@ -406,7 +429,7 @@ def barra_a():
 
 
 def barra_b():
-    b = barra_base(BWB)
+    b = barra_base(BWB, exterior_izq=False)
     b = agujeros_acople(b, BWB - X_ACOPLE)
     huella = box(-1, -1, BWB + 1, LARGO + 1)
     y0c, y1c = canal_carro()
@@ -424,13 +447,7 @@ def barra_b():
     # en el bloque de O la barra es casi maciza: el rebaje se redondea con más radio para que no quede la V
     corto = barrido(["corto"], "B", 5.0).intersection(huella)
     corto = redondear_con_cara(corto, box(-10, -5, 0, LARGO + 5), 4.0).intersection(huella)
-    b = cortar(b, corto, Z_PLACA_CORTE)
-    # transición estética en las caras: une el rebaje del eslabón corto con la boca del canal
-    # y la ranura del cuello, solo hasta la profundidad de esa ranura (1,7 mm)
-    boca = box(-1, y0c, C_CARRO + GANCHO + 0.1, y0c + 12)
-    transicion = unary_union([corto, boca]).buffer(4, 32).buffer(-4, 32)
-    transicion = transicion.intersection(box(-1, 0, C_CARRO + GANCHO + 0.1, y0c + 12))
-    b = cortar(b, transicion, [(-1, 1.7), (ESP - 1.7, ESP + 1)])
+    b = cortar(b, corto, Z_PLACA_CORTE)   # rebaje interior, tapado por la piel de las caras
     b = b.cut(cil_z(E_B, Y0, D_PERNO, -1, ESP + 1))
     b = rebaje_arandela(b, E_B, Y0, Z_PLACA_CORTE[1][0])
     return b
@@ -525,6 +542,18 @@ def perno():
     return cil_z(0, 0, D_PERNO, 0, ESP)
 
 
+def perno_c():
+    """Perno de C: queda entre las placas hundidas, sin llegar a la piel de las barras."""
+    return cil_z(0, 0, D_PERNO, Z_PLACA[0][0], Z_PLACA[1][1])
+
+
+def perno_a():
+    """Pernos Q1 y Q2: al ras de la superficie curva del lateral de A."""
+    y = LARGO / 2
+    p = cil_z(D_A, y, D_PERNO, 0, ESP).intersect(barra_base(BWA))
+    return p.translate((-D_A, -y, 0))
+
+
 PIEZAS = {
     "barra_A": barra_a,
     "barra_B": barra_b,
@@ -536,6 +565,8 @@ PIEZAS = {
     "placa_corta_inf": lambda: placa_corta(Z_PLACA[0]),
     "placa_corta_sup": lambda: placa_corta(Z_PLACA[1]),
     "perno": perno,
+    "perno_A": perno_a,
+    "perno_C": perno_c,
     "arandela": arandela,
 }
 
@@ -544,7 +575,7 @@ COLORES = {
     "carro": (0.85, 0.45, 0.15), "trinquete": (0.95, 0.75, 0.25), "tornillo": (0.20, 0.20, 0.22),
     "eslabon_1": (0.20, 0.45, 0.80), "eslabon_2": (0.35, 0.60, 0.90),
     "placa_corta_inf": (0.15, 0.65, 0.45), "placa_corta_sup": (0.15, 0.65, 0.45),
-    "perno": (0.85, 0.85, 0.85), "arandela": (0.70, 0.72, 0.75),
+    "perno": (0.85, 0.85, 0.85), "perno_A": (0.85, 0.85, 0.85), "perno_C": (0.85, 0.85, 0.85), "arandela": (0.70, 0.72, 0.75),
 }
 
 
@@ -566,7 +597,8 @@ def poses(w):
         ("placa_corta_sup", "placa_corta_sup", (*k["O"], 0), ac),
     ]
     for n in ("Q1", "Q2", "P1", "P2", "C", "O"):
-        r.append((f"perno_{n}", "perno", (*k[n], 0), 0))
+        tipo = "perno_A" if n in ("Q1", "Q2") else ("perno_C" if n == "C" else "perno")
+        r.append((f"perno_{n}", tipo, (*k[n], 0), 0))
         dz = Z_PLACA_CORTE[1][0] - Z_MED[1] if n == "O" else 0.0
         r.append((f"arandela_{n}", "arandela", (*k[n], dz), 0))
     return r

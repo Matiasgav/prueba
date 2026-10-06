@@ -1,4 +1,4 @@
-# Análisis de resistencia: eslabón regulable v3
+# Análisis de resistencia: eslabón regulable v4
 
 Cuánta fuerza aguanta el eslabón entre sus ejes de acople y qué pieza falla primero, en todo el rango de ancho de 35 a 105 mm. El cálculo lo hace `analisis.py` sobre la geometría real del CAD (`eslabon.py`). Los resultados quedan en `salida/capacidad.json`.
 
@@ -8,13 +8,13 @@ Carga entre ejes hasta la primera fluencia, sin coeficiente de seguridad. Es el 
 
 | Ancho W [mm] | Carga a fluencia [N] | Carga de trabajo estática, ÷ 1,5 [N] | Limita | Flexibilidad entre ejes [mm/kN] |
 |---:|---:|---:|---|---:|
-| 35 | 762 | 508 | flexión de la barra B | 16,5 |
-| 45 | 1.089 | 726 | flexión de la barra B | 8,4 |
-| 50 | 1.227 | 818 | flexión de la barra B | 6,8 |
-| 60 | 1.475 | 983 | flexión de la barra A | 5,0 |
-| 70 | 1.521 | 1.014 | flexión de la barra A | 4,0 |
-| 90 | 1.586 | 1.057 | flexión de la barra A | 2,7 |
-| 105 | 1.634 | 1.089 | flexión de la barra A | 2,6 |
+| 35 | 597 | 398 | flexión de la barra B | 21,3 |
+| 45 | 869 | 579 | flexión de la barra B | 10,4 |
+| 50 | 981 | 654 | flexión de la barra B | 8,4 |
+| 60 | 1.079 | 719 | flexión de la barra A | 6,2 |
+| 70 | 1.126 | 750 | flexión de la barra A | 4,8 |
+| 90 | 1.193 | 796 | flexión de la barra A | 3,2 |
+| 105 | 1.244 | 829 | flexión de la barra A | 3,2 |
 
 Comparación:
 
@@ -23,8 +23,15 @@ Comparación:
 | v1 (traba por fricción) | ≈ 25 N | – | ≈ 100 N | – |
 | v2 | 605 N | 1.165 N | 1.284 N | 1.409 N |
 | **v3** | **762 N** | **1.227 N** | **1.521 N** | **1.634 N** |
+| **v4 (lateral semicilíndrico)** | **597 N** | **981 N** | **1.126 N** | **1.244 N** |
 
 Para cargas cíclicas (vibración, ciclos de arranque y parada), usá **menos de un tercio** de la carga a fluencia. El 7075 tiene baja resistencia a la fatiga con concentradores, y los agujeros de los pernos en ligamentos de 2 mm lo son. Para un diseño a fatiga habría que conocer el espectro de cargas.
+
+## Qué cambió en la v4
+
+- **Lateral exterior en semicilindro R 6,5** (la mitad del espesor) en las dos barras, y puntas cerradas con el mismo radio. Cuesta resistencia porque saca la fibra exterior, la que más trabaja a flexión: un 20 a 25 % respecto de la v3. Para limitar la pérdida, la línea de pivotes de A se corrió de 5,5 a 6,5 mm de la cara exterior, así la nariz redonda queda maciza en Q1 y Q2. Se probaron 5,5, 6,5, 7, 7,5, 8 y 9 mm; 6,5 es la mejor.
+- **Caras continuas.** Las placas del eslabón corto quedan hundidas 0,6 mm (pasan de 2,8 a 2,2 mm). Las barras conservan una piel de 0,6 mm que tapa los rebajes de C en A y de O en B. Esos rebajes se mecanizan con fresa de disco desde la cara interior.
+- **Pernos Q1 y Q2 al ras** de la superficie curva.
 
 ## Qué cambió de la v2 a la v3
 
@@ -59,7 +66,7 @@ Fuerzas internas por cada newton entre ejes:
 | 105 | 0,3 N | 1,1 N | 1,0 N | 0,3 N |
 
 1. **A anchos chicos los eslabones largos quedan casi paralelos a las barras.** A W = 35 solo una fracción chica de su fuerza axial empuja en X, y el Scott Russell amplifica igual: el carro recibe p/s veces la carga. Esto viene del recorrido pedido (35 a 105) en 190 mm de largo.
-2. **El paralelogramo se agarra de A solo en la mitad inferior** (Q1 a 15 mm, Q2 a 91 mm). La carga del acople de y = 185 recorre la barra como un voladizo. Por eso la barra A limita desde W = 60 y la unión es flexible (2,6 a 16,5 mm/kN).
+2. **El paralelogramo se agarra de A solo en la mitad inferior** (Q1 a 15 mm, Q2 a 92 mm). La carga del acople de y = 185 recorre la barra como un voladizo. Por eso la barra A limita desde W = 55 y la unión es flexible (3,2 a 21,3 mm/kN).
 3. **Todo vive en 13 mm de espesor:** 7 mm de eslabón y 2,9 mm por mejilla.
 
 ## Hipótesis
@@ -83,30 +90,30 @@ Carga entre ejes [N] que lleva cada modo a la fluencia, ordenados por W = 35. Es
 
 | Modo de falla | W = 35 | W = 50 | W = 70 | W = 105 |
 |---|---:|---:|---:|---:|
-| barra B: flexión + axial | 762 | 1.227 | 1.773 | 2.664 |
-| eslabón 1: flexión + axial | 1.000 | 1.467 | 1.992 | 4.433 |
-| barra A: flexión + axial | 1.190 | 1.407 | 1.521 | 1.634 |
-| traba: corte de dientes | 1.255 | 2.728 | 5.246 | 25.080 |
-| placas cortas ojo C: desgarro | 1.329 | 2.763 | 4.674 | 8.020 |
-| placas cortas ojo O: desgarro | 1.329 | 2.763 | 4.674 | 8.020 |
-| eslabón 2 ojo Q2: desgarro | 1.577 | 3.278 | 5.547 | 9.518 |
-| eslabón 2 ojo P2: desgarro | 1.577 | 3.278 | 5.547 | 9.518 |
-| eslabón 1 ojo Q1: desgarro | 1.597 | 3.472 | 6.673 | 31.511 |
-| perno P2: flexión | 1.676 | 3.485 | 5.896 | 10.116 |
-| perno Q2: flexión | 1.676 | 3.485 | 5.896 | 10.116 |
-| perno Q1: flexión | 1.697 | 3.689 | 7.091 | 33.494 |
-| perno C: flexión | 1.738 | 3.613 | 6.114 | 10.490 |
-| perno O: flexión | 1.764 | 3.668 | 6.206 | 10.649 |
-| placas cortas ojo C: tracción neta | 1.782 | 3.704 | 6.268 | 10.754 |
-| placas cortas ojo O: tracción neta | 1.782 | 3.704 | 6.268 | 10.754 |
-| placa corta fuera del plano: pandeo | 1.908 | 3.966 | 6.711 | 11.514 |
-| traba: aplastamiento de flancos | 1.957 | 4.255 | 8.183 | 39.120 |
-| placas cortas ojo C: aplastamiento | 2.004 | 4.168 | 7.052 | 12.099 |
-| placas cortas ojo O: aplastamiento | 2.004 | 4.168 | 7.052 | 12.099 |
-| eslabón 2 ojo Q2: tracción neta | 2.147 | 4.464 | 7.553 | 12.958 |
-| eslabón 2 ojo P2: tracción neta | 2.147 | 4.464 | 7.553 | 12.958 |
-| ganchos del carro: flexión | 2.203 | 2.603 | 2.812 | 3.019 |
-| carro: flexión + axial | 2.203 | 4.417 | 7.461 | 17.344 |
+| barra B: flexión + axial | 597 | 981 | 1.419 | 2.112 |
+| barra A: flexión + axial | 797 | 1.010 | 1.126 | 1.244 |
+| placa corta fuera del plano: pandeo | 889 | 1.922 | 3.300 | 5.711 |
+| eslabón 1: flexión + axial | 947 | 1.412 | 1.919 | 4.309 |
+| placas cortas ojo O: desgarro | 980 | 2.120 | 3.639 | 6.298 |
+| placas cortas ojo C: desgarro | 980 | 2.120 | 3.639 | 6.298 |
+| traba: corte de dientes | 1.176 | 2.657 | 5.177 | 24.927 |
+| placas cortas ojo C: tracción neta | 1.314 | 2.842 | 4.880 | 8.445 |
+| placas cortas ojo O: tracción neta | 1.314 | 2.842 | 4.880 | 8.445 |
+| placas cortas ojo C: aplastamiento | 1.478 | 3.198 | 5.490 | 9.501 |
+| placas cortas ojo O: aplastamiento | 1.478 | 3.198 | 5.490 | 9.501 |
+| eslabón 2 ojo Q2: desgarro | 1.500 | 3.243 | 5.568 | 9.637 |
+| eslabón 2 ojo P2: desgarro | 1.500 | 3.243 | 5.568 | 9.637 |
+| eslabón 1 ojo Q1: desgarro | 1.517 | 3.425 | 6.675 | 31.920 |
+| perno Q2: flexión | 1.594 | 3.447 | 5.919 | 10.244 |
+| perno P2: flexión | 1.594 | 3.447 | 5.919 | 10.244 |
+| perno Q1: flexión | 1.612 | 3.640 | 7.092 | 33.916 |
+| perno C: flexión | 1.792 | 3.875 | 6.653 | 11.515 |
+| perno O: flexión | 1.822 | 3.940 | 6.764 | 11.707 |
+| traba: aplastamiento de flancos | 1.835 | 4.144 | 8.075 | 38.880 |
+| eslabón 2 ojo P2: tracción neta | 2.040 | 4.411 | 7.574 | 13.107 |
+| eslabón 2 ojo Q2: tracción neta | 2.040 | 4.411 | 7.574 | 13.107 |
+| carro: flexión + axial | 2.062 | 4.280 | 7.297 | 16.845 |
+| barra A mejilla Q1: tracción neta | 2.067 | 4.669 | 9.101 | 44.123 |
 
 ## Cómo subir más la capacidad
 

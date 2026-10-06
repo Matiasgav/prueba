@@ -157,12 +157,12 @@ const inst = {};
 function add(nombre, pieza) {
   const grp = new THREE.Group();
   grp.add(new THREE.Mesh(geoms[pieza], mats[pieza]));
-  if (pieza !== "perno" && pieza !== "arandela" && pieza !== "barra_B") grp.add(new THREE.LineSegments(new THREE.EdgesGeometry(geoms[pieza], 30), edgeMat));
+  if (!pieza.startsWith("perno") && pieza !== "arandela" && pieza !== "barra_B") grp.add(new THREE.LineSegments(new THREE.EdgesGeometry(geoms[pieza], 30), edgeMat));
   scene.add(grp); inst[nombre] = grp;
 }
 [["barra_A","barra_A"],["barra_B","barra_B"],["carro","carro"],["trinquete","trinquete"],["tornillo","tornillo"],
  ["l1","eslabon_1"],["l2","eslabon_2"],["ci","placa_corta_inf"],["cs","placa_corta_sup"],
- ["pQ1","perno"],["pQ2","perno"],["pP1","perno"],["pP2","perno"],["pC","perno"],["pO","perno"],
+ ["pQ1","perno_A"],["pQ2","perno_A"],["pP1","perno"],["pP2","perno"],["pC","perno_C"],["pO","perno"],
  ["aQ1","arandela"],["aQ2","arandela"],["aP1","arandela"],["aP2","arandela"],["aC","arandela"],["aO","arandela"]].forEach(([n, p]) => add(n, p));
 
 function pose(w) {
