@@ -48,7 +48,7 @@ ESP = 13.0
 W_MIN, W_MAX = 35.0, 105.0
 
 D_ACOPLE, P_ACOPLE = 5.0, 10.0
-ACORTE_A = 15.0              # la barra A (la fina) se acorta por la punta del voladizo (y = 190)
+ACORTE_A = 25.0              # la barra A (la fina) se acorta por la punta del voladizo (y = 190)
 LARGO_A = LARGO - ACORTE_A
 X_ACOPLE = 5.0               # eje de acople a 5 mm de la cara exterior de cada barra
 Z_EJE = ESP / 2
