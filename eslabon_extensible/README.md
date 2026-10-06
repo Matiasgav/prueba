@@ -1,6 +1,6 @@
-# Eslabón de ancho regulable (doble Scott Russell) — v7
+# Eslabón de ancho regulable (doble Scott Russell) — v8
 
-Modelo 3D paramétrico en CadQuery de un eslabón de **190 × 13 mm** cuyo **ancho se regula a mano entre 35 y 105 mm**. Está pensado para mecanizar en **aluminio 7075-T651**, con pivotes templados y precargados.
+Modelo 3D paramétrico en CadQuery de un eslabón de **190 × 13 mm** cuyo **ancho se regula a mano entre 35 y 105 mm**. Está pensado para mecanizar: barras y carro en **aluminio 7075-T651**, eslabones en **acero inoxidable 17-4PH**, con pivotes templados y precargados.
 
 ![Isométrica a W = 35 mm, barras transparentes](img/iso_W35.png)
 ![Cable a W = 70 mm](img/cable_W70.png)
@@ -14,11 +14,11 @@ Fuerza entre los ejes de acople hasta la primera fluencia, tanto en tracción co
 
 | W | 35 | 45 | 50 | 70 | 105 mm |
 |---|---:|---:|---:|---:|---:|
-| Carga a fluencia | 480 | 653 | 716 | 955 | 1.152 N |
-| Carga de trabajo estática (÷ 1,5) | 320 | 435 | 477 | 637 | 768 N |
-| Flexibilidad entre ejes | 10,7 | 5,0 | 4,1 | 2,6 | 1,5 mm/kN |
+| Carga a fluencia | 578 | 771 | 833 | 984 | 1.152 N |
+| Carga de trabajo estática (÷ 1,5) | 385 | 514 | 555 | 656 | 768 N |
+| Flexibilidad entre ejes | 7,9 | 3,7 | 3,0 | 2,0 | 1,4 mm/kN |
 
-Alabeo entre ejes (cupla alrededor del ancho, Mx): rigidez de 24 a 11 N·m/° y capacidad a fluencia de 78 a 16 N·m según el ancho. Alrededor del largo (My) es la dirección floja: de 2,9 a 4,7 N·m/° y de 8 a 11 N·m.
+Alabeo entre ejes (cupla alrededor del ancho, Mx): rigidez de 52 a 20 N·m/° y capacidad a fluencia de 91 a 24 N·m según el ancho. Alrededor del largo (My) es la dirección floja: de 5,8 a 7,6 N·m/° y 11 N·m a fluencia (rotura estimada ≈ 18 N·m).
 
 El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) está en **[ANALISIS.md](ANALISIS.md)**.
 
@@ -44,17 +44,17 @@ El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) 
 | 4 agujeros D5 × 10 | Dos por barra, uno en cada cara extrema. Cada par es coaxial, paralelo al largo, centrado en el espesor (z = 6,5) y a 5 mm de la cara exterior de su barra, igual en las dos. Distancia entre ejes: W − 10 (de 25 a 95 mm). |
 | Regulación manual | El carro se mueve a mano. **La traba que fija la posición está pendiente.** |
 
-## Piezas (7075-T651 salvo indicación)
+## Piezas
 
 | Pieza | Cant. | Notas |
 |---|---:|---|
-| Barra A | 1 | 14,2 × 190 × 13, lateral exterior en semicilindro R 6,5. Horquillas en Q1 y Q2, pivotes a 10 mm de la cara exterior. Túnel del cable alrededor de Q1. |
-| Barra B | 1 | 20,0 × 190 × 13, lateral exterior en semicilindro R 6,5. Columna de 8,6 mm y riel en C con alas de 1,5 mm y labios, alojamiento oculto del eslabón corto y túnel del cable en O. |
+| Barra A | 1 | 7075-T651. 14,2 × 190 × 13, lateral exterior en semicilindro R 6,5. Horquillas en Q1 y Q2, pivotes a 10 mm de la cara exterior. Túnel del cable alrededor de Q1. |
+| Barra B | 1 | 7075-T651. 20,0 × 190 × 13, lateral exterior en semicilindro R 6,5. Columna de 8,6 mm y riel en C con alas de 1,5 mm y labios, alojamiento oculto del eslabón corto y túnel del cable en O. |
 | Tapa | 1 | Cierra la boca del riel en y = 190; entra como el carro, bajo los labios. |
-| Carro | 1 | 11,4 mm de ancho, 9,8 mm de alto entre las alas, con el escalón de los labios. Horquillas en P1 y P2 (73 mm entre centros), mejillas de 1,3 mm. |
-| Eslabón 1 | 1 | 85,3 mm entre centros, 7 mm de espesor, ojos R 4,5, vientre de 9,9 mm hacia B, embocadura de 2,7 mm en C y túnel del cable alrededor de C. |
-| Eslabón 2 | 1 | Mismo contorno que el 1, espejado: vientre de 9,9 mm hacia A. Sin embocadura. |
-| Eslabón corto | 1 | 42,7 mm entre centros, 2,5 mm de espesor, R 4,5. |
+| Carro | 1 | 7075-T651. 11,4 mm de ancho, 9,8 mm de alto entre las alas, con el escalón de los labios. Horquillas en P1 y P2 (73 mm entre centros), mejillas de 1,3 mm. |
+| Eslabón 1 | 1 | **17-4PH.** 85,3 mm entre centros, 7 mm de espesor, ojos R 4,5, vientre de 9,9 mm hacia B, embocadura de 2,7 mm en C y túnel del cable alrededor de C. |
+| Eslabón 2 | 1 | **17-4PH.** Mismo contorno que el 1, espejado: vientre de 9,9 mm hacia A. Sin embocadura. |
+| Eslabón corto | 1 | **17-4PH.** 42,7 mm entre centros, 2,5 mm de espesor, R 4,5. |
 | Pasador Ø5 | 6 | Templado 550 a 650 HV, rectificado g6, a presión en las mejillas. Largos: 13 (Q1, Q2, O), 9,8 (P1, P2), 7 (C). |
 | Arandela ondulada | 6 | Acero inoxidable para resortes, Ø5,2 × 7,9, 0,25 mm comprimida. |
 

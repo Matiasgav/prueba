@@ -16,7 +16,8 @@ from OCP.GProp import GProp_GProps
 import eslabon as E
 
 T_LONCHA = 0.05
-Ea, G, Sy = 71700.0, 26900.0, 503.0
+Ea, G, Sy = 71700.0, 26900.0, 503.0                    # barras: 7075-T651
+E_ESL, G_ESL, SY_ESL = 197000.0, 76000.0, 725.0         # eslabones: 17-4PH (SUS630)
 
 
 def _sec(sol, y):
@@ -110,7 +111,7 @@ def armar(w, seg=4.0):
         for t in range(1,nm+1):
             n = nj if t==nm else m.nodo(pi+(pj-pi)*t/nm)
             s_=L*(t-0.5)/nm; d=props(tab,s_)
-            m.viga(prev,n,Ea*d["Iout"],G*d["J"],(nombre,s_,d)); prev=n
+            m.viga(prev,n,E_ESL*d["Iout"],G_ESL*d["J"],(nombre,s_,d)); prev=n
             if t==nm//2: mid=n
         return mid
     C=eslabon(S["L1"],A[yQ1],P1,"eslabón 1")
@@ -153,7 +154,7 @@ if __name__ == "__main__":
   for caso in ("Mx","My"):
     for w in (35,50,70,90,105):
         giro,peor,u,acA=resolver(w,caso)
-        caps={n:Sy/v[0] for n,v in peor.items()}
+        caps={n:(SY_ESL if "eslabón" in n else Sy)/v[0] for n,v in peor.items()}
         lim=min(caps,key=caps.get); grados=math.degrees(giro)
         filas.append(dict(caso=caso,W=w,grados_por_Nm=grados,rigidez_Nm_por_grado=1/grados,capacidad_Nm=caps[lim],limita=lim,caps=caps))
         print(f"{caso} W={w}: {grados:.4f} °/N·m  rigidez {1/grados:.1f} N·m/°  capacidad {caps[lim]:.1f} N·m ({lim})")

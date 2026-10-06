@@ -33,6 +33,10 @@ import secciones as S
 # ---------------------------------------------------------------- materiales
 AL = dict(nombre="7075-T651", Sy=503.0, Su=572.0, E=71700.0)
 AL["tau_y"] = 0.577 * AL["Sy"]
+# eslabones (los dos largos y el corto): inoxidable 17-4PH (SUS630) de catálogo, sin tratamiento
+# especial: se toma la fluencia más baja del rango publicado por el proveedor (725 MPa)
+ESL = dict(nombre="17-4PH (SUS630)", Sy=725.0, Su=930.0, E=197000.0, G=76000.0)
+ESL["tau_y"] = 0.577 * ESL["Sy"]
 _CORTE_ISO8734 = {4.0: 19.7e3, 5.0: 30.8e3, 6.0: 44.2e3}   # corte doble mínimo de rotura, ISO 8734
 PERNO = dict(nombre=f"pasador templado Ø{E.D_PERNO:g}", d=E.D_PERNO,
              corte_doble_rotura=_CORTE_ISO8734[E.D_PERNO],
@@ -41,8 +45,8 @@ PERNO["corte_doble_fluencia"] = 0.75 * PERNO["corte_doble_rotura"]
 F_BRY_MAX = 1.5                               # aplastamiento admisible máximo = 1,5 Sy (e/D >= 1,5)
 
 
-def f_bry(e_sobre_d):
-    return AL["Sy"] * min(F_BRY_MAX, max(e_sobre_d, 0.5))
+def f_bry(e_sobre_d, mat=AL):
+    return mat["Sy"] * min(F_BRY_MAX, max(e_sobre_d, 0.5))
 
 
 # espesores de capa
@@ -141,7 +145,7 @@ def contorno_capa(pieza, z):
 
 
 # ---------------------------------------------------------------- comprobaciones locales
-def orejeta(F_parte, poly, centro, t, d, nombre):
+def orejeta(F_parte, poly, centro, t, d, nombre, mat=AL):
     """Agujero de perno cargado: aplastamiento, desgarro y tracción neta (por N de carga)."""
     Fm = np.linalg.norm(F_parte)
     if Fm < 1e-12:
@@ -151,11 +155,11 @@ def orejeta(F_parte, poly, centro, t, d, nombre):
     e1 = distancia_borde(poly, centro, perp, d / 2)
     e2 = distancia_borde(poly, centro, -perp, d / 2)
     out = {}
-    out[f"{nombre}: aplastamiento"] = f_bry(e / d) / (Fm / (d * t))
+    out[f"{nombre}: aplastamiento"] = f_bry(e / d, mat) / (Fm / (d * t))
     a_desg = 2 * t * max(e - d / 2 * math.cos(math.radians(40)), 0.05)
-    out[f"{nombre}: desgarro"] = AL["tau_y"] / (Fm / a_desg)
+    out[f"{nombre}: desgarro"] = mat["tau_y"] / (Fm / a_desg)
     a_neta = t * (min(e1, 30) - d / 2 + min(e2, 30) - d / 2)
-    out[f"{nombre}: tracción neta"] = AL["Sy"] / (Fm / a_neta)
+    out[f"{nombre}: tracción neta"] = mat["Sy"] / (Fm / a_neta)
     return out
 
 
@@ -168,16 +172,16 @@ def perno(Fm, t_medio, t_ext, juego, nombre):
     return out
 
 
-def pandeo(N_comp, L, I, A, nombre, K=1.0):
+def pandeo(N_comp, L, I, A, nombre, K=1.0, mat=AL):
     if N_comp <= 1e-12:
         return {}
     r = math.sqrt(I / A)
     esb = K * L / r
-    esb_c = math.sqrt(2 * math.pi ** 2 * AL["E"] / AL["Sy"])
+    esb_c = math.sqrt(2 * math.pi ** 2 * mat["E"] / mat["Sy"])
     if esb >= esb_c:
-        scr = math.pi ** 2 * AL["E"] / esb ** 2
+        scr = math.pi ** 2 * mat["E"] / esb ** 2
     else:
-        scr = AL["Sy"] - (AL["Sy"] * esb / (2 * math.pi)) ** 2 / AL["E"]
+        scr = mat["Sy"] - (mat["Sy"] * esb / (2 * math.pi)) ** 2 / mat["E"]
     return {f"{nombre}: pandeo": scr * A / N_comp}
 
 
@@ -222,7 +226,7 @@ def esfuerzos_eslabon1(est):
         s = max(abs(s1), abs(s2))
         if s > peor[0]:
             peor = (s, xi)
-        integ += (N ** 2 / (AL["E"] * A) + M ** 2 / (AL["E"] * I)) * 0.25
+        integ += (N ** 2 / (ESL["E"] * A) + M ** 2 / (ESL["E"] * I)) * 0.25
         nmax_comp = max(nmax_comp, -N)
     return peor, integ, nmax_comp
 
@@ -289,31 +293,31 @@ class Modelo:
 
         # eslabón 1: viga + ojos
         (smax, xi), integ, ncomp = esfuerzos_eslabon1(est)
-        caps["eslabón 1: flexión + axial"] = AL["Sy"] / smax
+        caps["eslabón 1: flexión + axial"] = ESL["Sy"] / smax
         rig += integ
-        caps.update(orejeta(R(-est["FQ1"], al), self.e1, (0, 0), T_MED, d, "eslabón 1 ojo Q1"))
-        caps.update(orejeta(R(est["FP1"], al), self.e1, (E.L2, 0), T_MED, d, "eslabón 1 ojo P1"))
-        caps.update(orejeta(R(-est["fs"] * v, al), self.e1, (E.L1, 0), 2 * T_ALA_C, d, "eslabón 1 alas en C"))
-        caps.update(pandeo(ncomp, E.L1, 2 * E.R_OJO * T_MED ** 3 / 12, 2 * E.R_OJO * T_MED, "eslabón 1 fuera del plano"))
+        caps.update(orejeta(R(-est["FQ1"], al), self.e1, (0, 0), T_MED, d, "eslabón 1 ojo Q1", ESL))
+        caps.update(orejeta(R(est["FP1"], al), self.e1, (E.L2, 0), T_MED, d, "eslabón 1 ojo P1", ESL))
+        caps.update(orejeta(R(-est["fs"] * v, al), self.e1, (E.L1, 0), 2 * T_ALA_C, d, "eslabón 1 alas en C", ESL))
+        caps.update(pandeo(ncomp, E.L1, 2 * E.R_OJO * T_MED ** 3 / 12, 2 * E.R_OJO * T_MED, "eslabón 1 fuera del plano", mat=ESL))
 
         # eslabón 2: biela
         f2 = est["f2"]
         a2 = 2 * E.R_OJO * T_MED
-        rig += f2 ** 2 * E.L2 / (AL["E"] * a2)
-        caps.update(orejeta(R(-f2 * u, al), self.e2, (0, 0), T_MED, d, "eslabón 2 ojo Q2"))
-        caps.update(orejeta(R(f2 * u, al), self.e2, (E.L2, 0), T_MED, d, "eslabón 2 ojo P2"))
+        rig += f2 ** 2 * E.L2 / (ESL["E"] * a2)
+        caps.update(orejeta(R(-f2 * u, al), self.e2, (0, 0), T_MED, d, "eslabón 2 ojo Q2", ESL))
+        caps.update(orejeta(R(f2 * u, al), self.e2, (E.L2, 0), T_MED, d, "eslabón 2 ojo P2", ESL))
         if f2 < 0:
-            caps.update(pandeo(-f2, E.L2, T_MED * (2 * E.R_OJO) ** 3 / 12, a2, "eslabón 2 en el plano"))
-            caps.update(pandeo(-f2, E.L2, 2 * E.R_OJO * T_MED ** 3 / 12, a2, "eslabón 2 fuera del plano"))
+            caps.update(pandeo(-f2, E.L2, T_MED * (2 * E.R_OJO) ** 3 / 12, a2, "eslabón 2 en el plano", mat=ESL))
+            caps.update(pandeo(-f2, E.L2, 2 * E.R_OJO * T_MED ** 3 / 12, a2, "eslabón 2 fuera del plano", mat=ESL))
 
         # eslabón corto: una pieza de T_CORTO
         fs = est["fs"]
         ap = 2 * E.R_CORTO * T_CORTO
-        rig += fs ** 2 * E.L1 / (AL["E"] * ap)
-        caps.update(orejeta(R(-fs * v, ac), self.ec, (0, 0), T_CORTO, d, "eslabón corto ojo O"))
-        caps.update(orejeta(R(fs * v, ac), self.ec, (E.L1, 0), T_CORTO, d, "eslabón corto ojo C"))
+        rig += fs ** 2 * E.L1 / (ESL["E"] * ap)
+        caps.update(orejeta(R(-fs * v, ac), self.ec, (0, 0), T_CORTO, d, "eslabón corto ojo O", ESL))
+        caps.update(orejeta(R(fs * v, ac), self.ec, (E.L1, 0), T_CORTO, d, "eslabón corto ojo C", ESL))
         if fs < 0:
-            caps.update(pandeo(-fs, E.L1, 2 * E.R_CORTO * T_CORTO ** 3 / 12, ap, "eslabón corto fuera del plano"))
+            caps.update(pandeo(-fs, E.L1, 2 * E.R_CORTO * T_CORTO ** 3 / 12, ap, "eslabón corto fuera del plano", mat=ESL))
 
         # pernos (todos en doble corte)
         pins = {"Q1": est["FQ1"], "Q2": f2 * u, "P1": est["FP1"], "P2": f2 * u, "C": fs * v, "O": fs * v}
