@@ -1,9 +1,11 @@
-# Eslabón de ancho regulable (doble Scott Russell) — v4
+# Eslabón de ancho regulable (doble Scott Russell) — v5
 
 Modelo 3D paramétrico en CadQuery de un eslabón de **190 × 13 mm** cuyo **ancho se regula a mano entre 35 y 105 mm**. Está pensado para mecanizar en **aluminio 7075-T651**, con pivotes templados y precargados.
 
 ![Isométrica a W = 35 mm](img/iso_W35.png)
-![Planta a W = 70 mm](img/planta_W70.png)
+![Planta a W = 70 mm, barras transparentes](img/planta_W70.png)
+
+> **Pendiente: la traba del carro.** Esta versión no la incluye. El cálculo supone una traba ideal e informa cuánta fuerza tiene que aguantar: 6,7 veces la carga entre ejes a W = 35, 1,5 veces a W = 70 y 0,3 veces a W = 105.
 
 ## Cuánto aguanta
 
@@ -11,24 +13,22 @@ Fuerza entre los ejes de acople hasta la primera fluencia, tanto en tracción co
 
 | W | 35 | 45 | 50 | 70 | 105 mm |
 |---|---:|---:|---:|---:|---:|
-| Carga a fluencia | 597 | 869 | 981 | 1.126 | 1.244 N |
-| Carga de trabajo estática (÷ 1,5) | 398 | 579 | 654 | 750 | 829 N |
-| Flexibilidad entre ejes | 21,3 | 10,4 | 8,4 | 4,8 | 3,2 mm/kN |
+| Carga a fluencia | 673 | 911 | 1.004 | 1.156 | 1.256 N |
+| Carga de trabajo estática (÷ 1,5) | 449 | 607 | 669 | 771 | 838 N |
+| Flexibilidad entre ejes | 9,1 | 5,0 | 4,3 | 3,1 | 2,3 mm/kN |
 
 El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) está en **[ANALISIS.md](ANALISIS.md)**.
 
 ## Diseño
 
-- **Paralelogramo** de dos eslabones largos (88 mm entre centros), con pivotes separados 77 mm: Q1 y Q2 en la barra A, P1 y P2 en un carro que corre en la barra B.
-- **Eslabón corto** del Scott Russell (44 mm, dos placas): une el pivote O de B con el punto medio C del eslabón 1. Así Q1 se mueve en línea recta perpendicular a B, y la barra A se traslada sin girar.
-- **Eslabones largos con vientre en arco** (R 60, tangente a los ojos). El eslabón 1 tiene forma de gota hacia B, donde trabaja a flexión. El eslabón 2 es de la misma familia y tiene el vientre hacia A.
-- **Pivotes Ø5 en doble corte, precargados.** Pasador rectificado g6, a presión en las dos mejillas. Una arandela ondulada de acero, en un rebaje de 0,15 mm del ojo, elimina el juego axial y mantiene las caras en contacto, lo que hace al conjunto firme contra el alabeo.
-- **Traba de forma.** Cremallera de 60° y paso 0,5 mm en la columna de B, y trinquete de 11 dientes en el carro, entre P1 y P2 y junto a P1, que se aprieta con un tornillo cónico M4 desde arriba. El carro se retiene en X con ganchos en L detrás de un labio de la columna.
+- **Paralelogramo** de dos eslabones largos (87 mm entre centros), con pivotes separados 77 mm: Q1 y Q2 en la barra A, P1 y P2 en un carro que corre en la barra B.
+- **Eslabón corto** del Scott Russell (43,5 mm, una pieza de 4,6 mm): une el pivote O de B con el punto medio C del eslabón 1. Así Q1 se mueve en línea recta perpendicular a B, y la barra A se traslada sin girar.
+- **Embocadura en C.** El eslabón corto entra en una ranura central del eslabón 1. Alrededor de C (±22 mm) el eslabón 1 se engrosa a 9,8 mm, así las alas de la embocadura quedan de 2,5 mm donde el momento es máximo.
+- **Riel en C oculto.** El carro corre en un canal de B cerrado arriba y abajo por alas de 1,5 mm que trabajan con la columna: la cara ancha es continua y no se ve el carro. Ganchos en L bajo las alas lo retienen en X. El canal se abre en la punta de y = 190 para armar y se cierra con una tapa.
+- **Eslabones largos con vientre en arco** (R 60, tangente a los ojos). El eslabón 1 tiene forma de gota hacia B; el 2, vientre hacia A.
+- **Pivotes Ø5 en doble corte, precargados.** Pasador rectificado g6, a presión en las mejillas. Una arandela ondulada de acero, en un rebaje de 0,15 mm del ojo, elimina el juego axial y mantiene las caras en contacto, lo que hace al conjunto firme contra el alabeo.
 - **Lateral exterior en semicilindro R 6,5** a todo lo largo de las dos barras; las puntas (caras de 13 × ancho) son planas. Los pernos Q1 y Q2 quedan al ras de la superficie curva.
-- **Caras continuas:** las placas del eslabón corto van hundidas bajo una piel de 0,6 mm de las barras, que tapa por dentro los rebajes de los pivotes C y O.
-- **Terminación.**
-  - Bisel de 0,3 mm en las aristas exteriores (el de un rebabado normal).
-  - Agujeros de acople avellanados.
+- **Terminación:** bisel de 0,3 mm en las aristas exteriores y agujeros de acople avellanados.
 
 ## Requisitos
 
@@ -37,21 +37,20 @@ El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) 
 | Largo 190, espesor 13 | La envolvente es W × 190 × 13 en todo el recorrido. No sobresale nada. |
 | Ancho 35 a 105 regulable | La barra B se traslada en X respecto de la barra A, sin girar. |
 | 4 agujeros D5 × 10 | Dos por barra, uno en cada cara extrema. Cada par es coaxial, paralelo al largo, centrado en el espesor (z = 6,5) y a 5 mm de la cara exterior de su barra, igual en las dos. Distancia entre ejes: W − 10 (de 25 a 95 mm). |
-| Regulación manual | Se afloja el tornillo cónico, se lleva el ancho a mano y se vuelve a apretar. Hay 122 posiciones en todo el recorrido. Un diente de la traba equivale a 3 mm de ancho a W = 35, 0,75 mm a W = 70 y 0,16 mm a W = 105. |
+| Regulación manual | El carro se mueve a mano. **La traba que fija la posición está pendiente.** |
 
 ## Piezas (7075-T651 salvo indicación)
 
 | Pieza | Cant. | Notas |
 |---|---:|---|
-| Barra A | 1 | 12,3 × 190 × 13, lateral exterior en semicilindro R 6,5. Horquillas en Q1 y Q2 (mejillas de 2,9 mm), pivotes a 6,5 mm de la cara exterior. |
-| Barra B | 1 | 21,9 × 190 × 13, lateral exterior en semicilindro R 6,5. Columna maciza de 10,5 mm con cremallera y labio de retención, canal del carro y lengüeta del pivote O. |
-| Carro | 1 | 11,4 mm de ancho + ganchos. Horquillas en P1 y P2 (77 mm entre centros) y, entre ellas, el alojamiento del trinquete. |
-| Trinquete | 1 | 11 dientes de 60° y paso 0,5 mm. 7075 o acero. |
-| Tornillo cónico | 1 | M4, prisionero 12.9 con punta cónica. |
-| Eslabón 1 | 1 | 87 mm entre centros, 7 mm de espesor, ojos R 4,5, vientre de 12,5 mm hacia B. |
+| Barra A | 1 | 12,3 × 190 × 13, lateral exterior en semicilindro R 6,5. Horquillas en Q1 y Q2, pivotes a 6,5 mm de la cara exterior. Hueco interior bajo piel de 1,5 mm para la zona gruesa del eslabón 1. |
+| Barra B | 1 | 21,9 × 190 × 13, lateral exterior en semicilindro R 6,5. Columna de 10,5 mm y riel en C con alas de 1,5 mm, alojamiento oculto del eslabón corto en O. |
+| Tapa | 1 | Cierra la boca del riel en y = 190. |
+| Carro | 1 | 11,4 mm de ancho + ganchos, 9,8 mm de alto entre las alas. Horquillas en P1 y P2 (77 mm entre centros), mejillas de 1,3 mm. |
+| Eslabón 1 | 1 | 87 mm entre centros, 7 mm de espesor (9,8 mm alrededor de C), ojos R 4,5, vientre de 12,5 mm hacia B, embocadura de 4,8 mm en C. |
 | Eslabón 2 | 1 | 87 mm entre centros, 7 mm de espesor, ojos R 4,5, vientre de 10,6 mm hacia A. |
-| Placa corta | 2 | 43,5 mm entre centros, 2,2 mm de espesor, R 4,5. Van arriba y abajo del eslabón 1, hundidas 0,6 mm. |
-| Pasador Ø5 × 13 | 6 | Templado 550 a 650 HV, rectificado g6, a presión en las mejillas. |
+| Eslabón corto | 1 | 43,5 mm entre centros, 4,6 mm de espesor, R 4,5. |
+| Pasador Ø5 | 6 | Templado 550 a 650 HV, rectificado g6, a presión en las mejillas. Largos: 13 (Q1, Q2, O), 9,8 (P1, P2, C). |
 | Arandela ondulada | 6 | Acero inoxidable para resortes, Ø5,2 × 7,9, 0,25 mm comprimida. |
 
 ## Archivos

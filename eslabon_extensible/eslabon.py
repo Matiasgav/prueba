@@ -1,4 +1,4 @@
-"""Eslabón de ancho regulable con mecanismo de doble Scott Russell — versión 3.
+"""Eslabón de ancho regulable con mecanismo de doble Scott Russell — versión 5.
 
 Modelo paramétrico en CadQuery para mecanizado CNC en aluminio 7075-T651.
 Ejes globales:
@@ -6,25 +6,27 @@ Ejes globales:
   Y = largo (190 mm, dirección de los ejes de acople)
   Z = espesor (13 mm)
 
-Arquitectura en tres capas a lo largo del espesor:
-  capa media (z 3..10)       eslabón largo 1 y eslabón largo 2 (7 mm)
-  capas exteriores (z 0..2,8 y 10,2..13)
-                             eslabón corto, hecho de dos placas que abrazan al eslabón 1 en C
-  Barras y carro trabajan como horquillas: todos los pernos quedan en doble corte.
+Capas a lo largo del espesor:
+  alas de B (z 0..1,5 y 11,5..13)  riel en C: tapan el carro y trabajan con la columna
+  carro (z 1,6..11,4)               horquillas de P1 y P2 entre las alas
+  capa media (z 3..10)              eslabones largos 1 y 2 (7 mm); el 1 se engrosa en el vientre
+  capa central (z 4,2..8,8)         eslabón corto, embutido en el eslabón 1 (C) y en B (O)
+Todos los pernos quedan en doble corte.
 
 Los huecos de cada pieza se calculan barriendo el contorno de los eslabones por todo el rango
 de anchos, así se quita solo el material imprescindible.
 
 Piezas:
   barra A        lado fijo, pivotes Q1 y Q2
-  barra B        columna exterior + bloque del pivote O + canal del carro con cremallera
-  carro          corre en el canal de B, retenido por ganchos; lleva P1 y P2 y, entre ellos, el trinquete
-  eslabón 1      lado del paralelogramo con vientre en gota hacia B (trabaja a flexión), agujero en C
+  barra B        columna exterior + bloque del pivote O + riel en C del carro, abierto en y = 190
+  tapa           cierra la boca del riel en y = 190
+  carro          corre en el riel de B, retenido por ganchos bajo las alas; lleva P1 y P2
+  eslabón 1      lado del paralelogramo con vientre en gota hacia B y embocadura del corto en C
   eslabón 2      lado del paralelogramo (biela), vientre hacia A
-  placa corta    x2, eslabón corto del Scott Russell (O-C)
-  trinquete      traba dentada paso 0,5 mm, empujada por un tornillo cónico M4 desde arriba
+  eslabón corto  una pieza, O-C
   pernos Ø5      pasadores templados rectificados g6
   arandela       arandela ondulada de precarga en cada pivote (juego axial cero)
+La traba del carro queda pendiente: el modelo no la incluye.
 
 Uso:
   python eslabon.py            exporta piezas, ensambles, verificación y visor 3D (visor.html)
@@ -70,7 +72,6 @@ Z_PLACA_CORTE = (Z_EMBOC,)                 # el corto barre solo la capa central
 #   E_B      línea de pivotes O-P1-P2, medida desde la cara interior de B
 #   COLUMNA  ancho de la columna maciza de B detrás del carro
 #   GAP_MIN  luz entre barras a W mínimo
-TRINQ_LARGO = 6.0                          # trinquete: 11 dientes de paso 0,5
 COLA = 7.0                                 # carro por encima de P2: solo cierra el ojo de P2
 Y_FIN_CARRO = 185.0                        # el canal corre por dentro del eje de acople (otra zona de la columna)
 R_OJO_MAX = 4.5                            # ojo máximo: deja nervio en el fondo de las horquillas
@@ -89,7 +90,7 @@ ARANDELA = dict(d_int=D_PERNO + 0.2, d_ext=7.9, rebaje=0.15, alto=0.25)
 
 def configurar(d_a=6.5, e_b=6.3, columna=10.5, gap_min=0.8, margen_l2=4.0):
     global D_A, E_B, COLUMNA, GAP_MIN, C_CARRO, BWB, BWA, D_B, S_MIN, L2, L1, P_MAX, DP
-    global SEP_MIN, R_OJO, CARRO_Y, TRINQ_Y, X_LLAVE
+    global SEP_MIN, R_OJO, CARRO_Y
     D_A, E_B, COLUMNA, GAP_MIN = d_a, e_b, columna, gap_min
     C_CARRO = E_B + R_ANILLO + 0.6
     BWB = C_CARRO + COLUMNA
@@ -104,17 +105,9 @@ def configurar(d_a=6.5, e_b=6.3, columna=10.5, gap_min=0.8, margen_l2=4.0):
     SEP_MIN = DP * S_MIN / L2
     R_OJO = min(R_OJO_MAX, math.floor((SEP_MIN - 0.5) / 2 * 20) / 20)
     CARRO_Y = (-6.0, DP + COLA)
-    # trinquete justo arriba de P1, del lado de la columna: zona que ningún eslabón barre
-    TRINQ_Y = (R_OJO + HOLG_PLANO + 1.2, R_OJO + HOLG_PLANO + 1.2 + TRINQ_LARGO)
-    X_LLAVE = C_CARRO - TRINQ_PROF - 1.5
 
 
-TRINQ_PROF = 4.0
-TRINQ_Z = (3.8, 9.2)
-PASO_DIENTE = 0.5
-ALTO_DIENTE = 0.3
 GANCHO = 2.9                               # cuánto entran los ganchos del carro en la columna
-ANCHO_RANURA = 3.2                         # ranura del ala superior para la llave del tornillo cónico
 
 
 def cinematica(w):
@@ -278,6 +271,7 @@ def miembros(w):
         "eslabon1": colocar(perfil_eslabon1(), k["Q1"], k["ang_largo"]),
         "eslabon2": colocar(perfil_eslabon2(), k["Q2"], k["ang_largo"]),
         "corto": colocar(perfil_corto(), k["O"], k["ang_corto"]),
+        "vientre1": colocar(zona_vientre(), k["Q1"], k["ang_largo"]),
     }
 
 
@@ -402,20 +396,6 @@ def barra_base(ancho, exterior_izq=True):
     return b
 
 
-def dientes(x_cara, y0, y1, z0, z1, hacia, fase=0.0):
-    """Prisma de dientes en V (60°) sobre la cara x=x_cara, hacia +1/-1 en X."""
-    respaldo = x_cara - hacia * 0.5
-    pts = [(respaldo, y0), (x_cara, y0)]
-    y = y0 + ((fase - y0) % PASO_DIENTE)
-    while y + PASO_DIENTE <= y1:
-        pts += [(x_cara, y), (x_cara + hacia * ALTO_DIENTE, y + PASO_DIENTE / 2), (x_cara, y + PASO_DIENTE)]
-        y += PASO_DIENTE
-    pts += [(x_cara, y1), (respaldo, y1)]
-    pts = [pts[0]] + [q for i, q in enumerate(pts[1:]) if abs(q[0] - pts[i][0]) + abs(q[1] - pts[i][1]) > 1e-9]
-    return cq.Workplane("XY").workplane(offset=z0).polyline(pts).close().extrude(z1 - z0)
-
-
-# ---------------------------------------------------------------- piezas
 def canal_carro():
     """Recorrido del carro en el marco de B."""
     ps = [cinematica(w)["p"] for w in (W_MIN, W_MAX)]
@@ -429,6 +409,7 @@ def barra_a():
     b = cortar(b, barrido(["eslabon1", "eslabon2"], "A").intersection(huella), [Z_MED_CORTE])
     corto = barrido(["corto"], "A", SUAVE).intersection(huella)
     b = cortar(b, corto, Z_PLACA_CORTE)
+    b = cortar(b, barrido(["vientre1"], "A").intersection(huella), [Z_CANAL])
     for y in (Y0, Y0 + DP):
         b = b.cut(cil_z(D_A, y, D_PERNO, -1, ESP + 1))
     return b
@@ -448,20 +429,15 @@ def barra_b():
                                    ((Z_CANAL[1] - 1.0, Z_CANAL[1]), (Z_CANAL[1] - 1.9, Z_CANAL[1]))):
         b = b.cut(caja(-1, c + GANCHO + 0.1, y0c, LARGO + 1, zc0, zc1))
         b = b.cut(caja(c + 1.6, c + GANCHO + 0.1, y0c, LARGO + 1, zp0, zp1))
-    # cremallera en la cara de la columna (capa media)
-    b = b.cut(dientes(c + HOLG, y0c, LARGO, *TRINQ_Z, +1))
     b = cortar(b, barrido(["eslabon1", "eslabon2"], "B").intersection(huella), [Z_MED_CORTE])
+    # el vientre grueso del eslabón 1 entra en la boca del riel a W mínimo (bajo las alas)
+    b = cortar(b, barrido(["vientre1"], "B").intersection(huella), [Z_CANAL])
     # alojamiento del eslabón corto en el bloque de O (capa central, oculto)
     corto = barrido(["corto"], "B", 5.0).intersection(huella)
     corto = redondear_con_cara(corto, box(-10, -5, 0, LARGO + 5), 4.0).intersection(huella)
     b = cortar(b, corto, Z_PLACA_CORTE)
     b = b.cut(cil_z(E_B, Y0, D_PERNO, -1, ESP + 1))
-    # ranura fina en el ala superior para la llave del tornillo cónico
-    ys = [Y0 + cinematica(w)["p"] + sum(TRINQ_Y) / 2 for w in (W_MIN, W_MAX)]
-    ranura = (cq.Workplane("XY").workplane(offset=Z_CANAL[1] - 0.5)
-              .center(X_LLAVE, (ys[0] + ys[1]) / 2).slot2D(abs(ys[0] - ys[1]) + ANCHO_RANURA, ANCHO_RANURA, 90)
-              .extrude(ALA + 1.0))
-    return b.cut(ranura)
+    return b
 
 
 def tapa():
@@ -490,27 +466,7 @@ def carro():
     k = cortar(k, barrido(["corto"], "carro", SUAVE).intersection(huella), Z_PLACA_CORTE)
     for y in (0.0, DP):
         k = k.cut(cil_z(E_B, y, D_PERNO, -1, ESP + 1))
-    # alojamiento del trinquete y tornillo cónico (se aprieta desde arriba por la ranura del ala)
-    k = k.cut(caja(c - TRINQ_PROF - 0.1, c + 1, *TRINQ_Y, TRINQ_Z[0] - 0.1, TRINQ_Z[1] + 0.1))
-    k = k.cut(cil_z(X_LLAVE, sum(TRINQ_Y) / 2, 4.0, TRINQ_Z[0], ESP + 1))
     return k
-
-
-def trinquete():
-    """En posición liberada (dientes 0,05 mm dentro del carro). Al apretar avanza ALTO_DIENTE."""
-    c = C_CARRO
-    y0, y1 = TRINQ_Y[0] + 0.1, TRINQ_Y[1] - 0.1
-    t = caja(c - TRINQ_PROF, c - ALTO_DIENTE - 0.05, y0, y1, *TRINQ_Z)
-    t = t.union(dientes(c - ALTO_DIENTE - 0.05, y0, y1, *TRINQ_Z, +1, fase=0.25))
-    t = t.cut(cil_z(X_LLAVE, sum(TRINQ_Y) / 2, 4.1, TRINQ_Z[0] - 1, ESP))
-    return t
-
-
-def tornillo_conico():
-    y = sum(TRINQ_Y) / 2
-    cuerpo = cil_z(X_LLAVE, y, 4.0, 6.0, Z_CARRO[1] - 0.1)
-    punta = cq.Workplane("XY").workplane(offset=4.0).center(X_LLAVE, y).circle(0.5).workplane(offset=2.0).circle(2.0).loft()
-    return cuerpo.union(punta)
 
 
 def pieza_miembro(contorno, z, agujeros):
@@ -539,10 +495,9 @@ LARGO_VIENTRE = 22.0       # semilargo de la zona gruesa del vientre, a cada lad
 
 
 def zona_vientre():
-    """Parte del vientre del eslabón 1 que se engrosa (lado de B, lejos del eje y cerca de C)."""
-    lado = -LADO_VIENTRE1
-    franja = box(L1 - LARGO_VIENTRE, -40, L1 + LARGO_VIENTRE, -(R_OJO + HOLG_PLANO)) if LADO_VIENTRE1 < 0 else \
-        box(L1 - LARGO_VIENTRE, R_OJO + HOLG_PLANO, L1 + LARGO_VIENTRE, 40)
+    """Zona gruesa del eslabón 1 alrededor de C (todo el ancho del perfil, a cada lado de C).
+    Le da alas de 2,5 mm a la embocadura del corto donde el momento es máximo."""
+    franja = box(L1 - LARGO_VIENTRE, -40, L1 + LARGO_VIENTRE, 40)
     return perfil_eslabon1().intersection(franja).buffer(-0.01)
 
 
@@ -599,7 +554,7 @@ def perno():
 
 def perno_c():
     """Perno de C: atraviesa las dos alas de la embocadura del eslabón 1."""
-    return cil_z(0, 0, D_PERNO, Z_MED[0], Z_MED[1])
+    return cil_z(0, 0, D_PERNO, Z_VIENTRE[0], Z_VIENTRE[1])
 
 
 def perno_p():
@@ -618,8 +573,6 @@ PIEZAS = {
     "barra_A": barra_a,
     "barra_B": barra_b,
     "carro": carro,
-    "trinquete": trinquete,
-    "tornillo": tornillo_conico,
     "eslabon_1": eslabon1,
     "eslabon_2": eslabon2,
     "eslabon_corto": eslabon_corto,
@@ -633,7 +586,7 @@ PIEZAS = {
 
 COLORES = {
     "barra_A": (0.55, 0.60, 0.66), "barra_B": (0.55, 0.60, 0.66),
-    "carro": (0.85, 0.45, 0.15), "trinquete": (0.95, 0.75, 0.25), "tornillo": (0.20, 0.20, 0.22),
+    "carro": (0.85, 0.45, 0.15),
     "eslabon_1": (0.20, 0.45, 0.80), "eslabon_2": (0.35, 0.60, 0.90),
     "eslabon_corto": (0.15, 0.65, 0.45), "tapa": (0.55, 0.60, 0.66), "perno_P": (0.85, 0.85, 0.85),
     "perno": (0.85, 0.85, 0.85), "perno_A": (0.85, 0.85, 0.85), "perno_C": (0.85, 0.85, 0.85), "arandela": (0.70, 0.72, 0.75),
@@ -650,8 +603,6 @@ def poses(w):
         ("barra_A", "barra_A", (0, 0, 0), 0),
         ("barra_B", "barra_B", (xb, 0, 0), 0),
         ("carro", "carro", (xb, yc, 0), 0),
-        ("trinquete", "trinquete", (xb, yc, 0), 0),
-        ("tornillo", "tornillo", (xb, yc, 0), 0),
         ("eslabon_1", "eslabon_1", (*k["Q1"], 0), al),
         ("eslabon_2", "eslabon_2", (*k["Q2"], 0), al),
         ("eslabon_corto", "eslabon_corto", (*k["O"], 0), ac),
@@ -730,7 +681,7 @@ if __name__ == "__main__":
     if not rapido:
         geo = {
             "param": {"LARGO": LARGO, "ESP": ESP, "W_MIN": W_MIN, "W_MAX": W_MAX, "BWA": BWA, "BWB": BWB,
-                      "D_A": D_A, "D_B": D_B, "L2": L2, "Y0": Y0, "DP": DP, "PASO": PASO_DIENTE,
+                      "D_A": D_A, "D_B": D_B, "L2": L2, "Y0": Y0, "DP": DP, 
                       "X_ACOPLE": X_ACOPLE, "DZ_O": Z_CORTO[1] - Z_MED[1]},
             "colores": {k: "#%02x%02x%02x" % tuple(int(c * 255) for c in v) for k, v in COLORES.items()},
             "mallas": {k: malla_json(f) for k, f in piezas.items()},

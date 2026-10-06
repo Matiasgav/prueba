@@ -1,4 +1,4 @@
-"""Verificación estructural del eslabón regulable v2 (7075-T651 + pernos templados).
+"""Verificación estructural del eslabón regulable v5 (7075-T651 + pernos templados).
 
 Caso de carga: fuerza F entre los ejes de acople, en la dirección del ancho (X).
   tracción  (F > 0): los ejes se separan.
@@ -6,6 +6,8 @@ Caso de carga: fuerza F entre los ejes de acople, en la dirección del ancho (X)
   La carga entra repartida en partes iguales por los dos agujeros de cada barra (y = 5 y y = 185).
 
 Con el carro trabado el mecanismo es isostático: la estática da todas las fuerzas internas.
+La traba todavía no está definida: se supone una traba ideal en el frente del carro, contra la
+cara de la columna, y se informa la fuerza que tiene que aguantar (traba_por_N).
 Para cada pieza se calcula la tensión por newton de carga y la capacidad es
   F_admisible = tensión admisible / tensión por newton
 en cada modo de falla. Se informa el mínimo y qué lo gobierna.
@@ -45,9 +47,11 @@ def f_bry(e_sobre_d):
 
 # espesores de capa
 T_MED = E.Z_MED[1] - E.Z_MED[0]                          # eslabones largos
-T_PLACA = E.Z_PLACA[0][1] - E.Z_PLACA[0][0]              # cada placa corta
-T_MEJ = E.Z_MED_CORTE[0]                                 # mejillas de barras y carro
-T_LENG_O = E.Z_PLACA_CORTE[1][0] - E.Z_PLACA_CORTE[0][1] # lengüeta de B en O
+T_CORTO = E.Z_CORTO[1] - E.Z_CORTO[0]               # eslabón corto (una pieza)
+T_MEJ = E.Z_MED_CORTE[0]                                 # mejillas de A
+T_MEJ_K = E.Z_MED_CORTE[0] - E.Z_CARRO[0]                 # mejillas del carro (bajo las alas de B)
+T_ALA_C = E.Z_EMBOC[0] - E.Z_VIENTRE[0]                    # alas del eslabón 1 a cada lado de la embocadura
+T_MEJ_O = E.Z_EMBOC[0]                                   # B a cada lado del corto en O
 
 
 # ---------------------------------------------------------------- estática
@@ -69,10 +73,10 @@ def estatica(w, F=1.0):
     M = np.array([[-v[0], 1, 0], [-v[1], 0, 1], [cr(C - P1, -v), 0, 0]])
     fs, px, py = np.linalg.solve(M, -np.array([-FQ1[0], -FQ1[1], cr(Q1 - P1, -FQ1)]))
     FP1 = np.array([px, py])
-    # carro: recibe -FP1 y -f2*u; B lo sostiene con los ganchos (X repartida) y el trinquete (Y)
+    # carro: recibe -FP1 y -f2*u; B lo sostiene con los ganchos (X repartida) y la traba (Y)
     G1, G2 = -FP1, -f2 * u
     y_c0, y_c1 = Y_CARRO_GLOBAL(k)
-    y_tr = E.Y0 + k["p"] + sum(E.TRINQ_Y) / 2
+    y_tr = y_c0
     x_tr = k["xb"] + E.C_CARRO
     Fp = -(G1[1] + G2[1])
     # reparto lineal q(y) = a + b (y - ym) sobre [y_c0, y_c1]; equilibrio en X y de momentos
@@ -126,11 +130,9 @@ def contorno_capa(pieza, z):
         if abs(f.normalAt().z) < 0.99:
             continue
         def pts(wire):
-            out = []
-            for e in wire.Edges():
-                n = 2 if e.geomType() == "LINE" else 24
-                out += [(p.x, p.y) for p in (e.positionAt(t) for t in np.linspace(0, 1, n))]
-            return out
+            # recorrido ordenado del contorno (los tramos sueltos pueden venir invertidos)
+            n = max(200, int(wire.Length() / 0.1))
+            return [(p.x, p.y) for p in (wire.positionAt(t) for t in np.linspace(0, 1, n, endpoint=False))]
         ext = Polygon(pts(f.outerWire())).buffer(0)
         hol = [Polygon(pts(wi)).buffer(0) for wi in f.innerWires()]
         polys.append(ext.difference(unary_union(hol)) if hol else ext)
@@ -180,20 +182,16 @@ def pandeo(N_comp, L, I, A, nombre, K=1.0):
 
 # ---------------------------------------------------------------- eslabón 1 como viga
 def secciones_eslabon1():
-    perfil = E.perfil_eslabon1().difference(unary_union(
-        [Point(x, 0).buffer(E.D_PERNO / 2, 32) for x in (0.0, E.L1, E.L2)]))
+    """Secciones medidas sobre el sólido real (vientre engrosado y embocadura del corto).
+    Se gira el eslabón 90° para cortarlo con planos y = cte: la y local queda como -x."""
+    sol = E.eslabon1().val().rotate((0, 0, 0), (0, 0, 1), 90)
     out = []
     for xi in np.arange(E.R_OJO, E.L2 - E.R_OJO + 1e-9, 0.25):
-        seg = LineString([(xi, -60), (xi, 60)]).intersection(perfil)
-        tramos = [(min(s.coords[0][1], s.coords[-1][1]), max(s.coords[0][1], s.coords[-1][1]))
-                  for s in getattr(seg, "geoms", [seg]) if not s.is_empty and s.length > 1e-6]
-        A = sum(b - a for a, b in tramos) * T_MED
-        if A <= 0:
+        sc = S.seccion(sol, xi)
+        if sc["A"] <= 0:
             continue
-        ec = sum((b - a) * (a + b) / 2 for a, b in tramos) * T_MED / A
-        I = sum(T_MED * ((b - a) ** 3 / 12 + (b - a) * ((a + b) / 2 - ec) ** 2) for a, b in tramos)
-        lo, hi = min(a for a, _ in tramos), max(b for _, b in tramos)
-        out.append((xi, A, ec, I, lo, hi))
+        ec = -sc["xc"]
+        out.append((xi, sc["A"], ec, sc["I"], -sc["xmax"], -sc["xmin"]))
     return out
 
 
@@ -272,8 +270,8 @@ class Modelo:
         zm = sum(E.Z_MED) / 2
         zi = T_MEJ / 2
         self.cA = contorno_capa(self.A, zi)
-        self.cK = contorno_capa(self.K, zi)
-        self.cB_med = contorno_capa(self.B, zm)
+        self.cK = contorno_capa(self.K, (E.Z_CARRO[0] + E.Z_MED_CORTE[0]) / 2)
+        self.cB_O = contorno_capa(self.B, E.Z_EMBOC[0] - 0.6)
         self.e1 = E.perfil_eslabon1()
         self.e2 = E.perfil_eslabon2()
         self.ec = E.perfil_corto()
@@ -294,7 +292,7 @@ class Modelo:
         rig += integ
         caps.update(orejeta(R(-est["FQ1"], al), self.e1, (0, 0), T_MED, d, "eslabón 1 ojo Q1"))
         caps.update(orejeta(R(est["FP1"], al), self.e1, (E.L2, 0), T_MED, d, "eslabón 1 ojo P1"))
-        caps.update(orejeta(R(-est["fs"] * v, al), self.e1, (E.L1, 0), T_MED, d, "eslabón 1 agujero C"))
+        caps.update(orejeta(R(-est["fs"] * v, al), self.e1, (E.L1, 0), 2 * T_ALA_C, d, "eslabón 1 alas en C"))
         caps.update(pandeo(ncomp, E.L1, 2 * E.R_OJO * T_MED ** 3 / 12, 2 * E.R_OJO * T_MED, "eslabón 1 fuera del plano"))
 
         # eslabón 2: biela
@@ -307,32 +305,34 @@ class Modelo:
             caps.update(pandeo(-f2, E.L2, T_MED * (2 * E.R_OJO) ** 3 / 12, a2, "eslabón 2 en el plano"))
             caps.update(pandeo(-f2, E.L2, 2 * E.R_OJO * T_MED ** 3 / 12, a2, "eslabón 2 fuera del plano"))
 
-        # eslabón corto: dos placas
+        # eslabón corto: una pieza de T_CORTO
         fs = est["fs"]
-        ap = 2 * E.R_CORTO * T_PLACA
-        rig += fs ** 2 * E.L1 / (AL["E"] * 2 * ap)
-        caps.update(orejeta(R(-fs * v, ac), self.ec, (0, 0), 2 * T_PLACA, d, "placas cortas ojo O"))
-        caps.update(orejeta(R(fs * v, ac), self.ec, (E.L1, 0), 2 * T_PLACA, d, "placas cortas ojo C"))
+        ap = 2 * E.R_CORTO * T_CORTO
+        rig += fs ** 2 * E.L1 / (AL["E"] * ap)
+        caps.update(orejeta(R(-fs * v, ac), self.ec, (0, 0), T_CORTO, d, "eslabón corto ojo O"))
+        caps.update(orejeta(R(fs * v, ac), self.ec, (E.L1, 0), T_CORTO, d, "eslabón corto ojo C"))
         if fs < 0:
-            caps.update(pandeo(-fs / 2, E.L1, 2 * E.R_CORTO * T_PLACA ** 3 / 12, ap, "placa corta fuera del plano"))
+            caps.update(pandeo(-fs, E.L1, 2 * E.R_CORTO * T_CORTO ** 3 / 12, ap, "eslabón corto fuera del plano"))
 
         # pernos (todos en doble corte)
         pins = {"Q1": est["FQ1"], "Q2": f2 * u, "P1": est["FP1"], "P2": f2 * u, "C": fs * v, "O": fs * v}
         for n, Fv in pins.items():
             Fm = np.linalg.norm(Fv)
             if n == "C":
-                caps.update(perno(Fm, T_MED, T_PLACA, 0.2, n))
+                caps.update(perno(Fm, T_CORTO, T_ALA_C, 0.1, n))
             elif n == "O":
-                caps.update(perno(Fm, T_LENG_O, T_PLACA, 0.1, n))
+                caps.update(perno(Fm, T_CORTO, T_MEJ_O, 0.1, n))
+            elif n in ("P1", "P2"):
+                caps.update(perno(Fm, T_MED, T_MEJ_K, 0.1, n))
             else:
                 caps.update(perno(Fm, T_MED, T_MEJ, 0.1, n))
 
         # agujeros en mejillas de A y del carro, y en la lengüeta de B
         caps.update(orejeta(est["FQ1"] * 0.5, self.cA, (E.D_A, E.Y0), T_MEJ, d, "barra A mejilla Q1"))
         caps.update(orejeta(f2 * u * 0.5, self.cA, (E.D_A, E.Y0 + E.DP), T_MEJ, d, "barra A mejilla Q2"))
-        caps.update(orejeta(est["G1"] * 0.5, self.cK, (E.E_B, 0), T_MEJ, d, "carro mejilla P1"))
-        caps.update(orejeta(est["G2"] * 0.5, self.cK, (E.E_B, E.DP), T_MEJ, d, "carro mejilla P2"))
-        caps.update(orejeta(fs * v, self.cB_med, (E.E_B, E.Y0), T_LENG_O, d, "barra B lengüeta O"))
+        caps.update(orejeta(est["G1"] * 0.5, self.cK, (E.E_B, 0), T_MEJ_K, d, "carro mejilla P1"))
+        caps.update(orejeta(est["G2"] * 0.5, self.cK, (E.E_B, E.DP), T_MEJ_K, d, "carro mejilla P2"))
+        caps.update(orejeta(fs * v * 0.5, self.cB_O, (E.E_B, E.Y0), T_MEJ_O, d, "barra B horquilla O"))
 
         # barra A
         fA = est["acA"] + [(k["Q1"], est["FQ1"]), (k["Q2"], f2 * u)]
@@ -352,22 +352,13 @@ class Modelo:
         caps["carro: flexión + axial"] = AL["Sy"] / s
         rig += integ
 
-        # traba: cremallera y trinquete (dientes enganchados a lo largo del trinquete, alto en z = TRINQ_Z)
-        Fp = abs(est["Fp"])
-        n_d = int((E.TRINQ_Y[1] - E.TRINQ_Y[0] - 0.2) / E.PASO_DIENTE) - 1
-        hz = E.TRINQ_Z[1] - E.TRINQ_Z[0]
-        if Fp > 1e-12:
-            caps["traba: corte de dientes"] = AL["tau_y"] / (Fp / (n_d * E.PASO_DIENTE * hz))
-            caps["traba: aplastamiento de flancos"] = f_bry(1.5) / (Fp / (n_d * E.ALTO_DIENTE * hz))
-            caps["traba: apoyo del trinquete en el carro"] = f_bry(1.5) / (Fp / (E.TRINQ_PROF * hz))
-            # separación por flanco de 60° -> empuje sobre el tornillo cónico M4 12.9 (carga de prueba 8,5 kN)
-            caps["traba: tornillo cónico"] = 8.5e3 / (Fp * math.tan(math.radians(30)))
-        # ganchos del carro: cuello en voladizo (1,6 mm) con la carga de tracción repartida
+        # ganchos (arriba y abajo) cuando B tira del carro hacia A, carga q [N/mm] repartida:
+        #   pie del carro (1,2 de espesor, brazo 0,5), cuello del carro (0,8), labio de B (1,5, brazo 0,5)
         a, b, y0, y1, ym, xg = est["q"]
         qmax = max(abs(a + b * (y0 - ym)), abs(a + b * (y1 - ym)))
         if qmax > 1e-12:
-            m_cuello = qmax / 2 * (E.GANCHO - 0.6)
-            caps["ganchos del carro: flexión"] = AL["Sy"] / (m_cuello / (1.6 ** 2 / 6))
+            q_adm = 2 * min(AL["Sy"] * 1.2 ** 2 / 6 / 0.5, AL["Sy"] * 0.8, AL["Sy"] * 1.5 ** 2 / 6 / 0.5)
+            caps["ganchos del carro"] = q_adm / qmax
         # agujeros de acople D5 x 10
         caps["acople: aplastamiento"] = f_bry(1.5) / (0.5 / (E.D_ACOPLE * E.P_ACOPLE))
         return caps, rig, est
@@ -393,6 +384,7 @@ def correr(anchos=None, verbose=True):
                           rigidez_mm_por_kN=rig * 1000, fuerzas=dict(
                               eslabon1_Q1=float(np.linalg.norm(est["FQ1"])), eslabon2=float(est["f2"]),
                               corto=float(est["fs"]), traba=float(est["Fp"])),
+                          traba_por_N=abs(float(est["Fp"])),
                           caps_traccion=ct, caps_compresion=cc))
         if verbose:
             print(f"W={w:6.1f}  tracción {ft:7.0f} N ({mt})   compresión {fc:7.0f} N ({mc})   "
