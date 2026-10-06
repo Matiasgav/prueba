@@ -108,7 +108,7 @@ Fuerzas internas por cada newton entre ejes:
 | 105 | 0,3 N | 1,1 N | 1,0 N | 0,3 N |
 
 1. **A anchos chicos los eslabones largos quedan casi paralelos a las barras.** A W = 35 solo una fracción chica de su fuerza axial empuja en X, y el Scott Russell amplifica igual: el carro recibe p/s veces la carga. Esto viene del recorrido pedido (35 a 105) en 190 mm de largo.
-2. **El paralelogramo se agarra de A solo en la mitad inferior** (Q1 a 20 mm, Q2 a 93 mm). La carga del acople de y = 185 recorre la barra como un voladizo. Por eso la barra A limita desde W = 55.
+2. **El paralelogramo se agarra de A solo en la mitad inferior** (Q1 a 20 mm, Q2 a 93 mm). La carga del acople de y = 185 recorre la barra como un voladizo. Por eso la barra A limita desde W = 75.
 3. **Todo vive en 13 mm de espesor:** 7 mm de eslabón, 1,5 de ala y 1,3 de mejilla del carro. En C el eslabón 1 tiene dos alas de 2,15 mm alrededor del corto, y de 1,3 mm donde pasa el cable.
 
 ## Hipótesis
