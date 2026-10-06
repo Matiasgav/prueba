@@ -1,0 +1,213 @@
+<title>Guía, traba y regulación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: visor 3D a la izquierda con controles y ficha a la derecha; abajo, las tres piezas explicadas con su referencia real. */
+:root{
+  --bg:#eef1ef; --panel:#fafbfa; --ink:#1c2321; --muted:#5a6561; --line:#c6cdc9;
+  --new:#c0641c; --warn:#b0362a; --ok:#2d7a4c; --view:#dfe6e8;
+  --f-display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#131716; --panel:#1a1f1e; --ink:#e3e8e6; --muted:#97a29e; --line:#353e3b;
+  --new:#ec944c; --warn:#ec7a6c; --ok:#6cc495; --view:#1f2628; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#131716; --panel:#1a1f1e; --ink:#e3e8e6; --muted:#97a29e; --line:#353e3b;
+  --new:#ec944c; --warn:#ec7a6c; --ok:#6cc495; --view:#1f2628; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1320px;margin:0 auto;padding-inline:16px;padding-block:20px 40px;display:grid;gap:16px}
+h1{font-family:var(--f-display);font-weight:700;font-size:1.9rem;margin:0}
+header p{margin:.25rem 0 0;color:var(--muted);max-width:90ch}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+@media (max-width:900px){.main{grid-template-columns:minmax(0,1fr)}}
+.viewer{position:relative;background:var(--view);border:1px solid var(--line);border-radius:6px;overflow:hidden;aspect-ratio:16/10;min-height:340px;max-width:100%}
+.viewer canvas{display:block;width:100%;height:100%}
+.hud{position:absolute;left:10px;bottom:8px;font-family:var(--f-mono);font-size:.75rem;color:var(--muted);pointer-events:none}
+.legend{position:absolute;right:10px;top:8px;display:grid;gap:3px;font-size:.75rem;color:var(--ink);background:var(--panel);opacity:.92;padding:6px 9px;border-radius:4px;border:1px solid var(--line)}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;display:grid;gap:12px}
+label.l{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.07em;font-size:.74rem;color:var(--muted)}
+.row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+input[type=range]{width:100%;accent-color:var(--new)}
+.val{font-family:var(--f-mono);font-size:.82rem;min-width:9ch;text-align:right}
+button.b{font-family:var(--f-display);font-weight:600;font-size:.9rem;padding:4px 12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:4px;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--new);outline-offset:1px}
+.checks{display:flex;flex-wrap:wrap;gap:12px;font-size:.88rem}
+table{border-collapse:collapse;width:100%;font-size:.86rem}
+td{padding:4px 2px;border-bottom:1px solid var(--line);vertical-align:top}
+td:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;font-size:.8rem}
+.panel{min-width:0}
+.three{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:grid;gap:6px;align-content:start}
+.card h2{font-family:var(--f-display);font-weight:600;font-size:1.15rem;margin:0}
+.card .k{font-family:var(--f-mono);font-size:.8rem;color:var(--new)}
+.card p{margin:0;font-size:.92rem}
+.card .ref{font-size:.82rem;color:var(--muted)}
+.card a{color:var(--new)}
+#err[hidden]{display:none}
+#err{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);padding:20px;text-align:center}
+</style>
+
+<div class="wrap">
+<header>
+  <h1>Guía, traba y regulación</h1>
+  <p>Tres piezas simples, cada una tomada de un mecanismo que ya existe. La guía es un carro de 7075 con dos pines en una ranura en L. La traba es un fleje de acero que hace clic en hoyuelos de la chapa inferior. La regulación transversal es un buje excéntrico que mueve solo la bobina, sin mover el holder. Arrastrá para girar la vista y usá los controles para recorrer el movimiento.</p>
+</header>
+
+<div class="main">
+  <div class="viewer" id="viewer">
+    <div class="legend">
+      <span><i style="background:#c3ccd0"></i>chapas 7075</span>
+      <span><i style="background:#3d4348"></i>holder PEEK</span>
+      <span><i style="background:#a7b2b8"></i>carro 7075 y pines</span>
+      <span><i style="background:#d07a2c"></i>fleje y hoyuelos</span>
+      <span><i style="background:#3f7fb0"></i>buje excéntrico</span>
+      <span><i style="background:#b87333"></i>bobina</span>
+    </div>
+    <div class="hud" id="hud"></div>
+    <div id="err" hidden>El visor 3D necesita WebGL, que este navegador no tiene activo.</div>
+  </div>
+  <div class="panel">
+    <div><label class="l" for="u">Posición</label>
+      <div class="row"><button type="button" class="b" id="play">Animar</button><input type="range" id="u" min="0" max="2" step="0.005" value="0"><span class="val" id="uv"></span></div></div>
+    <div><label class="l" for="ecc">Regulación transversal de la bobina</label>
+      <div class="row"><span></span><input type="range" id="ecc" min="0" max="180" step="1" value="0"><span class="val" id="ev"></span></div></div>
+    <div class="checks">
+      <label><input type="checkbox" id="hideTop"> Ocultar chapa superior</label>
+      <label><input type="checkbox" id="hideHolder"> Ocultar holder</label>
+      <button type="button" class="b" id="reset">Vista inicial</button>
+    </div>
+    <table id="tab"></table>
+  </div>
+</div>
+
+<div class="three">
+  <article class="card"><span class="k">1 · guía</span><h2>Carro con dos pines en ranura en L</h2>
+    <p>El nervio pasa a ser un carro de 7075 atornillado al holder de PEEK. Dos pines del carro corren en una ranura ciega de la chapa superior. En el tramo recto, el holder solo se traslada. Al final, el pin trasero se detiene, el delantero sigue por el arco y el holder gira 90°. La chapa no tiene ningún corte pasante.</p>
+    <p class="ref">Mismo principio que el pin de leva del cerrojo rotativo de un AR-15: un pin en una pista convierte avance en giro. <a href="https://rotorm.com/faq/how-does-the-cam-pin-work/">Cómo funciona</a></p></article>
+  <article class="card"><span class="k">2 · traba</span><h2>Fleje con clic cada 2 mm</h2>
+    <p>Una lámina de acero inoxidable, alojada en el carro, apoya una nariz contra la chapa inferior, que no tiene ranura. La nariz cae en hoyuelos cada 2 mm a lo largo de la carrera y cada 15° en el giro final. El holder se empuja con la mano y hace clic. No hay tornillo ni nada que accionar desde afuera.</p>
+    <p class="ref">Es un retén de posición como los de las unidades de posicionamiento de Misumi, pero sin pieza que tirar. <a href="https://us.misumi-ec.com/us/incadlibrary/detail/000043.html">Misumi inCAD 000043</a></p></article>
+  <article class="card"><span class="k">3 · regulación</span><h2>Buje excéntrico de la bobina</h2>
+    <p>La bobina va dentro de un buje con el agujero corrido 2,5 mm de su centro. Al girar el buje 180°, la bobina recorre 5 mm en dirección transversal, de 2,5 mm hacia afuera a 2,5 mm hacia adentro del centro del holder. El holder no se mueve, así que no cambia el ancho ni choca con las chapas. Un prisionero radial fija el buje.</p>
+    <p class="ref">Es el ajuste de las bisagras Blum de cocina y de los bujes excéntricos de catálogo. <a href="https://in.misumi-ec.com/vona2/detail/110300424410/">Bujes excéntricos Misumi</a> · <a href="https://www.hingeoutlet.com/blogs/news/a-guide-to-adjusting-blum-cabinet-hinges">Bisagras Blum</a></p></article>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+/* Marco del holder: centro nominal de la bobina en el origen, +Y hacia el chasis. Mundo: ranura en y = 0. */
+const R=9.5, S=30, PE=30, EDGE_W=-3.55, PY=15.5, PX=2, D=3.5, PIN_R=1.25, YF=9.5, ECC=2.5;
+const NOSE=[PX,PY+5];            // nariz del fleje, 5 mm hacia adentro del pivote
+const st={u:0,ecc:0,hideTop:false,hideHolder:false};
+const rc=Math.min(PY-YF,Math.hypot(PX,PY)-R), Rp=rc-0.3;
+
+if(!window.THREE){$("err").hidden=false;$("err").textContent="No se pudo cargar el motor 3D. Revisá la conexión y recargá la página.";return;}
+const view=$("viewer");let renderer;
+try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});}catch(e){$("err").hidden=false;return;}
+renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));view.prepend(renderer.domElement);
+const scene=new THREE.Scene();const cam=new THREE.PerspectiveCamera(30,1.6,1,2000);cam.up.set(0,0,1);
+const ctl=new THREE.OrbitControls(cam,renderer.domElement);
+function resetView(){cam.position.set(PE-2,-78,58);ctl.target.set(PE-13,-3,4);ctl.update();}resetView();
+scene.add(new THREE.HemisphereLight(0xffffff,0x6b7378,0.75));
+const d1=new THREE.DirectionalLight(0xffffff,0.75);d1.position.set(40,-60,90);scene.add(d1);
+const d2=new THREE.DirectionalLight(0xffffff,0.3);d2.position.set(-60,50,40);scene.add(d2);
+const M={
+  plate:new THREE.MeshStandardMaterial({color:0xc3ccd0,metalness:.55,roughness:.45}),
+  plateT:new THREE.MeshStandardMaterial({color:0xc3ccd0,metalness:.55,roughness:.45,transparent:true,opacity:.35,depthWrite:false}),
+  peek:new THREE.MeshStandardMaterial({color:0x3d4348,metalness:.05,roughness:.7,transparent:true,opacity:1}),
+  cart:new THREE.MeshStandardMaterial({color:0xa7b2b8,metalness:.7,roughness:.35}),
+  pin:new THREE.MeshStandardMaterial({color:0x7e8a93,metalness:.85,roughness:.3}),
+  acc:new THREE.MeshStandardMaterial({color:0xd07a2c,metalness:.3,roughness:.45}),
+  dimple:new THREE.MeshBasicMaterial({color:0xd07a2c}),
+  bush:new THREE.MeshStandardMaterial({color:0x3f7fb0,metalness:.4,roughness:.4}),
+  coil:new THREE.MeshStandardMaterial({color:0xb87333,metalness:.6,roughness:.35}),
+};
+const edgesMat=new THREE.LineBasicMaterial({color:0x1d2326,transparent:true,opacity:.35});
+function extrude(shape,depth,z,mat,edges=true){const g=new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:false,curveSegments:40});
+  const m=new THREE.Mesh(g,mat);m.position.z=z;if(edges)m.add(new THREE.LineSegments(new THREE.EdgesGeometry(g,25),edgesMat));return m;}
+function cyl(r,h,x,y,z,mat,seg=32){const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,seg),mat);m.rotation.x=Math.PI/2;m.position.set(x,y,z+h/2);return m;}
+
+/* ---------- chapas ---------- */
+function outline(){const s=new THREE.Shape();s.moveTo(-40,EDGE_W);s.lineTo(PE,EDGE_W);
+  s.absarc(PE,0,Rp,Math.asin(EDGE_W/Rp),Math.PI/2*0.999,false);s.lineTo(PE,26);s.lineTo(-40,26);s.closePath();return s;}
+function groove(hw){const c=[[PE-S,0],[PE+D,0]];for(let i=1;i<=24;i++){const a=Math.PI/2*i/24;c.push([PE+D*Math.cos(a),D*Math.sin(a)]);}
+  const L=[],Rr=[];for(let i=0;i<c.length;i++){const q=c[Math.min(i+1,c.length-1)],o=c[Math.max(i-1,0)];let tx=q[0]-o[0],ty=q[1]-o[1];const l=Math.hypot(tx,ty)||1;tx/=l;ty/=l;
+    L.push([c[i][0]-ty*hw,c[i][1]+tx*hw]);Rr.push([c[i][0]+ty*hw,c[i][1]-tx*hw]);}
+  const p=new THREE.Path();p.moveTo(...Rr[0]);for(let i=1;i<c.length;i++)p.lineTo(...Rr[i]);
+  const e=c[c.length-1],en=c[c.length-2];const ang=Math.atan2(e[1]-en[1],e[0]-en[0]);p.absarc(e[0],e[1],hw,ang-Math.PI/2,ang+Math.PI/2,false);
+  for(let i=c.length-1;i>=0;i--)p.lineTo(...L[i]);p.absarc(c[0][0],c[0][1],hw,Math.PI/2,Math.PI*1.5,false);return p;}
+const plates=new THREE.Group();scene.add(plates);
+plates.add(extrude(outline(),3,0,M.plate));                    // chapa inferior: sin ranura, con hoyuelos
+const top=new THREE.Group();const lay=outline();lay.holes.push(groove(PIN_R+0.1));
+top.add(extrude(lay,2,9,M.plateT));top.add(extrude(outline(),1,11,M.plateT));plates.add(top);
+// hoyuelos en la cara interior de la chapa inferior
+const ny=NOSE[1]-PY, nx=NOSE[0]-PX;
+for(let x=0;x<=S+1e-6;x+=2){const m=cyl(0.55,0.06,PE-S+x+nx,ny,3.0,M.dimple,20);plates.add(m);}
+for(let a=15;a<=90;a+=15){const r=Math.hypot(nx,ny),a0=Math.atan2(ny,nx),t=a0+a*Math.PI/180;plates.add(cyl(0.55,0.06,PE+r*Math.cos(t),r*Math.sin(t),3.0,M.dimple,20));}
+
+/* ---------- holder + carro (giran juntos alrededor del pivote) ---------- */
+const mov=new THREE.Group();scene.add(mov);
+const ox=-PX,oy=-PY,P=(x,y)=>[x+ox,y+oy];
+const holder=new THREE.Group();mov.add(holder);
+// parte de altura completa del holder (PEEK) con alojamiento del buje
+const f=new THREE.Shape();f.moveTo(...P(-R,YF));f.lineTo(...P(-R,0));f.absarc(ox,oy,R,Math.PI,2*Math.PI,false);f.lineTo(...P(R,YF));f.closePath();
+const bh=new THREE.Path();bh.absarc(ox,oy,6.9,0,2*Math.PI,true);f.holes.push(bh);
+holder.add(extrude(f,12,0,M.peek));
+// carro 7075 entre chapas (incluye la lengüeta que entra al holder)
+const cb=new THREE.Shape();cb.moveTo(...P(-9.5,7.4));cb.lineTo(...P(9.5,7.4));cb.lineTo(...P(9.5,22));cb.lineTo(...P(-9.5,22));cb.closePath();
+mov.add(extrude(cb,5.8,3.1,M.cart));
+// pines (solo hacia arriba, a la ranura de la chapa superior)
+[PX,PX+D].forEach(x=>{const q=P(x,PY);mov.add(cyl(PIN_R,2.75,q[0],q[1],8.15,M.pin));});
+// fleje: lámina con nariz hacia abajo
+const q=P(NOSE[0],NOSE[1]);const leaf=new THREE.Mesh(new THREE.BoxGeometry(8,1.6,0.25),M.acc);leaf.position.set(q[0]-3,q[1],3.6);mov.add(leaf);
+const nose=new THREE.Mesh(new THREE.SphereGeometry(0.6,20,12),M.acc);nose.position.set(q[0],q[1],3.25);mov.add(nose);
+// buje excéntrico + bobina
+const bush=new THREE.Group();mov.add(bush);
+const bs=new THREE.Shape();bs.absarc(0,0,6.8,0,2*Math.PI,false);const bhole=new THREE.Path();bhole.absarc(0,-ECC,3.7,0,2*Math.PI,true);bs.holes.push(bhole);
+bush.add(extrude(bs,11.6,0.2,M.bush));
+const coil=cyl(3.5,11,0,-ECC,0.5,M.coil);bush.add(coil);
+const screw=cyl(0.8,0.6,4.4,3.6,11.5,M.pin,16);bush.add(screw);  // marca del prisionero
+bush.position.set(ox,oy,0);
+
+/* ---------- cinemática ---------- */
+function coilRel(){const t=st.ecc*Math.PI/180;return [ECC*Math.sin(t),-ECC*Math.cos(t)];}  // corrimiento de la bobina en el marco del holder
+function centre(u){const s=S*Math.min(u,1),ph=Math.PI/2*Math.max(0,u-1),c=coilRel();const cx=c[0]-PX,cy=c[1]-PY;
+  return [PE-S+s+cx*Math.cos(ph)-cy*Math.sin(ph),cx*Math.sin(ph)+cy*Math.cos(ph)];}
+function place(){
+  const s=S*Math.min(st.u,1),ph=Math.PI/2*Math.max(0,st.u-1);
+  mov.position.set(PE-S+s,0,0);mov.rotation.z=ph;
+  bush.rotation.z=st.ecc*Math.PI/180;      // 0° → bobina 2,5 mm hacia afuera; 180° → 2,5 mm hacia adentro
+  top.visible=!st.hideTop;holder.visible=!st.hideHolder;
+  const c0=centre(0),c=centre(st.u);
+  $("uv").textContent=st.u<=1?`carrera ${s.toFixed(1)}`:`giro ${(ph*180/Math.PI).toFixed(0)}°`;
+  $("ev").textContent=`${(coilRel()[1]+ECC).toFixed(1)} mm`;
+  $("hud").textContent=`avance de la bobina: ${(c[0]-c0[0]).toFixed(1)} mm · corrimiento transversal: ${(coilRel()[1]+ECC).toFixed(1)} de 5 mm`;
+  const row=(a,b)=>`<tr><td>${a}</td><td>${b}</td></tr>`;
+  const ext=centre(2)[0]-centre(1)[0];
+  $("tab").innerHTML=row("Carrera en la ranura","30 mm")+row("Extensión por giro",`${ext.toFixed(1)} mm`)+
+    row("Clic en la carrera","cada 2 mm")+row("Clic en el giro","cada 15°")+row("Avance en cada clic del giro","4 · 8 · 11,5 · 14,4 · 16,5 · 17,5 mm")+
+    row("Regulación transversal","5 mm (±2,5 del centro del holder)")+row("Salida del ancho durante el giro","0,13 mm")+
+    row("Chapa superior","ranura ciega en L, 2 mm")+row("Chapa inferior","solo hoyuelos, sin ranura");
+}
+function resize(){const w=view.clientWidth,h=view.clientHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();}
+new ResizeObserver(resize).observe(view);resize();
+(function loop(){ctl.update();renderer.render(scene,cam);requestAnimationFrame(loop);})();
+$("u").oninput=e=>{st.u=+e.target.value;place();};
+$("ecc").oninput=e=>{st.ecc=+e.target.value;place();};
+$("hideTop").onchange=e=>{st.hideTop=e.target.checked;place();};
+$("hideHolder").onchange=e=>{st.hideHolder=e.target.checked;place();};
+$("reset").onclick=resetView;
+let anim=null,dir=1;
+$("play").onclick=()=>{if(anim){cancelAnimationFrame(anim);anim=null;$("play").textContent="Animar";return;}
+  $("play").textContent="Pausa";let last=performance.now();
+  const step=t=>{const dt=(t-last)/1000;last=t;st.u+=dir*dt*0.35;if(st.u>=2){st.u=2;dir=-1}if(st.u<=0){st.u=0;dir=1}$("u").value=st.u;place();anim=requestAnimationFrame(step);};
+  anim=requestAnimationFrame(step);};
+place();
+})();
+</script>
