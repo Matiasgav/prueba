@@ -577,6 +577,15 @@ def _arco(c, a0, a1, r, ccw=True, paso=0.4):
     return [np.asarray(c) + r * np.array([math.cos(t), math.sin(t)]) for t in np.linspace(a0, a0 + d, n)]
 
 
+def angulos_cable():
+    """Ángulos (en Q1 y en O) donde el cable deja de rodear el pivote y dobla hacia el lateral.
+    Son los de W mínimo: lo justo para que el arco nunca sea negativo, así sale lo más arriba posible."""
+    k = cinematica(W_MIN)
+    hO = math.atan2(*(k["C"] - k["O"])[::-1])
+    hC = math.atan2(*(k["Q1"] - k["C"])[::-1])
+    return hO - math.pi / 2, (hC - math.pi / 2) % (2 * math.pi)
+
+
 def ruta_cable(w):
     """Eje del cable en coordenadas globales, de B (lateral exterior) a A (lateral exterior)."""
     k = cinematica(w)
@@ -584,15 +593,21 @@ def ruta_cable(w):
     hO = math.atan2(*(C - O)[::-1])
     hC = math.atan2(*(Q - C)[::-1])
     R, Rc, h = R_CABLE, R_CURVA, math.pi / 2
-    cb = O + np.array([R + Rc, 0.0])                    # curva fija de B: llega a O subiendo
-    pts = [cb + np.array([2.5, -Rc])]                     # afuera del lateral de B
-    pts += _arco(cb, -h, -math.pi, Rc, ccw=False)
-    pts += _arco(O, 0.0, hO - h, R)
+    a_ini, a_fin = angulos_cable()
+    ua = lambda a: np.array([math.cos(a), math.sin(a)])
+    # B: entra por el lateral hacia -x y dobla (R 5, sentido horario) hasta llegar tangente a O
+    cb = O + (R + Rc) * ua(a_ini)
+    giro_b = math.pi - (a_ini + h)                        # de rumbo 180° a rumbo a_ini + 90°
+    pts = [cb + Rc * ua(a_ini + math.pi + giro_b) + np.array([2.5, 0.0])]
+    pts += _arco(cb, a_ini + math.pi + giro_b, a_ini + math.pi, Rc, ccw=False)
+    pts += _arco(O, a_ini, hO - h, R)
     pts += _arco(C, hO - h, hC - h, R)
-    pts += _arco(Q, hC - h, math.pi, R)                   # baja por el lado exterior de Q1
-    ca = Q + np.array([-R - Rc, 0.0])                     # curva fija de A: sale por el lateral
-    pts += _arco(ca, 0.0, -h, Rc, ccw=False)
-    pts.append(ca + np.array([-2.5, -Rc]))
+    pts += _arco(Q, hC - h, a_fin, R)
+    # A: deja Q1 con rumbo a_fin + 90° y dobla (R 5, horario) hasta rumbo 180°, hacia el lateral
+    ca = Q + (R + Rc) * ua(a_fin)
+    giro_a = (a_fin + h) - math.pi
+    pts += _arco(ca, a_fin + math.pi, a_fin + math.pi - giro_a, Rc, ccw=False)
+    pts.append(pts[-1] + np.array([-2.5, 0.0]))
     return np.array(pts)
 
 
@@ -753,7 +768,8 @@ if __name__ == "__main__":
             "param": {"LARGO": LARGO, "ESP": ESP, "W_MIN": W_MIN, "W_MAX": W_MAX, "BWA": BWA, "BWB": BWB,
                       "D_A": D_A, "D_B": D_B, "L2": L2, "Y0": Y0, "DP": DP, 
                       "X_ACOPLE": X_ACOPLE, "DZ_O": Z_CORTO[1] - Z_MED[1],
-                      "R_CABLE": R_CABLE, "R_CURVA": R_CURVA, "D_CABLE": D_CABLE, "Z_CABLE": Z_CABLE},
+                      "R_CABLE": R_CABLE, "R_CURVA": R_CURVA,
+                      "A_INI": angulos_cable()[0], "A_FIN": angulos_cable()[1], "D_CABLE": D_CABLE, "Z_CABLE": Z_CABLE},
             "colores": {k: "#%02x%02x%02x" % tuple(int(c * 255) for c in v) for k, v in COLORES.items()},
             "mallas": {k: malla_json(f) for k, f in piezas.items()},
         }

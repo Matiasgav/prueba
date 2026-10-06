@@ -3,11 +3,11 @@
   "W": 35.0,
   "p": 84.54821109875714,
   "s": 11.3,
-  "traccion": 479.91773664983344,
+  "traccion": 479.91773664982793,
   "modo_traccion": "eslabón 1: flexión + axial",
-  "compresion": 479.91773664983344,
+  "compresion": 479.91773664982793,
   "modo_compresion": "eslabón 1: flexión + axial",
-  "rigidez_mm_por_kN": 10.713129296525736,
+  "rigidez_mm_por_kN": 10.71323109519041,
   "fuerzas": {
    "eslabon1_Q1": 7.687181604979843,
    "eslabon2": 7.755485513395562,
@@ -16,7 +16,7 @@
   },
   "traba_por_N": 7.48214257511125,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 479.91773664983344,
+   "eslabón 1: flexión + axial": 479.91773664982793,
    "eslabón 1 ojo Q1: aplastamiento": 3435.2642303770895,
    "eslabón 1 ojo Q1: desgarro": 17434.86089736822,
    "eslabón 1 ojo Q1: tracción neta": 1908.089867842558,
@@ -73,7 +73,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 479.91773664983344,
+   "eslabón 1: flexión + axial": 479.91773664982793,
    "eslabón 1 ojo Q1: aplastamiento": 2060.153231897672,
    "eslabón 1 ojo Q1: desgarro": 1365.1414643526034,
    "eslabón 1 ojo Q1: tracción neta": 1908.089867842558,
@@ -136,11 +136,11 @@
   "W": 37.5,
   "p": 84.17630307871687,
   "s": 13.8,
-  "traccion": 532.595098952983,
+  "traccion": 532.5950989529769,
   "modo_traccion": "eslabón 1: flexión + axial",
-  "compresion": 532.595098952983,
+  "compresion": 532.5950989529769,
   "modo_compresion": "eslabón 1: flexión + axial",
-  "rigidez_mm_por_kN": 8.157321964923621,
+  "rigidez_mm_por_kN": 8.157417287034566,
   "fuerzas": {
    "eslabon1_Q1": 6.266907942360414,
    "eslabon2": 6.350506253722454,
@@ -149,7 +149,7 @@
   },
   "traba_por_N": 6.099732107153395,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 532.595098952983,
+   "eslabón 1: flexión + axial": 532.5950989529769,
    "eslabón 1 ojo Q1: aplastamiento": 4213.800528567152,
    "eslabón 1 ojo Q1: desgarro": 17286.951432557056,
    "eslabón 1 ojo Q1: tracción neta": 2361.336638230601,
@@ -206,7 +206,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 532.595098952983,
+   "eslabón 1: flexión + axial": 532.5950989529769,
    "eslabón 1 ojo Q1: aplastamiento": 2528.005606308094,
    "eslabón 1 ojo Q1: desgarro": 1675.6304413008522,
    "eslabón 1 ojo Q1: tracción neta": 2361.336638230601,
@@ -269,11 +269,11 @@
   "W": 40.0,
   "p": 83.72813147323903,
   "s": 16.3,
-  "traccion": 577.6395326636748,
+  "traccion": 577.639532663668,
   "modo_traccion": "eslabón 1: flexión + axial",
-  "compresion": 577.6395326636748,
+  "compresion": 577.639532663668,
   "modo_compresion": "eslabón 1: flexión + axial",
-  "rigidez_mm_por_kN": 6.634326345586317,
+  "rigidez_mm_por_kN": 6.634417257535782,
   "fuerzas": {
    "eslabon1_Q1": 5.27749767192992,
    "eslabon2": 5.376502227077905,
@@ -282,7 +282,7 @@
   },
   "traba_por_N": 5.1366951824073,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 577.6395326636748,
+   "eslabón 1: flexión + axial": 577.639532663668,
    "eslabón 1 ojo Q1: aplastamiento": 5003.791880469571,
    "eslabón 1 ojo Q1: desgarro": 17153.341545009644,
    "eslabón 1 ojo Q1: tracción neta": 2834.493502728912,
@@ -339,7 +339,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 577.6395326636748,
+   "eslabón 1: flexión + axial": 577.639532663668,
    "eslabón 1 ojo Q1: aplastamiento": 3000.743420207413,
    "eslabón 1 ojo Q1: desgarro": 1988.381734552873,
    "eslabón 1 ojo Q1: tracción neta": 2834.493502728912,
@@ -402,11 +402,11 @@
   "W": 42.5,
   "p": 83.20246390582433,
   "s": 18.8,
-  "traccion": 617.1856158777131,
+  "traccion": 617.1856158777057,
   "modo_traccion": "eslabón 1: flexión + axial",
-  "compresion": 617.1856158777131,
+  "compresion": 617.1856158777057,
   "modo_compresion": "eslabón 1: flexión + axial",
-  "rigidez_mm_por_kN": 5.642483637126091,
+  "rigidez_mm_por_kN": 5.642571339568741,
   "fuerzas": {
    "eslabon1_Q1": 4.546996553923989,
    "eslabon2": 4.66154182454095,
@@ -415,7 +415,7 @@
   },
   "traba_por_N": 4.425662973714059,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 617.1856158777131,
+   "eslabón 1: flexión + axial": 617.1856158777057,
    "eslabón 1 ojo Q1: aplastamiento": 5807.679791886082,
    "eslabón 1 ojo Q1: desgarro": 17034.147776020367,
    "eslabón 1 ojo Q1: tracción neta": 3326.7303475402628,
@@ -472,7 +472,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 617.1856158777131,
+   "eslabón 1: flexión + axial": 617.1856158777057,
    "eslabón 1 ojo Q1: aplastamiento": 3484.368791066317,
    "eslabón 1 ojo Q1: desgarro": 2309.6023448522037,
    "eslabón 1 ojo Q1: tracción neta": 3326.7303475402628,
@@ -535,11 +535,11 @@
   "W": 45.0,
   "p": 82.59782079449796,
   "s": 21.3,
-  "traccion": 652.7491550810489,
+  "traccion": 652.7491550810408,
   "modo_traccion": "eslabón 1: flexión + axial",
-  "compresion": 652.7491550810489,
+  "compresion": 652.7491550810408,
   "modo_compresion": "eslabón 1: flexión + axial",
-  "rigidez_mm_por_kN": 4.95244476983379,
+  "rigidez_mm_por_kN": 4.952530019797583,
   "fuerzas": {
    "eslabon1_Q1": 3.984168133933859,
    "eslabon2": 4.11441250241173,
@@ -548,7 +548,7 @@
   },
   "traba_por_N": 3.877831962183002,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 652.7491550810489,
+   "eslabón 1: flexión + axial": 652.7491550810408,
    "eslabón 1 ojo Q1: aplastamiento": 6628.108832828286,
    "eslabón 1 ojo Q1: desgarro": 16929.613757866315,
    "eslabón 1 ojo Q1: tracción neta": 3845.869806684263,
@@ -605,7 +605,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 652.7491550810489,
+   "eslabón 1: flexión + axial": 652.7491550810408,
    "eslabón 1 ojo Q1: aplastamiento": 3974.8827948899448,
    "eslabón 1 ojo Q1: desgarro": 2633.8982338025244,
    "eslabón 1 ojo Q1: tracción neta": 3845.869806684263,
@@ -668,11 +668,11 @@
   "W": 47.5,
   "p": 81.91245326566651,
   "s": 23.799999999999997,
-  "traccion": 685.4483563541677,
+  "traccion": 685.4483563541593,
   "modo_traccion": "eslabón 1: flexión + axial",
-  "compresion": 685.4483563541677,
+  "compresion": 685.4483563541593,
   "modo_compresion": "eslabón 1: flexión + axial",
-  "rigidez_mm_por_kN": 4.446864759276521,
+  "rigidez_mm_por_kN": 4.446948063171713,
   "fuerzas": {
    "eslabon1_Q1": 3.5360989968725014,
    "eslabon2": 3.682226315183608,
@@ -681,7 +681,7 @@
   },
   "traba_por_N": 3.441699717044812,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 685.4483563541677,
+   "eslabón 1: flexión + axial": 685.4483563541593,
    "eslabón 1 ojo Q1: aplastamiento": 7467.975309332708,
    "eslabón 1 ojo Q1: desgarro": 16840.12201777234,
    "eslabón 1 ojo Q1: tracción neta": 4392.915172184375,
@@ -738,7 +738,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 685.4483563541677,
+   "eslabón 1: flexión + axial": 685.4483563541593,
    "eslabón 1 ojo Q1: aplastamiento": 4479.859102338418,
    "eslabón 1 ojo Q1: desgarro": 2969.1559577412295,
    "eslabón 1 ojo Q1: tracción neta": 4392.915172184375,
@@ -801,11 +801,11 @@
   "W": 50.0,
   "p": 81.14431588226005,
   "s": 26.299999999999997,
-  "traccion": 716.1391869950577,
+  "traccion": 716.1391869950486,
   "modo_traccion": "eslabón 1: flexión + axial",
-  "compresion": 716.1391869950577,
+  "compresion": 716.1391869950486,
   "modo_compresion": "eslabón 1: flexión + axial",
-  "rigidez_mm_por_kN": 4.059652118145162,
+  "rigidez_mm_por_kN": 4.059733830156062,
   "fuerzas": {
    "eslabon1_Q1": 3.1699833318404367,
    "eslabon2": 3.332204802333455,
@@ -814,7 +814,7 @@
   },
   "traba_por_N": 3.085335204648672,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 716.1391869950577,
+   "eslabón 1: flexión + axial": 716.1391869950486,
    "eslabón 1 ojo Q1: aplastamiento": 8330.485442858233,
    "eslabón 1 ojo Q1: desgarro": 16766.210059095563,
    "eslabón 1 ojo Q1: tracción neta": 4975.28310924551,
@@ -871,7 +871,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 716.1391869950577,
+   "eslabón 1: flexión + axial": 716.1391869950486,
    "eslabón 1 ojo Q1: aplastamiento": 4995.965051247818,
    "eslabón 1 ojo Q1: desgarro": 3310.584841603051,
    "eslabón 1 ojo Q1: tracción neta": 4975.28310924551,
@@ -934,11 +934,11 @@
   "W": 52.5,
   "p": 80.2910331232573,
   "s": 28.799999999999997,
-  "traccion": 745.5020334082747,
+  "traccion": 745.5020334082652,
   "modo_traccion": "eslabón 1: flexión + axial",
-  "compresion": 745.5020334082747,
+  "compresion": 745.5020334082652,
   "modo_compresion": "eslabón 1: flexión + axial",
-  "rigidez_mm_por_kN": 3.7537864807736567,
+  "rigidez_mm_por_kN": 3.7538668572801566,
   "fuerzas": {
    "eslabon1_Q1": 2.8643944804884036,
    "eslabon2": 3.042950913242009,
@@ -947,7 +947,7 @@
   },
   "traba_por_N": 2.787883094557545,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 745.5020334082747,
+   "eslabón 1: flexión + axial": 745.5020334082652,
    "eslabón 1 ojo Q1: aplastamiento": 9219.225975989626,
    "eslabón 1 ojo Q1: desgarro": 16708.591725960167,
    "eslabón 1 ojo Q1: tracción neta": 5597.406653947037,
@@ -1004,7 +1004,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 745.5020334082747,
+   "eslabón 1: flexión + axial": 745.5020334082652,
    "eslabón 1 ojo Q1: aplastamiento": 5529.881436572309,
    "eslabón 1 ojo Q1: desgarro": 3664.8376110061777,
    "eslabón 1 ojo Q1: tracción neta": 5597.406653947037,
@@ -1067,11 +1067,11 @@
   "W": 55.0,
   "p": 79.34985822293572,
   "s": 31.299999999999997,
-  "traccion": 774.0996847505908,
+  "traccion": 774.099684750581,
   "modo_traccion": "eslabón 1: flexión + axial",
-  "compresion": 774.0996847505908,
+  "compresion": 774.099684750581,
   "modo_compresion": "eslabón 1: flexión + axial",
-  "rigidez_mm_por_kN": 3.5034904252200185,
+  "rigidez_mm_por_kN": 3.5035696568747277,
   "fuerzas": {
    "eslabon1_Q1": 2.604739199350972,
    "eslabon2": 2.799903715698718,
@@ -1080,7 +1080,7 @@
   },
   "traba_por_N": 2.5351392403493844,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 774.0996847505908,
+   "eslabón 1: flexión + axial": 774.099684750581,
    "eslabón 1 ojo Q1: aplastamiento": 10138.251079639762,
    "eslabón 1 ojo Q1: desgarro": 16668.185244067874,
    "eslabón 1 ojo Q1: tracción neta": 6266.244662102593,
@@ -1137,7 +1137,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 774.0996847505908,
+   "eslabón 1: flexión + axial": 774.099684750581,
    "eslabón 1 ojo Q1: aplastamiento": 6080.357862305486,
    "eslabón 1 ojo Q1: desgarro": 4029.2766592710354,
    "eslabón 1 ojo Q1: tracción neta": 6266.244662102593,
@@ -1200,11 +1200,11 @@
   "W": 57.5,
   "p": 78.31762253797034,
   "s": 33.8,
-  "traccion": 802.4180243229604,
+  "traccion": 802.41802432295,
   "modo_traccion": "eslabón 1: flexión + axial",
-  "compresion": 802.4180243229604,
+  "compresion": 802.41802432295,
   "modo_compresion": "eslabón 1: flexión + axial",
-  "rigidez_mm_por_kN": 3.2936911667264726,
+  "rigidez_mm_por_kN": 3.2937693983500047,
   "fuerzas": {
    "eslabon1_Q1": 2.3807289743173565,
    "eslabon2": 2.5928102456026587,
@@ -1213,7 +1213,7 @@
   },
   "traba_por_N": 2.3170894242003053,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 802.4180243229604,
+   "eslabón 1: flexión + axial": 802.41802432295,
    "eslabón 1 ojo Q1: aplastamiento": 11092.190788988071,
    "eslabón 1 ojo Q1: desgarro": 16646.14986852157,
    "eslabón 1 ojo Q1: tracción neta": 6990.951371165748,
@@ -1270,7 +1270,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 802.4180243229604,
+   "eslabón 1: flexión + axial": 802.41802432295,
    "eslabón 1 ojo Q1: aplastamiento": 6652.9653061015915,
    "eslabón 1 ojo Q1: desgarro": 4408.966553984077,
    "eslabón 1 ojo Q1: tracción neta": 6990.951371165748,
@@ -1333,11 +1333,11 @@
   "W": 60.0,
   "p": 77.19067301170524,
   "s": 36.3,
-  "traccion": 830.8962392930824,
+  "traccion": 830.8962392930716,
   "modo_traccion": "eslabón 1: flexión + axial",
-  "compresion": 830.8962392930824,
+  "compresion": 830.8962392930716,
   "modo_compresion": "eslabón 1: flexión + axial",
-  "rigidez_mm_por_kN": 3.1132606635760247,
+  "rigidez_mm_por_kN": 3.113338007022048,
   "fuerzas": {
    "eslabon1_Q1": 2.1848959106386787,
    "eslabon2": 2.4142420468696932,
@@ -1346,7 +1346,7 @@
   },
   "traba_por_N": 2.1264648212590975,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 830.8962392930824,
+   "eslabón 1: flexión + axial": 830.8962392930716,
    "eslabón 1 ojo Q1: aplastamiento": 12086.388130169862,
    "eslabón 1 ojo Q1: desgarro": 16643.933833717816,
    "eslabón 1 ojo Q1: tracción neta": 7778.895802407207,
@@ -1403,7 +1403,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 830.8962392930824,
+   "eslabón 1: flexión + axial": 830.8962392930716,
    "eslabón 1 ojo Q1: aplastamiento": 7248.951271437606,
    "eslabón 1 ojo Q1: desgarro": 4803.7724752296135,
    "eslabón 1 ojo Q1: tracción neta": 7778.895802407207,
@@ -1466,11 +1466,11 @@
   "W": 62.5,
   "p": 75.96479447744198,
   "s": 38.8,
-  "traccion": 859.9508771849463,
+  "traccion": 859.9508771849353,
   "modo_traccion": "eslabón 1: flexión + axial",
-  "compresion": 859.9508771849463,
+  "compresion": 859.9508771849353,
   "modo_compresion": "eslabón 1: flexión + axial",
-  "rigidez_mm_por_kN": 2.9556112772189,
+  "rigidez_mm_por_kN": 2.9556878199861463,
   "fuerzas": {
    "eslabon1_Q1": 2.011681976650684,
    "eslabon2": 2.2586852139528317,
@@ -1479,7 +1479,7 @@
   },
   "traba_por_N": 1.9578555277691234,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 859.9508771849463,
+   "eslabón 1: flexión + axial": 859.9508771849353,
    "eslabón 1 ojo Q1: aplastamiento": 13127.07490871232,
    "eslabón 1 ojo Q1: desgarro": 16663.337406576535,
    "eslabón 1 ojo Q1: tracción neta": 8645.214292959272,
@@ -1536,7 +1536,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 859.9508771849463,
+   "eslabón 1: flexión + axial": 859.9508771849353,
    "eslabón 1 ojo Q1: aplastamiento": 7873.300408456988,
    "eslabón 1 ojo Q1: desgarro": 5217.610372155235,
    "eslabón 1 ojo Q1: tracción neta": 8645.214292959272,
@@ -1599,11 +1599,11 @@
   "W": 65.0,
   "p": 74.63511238016595,
   "s": 41.3,
-  "traccion": 889.9967355433272,
+  "traccion": 889.9967355433153,
   "modo_traccion": "eslabón 1: flexión + axial",
-  "compresion": 889.9967355433272,
+  "compresion": 889.9967355433153,
   "modo_compresion": "eslabón 1: flexión + axial",
-  "rigidez_mm_por_kN": 2.8146672219061646,
+  "rigidez_mm_por_kN": 2.8147430330728094,
   "fuerzas": {
    "eslabon1_Q1": 1.8568585451882489,
    "eslabon2": 2.1219609273939435,
@@ -1612,7 +1612,7 @@
   },
   "traba_por_N": 1.8071455782122505,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 889.9967355433272,
+   "eslabón 1: flexión + axial": 889.9967355433153,
    "eslabón 1 ojo Q1: aplastamiento": 14221.600276677402,
    "eslabón 1 ojo Q1: desgarro": 16706.59647674989,
    "eslabón 1 ojo Q1: tracción neta": 9600.064518934876,
@@ -1669,7 +1669,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 889.9967355433272,
+   "eslabón 1: flexión + axial": 889.9967355433153,
    "eslabón 1 ojo Q1: aplastamiento": 8529.605074537212,
    "eslabón 1 ojo Q1: desgarro": 5652.460237583915,
    "eslabón 1 ojo Q1: tracción neta": 9600.064518934876,
@@ -1732,11 +1732,11 @@
   "W": 67.5,
   "p": 73.19596983441096,
   "s": 43.8,
-  "traccion": 921.4669070947633,
+  "traccion": 921.4669070947509,
   "modo_traccion": "eslabón 1: flexión + axial",
-  "compresion": 921.4669070947633,
+  "compresion": 921.4669070947509,
   "modo_compresion": "eslabón 1: flexión + axial",
-  "rigidez_mm_por_kN": 2.6869559542533468,
+  "rigidez_mm_por_kN": 2.687031088666484,
   "fuerzas": {
    "eslabon1_Q1": 1.7171441223559913,
    "eslabon2": 2.0008444361043347,
@@ -1745,7 +1745,7 @@
   },
   "traba_por_N": 1.6711408637993372,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 921.4669070947633,
+   "eslabón 1: flexión + axial": 921.4669070947509,
    "eslabón 1 ojo Q1: aplastamiento": 15378.732429149768,
    "eslabón 1 ojo Q1: desgarro": 16776.494575352073,
    "eslabón 1 ojo Q1: tracción neta": 10666.052156171589,
@@ -1802,7 +1802,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 921.4669070947633,
+   "eslabón 1: flexión + axial": 921.4669070947509,
    "eslabón 1 ojo Q1: aplastamiento": 9223.911527307875,
    "eslabón 1 ojo Q1: desgarro": 6112.7157133210785,
    "eslabón 1 ojo Q1: tracción neta": 10666.052156171589,
@@ -1865,11 +1865,11 @@
   "W": 70.0,
   "p": 71.64077051511939,
   "s": 46.3,
-  "traccion": 954.8341036295544,
+  "traccion": 954.8341036295417,
   "modo_traccion": "eslabón 1: flexión + axial",
-  "compresion": 954.8341036295544,
+  "compresion": 954.8341036295417,
   "modo_compresion": "eslabón 1: flexión + axial",
-  "rigidez_mm_por_kN": 2.5696216181298883,
+  "rigidez_mm_por_kN": 2.56969611942261,
   "fuerzas": {
    "eslabon1_Q1": 1.5899451669619624,
    "eslabon2": 1.8928074795112282,
@@ -1878,7 +1878,7 @@
   },
   "traba_por_N": 1.5473168577779566,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 954.8341036295544,
+   "eslabón 1: flexión + axial": 954.8341036295417,
    "eslabón 1 ojo Q1: aplastamiento": 16609.063349309683,
    "eslabón 1 ojo Q1: desgarro": 16876.51499579756,
    "eslabón 1 ojo Q1: tracción neta": 11861.133707804629,
@@ -1935,7 +1935,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 954.8341036295544,
+   "eslabón 1: flexión + axial": 954.8341036295417,
    "eslabón 1 ojo Q1: aplastamiento": 9961.239916520508,
    "eslabón 1 ojo Q1: desgarro": 6601.04889382839,
    "eslabón 1 ojo Q1: tracción neta": 11861.133707804629,
@@ -1998,11 +1998,11 @@
   "W": 72.5,
   "p": 69.96177527764715,
   "s": 48.8,
-  "traccion": 990.635583949031,
+  "traccion": 990.6355839490178,
   "modo_traccion": "eslabón 1: flexión + axial",
-  "compresion": 990.635583949031,
+  "compresion": 990.6355839490178,
   "modo_compresion": "eslabón 1: flexión + axial",
-  "rigidez_mm_por_kN": 2.460534239085405,
+  "rigidez_mm_por_kN": 2.4606081418836294,
   "fuerzas": {
    "eslabon1_Q1": 1.4731756058368912,
    "eslabon2": 1.7958398832247924,
@@ -2011,7 +2011,7 @@
   },
   "traba_por_N": 1.43364293601736,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 990.635583949031,
+   "eslabón 1: flexión + axial": 990.6355839490178,
    "eslabón 1 ojo Q1: aplastamiento": 17925.56155245203,
    "eslabón 1 ojo Q1: desgarro": 17011.050649601897,
    "eslabón 1 ojo Q1: tracción neta": 13217.837769869591,
@@ -2068,7 +2068,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 990.635583949031,
+   "eslabón 1: flexión + axial": 990.6355839490178,
    "eslabón 1 ojo Q1: aplastamiento": 10752.126414822562,
    "eslabón 1 ojo Q1: desgarro": 7125.797067082665,
    "eslabón 1 ojo Q1: tracción neta": 13217.837769869591,
@@ -2135,7 +2135,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1010.453396139147,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 2.3579423765873395,
+  "rigidez_mm_por_kN": 2.3580157081410626,
   "fuerzas": {
    "eslabon1_Q1": 1.3651278490066383,
    "eslabon2": 1.7083233197148122,
@@ -2144,7 +2144,7 @@
   },
   "traba_por_N": 1.328456821106513,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 1029.504671265316,
+   "eslabón 1: flexión + axial": 1029.5046712653022,
    "eslabón 1 ojo Q1: aplastamiento": 19344.34201105481,
    "eslabón 1 ojo Q1: desgarro": 17185.698929982376,
    "eslabón 1 ojo Q1: tracción neta": 14771.899870772793,
@@ -2201,7 +2201,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 1029.504671265316,
+   "eslabón 1: flexión + axial": 1029.5046712653022,
    "eslabón 1 ojo Q1: aplastamiento": 11601.109189871902,
    "eslabón 1 ojo Q1: desgarro": 7687.448651219105,
    "eslabón 1 ojo Q1: tracción neta": 14771.899870772793,
@@ -2268,7 +2268,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1022.6454129174039,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 2.2608632602918792,
+  "rigidez_mm_por_kN": 2.260936041685397,
   "fuerzas": {
    "eslabon1_Q1": 1.2643780562304774,
    "eslabon2": 1.628940265824719,
@@ -2277,7 +2277,7 @@
   },
   "traba_por_N": 1.2303723599201584,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 1072.2131654117075,
+   "eslabón 1: flexión + axial": 1072.2131654116931,
    "eslabón 1 ojo Q1: aplastamiento": 20417.78978387785,
    "eslabón 1 ojo Q1: desgarro": 17407.68491621686,
    "eslabón 1 ojo Q1: tracción neta": 16571.298794374146,
@@ -2334,7 +2334,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 1072.2131654117075,
+   "eslabón 1: flexión + axial": 1072.2131654116931,
    "eslabón 1 ojo Q1: aplastamiento": 12529.638169192567,
    "eslabón 1 ojo Q1: desgarro": 8304.757952870043,
    "eslabón 1 ojo Q1: tracción neta": 16571.298794374146,
@@ -2401,7 +2401,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1034.3725411587566,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 2.16841621357755,
+  "rigidez_mm_por_kN": 2.168488460620732,
   "fuerzas": {
    "eslabon1_Q1": 1.1697142841731532,
    "eslabon2": 1.5566072167206013,
@@ -2410,7 +2410,7 @@
   },
   "traba_por_N": 1.138209564665452,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 1119.7313764974344,
+   "eslabón 1: flexión + axial": 1119.7313764974194,
    "eslabón 1 ojo Q1: aplastamiento": 21090.988961401607,
    "eslabón 1 ojo Q1: desgarro": 17686.48391404312,
    "eslabón 1 ojo Q1: tracción neta": 18689.967957682766,
@@ -2467,7 +2467,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 1119.7313764974344,
+   "eslabón 1: flexión + axial": 1119.7313764974194,
    "eslabón 1 ojo Q1: aplastamiento": 13538.70272766558,
    "eslabón 1 ojo Q1: desgarro": 8971.145600311746,
    "eslabón 1 ojo Q1: tracción neta": 18689.967957682766,
@@ -2534,7 +2534,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1045.727780163853,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 2.0799784793806335,
+  "rigidez_mm_por_kN": 2.080050203247026,
   "fuerzas": {
    "eslabon1_Q1": 1.0800796139988988,
    "eslabon2": 1.4904249370981268,
@@ -2543,7 +2543,7 @@
   },
   "traba_por_N": 1.0509392236879298,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 1173.3169364117375,
+   "eslabón 1: flexión + axial": 1173.3169364117214,
    "eslabón 1 ojo Q1: aplastamiento": 21871.20154367169,
    "eslabón 1 ojo Q1: desgarro": 18034.763822374793,
    "eslabón 1 ojo Q1: tracción neta": 21206.271533296527,
@@ -2600,7 +2600,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 1173.3169364117375,
+   "eslabón 1: flexión + axial": 1173.3169364117214,
    "eslabón 1 ojo Q1: aplastamiento": 14667.368179764604,
    "eslabón 1 ojo Q1: desgarro": 9721.540120426018,
    "eslabón 1 ojo Q1: tracción neta": 21206.271533296527,
@@ -2667,7 +2667,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1056.8018349230272,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.9950776526619636,
+  "rigidez_mm_por_kN": 1.9951488603119683,
   "fuerzas": {
    "eslabon1_Q1": 0.9945242791849858,
    "eslabon2": 1.4296408858298508,
@@ -2676,7 +2676,7 @@
   },
   "traba_por_N": 0.9676362539460895,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 1223.7569279395734,
+   "eslabón 1: flexión + axial": 1223.7569279395575,
    "eslabón 1 ojo Q1: aplastamiento": 22785.311173012964,
    "eslabón 1 ojo Q1: desgarro": 18469.86035841439,
    "eslabón 1 ojo Q1: tracción neta": 24270.332499102104,
@@ -2733,7 +2733,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 1223.7569279395734,
+   "eslabón 1: flexión + axial": 1223.7569279395575,
    "eslabón 1 ojo Q1: aplastamiento": 15924.89409961541,
    "eslabón 1 ojo Q1: desgarro": 10552.93905571361,
    "eslabón 1 ojo Q1: tracción neta": 24270.332499102104,
@@ -2800,7 +2800,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1067.6872167249946,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.913571954236621,
+  "rigidez_mm_por_kN": 1.9136426486395501,
   "fuerzas": {
    "eslabon1_Q1": 0.9121615474437442,
    "eslabon2": 1.3736204749431014,
@@ -2809,7 +2809,7 @@
   },
   "traba_por_N": 0.8874366753481735,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 1267.8416028590445,
+   "eslabón 1: flexión + axial": 1267.841602859028,
    "eslabón 1 ojo Q1: aplastamiento": 23870.93984351253,
    "eslabón 1 ojo Q1: desgarro": 19016.180342090185,
    "eslabón 1 ojo Q1: tracción neta": 28059.336241970843,
@@ -2866,7 +2866,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 1267.8416028590445,
+   "eslabón 1: flexión + axial": 1267.841602859028,
    "eslabón 1 ojo Q1: aplastamiento": 17362.37980439126,
    "eslabón 1 ojo Q1: desgarro": 11505.302056944238,
    "eslabón 1 ojo Q1: tracción neta": 28059.336241970843,
@@ -2933,7 +2933,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1078.4835118381427,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.835569809589897,
+  "rigidez_mm_por_kN": 1.8356399897314963,
   "fuerzas": {
    "eslabon1_Q1": 0.8321216038189752,
    "eslabon2": 1.3218248310915515,
@@ -2942,7 +2942,7 @@
   },
   "traba_por_N": 0.8094925808531578,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 1320.4263978256845,
+   "eslabón 1: flexión + axial": 1320.4263978256672,
    "eslabón 1 ojo Q1: aplastamiento": 25182.634888527973,
    "eslabón 1 ojo Q1: desgarro": 19709.309465685936,
    "eslabón 1 ojo Q1: tracción neta": 32878.27157199462,
@@ -2999,7 +2999,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 1320.4263978256845,
+   "eslabón 1: flexión + axial": 1320.4263978256672,
    "eslabón 1 ojo Q1: aplastamiento": 19041.04762258656,
    "eslabón 1 ojo Q1: desgarro": 12621.917760789544,
    "eslabón 1 ojo Q1: tracción neta": 32878.27157199462,
@@ -3066,7 +3066,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1089.3049934979358,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.761335252634059,
+  "rigidez_mm_por_kN": 1.7614049132567922,
   "fuerzas": {
    "eslabon1_Q1": 0.7534952683708857,
    "eslabon2": 1.2737934055431666,
@@ -3075,7 +3075,7 @@
   },
   "traba_por_N": 0.7329170978236997,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 1384.2885378896158,
+   "eslabón 1: flexión + axial": 1384.288537889598,
    "eslabón 1 ojo Q1: aplastamiento": 26803.05382798422,
    "eslabón 1 ojo Q1: desgarro": 20603.460107190793,
    "eslabón 1 ojo Q1: tracción neta": 39213.427891214,
@@ -3132,7 +3132,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 1384.2885378896158,
+   "eslabón 1: flexión + axial": 1384.288537889598,
    "eslabón 1 ojo Q1: aplastamiento": 21018.93079225362,
    "eslabón 1 ojo Q1: desgarro": 13928.582123957684,
    "eslabón 1 ojo Q1: tracción neta": 39213.427891214,
@@ -3199,7 +3199,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1100.292909349815,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.691432908906943,
+  "rigidez_mm_por_kN": 1.691502039859785,
   "fuerzas": {
    "eslabon1_Q1": 0.675253013961101,
    "eslabon2": 1.2291302426559587,
@@ -3208,7 +3208,7 @@
   },
   "traba_por_N": 0.6567050664278262,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 1463.722297137092,
+   "eslabón 1: flexión + axial": 1463.7222971370734,
    "eslabón 1 ojo Q1: aplastamiento": 28864.74155399046,
    "eslabón 1 ojo Q1: desgarro": 21786.01714477458,
    "eslabón 1 ojo Q1: tracción neta": 47871.05638125816,
@@ -3265,7 +3265,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 1463.722297137092,
+   "eslabón 1: flexión + axial": 1463.7222971370734,
    "eslabón 1 ojo Q1: aplastamiento": 23452.763613182335,
    "eslabón 1 ojo Q1: desgarro": 15540.594601082006,
    "eslabón 1 ojo Q1: tracción neta": 47871.05638125816,
@@ -3332,7 +3332,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1111.6376331293911,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.6269571808740024,
+  "rigidez_mm_por_kN": 1.6270257657979825,
   "fuerzas": {
    "eslabon1_Q1": 0.5961083776220131,
    "eslabon2": 1.187493039313955,
@@ -3341,7 +3341,7 @@
   },
   "traba_por_N": 0.5795990275975818,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 1565.8239946995286,
+   "eslabón 1: flexión + axial": 1565.8239946995086,
    "eslabón 1 ojo Q1: aplastamiento": 31596.833380393746,
    "eslabón 1 ojo Q1: desgarro": 23408.836634807412,
    "eslabón 1 ojo Q1: tracción neta": 60380.894013684265,
@@ -3398,7 +3398,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 1565.8239946995286,
+   "eslabón 1: flexión + axial": 1565.8239946995086,
    "eslabón 1 ojo Q1: aplastamiento": 26570.46835386793,
    "eslabón 1 ojo Q1: desgarro": 17608.411394196628,
    "eslabón 1 ojo Q1: tracción neta": 60380.894013684265,
@@ -3465,7 +3465,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1123.6238831411054,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.569804244743666,
+  "rigidez_mm_por_kN": 1.5698722584427836,
   "fuerzas": {
    "eslabon1_Q1": 0.5142484812330599,
    "eslabon2": 1.1485843551948869,
@@ -3474,7 +3474,7 @@
   },
   "traba_por_N": 0.4998243328567455,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 1703.4503081681141,
+   "eslabón 1: flexión + axial": 1703.450308168093,
    "eslabón 1 ojo Q1: aplastamiento": 35439.34096382876,
    "eslabón 1 ojo Q1: desgarro": 25765.122858210372,
    "eslabón 1 ojo Q1: tracción neta": 79930.55388844416,
@@ -3531,7 +3531,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 1703.4503081681141,
+   "eslabón 1: flexión + axial": 1703.450308168093,
    "eslabón 1 ojo Q1: aplastamiento": 30806.561531039744,
    "eslabón 1 ojo Q1: desgarro": 20418.895392771854,
    "eslabón 1 ojo Q1: tracción neta": 79930.55388844416,
@@ -3598,7 +3598,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1136.73929485398,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.5235069548405604,
+  "rigidez_mm_por_kN": 1.5235743575486,
   "fuerzas": {
    "eslabon1_Q1": 0.42669762115913723,
    "eslabon2": 1.1121444962102776,
@@ -3607,7 +3607,7 @@
   },
   "traba_por_N": 0.41446203148389327,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 1903.311300648238,
+   "eslabón 1: flexión + axial": 1903.3113006482145,
    "eslabón 1 ojo Q1: aplastamiento": 41382.48832168722,
    "eslabón 1 ojo Q1: desgarro": 29518.71950747632,
    "eslabón 1 ojo Q1: tracción neta": 114292.9051287731,
@@ -3664,7 +3664,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 1903.311300648238,
+   "eslabón 1: flexión + axial": 1903.3113006482145,
    "eslabón 1 ojo Q1: aplastamiento": 37132.14493988403,
    "eslabón 1 ojo Q1: desgarro": 24613.82324487543,
    "eslabón 1 ojo Q1: tracción neta": 114292.9051287731,
@@ -3731,7 +3731,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1152.009462715901,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.4956958779637717,
+  "rigidez_mm_por_kN": 1.495762600185574,
   "fuerzas": {
    "eslabon1_Q1": 0.32737201352230716,
    "eslabon2": 1.077945710963959,
@@ -3740,7 +3740,7 @@
   },
   "traba_por_N": 0.31752428635203056,
   "caps_traccion": {
-   "eslabón 1: flexión + axial": 2235.2659614419185,
+   "eslabón 1: flexión + axial": 2235.265961441892,
    "eslabón 1 ojo Q1: aplastamiento": 52355.23048193334,
    "eslabón 1 ojo Q1: desgarro": 36648.20537744791,
    "eslabón 1 ojo Q1: tracción neta": 187969.51480500033,
@@ -3797,7 +3797,7 @@
    "acople: aplastamiento": 75450.0
   },
   "caps_compresion": {
-   "eslabón 1: flexión + axial": 2235.2659614419185,
+   "eslabón 1: flexión + axial": 2235.265961441892,
    "eslabón 1 ojo Q1: aplastamiento": 48395.17693644499,
    "eslabón 1 ojo Q1: desgarro": 32078.303585954367,
    "eslabón 1 ojo Q1: tracción neta": 187969.51480500033,

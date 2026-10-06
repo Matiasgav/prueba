@@ -176,14 +176,17 @@ function arcoPts(c, a0, a1, r, ccw, out) {
 function rutaCable(O, C, Q) {
   const R = P.R_CABLE, Rc = P.R_CURVA, h = Math.PI / 2, pts = [];
   const hO = Math.atan2(C[1] - O[1], C[0] - O[0]), hC = Math.atan2(Q[1] - C[1], Q[0] - C[0]);
-  const cb = [O[0] + R + Rc, O[1]], ca = [Q[0] - R - Rc, Q[1]];
-  pts.push([cb[0] + 2.5, cb[1] - Rc]);
-  arcoPts(cb, -h, -Math.PI, Rc, false, pts);
-  arcoPts(O, 0, hO - h, R, true, pts);
+  const ai = P.A_INI, af = P.A_FIN, R2 = R + Rc;
+  const cb = [O[0] + R2 * Math.cos(ai), O[1] + R2 * Math.sin(ai)], ca = [Q[0] + R2 * Math.cos(af), Q[1] + R2 * Math.sin(af)];
+  const gb = Math.PI - (ai + h), ga = (af + h) - Math.PI;
+  const e = ai + Math.PI + gb;
+  pts.push([cb[0] + Rc * Math.cos(e) + 2.5, cb[1] + Rc * Math.sin(e)]);
+  arcoPts(cb, e, ai + Math.PI, Rc, false, pts);
+  arcoPts(O, ai, hO - h, R, true, pts);
   arcoPts(C, hO - h, hC - h, R, true, pts);
-  arcoPts(Q, hC - h, Math.PI, R, true, pts);
-  arcoPts(ca, 0, -h, Rc, false, pts);
-  pts.push([ca[0] - 2.5, ca[1] - Rc]);
+  arcoPts(Q, hC - h, af, R, true, pts);
+  arcoPts(ca, af + Math.PI, af + Math.PI - ga, Rc, false, pts);
+  const l = pts[pts.length - 1]; pts.push([l[0] - 2.5, l[1]]);
   return pts;
 }
 function setCable(O, C, Q) {

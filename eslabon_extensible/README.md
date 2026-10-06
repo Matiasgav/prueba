@@ -28,7 +28,7 @@ El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) 
 - **Riel en C oculto, guiado por las alas.** El carro corre en un canal de B cerrado arriba y abajo por alas de 1,5 mm que trabajan con la columna: la cara ancha es continua y no se ve el carro. Las alas lo guían en z; la columna lo apoya hacia B y un labio de 1,5 × 0,9 mm en el borde interior de cada ala lo retiene hacia A. No hay guía mecanizada en la columna. El canal se abre en la punta de y = 190 para armar y se cierra con una tapa.
 - **Eslabones largos iguales, espejados y planos.** Mismo contorno con vientre simétrico en arco (R 60, tangente a los ojos, 9,9 mm de profundidad): el 1 hacia B y el 2 hacia A. Espesor constante de 7 mm.
 - **Pivotes Ø5 en doble corte, precargados.** Pasador rectificado g6, a presión en las mejillas. Una arandela ondulada de acero, en un rebaje de 0,15 mm del ojo, elimina el juego axial y mantiene las caras en contacto, lo que hace al conjunto firme contra el alabeo.
-- **Cable Ø4 oculto, de largo fijo.** Entra por el lateral de B, rodea O, sigue el lado de afuera del eslabón corto, pasa por encima de C, baja por el lado de afuera del eslabón 1, rodea Q1 y sale por el lateral de A. En los tres pivotes gira por afuera a R 7: los giros suman siempre 180°, así que el largo es 128,0 mm en todo el recorrido. Dentro de las barras hace curvas fijas de R 5. Los ojos de los eslabones hacen de polea. Ver [el esquema](img/cable_recorrido.png).
+- **Cable Ø4 oculto, de largo fijo.** Entra por el lateral de B, rodea O, sigue el lado de afuera del eslabón corto, pasa por encima de C, baja por el lado de afuera del eslabón 1, rodea Q1 y sale por el lateral de A. En los tres pivotes gira por afuera a R 7: los giros suman siempre 180°, así que el largo es 124,8 mm en todo el recorrido. Dentro de las barras hace curvas fijas de R 5. Los ojos de los eslabones hacen de polea. Ver [el esquema](img/cable_recorrido.png).
 - **Lateral exterior en semicilindro R 6,5** a todo lo largo de las dos barras; las puntas (caras de 13 × ancho) son planas. Los pernos Q1 y Q2 quedan al ras de la superficie curva.
 - **Terminación:** bisel de 0,3 mm en las aristas exteriores y agujeros de acople avellanados.
 
@@ -36,7 +36,7 @@ El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) 
 
 | Requisito | Cómo se resolvió |
 |---|---|
-| Cable Ø4 de un lado al otro, oculto, largo fijo, R mín 5 | Entra y sale por los laterales de 190 de B y A, a la altura de O y Q1. Largo 128,0 mm constante. Curvas de R 5 (fijas) y R 7 (en los pivotes). |
+| Cable Ø4 de un lado al otro, oculto, largo fijo, R mín 5 | Entra y sale por los laterales de 190 de B y A, a 16,6 mm de la punta (3,4 mm por debajo de O y Q1). Largo 124,8 mm constante. Curvas de R 5 (fijas) y R 7 (en los pivotes). |
 | Largo 190, espesor 13 | La envolvente es W × 190 × 13 en todo el recorrido. No sobresale nada. |
 | Ancho 35 a 105 regulable | La barra B se traslada en X respecto de la barra A, sin girar. |
 | 4 agujeros D5 × 10 | Dos por barra, uno en cada cara extrema. Cada par es coaxial, paralelo al largo, centrado en el espesor (z = 6,5) y a 5 mm de la cara exterior de su barra, igual en las dos. Distancia entre ejes: W − 10 (de 25 a 95 mm). |

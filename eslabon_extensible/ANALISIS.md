@@ -39,7 +39,14 @@ Para cargas cíclicas (vibración, ciclos de arranque y parada), usá **menos de
 ![Recorrido del cable](img/cable_recorrido.png)
 
 - **Recorrido.** El cable entra por el lateral de B, rodea O, sigue el lado de afuera del eslabón corto, pasa por encima de C, baja por el lado de afuera del eslabón 1, rodea Q1 y sale por el lateral de A. Dentro de cada barra hace una curva fija de R 5.
-- **Largo fijo.** En O, C y Q1 el cable gira siempre por el lado de afuera y al mismo radio (R 7 al eje del cable). Los tres giros suman siempre 180°, así que el largo no cambia: 128,0 mm entre laterales en todo el recorrido (verificado cada 0,25 mm de ancho). El radio mínimo de curvatura es 5 mm (curvas fijas en A y B); en los pivotes es 7.
+- **Largo fijo.** En O, C y Q1 el cable gira siempre por el lado de afuera y al mismo radio (R 7 al eje del cable). Los tres giros suman siempre 180°, así que el largo no cambia: 124,8 mm entre laterales en todo el recorrido (verificado cada 0,25 mm de ancho). El radio mínimo de curvatura es 5 mm (curvas fijas en A y B); en los pivotes es 7.
+- **Altura de la salida.** El cable rodea Q1 y O solo lo justo para W = 35 y enseguida dobla hacia el lateral, así sale a 16,6 mm de la punta. Se puede subir más corriendo O y Q1 hacia el centro, pero acorta el paralelogramo:
+
+  | O y Q1 en y = | 20 (actual) | 23 | 25 |
+  |---|---:|---:|---:|
+  | Salida del cable a | 16,6 | 19,6 | 21,6 mm de la punta |
+  | Capacidad a W = 35 / 50 / 70 | 480 / 716 / 955 | 447 / 668 / 892 | 427 / 640 / 854 N |
+
 - **Por qué R 7.** El cable va en la capa del medio (z 4,3 a 8,7), la misma de los ojos de los eslabones (R 4,5). A R 7 le quedan 0,3 mm a cada ojo. Los ojos hacen de polea.
 - **Lo que costó en geometría** (el ancho total y el espesor no cambian):
   - Q1 y Q2 a 10 mm de la cara exterior de A (antes 6,5), para que el cable rodee Q1 por dentro del semicilindro. A pasa a 14,2 mm y B a 20,0 mm (columna de 8,6). La relación s/p a W = 35 empeora un poco (s mínimo 11,3 en lugar de 12,9).
