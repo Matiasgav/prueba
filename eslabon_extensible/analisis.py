@@ -65,7 +65,7 @@ def estatica(w, F=1.0):
     u = np.array([k["s"], k["p"]]) / E.L2
     v = (k["C"] - k["O"]) / np.linalg.norm(k["C"] - k["O"])
     cr = lambda a, b: a[0] * b[1] - a[1] * b[0]
-    acA = [(np.array([E.X_ACOPLE, y]), np.array([-F / 2, 0.0])) for y in (5.0, 185.0)]
+    acA = [(np.array([E.X_ACOPLE, y]), np.array([-F / 2, 0.0])) for y in (5.0, E.LARGO_A - 5.0)]
     acB = [(np.array([k["xb"] + E.BWB - E.X_ACOPLE, y]), np.array([F / 2, 0.0])) for y in (5.0, 185.0)]
     Q1, Q2, P1, P2, C, O = (k[n] for n in ("Q1", "Q2", "P1", "P2", "C", "O"))
     # barra A: FQ1 (2 incógnitas) + f2*u en Q2
@@ -269,7 +269,7 @@ class Modelo:
         self.A = E.barra_a()
         self.B = E.barra_b()
         self.K = E.carro()
-        self.tA = tabla_secciones("A", self.A, 0.25, E.LARGO - 0.25)
+        self.tA = tabla_secciones("A", self.A, 0.25, E.LARGO_A - 0.25)
         self.tB = tabla_secciones("B", self.B, 0.25, E.LARGO - 0.25)
         self.tK = tabla_secciones("carro", self.K, E.CARRO_Y[0] + 0.25, E.CARRO_Y[1] - 0.25)
         zm = sum(E.Z_MED) / 2

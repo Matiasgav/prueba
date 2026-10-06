@@ -37,7 +37,8 @@ def medir_secciones():
     res = {}
     for n, f in (("A", E.barra_a), ("B", E.barra_b)):
         sol = f().val()
-        res[n] = [(float(y), _sec(sol, y)) for y in np.arange(1, 189.1, 1.0)]
+        largo = E.LARGO_A if n == "A" else E.LARGO
+        res[n] = [(float(y), _sec(sol, y)) for y in np.arange(1, largo - 0.9, 1.0)]
     for n, f, L in (("L1", E.eslabon1, E.L2), ("L2", E.eslabon2, E.L2), ("corto", E.eslabon_corto, E.L1)):
         sol = f().val().rotate((0, 0, 0), (0, 0, 1), 90)
         res[n] = [(float(x), _sec(sol, x)) for x in np.arange(0.5, L - 0.49, 0.5)]
@@ -88,8 +89,8 @@ RIG=1e12
 def armar(w, seg=4.0):
     k=E.cinematica(w); m=Emp(); xb=k["xb"]
     xA=E.D_A; xBc=xb+12.39
-    def barra(tab, x, ys_extra, nombre):
-        ys=sorted(set(list(np.arange(0,190.01,seg))+ys_extra))
+    def barra(tab, x, ys_extra, nombre, largo=E.LARGO):
+        ys=sorted(set([y for y in np.arange(0,largo+0.01,seg)]+[largo]+ys_extra))
         ids={}
         prev=None
         for y in ys:
@@ -99,11 +100,12 @@ def armar(w, seg=4.0):
             prev=(y,n)
         return ids
     yQ1,yQ2=E.Y0,E.Y0+E.DP; yP1=k["P1"][1]; yP2=k["P2"][1]
-    A=barra(S["A"],xA,[yQ1,yQ2,5.0,185.0],"barra A")
+    yA=E.LARGO_A-5.0
+    A=barra(S["A"],xA,[yQ1,yQ2,5.0,yA],"barra A",E.LARGO_A)
     B=barra(S["B"],xBc,[E.Y0,yP1,yP2,5.0,185.0],"barra B")
     def brazo(n_bar, p):
         q=m.nodo(p); m.viga(n_bar,q,RIG,RIG,None); return q
-    acA=[brazo(A[5.0],(E.X_ACOPLE,5.0)),brazo(A[185.0],(E.X_ACOPLE,185.0))]
+    acA=[brazo(A[5.0],(E.X_ACOPLE,5.0)),brazo(A[round(yA,4)],(E.X_ACOPLE,yA))]
     acB=[brazo(B[5.0],(xb+E.BWB-E.X_ACOPLE,5.0)),brazo(B[185.0],(xb+E.BWB-E.X_ACOPLE,185.0))]
     O=brazo(B[E.Y0],tuple(k["O"])); P1=brazo(B[round(yP1,4)],tuple(k["P1"])); P2=brazo(B[round(yP2,4)],tuple(k["P2"]))
     def eslabon(tab, ni, nj, nombre, nm=40, nodo_medio=False):
@@ -122,13 +124,13 @@ def resolver(w, caso):
     m,acA,acB=armar(w)
     K=m.K(); N=len(m.n); F=np.zeros(3*N)
     if caso=="Mx":      # 1 N·m alrededor de X: fuerzas en z en los acoples de A
-        f=1000.0/180.0; F[3*acA[1]]+=f; F[3*acA[0]]-=f
+        brazoA=E.LARGO_A-10.0; f=1000.0/brazoA; F[3*acA[1]]+=f; F[3*acA[0]]-=f
     else:               # 1 N·m alrededor de Y en el eje de acople de A
         F[3*acA[0]+2]+=500.0; F[3*acA[1]+2]+=500.0
     fijos=[3*n+d for n in acB for d in range(3)]
     libres=[i for i in range(3*N) if i not in fijos]
     u=np.zeros(3*N); u[libres]=np.linalg.solve(K[np.ix_(libres,libres)],F[libres])
-    if caso=="Mx": giro=(u[3*acA[1]]-u[3*acA[0]])/180.0
+    if caso=="Mx": giro=(u[3*acA[1]]-u[3*acA[0]])/(E.LARGO_A-10.0)
     else: giro=(u[3*acA[0]+2]+u[3*acA[1]+2])/2
     peor={}
     for info,M1,M2,T in m.fuerzas_elem(u):

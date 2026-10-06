@@ -1,6 +1,6 @@
-# Eslabón de ancho regulable (doble Scott Russell) — v8
+# Eslabón de ancho regulable (doble Scott Russell) — v9
 
-Modelo 3D paramétrico en CadQuery de un eslabón de **190 × 13 mm** cuyo **ancho se regula a mano entre 35 y 105 mm**. Está pensado para mecanizar: barras y carro en **aluminio 7075-T651**, eslabones en **acero inoxidable 17-4PH**, con pivotes templados y precargados.
+Modelo 3D paramétrico en CadQuery de un eslabón de **190 × 13 mm** (barra B de 190, barra A de 175) cuyo **ancho se regula a mano entre 35 y 105 mm**. Está pensado para mecanizar: barras y carro en **aluminio 7075-T651**, eslabones en **acero inoxidable 17-4PH**, con pivotes templados y precargados.
 
 ![Isométrica a W = 35 mm, barras transparentes](img/iso_W35.png)
 ![Cable a W = 70 mm](img/cable_W70.png)
@@ -14,9 +14,9 @@ Fuerza entre los ejes de acople hasta la primera fluencia, tanto en tracción co
 
 | W | 35 | 45 | 50 | 70 | 105 mm |
 |---|---:|---:|---:|---:|---:|
-| Carga a fluencia | 578 | 771 | 833 | 984 | 1.152 N |
-| Carga de trabajo estática (÷ 1,5) | 385 | 514 | 555 | 656 | 768 N |
-| Flexibilidad entre ejes | 7,9 | 3,7 | 3,0 | 2,0 | 1,4 mm/kN |
+| Carga a fluencia | 665 | 897 | 972 | 1.160 | 1.372 N |
+| Carga de trabajo estática (÷ 1,5) | 443 | 598 | 648 | 773 | 914 N |
+| Flexibilidad entre ejes | 6,9 | 3,1 | 2,5 | 1,6 | 0,9 mm/kN |
 
 Alabeo entre ejes (cupla alrededor del ancho, Mx): rigidez de 52 a 20 N·m/° y capacidad a fluencia de 91 a 24 N·m según el ancho. Alrededor del largo (My) es la dirección floja: de 5,8 a 7,6 N·m/° y 11 N·m a fluencia (rotura estimada ≈ 18 N·m).
 
@@ -39,16 +39,16 @@ El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) 
 | Requisito | Cómo se resolvió |
 |---|---|
 | Cable Ø4 de un lado al otro, oculto, largo fijo, R mín 5 | Entra y sale por los laterales de 190 de B y A, a 16,6 mm de la punta (3,4 mm por debajo de O y Q1). Largo 124,8 mm constante. Curvas de R 5 (fijas) y R 7 (en los pivotes). |
-| Largo 190, espesor 13 | La envolvente es W × 190 × 13 en todo el recorrido. No sobresale nada. |
+| Largo 190, espesor 13 | La envolvente es W × 190 × 13 en todo el recorrido. No sobresale nada. La barra A está acortada a 175 mm del lado del voladizo. |
 | Ancho 35 a 105 regulable | La barra B se traslada en X respecto de la barra A, sin girar. |
-| 4 agujeros D5 × 10 | Dos por barra, uno en cada cara extrema. Cada par es coaxial, paralelo al largo, centrado en el espesor (z = 6,5) y a 5 mm de la cara exterior de su barra, igual en las dos. Distancia entre ejes: W − 10 (de 25 a 95 mm). |
+| 4 agujeros D5 × 10 | Dos por barra, uno en cada cara extrema (en A, en y = 0 y y = 175). Cada par es coaxial, paralelo al largo, centrado en el espesor (z = 6,5) y a 5 mm de la cara exterior de su barra, igual en las dos. Distancia entre ejes: W − 10 (de 25 a 95 mm). |
 | Regulación manual | El carro se mueve a mano. **La traba que fija la posición está pendiente.** |
 
 ## Piezas
 
 | Pieza | Cant. | Notas |
 |---|---:|---|
-| Barra A | 1 | 7075-T651. 14,2 × 190 × 13, lateral exterior en semicilindro R 6,5. Horquillas en Q1 y Q2, pivotes a 10 mm de la cara exterior. Túnel del cable alrededor de Q1. |
+| Barra A | 1 | 7075-T651. 14,2 × 175 × 13 (acortada 15 mm del lado del voladizo), lateral exterior en semicilindro R 6,5. Horquillas en Q1 y Q2, pivotes a 10 mm de la cara exterior. Túnel del cable alrededor de Q1. |
 | Barra B | 1 | 7075-T651. 20,0 × 190 × 13, lateral exterior en semicilindro R 6,5. Columna de 8,6 mm y riel en C con alas de 1,5 mm y labios, alojamiento oculto del eslabón corto y túnel del cable en O. |
 | Tapa | 1 | Cierra la boca del riel en y = 190; entra como el carro, bajo los labios. |
 | Carro | 1 | 7075-T651. 11,4 mm de ancho, 9,8 mm de alto entre las alas, con el escalón de los labios. Horquillas en P1 y P2 (73 mm entre centros), mejillas de 1,3 mm. |

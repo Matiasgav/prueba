@@ -48,6 +48,8 @@ ESP = 13.0
 W_MIN, W_MAX = 35.0, 105.0
 
 D_ACOPLE, P_ACOPLE = 5.0, 10.0
+ACORTE_A = 15.0              # la barra A (la fina) se acorta por la punta del voladizo (y = 190)
+LARGO_A = LARGO - ACORTE_A
 X_ACOPLE = 5.0               # eje de acople a 5 mm de la cara exterior de cada barra
 Z_EJE = ESP / 2
 
@@ -363,8 +365,8 @@ def cil_z(x, y, d, z0, z1):
     return cq.Workplane("XY").workplane(offset=z0).center(x, y).circle(d / 2).extrude(z1 - z0)
 
 
-def agujeros_acople(sol, x):
-    for y0, sentido in ((0.0, 1), (LARGO, -1)):
+def agujeros_acople(sol, x, largo=LARGO):
+    for y0, sentido in ((0.0, 1), (largo, -1)):
         h = (cq.Workplane("XZ", origin=(0, y0, 0)).center(x, Z_EJE)
              .circle(D_ACOPLE / 2).extrude(-sentido * P_ACOPLE))
         sol = sol.cut(h)
@@ -378,18 +380,18 @@ def agujeros_acople(sol, x):
 R_LATERAL = ESP / 2   # lateral exterior en semicilindro (R 6,5) y puntas con el mismo radio
 
 
-def barra_base(ancho, exterior_izq=True):
+def barra_base(ancho, exterior_izq=True, largo=LARGO):
     """Barra con el lateral exterior en semicilindro R 6,5 a todo lo largo. Las puntas
     (caras de 13 x ancho) quedan planas; la cara interior lleva un redondeo de 0,3."""
     r = R_LATERAL
     piezas = [
-        cq.Solid.makeBox(ancho - r, LARGO, ESP, cq.Vector(r, 0, 0)),
-        cq.Solid.makeCylinder(r, LARGO, cq.Vector(r, 0, r), cq.Vector(0, 1, 0)),
+        cq.Solid.makeBox(ancho - r, largo, ESP, cq.Vector(r, 0, 0)),
+        cq.Solid.makeCylinder(r, largo, cq.Vector(r, 0, r), cq.Vector(0, 1, 0)),
     ]
     b = cq.Workplane().add(piezas[0])
     for p in piezas[1:]:
         b = b.union(cq.Workplane().add(p))
-    b = b.intersect(caja(0, ancho, 0, LARGO, 0, ESP))
+    b = b.intersect(caja(0, ancho, 0, largo, 0, ESP))
     if not exterior_izq:
         b = b.mirror("YZ").translate((ancho, 0, 0))
     try:
@@ -406,16 +408,16 @@ def canal_carro():
 
 
 def barra_a():
-    b = barra_base(BWA)
-    b = agujeros_acople(b, X_ACOPLE)
-    huella = box(-1, -1, BWA + 1, LARGO + 1)
+    b = barra_base(BWA, largo=LARGO_A)
+    b = agujeros_acople(b, X_ACOPLE, LARGO_A)
+    huella = box(-1, -1, BWA + 1, LARGO_A + 1)
     b = cortar(b, barrido(["eslabon1", "eslabon2"], "A").intersection(huella), [Z_MED_CORTE])
     corto = barrido(["corto"], "A", SUAVE).intersection(huella)
     b = cortar(b, corto, Z_PLACA_CORTE)
 
     for y in (Y0, Y0 + DP):
         b = b.cut(cil_z(D_A, y, D_PERNO, -1, ESP + 1))
-    return cortar_cable(b, "A", box(-5, -1, BWA + 1, LARGO + 1))
+    return cortar_cable(b, "A", box(-5, -1, BWA + 1, LARGO_A + 1))
 
 
 def barra_b():
