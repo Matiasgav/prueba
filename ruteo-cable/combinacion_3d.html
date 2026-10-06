@@ -53,7 +53,7 @@ td:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-a
 <div class="wrap">
 <header>
   <h1>Guía, traba y regulación</h1>
-  <p>Tres piezas simples, cada una tomada de un mecanismo que ya existe. La guía es un carro de 7075 con dos pines en una ranura en L. La traba es un fleje de acero que hace clic en hoyuelos de la chapa inferior. La regulación transversal es un buje excéntrico que mueve solo la bobina, sin mover el holder. Arrastrá para girar la vista y usá los controles para recorrer el movimiento.</p>
+  <p>Tres piezas simples, cada una tomada de un mecanismo que ya existe. La guía es un carro de 7075 con un pin en una ranura recta y ciega; al final gira libre sobre el pin. La traba es un fleje de acero que hace clic en hoyuelos de la chapa inferior. La regulación en altura es un buje roscado de paso fino que sube o baja la bobina dentro del holder, sin moverlo. Arrastrá para girar la vista y usá los controles para recorrer el movimiento.</p>
 </header>
 
 <div class="main">
@@ -63,7 +63,7 @@ td:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-a
       <span><i style="background:#3d4348"></i>holder PEEK</span>
       <span><i style="background:#a7b2b8"></i>carro 7075 y pines</span>
       <span><i style="background:#d07a2c"></i>fleje y hoyuelos</span>
-      <span><i style="background:#3f7fb0"></i>buje excéntrico</span>
+      <span><i style="background:#3f7fb0"></i>buje roscado</span>
       <span><i style="background:#b87333"></i>bobina</span>
     </div>
     <div class="hud" id="hud"></div>
@@ -72,8 +72,8 @@ td:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-a
   <div class="panel">
     <div><label class="l" for="u">Posición</label>
       <div class="row"><button type="button" class="b" id="play">Animar</button><input type="range" id="u" min="0" max="2" step="0.005" value="0"><span class="val" id="uv"></span></div></div>
-    <div><label class="l" for="ecc">Regulación transversal de la bobina</label>
-      <div class="row"><span></span><input type="range" id="ecc" min="0" max="180" step="1" value="0"><span class="val" id="ev"></span></div></div>
+    <div><label class="l" for="ecc">Regulación en altura (Z) de la bobina</label>
+      <div class="row"><span></span><input type="range" id="ecc" min="0" max="5" step="0.1" value="0"><span class="val" id="ev"></span></div></div>
     <div class="checks">
       <label><input type="checkbox" id="hideTop"> Ocultar chapa superior</label>
       <label><input type="checkbox" id="hideHolder"> Ocultar holder</label>
@@ -84,15 +84,15 @@ td:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-a
 </div>
 
 <div class="three">
-  <article class="card"><span class="k">1 · guía</span><h2>Carro con dos pines en ranura en L</h2>
-    <p>El nervio pasa a ser un carro de 7075 atornillado al holder de PEEK. Dos pines del carro corren en una ranura ciega de la chapa superior. En el tramo recto, el holder solo se traslada. Al final, el pin trasero se detiene, el delantero sigue por el arco y el holder gira 90°. La chapa no tiene ningún corte pasante.</p>
-    <p class="ref">Mismo principio que el pin de leva del cerrojo rotativo de un AR-15: un pin en una pista convierte avance en giro. <a href="https://rotorm.com/faq/how-does-the-cam-pin-work/">Cómo funciona</a></p></article>
+  <article class="card"><span class="k">1 · guía</span><h2>Carro con un pin en ranura recta ciega</h2>
+    <p>El nervio pasa a ser un carro de 7075 atornillado al holder de PEEK. Un pin del carro corre en una ranura recta de la chapa superior, mecanizada desde adentro y sin atravesarla. Durante la carrera, la parte redonda del holder queda contra el canto y no lo deja girar. Al final, la chapa termina redondeada alrededor del pin y el holder gira 90° libre sobre él, como hoy.</p>
+    <p class="ref">Es una corredera con pivote en el extremo ("slide and swivel"). <a href="https://www.eng-tips.com/threads/sliding-pivoting-joint-design.323705/">Ejemplo en Eng-Tips</a></p></article>
   <article class="card"><span class="k">2 · traba</span><h2>Fleje con clic cada 2 mm</h2>
     <p>Una lámina de acero inoxidable, alojada en el carro, apoya una nariz contra la chapa inferior, que no tiene ranura. La nariz cae en hoyuelos cada 2 mm a lo largo de la carrera y cada 15° en el giro final. El holder se empuja con la mano y hace clic. No hay tornillo ni nada que accionar desde afuera.</p>
     <p class="ref">Es un retén de posición como los de las unidades de posicionamiento de Misumi, pero sin pieza que tirar. <a href="https://us.misumi-ec.com/us/incadlibrary/detail/000043.html">Misumi inCAD 000043</a></p></article>
-  <article class="card"><span class="k">3 · regulación</span><h2>Buje excéntrico de la bobina</h2>
-    <p>La bobina va dentro de un buje con el agujero corrido 2,5 mm de su centro. Al girar el buje 180°, la bobina recorre 5 mm en dirección transversal, de 2,5 mm hacia afuera a 2,5 mm hacia adentro del centro del holder. El holder no se mueve, así que no cambia el ancho ni choca con las chapas. Un prisionero radial fija el buje.</p>
-    <p class="ref">Es el ajuste de las bisagras Blum de cocina y de los bujes excéntricos de catálogo. <a href="https://in.misumi-ec.com/vona2/detail/110300424410/">Bujes excéntricos Misumi</a> · <a href="https://www.hingeoutlet.com/blogs/news/a-guide-to-adjusting-blum-cabinet-hinges">Bisagras Blum</a></p></article>
+  <article class="card"><span class="k">3 · regulación</span><h2>Buje roscado de paso fino</h2>
+    <p>La bobina va dentro de un buje con rosca exterior M15 × 0,5, enroscado en la parte redonda del holder. Diez vueltas lo suben o bajan 5 mm. Un prisionero radial con punta de latón lo deja fijo. Para la bobina de Ø12, el buje tiene 1,5 mm de pared y deja 2 mm de PEEK hasta el borde del holder. El holder no se mueve y nada sale de los 12 mm, porque el buje es más bajo que el holder: mide 7 mm y recorre los otros 5 por dentro.</p>
+    <p class="ref">Es el ajuste de un anillo de enfoque o de un tornillo micrométrico: rosca fina y un bloqueo. <a href="https://in.misumi-ec.com/vona2/detail/110300424410/">Ejemplos de regulación con bujes (Misumi)</a></p></article>
 </div>
 </div>
 
@@ -102,7 +102,7 @@ td:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-a
 (function(){
 const $=id=>document.getElementById(id);
 /* Marco del holder: centro nominal de la bobina en el origen, +Y hacia el chasis. Mundo: ranura en y = 0. */
-const R=9.5, S=30, PE=30, EDGE_W=-3.55, PY=15.5, PX=2, D=3.5, PIN_R=1.25, YF=9.5, ECC=2.5;
+const R=9.5, S=30, PE=30, EDGE_W=-3.55, PY=15.5, PX=5.5, D=0, PIN_R=1.5, YF=11.7, ECC=2.5;
 const NOSE=[PX,PY+5];            // nariz del fleje, 5 mm hacia adentro del pivote
 const st={u:0,ecc:0,hideTop:false,hideHolder:false};
 const rc=Math.min(PY-YF,Math.hypot(PX,PY)-R), Rp=rc-0.3;
@@ -113,7 +113,7 @@ try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingB
 renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));view.prepend(renderer.domElement);
 const scene=new THREE.Scene();const cam=new THREE.PerspectiveCamera(30,1.6,1,2000);cam.up.set(0,0,1);
 const ctl=new THREE.OrbitControls(cam,renderer.domElement);
-function resetView(){cam.position.set(PE-2,-78,58);ctl.target.set(PE-13,-3,4);ctl.update();}resetView();
+function resetView(){cam.position.set(PE-6,-92,68);ctl.target.set(PE-13,-4,4);ctl.update();}resetView();
 scene.add(new THREE.HemisphereLight(0xffffff,0x6b7378,0.75));
 const d1=new THREE.DirectionalLight(0xffffff,0.75);d1.position.set(40,-60,90);scene.add(d1);
 const d2=new THREE.DirectionalLight(0xffffff,0.3);d2.position.set(-60,50,40);scene.add(d2);
@@ -136,7 +136,7 @@ function cyl(r,h,x,y,z,mat,seg=32){const m=new THREE.Mesh(new THREE.CylinderGeom
 /* ---------- chapas ---------- */
 function outline(){const s=new THREE.Shape();s.moveTo(-40,EDGE_W);s.lineTo(PE,EDGE_W);
   s.absarc(PE,0,Rp,Math.asin(EDGE_W/Rp),Math.PI/2*0.999,false);s.lineTo(PE,26);s.lineTo(-40,26);s.closePath();return s;}
-function groove(hw){const c=[[PE-S,0],[PE+D,0]];for(let i=1;i<=24;i++){const a=Math.PI/2*i/24;c.push([PE+D*Math.cos(a),D*Math.sin(a)]);}
+function groove(hw){const c=[[PE-S,0],[PE-S+S/2,0],[PE,0]];
   const L=[],Rr=[];for(let i=0;i<c.length;i++){const q=c[Math.min(i+1,c.length-1)],o=c[Math.max(i-1,0)];let tx=q[0]-o[0],ty=q[1]-o[1];const l=Math.hypot(tx,ty)||1;tx/=l;ty/=l;
     L.push([c[i][0]-ty*hw,c[i][1]+tx*hw]);Rr.push([c[i][0]+ty*hw,c[i][1]-tx*hw]);}
   const p=new THREE.Path();p.moveTo(...Rr[0]);for(let i=1;i<c.length;i++)p.lineTo(...Rr[i]);
@@ -157,43 +157,43 @@ const ox=-PX,oy=-PY,P=(x,y)=>[x+ox,y+oy];
 const holder=new THREE.Group();mov.add(holder);
 // parte de altura completa del holder (PEEK) con alojamiento del buje
 const f=new THREE.Shape();f.moveTo(...P(-R,YF));f.lineTo(...P(-R,0));f.absarc(ox,oy,R,Math.PI,2*Math.PI,false);f.lineTo(...P(R,YF));f.closePath();
-const bh=new THREE.Path();bh.absarc(ox,oy,6.9,0,2*Math.PI,true);f.holes.push(bh);
+const bh=new THREE.Path();bh.absarc(ox,oy,7.55,0,2*Math.PI,true);f.holes.push(bh);
 holder.add(extrude(f,12,0,M.peek));
 // carro 7075 entre chapas (incluye la lengüeta que entra al holder)
-const cb=new THREE.Shape();cb.moveTo(...P(-9.5,7.4));cb.lineTo(...P(9.5,7.4));cb.lineTo(...P(9.5,22));cb.lineTo(...P(-9.5,22));cb.closePath();
+const cb=new THREE.Shape();cb.moveTo(...P(-9.5,8));cb.lineTo(...P(9.5,8));cb.lineTo(...P(9.5,22));cb.lineTo(...P(-9.5,22));cb.closePath();
 mov.add(extrude(cb,5.8,3.1,M.cart));
 // pines (solo hacia arriba, a la ranura de la chapa superior)
-[PX,PX+D].forEach(x=>{const q=P(x,PY);mov.add(cyl(PIN_R,2.75,q[0],q[1],8.15,M.pin));});
+[PX].forEach(x=>{const q=P(x,PY);mov.add(cyl(PIN_R,2.75,q[0],q[1],8.15,M.pin));});
 // fleje: lámina con nariz hacia abajo
 const q=P(NOSE[0],NOSE[1]);const leaf=new THREE.Mesh(new THREE.BoxGeometry(8,1.6,0.25),M.acc);leaf.position.set(q[0]-3,q[1],3.6);mov.add(leaf);
 const nose=new THREE.Mesh(new THREE.SphereGeometry(0.6,20,12),M.acc);nose.position.set(q[0],q[1],3.25);mov.add(nose);
-// buje excéntrico + bobina
+// buje roscado + bobina (sube y baja en Z)
 const bush=new THREE.Group();mov.add(bush);
-const bs=new THREE.Shape();bs.absarc(0,0,6.8,0,2*Math.PI,false);const bhole=new THREE.Path();bhole.absarc(0,-ECC,3.7,0,2*Math.PI,true);bs.holes.push(bhole);
-bush.add(extrude(bs,11.6,0.2,M.bush));
-const coil=cyl(3.5,11,0,-ECC,0.5,M.coil);bush.add(coil);
-const screw=cyl(0.8,0.6,4.4,3.6,11.5,M.pin,16);bush.add(screw);  // marca del prisionero
+const bs=new THREE.Shape();bs.absarc(0,0,7.5,0,2*Math.PI,false);const bhole=new THREE.Path();bhole.absarc(0,0,6.05,0,2*Math.PI,true);bs.holes.push(bhole);
+bush.add(extrude(bs,7,0,M.bush));
+for(let i=1;i<7;i++){const t=new THREE.Mesh(new THREE.TorusGeometry(7.5,0.08,6,40),M.pin);t.position.z=i;bush.add(t);} // marcas de rosca
+bush.add(cyl(6,6.6,0,0,0.2,M.coil));
 bush.position.set(ox,oy,0);
-
+holder.add(cyl(0.8,2,ox+5.9,oy-5.9,5,M.pin,16)); // prisionero radial (marca)
 /* ---------- cinemática ---------- */
-function coilRel(){const t=st.ecc*Math.PI/180;return [ECC*Math.sin(t),-ECC*Math.cos(t)];}  // corrimiento de la bobina en el marco del holder
+function coilRel(){return [0,0];}  // corrimiento de la bobina en el marco del holder
 function centre(u){const s=S*Math.min(u,1),ph=Math.PI/2*Math.max(0,u-1),c=coilRel();const cx=c[0]-PX,cy=c[1]-PY;
   return [PE-S+s+cx*Math.cos(ph)-cy*Math.sin(ph),cx*Math.sin(ph)+cy*Math.cos(ph)];}
 function place(){
   const s=S*Math.min(st.u,1),ph=Math.PI/2*Math.max(0,st.u-1);
   mov.position.set(PE-S+s,0,0);mov.rotation.z=ph;
-  bush.rotation.z=st.ecc*Math.PI/180;      // 0° → bobina 2,5 mm hacia afuera; 180° → 2,5 mm hacia adentro
+  bush.position.z=st.ecc;bush.rotation.z=st.ecc/0.5*2*Math.PI;
   top.visible=!st.hideTop;holder.visible=!st.hideHolder;
   const c0=centre(0),c=centre(st.u);
   $("uv").textContent=st.u<=1?`carrera ${s.toFixed(1)}`:`giro ${(ph*180/Math.PI).toFixed(0)}°`;
-  $("ev").textContent=`${(coilRel()[1]+ECC).toFixed(1)} mm`;
-  $("hud").textContent=`avance de la bobina: ${(c[0]-c0[0]).toFixed(1)} mm · corrimiento transversal: ${(coilRel()[1]+ECC).toFixed(1)} de 5 mm`;
+  $("ev").textContent=`${st.ecc.toFixed(1)} mm`;
+  $("hud").textContent=`avance de la bobina: ${(c[0]-c0[0]).toFixed(1)} mm · altura de la bobina: +${st.ecc.toFixed(1)} de 5 mm`;
   const row=(a,b)=>`<tr><td>${a}</td><td>${b}</td></tr>`;
   const ext=centre(2)[0]-centre(1)[0];
   $("tab").innerHTML=row("Carrera en la ranura","30 mm")+row("Extensión por giro",`${ext.toFixed(1)} mm`)+
-    row("Clic en la carrera","cada 2 mm")+row("Clic en el giro","cada 15°")+row("Avance en cada clic del giro","4 · 8 · 11,5 · 14,4 · 16,5 · 17,5 mm")+
-    row("Regulación transversal","5 mm (±2,5 del centro del holder)")+row("Salida del ancho durante el giro","0,13 mm")+
-    row("Chapa superior","ranura ciega en L, 2 mm")+row("Chapa inferior","solo hoyuelos, sin ranura");
+    row("Clic en la carrera","cada 2 mm")+row("Clic en el giro","cada 15°")+row("Avance en cada clic del giro","4,2 · 8,5 · 12,6 · 16,2 · 19 · 21 mm")+
+    row("Regulación en altura (Z)","5 mm, 10 vueltas de M15 × 0,5")+row("Bobina","Ø12, alto máximo 7 mm")+row("Salida del ancho durante el giro","0,95 mm, cerca del final")+
+    row("Chapa superior","ranura ciega recta, 2 mm")+row("Chapa inferior","solo hoyuelos, sin ranura");
 }
 function resize(){const w=view.clientWidth,h=view.clientHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();}
 new ResizeObserver(resize).observe(view);resize();
