@@ -29,7 +29,7 @@ Para cargas cíclicas (vibración, ciclos de arranque y parada), usá **menos de
 
 ## Qué cambió en la v4
 
-- **Lateral exterior en semicilindro R 6,5** (la mitad del espesor) en las dos barras, y puntas cerradas con el mismo radio. Cuesta resistencia porque saca la fibra exterior, la que más trabaja a flexión: un 20 a 25 % respecto de la v3. Para limitar la pérdida, la línea de pivotes de A se corrió de 5,5 a 6,5 mm de la cara exterior, así la nariz redonda queda maciza en Q1 y Q2. Se probaron 5,5, 6,5, 7, 7,5, 8 y 9 mm; 6,5 es la mejor.
+- **Lateral exterior en semicilindro R 6,5** (la mitad del espesor) en las dos barras; las puntas (caras de 13 × ancho) quedan planas. Cuesta resistencia porque saca la fibra exterior, la que más trabaja a flexión: un 20 a 25 % respecto de la v3. Para limitar la pérdida, la línea de pivotes de A se corrió de 5,5 a 6,5 mm de la cara exterior, así la nariz redonda queda maciza en Q1 y Q2. Se probaron 5,5, 6,5, 7, 7,5, 8 y 9 mm; 6,5 es la mejor.
 - **Caras continuas.** Las placas del eslabón corto quedan hundidas 0,6 mm (pasan de 2,8 a 2,2 mm). Las barras conservan una piel de 0,6 mm que tapa los rebajes de C en A y de O en B. Esos rebajes se mecanizan con fresa de disco desde la cara interior.
 - **Pernos Q1 y Q2 al ras** de la superficie curva.
 

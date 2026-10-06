@@ -235,9 +235,14 @@ def _casco(circulos):
     return [t for t in tramos if not (t[0] == "linea" and np.linalg.norm(t[2] - t[1]) < 1e-6)]
 
 
+LADO_VIENTRE1 = -1                         # -1: vientre hacia B; +1: hacia el eslabón 2 (lado de A)
+
+
 def tramos_eslabon1():
-    """Gota: vientre hacia B (-y local), punto más profundo en C."""
-    return _casco([(0.0, 0.0, R_OJO), (L1 + DX_GOTA1, -(QUILLA - R_GOTA), R_GOTA), (L2, 0.0, R_OJO)])
+    """Gota con el punto más profundo cerca de C."""
+    if LADO_VIENTRE1 < 0:
+        return _casco([(0.0, 0.0, R_OJO), (L1 + DX_GOTA1, -(QUILLA - R_GOTA), R_GOTA), (L2, 0.0, R_OJO)])
+    return _casco([(0.0, 0.0, R_OJO), (L2, 0.0, R_OJO), (L1 + DX_GOTA1, QUILLA - R_GOTA, R_GOTA)])
 
 
 def tramos_eslabon2():
@@ -371,17 +376,12 @@ R_LATERAL = ESP / 2   # lateral exterior en semicilindro (R 6,5) y puntas con el
 
 
 def barra_base(ancho, exterior_izq=True):
-    """Barra con el lateral exterior en semicilindro R 6,5 a todo lo largo, puntas cerradas
-    con el mismo radio (semicilindro transversal y cuarto de esfera en la esquina) y la cara
-    interior plana con un redondeo de 0,3 en sus aristas."""
+    """Barra con el lateral exterior en semicilindro R 6,5 a todo lo largo. Las puntas
+    (caras de 13 x ancho) quedan planas; la cara interior lleva un redondeo de 0,3."""
     r = R_LATERAL
     piezas = [
-        cq.Solid.makeBox(ancho - r, LARGO - 2 * r, ESP, cq.Vector(r, r, 0)),
-        cq.Solid.makeCylinder(r, LARGO - 2 * r, cq.Vector(r, r, r), cq.Vector(0, 1, 0)),
-        cq.Solid.makeCylinder(r, ancho - r, cq.Vector(r, r, r), cq.Vector(1, 0, 0)),
-        cq.Solid.makeCylinder(r, ancho - r, cq.Vector(r, LARGO - r, r), cq.Vector(1, 0, 0)),
-        cq.Solid.makeSphere(r, cq.Vector(r, r, r), angleDegrees1=-90, angleDegrees2=90),
-        cq.Solid.makeSphere(r, cq.Vector(r, LARGO - r, r), angleDegrees1=-90, angleDegrees2=90),
+        cq.Solid.makeBox(ancho - r, LARGO, ESP, cq.Vector(r, 0, 0)),
+        cq.Solid.makeCylinder(r, LARGO, cq.Vector(r, 0, r), cq.Vector(0, 1, 0)),
     ]
     b = cq.Workplane().add(piezas[0])
     for p in piezas[1:]:

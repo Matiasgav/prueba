@@ -24,7 +24,7 @@ El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) 
 - **Eslabones largos con vientre en arco** (R 60, tangente a los ojos). El eslabón 1 tiene forma de gota hacia B, donde trabaja a flexión. El eslabón 2 es de la misma familia y tiene el vientre hacia A.
 - **Pivotes Ø5 en doble corte, precargados.** Pasador rectificado g6, a presión en las dos mejillas. Una arandela ondulada de acero, en un rebaje de 0,15 mm del ojo, elimina el juego axial y mantiene las caras en contacto, lo que hace al conjunto firme contra el alabeo.
 - **Traba de forma.** Cremallera de 60° y paso 0,5 mm en la columna de B, y trinquete de 11 dientes en el carro, entre P1 y P2 y junto a P1, que se aprieta con un tornillo cónico M4 desde arriba. El carro se retiene en X con ganchos en L detrás de un labio de la columna.
-- **Lateral exterior en semicilindro R 6,5** a todo lo largo de las dos barras, con las puntas cerradas con el mismo radio (cápsula). Los pernos Q1 y Q2 quedan al ras de la superficie curva.
+- **Lateral exterior en semicilindro R 6,5** a todo lo largo de las dos barras; las puntas (caras de 13 × ancho) son planas. Los pernos Q1 y Q2 quedan al ras de la superficie curva.
 - **Caras continuas:** las placas del eslabón corto van hundidas bajo una piel de 0,6 mm de las barras, que tapa por dentro los rebajes de los pivotes C y O.
 - **Terminación.**
   - Bisel de 0,3 mm en las aristas exteriores (el de un rebabado normal).
