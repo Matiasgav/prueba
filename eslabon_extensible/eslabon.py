@@ -85,7 +85,7 @@ R_CORTO = 4.5                              # semiancho del eslabón corto (ojo i
 # come la barra A más allá del fondo que ya deja el ojo.
 R_GOTA = 60.0
 DX_GOTA1 = 0.0                             # vientre simétrico: los dos eslabones largos son iguales, espejados
-QUILLA = 9.9                               # profundidad del vientre (eslabón 1 hacia B, eslabón 2 hacia A)
+QUILLA = 9.9                                # profundidad del vientre (eslabón 1 hacia B, eslabón 2 hacia A)
 PANZA_2 = QUILLA
 # pivote precargado: arandela ondulada de acero en un rebaje de la cara superior del ojo
 ARANDELA = dict(d_int=D_PERNO + 0.2, d_ext=7.9, rebaje=0.15, alto=0.25)
