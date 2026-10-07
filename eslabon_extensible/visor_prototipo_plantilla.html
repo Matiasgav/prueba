@@ -84,7 +84,7 @@ td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:righ
     </div>
     <div class="card">
       <h2>Para armar</h2>
-      <div class="facts"><span>13 × M3 × 12 avellanado</span><span>sin tuercas</span><span>piloto Ø2,7</span><span>CA en gel o epoxi</span><span>PETG · sin soportes</span></div>
+      <div class="facts"><span>15 × M3 × 12 avellanado (2 acortados a 9,5)</span><span>3 × M3 × 8 (1 acortado a 7)</span><span>sin tuercas</span><span>piloto Ø2,7</span><span>CA en gel o epoxi</span><span>PETG · sin soportes</span></div>
     </div>
   </aside>
 </div>
@@ -133,8 +133,9 @@ for (const n in D.mallas){
   const gr2 = new THREE.Group(); gr2.add(mb); scene.add(gr2); bed[n] = {grp:gr2, c};
 }
 // tornillos M3 x 12 avellanados (cabeza rebajada 1 mm)
-function tornillo(L){
+function tornillo(L, abajo){
   const g = new THREE.Group();
+  if (abajo) g.rotation.x = Math.PI;
   const cab = new THREE.Mesh(new THREE.CylinderGeometry(3.0, 1.5, 1.65, 24), mats.tornillo);
   cab.rotation.x = Math.PI/2; cab.position.z = -0.825; g.add(cab);
   const sh = new THREE.Mesh(new THREE.CylinderGeometry(1.45, 1.45, L-1.65, 16), mats.tornillo);
@@ -142,11 +143,14 @@ function tornillo(L){
   return g;
 }
 const screws = [];
-function addScrew(pieza, x, y, ztop){ const s = tornillo(12); scene.add(s); screws.push({s, pieza, x, y, ztop}); }
+function addScrew(pieza, x, y, ztop, L=12, abajo=false){ const s = tornillo(L, abajo); scene.add(s); screws.push({s, pieza, x, y, ztop, abajo}); }
 addScrew("barra_A", I.D_A, I.Y0, I.ESP-1); addScrew("barra_A", I.D_A, I.Y0+I.DP, I.ESP-1);
 addScrew("barra_B", I.E_B, I.Y0, I.ESP-1);
 for (const [x,y] of I.union_a) addScrew("barra_A", x, y, I.ESP);
 for (const [x,y] of I.union_b) addScrew("barra_B", x, y, I.ESP);
+addScrew("carro", I.E_B, 0, I.z_carro0+0.2, 9.5, true); addScrew("carro", I.E_B, I.DP, I.z_carro0+0.2, 9.5, true);
+for (const [x,y] of I.union_carro) addScrew("carro", x, y, I.z_carro0+0.2, 8, true);
+addScrew("eslabon_1", I.L1, 0, 10, 7);
 const traba = {s: tornillo(12)}; scene.add(traba.s);
 
 // cama de impresión
@@ -183,7 +187,8 @@ function pose(w){
   const ver = document.getElementById("tornillos").checked && modo!=="cama";
   for (const sc of screws){
     const q = P[sc.pieza]; sc.s.visible = ver;
-    sc.s.position.set(q[0]+sc.x, q[1]+sc.y, sc.ztop + (ex ? 50 : 0));
+    const c = Math.cos(q[2]||0), si = Math.sin(q[2]||0);
+    sc.s.position.set(q[0]+c*sc.x-si*sc.y, q[1]+si*sc.x+c*sc.y, sc.ztop + (ex ? (sc.abajo ? -30 : 50) : 0));
   }
   traba.s.visible = ver; traba.s.position.set(k.xb + I.x_traba, I.Y0 + k.p + I.y_traba, I.ESP + 2 + (ex?50:0));
   for (const n in bed) bed[n].grp.visible = modo==="cama";

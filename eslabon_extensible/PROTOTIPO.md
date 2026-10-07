@@ -11,7 +11,7 @@ Los STL están en `salida/prototipo/`, **ya orientados para imprimir**. Los gene
 ## Cómo se adaptó
 
 - **Mitades por el plano medio.** El diseño es simétrico en el espesor. Por eso las barras A y B, el carro y el eslabón 1 se parten en dos mitades por z = 6,5. Cada mitad se imprime con su **cara exterior sobre la cama** y todos los huecos quedan abiertos hacia arriba: **no hace falta ningún soporte**. Las mitades «arriba» ya vienen dadas vuelta en el STL. El eslabón 2 y el eslabón corto se imprimen enteros, acostados.
-- **Articulaciones sin juego: pivote de doble cono.** Cada ojo tiene un avellanado a 45° en las dos caras, y cada mejilla un cono macho que entra en él. El tornillo no apoya en el ojo: solo aprieta. Donde no entra un tornillo (P1, P2 y C), los conos se asientan al pegar las mitades apretándolas. Al ajustarlo, las mejillas flexionan un poco y asientan los conos, así que el juego radial y axial se va a cero aunque la impresión no sea precisa. El par del tornillo regula la fricción. Es el mismo principio de los pasadores expansores y de los pivotes de conos precargados.
+- **Articulaciones sin juego: pivote de doble cono.** Cada ojo tiene un avellanado a 45° en las dos caras, y cada mejilla un cono macho que entra en él. El tornillo no apoya en el ojo: solo aprieta. Las seis articulaciones llevan tornillo. Al ajustarlo, las mejillas flexionan un poco y asientan los conos, así que el juego radial y axial se va a cero aunque la impresión no sea precisa. El par del tornillo regula la fricción. Es el mismo principio de los pasadores expansores y de los pivotes de conos precargados.
 
 ![Pivote de doble cono](img/prototipo_pivote.png)
 
@@ -48,11 +48,14 @@ Los STL están en `salida/prototipo/`, **ya orientados para imprimir**. Los gene
 
 | | Cant. | Dónde |
 |---|---:|---|
-| M3 × 12 cabeza fresada (DIN 7991 / ISO 10642) | 13 | Pivotes Q1, Q2 y O (3) + uniones de las mitades de A (2) y de B (7) + traba (1) |
-| Pegamento CA en gel o epoxi de 5 min | – | Mitades del carro y del eslabón 1 |
+| M3 × 12 cabeza fresada (DIN 7991 / ISO 10642) | 13 | Pivotes Q1, Q2 y O (3) + uniones de A (2) y de B (7) + traba (1) |
+| M3 × 12 **acortado a 9,5 mm** | 2 | Pivotes P1 y P2, desde abajo del carro |
+| M3 × 8 cabeza fresada | 2 | Unión de las mitades del carro (lomo), desde abajo |
+| M3 × 8 **acortado a 7 mm** | 1 | Pivote C, desde arriba del eslabón 1 |
+| Pegamento CA en gel o epoxi de 5 min | – | Mitades del eslabón 1 (opcional en el carro) |
 | Grasa de PTFE o silicona | – | En los conos |
 
-**Sin tuercas: todos los tornillos roscan directo en el plástico.** La mitad de arriba tiene agujero de paso (Ø3,4) y la de abajo un agujero piloto de Ø2,7, donde el tornillo hace su propia rosca. En los pivotes la cabeza queda rebajada 1 mm y la punta al ras de la cara de abajo. En las uniones la cabeza queda al ras y el agujero de abajo es ciego, así que esa cara queda lisa. No hace falta ningún otro largo: en C no va tornillo (un M3 × 8 asomaría 2 mm por abajo del eslabón 1) y los M4 que tenés no se usan. No sobresale ninguna cabeza.
+**Sin tuercas: todos los tornillos roscan directo en el plástico.** La mitad de arriba tiene agujero de paso (Ø3,4) y la de abajo un agujero piloto de Ø2,7, donde el tornillo hace su propia rosca. En los pivotes la cabeza queda rebajada 1 mm y la punta al ras de la cara de abajo. En las uniones la cabeza queda al ras y el agujero de abajo es ciego, así que esa cara queda lisa. **Todas las articulaciones llevan tornillo.** Tres se acortan porque el espesor disponible es menor que los largos que tenés: P1 y P2 (M3 × 12 a 9,5 mm, si no asomaría por arriba del carro contra el ala de B) y C (M3 × 8 a 7 mm, el espesor del eslabón 1). Se cortan con alicate de corte o amoladora chica y se repasa la punta con lima para que entre la rosca. Los M4 no se usan. No sobresale ninguna cabeza.
 
 - La primera vez, pasar cada tornillo solo y sacarlo, así forma la rosca sin arrastrar las piezas.
 - No apretar de más: en plástico la rosca se barre. Alcanza con que la cabeza asiente.
@@ -64,11 +67,11 @@ Los STL están en `salida/prototipo/`, **ya orientados para imprimir**. Los gene
 2. **C (eslabón 1 + corto).**
    1. Sobre `eslabon_1_abajo` poner el ojo C del corto en su cono.
    2. Poner pegamento en la cara de partición del eslabón 1, lejos de C y de los ojos, y cerrar con `eslabon_1_arriba`.
-   3. **Apretar las dos mitades mientras fragua**, como el carro: los conos de C asientan antes que el plano (hay 0,15 mm de luz para la cola), así que el corto queda sin juego. Mover el corto mientras fragua para comprobar que gira.
-3. **Carro (P1, P2).** El carro no lleva tornillos de unión: corre entre las alas de B con 0,25 mm de luz, así que no hay lugar para cabezas (las mejillas tienen 1,3 mm y la cabeza fresada 1,65). Sus mitades se pegan, las alas de B no las dejan abrirse, y el tornillo de la traba las atraviesa a las dos.
-   1. Sobre `carro_abajo` poner el ojo P1 del eslabón 1 y el ojo P2 del eslabón 2 en sus conos.
-   2. Poner pegamento en el lomo y cerrar con `carro_arriba`.
-   3. **Apretar las dos mitades con la mano o una pinza mientras fragua.** Los conos asientan antes que el plano (hay 0,15 mm de luz para la cola), así que P1 y P2 quedan sin juego.
+   3. Atornillar el M3 × 7 (M3 × 8 acortado) en C desde arriba hasta que el corto gire sin juego.
+3. **Carro (P1, P2).**
+   1. Sobre `carro_abajo` poner el ojo P1 del eslabón 1 y el ojo P2 del eslabón 2 en sus conos, y cerrar con `carro_arriba`. El pegamento en el lomo es opcional.
+   2. Desde abajo, los 2 × M3 × 8 del lomo y los 2 × M3 × 9,5 de P1 y P2. Las cabezas quedan 0,2 mm adentro de la cara de abajo del carro, que corre sobre el ala de B.
+   3. Apretar P1 y P2 hasta que los eslabones giren sin juego.
 4. **B.**
    1. Meter el carro en el riel y apoyar el ojo O del corto en su cono.
    2. Cerrar con `barra_B_arriba`.
@@ -77,8 +80,8 @@ Los STL están en `salida/prototipo/`, **ya orientados para imprimir**. Los gene
    1. Apoyar los ojos Q1 (eslabón 1) y Q2 (eslabón 2) en sus conos.
    2. Cerrar con `barra_A_arriba`.
    3. Poner los 2 tornillos de unión y los de Q1 y Q2. Sin pegamento: A se puede desarmar.
-6. **Ajuste.** Apretar cada pivote con tornillo (Q1, Q2 y O) hasta que **no haya juego al torcer y empujar**, pero el mecanismo todavía se mueva con la mano. Si queda duro, aflojar 1/8 de vuelta.
-7. **Traba.** Arandela impresa sobre la ranura de B y M3 × 12 hasta el agujero del carro. Se afloja para regular el ancho y se aprieta para cargar.
+6. **Ajuste.** Apretar cada pivote (Q1, Q2 y O; P1, P2 y C ya se ajustaron antes de cerrar B) hasta que **no haya juego al torcer y empujar**, pero el mecanismo todavía se mueva con la mano. Si queda duro, aflojar 1/8 de vuelta.
+7. **Traba.** La arandela impresa va apoyada sobre la cara de arriba de B, encima de la ranura larga y M3 × 12 hasta el agujero del carro. Se afloja para regular el ancho y se aprieta para cargar.
 
 ## Qué esperar y qué mirar
 
@@ -102,4 +105,4 @@ Los STL están en `salida/prototipo/`, **ya orientados para imprimir**. Los gene
 
 ## Para desarmar
 
-A y B se desarman (solo tornillos). El carro y el eslabón 1 quedan pegados. Para cambiar algo se vuelve a imprimir esa pieza, que es barato: el juego completo tiene 66 cm³ de pieza: menos de 85 g de PETG.
+A, B y el carro se desarman (solo tornillos). El eslabón 1 queda pegado. Para cambiar algo se vuelve a imprimir esa pieza, que es barato: el juego completo tiene 66 cm³ de pieza: menos de 85 g de PETG.

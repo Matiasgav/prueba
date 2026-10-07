@@ -12,14 +12,17 @@ Cómo se adapta:
     caras y cada mejilla un cono macho que entra en él. El tornillo M3 del pivote solo aprieta:
     al ajustarlo, las mejillas (que flexionan un poco) asientan los conos y el juego radial y
     axial se va a cero, aunque la impresión no sea precisa. El par del tornillo regula la
-    fricción. En P1 y P2 no hay lugar para tornillos (las alas de B están encima): ahí los conos
-    se asientan al pegar las dos mitades del carro apretándolas.
+    fricción. Las seis articulaciones llevan tornillo.
   * Sin tuercas: todos los M3 roscan directo en el plástico (agujero piloto de 2,7).
   * Las mitades de A y de B se unen con tornillos M3 × 12 (cabeza fresada al ras arriba, rosca en
     la mitad de abajo). En B van a lo largo de toda la columna, al lado del riel.
-  * Tornillería: solo M3 × 12 de cabeza fresada (los que hay a mano). En C no entra (un M3 × 8
-    asomaría por abajo del eslabón 1): ahí, como en P1 y P2, los conos se asientan al pegar las
-    mitades apretándolas.
+  * Tornillería: M3 × 12 y M3 × 8 de cabeza fresada (los que hay a mano), todos con rosca directa en
+    el plástico. Todos los pivotes llevan tornillo:
+      Q1, Q2, O: M3 × 12 desde arriba (cabeza rebajada 1 mm).
+      P1, P2: M3 × 12 desde abajo del carro, ACORTADO a 9,5 mm (la cabeza queda rebajada 0,2 en la
+      cara de abajo del carro; un M3 × 12 entero asomaría por arriba contra el ala de B).
+      C: M3 × 8 desde arriba, cabeza al ras, ACORTADO a 7 mm (el eslabón 1 tiene 7 mm).
+    Las mitades del carro se unen además con 2 × M3 × 8 desde abajo en el lomo.
   * Traba provisoria: un tornillo M3 pasa por una ranura del ala de arriba de B y rosca en el
     carro; al apretarlo, el carro queda pinzado contra el ala (por fricción).
   * Sin cable, sin resortes de disco y sin remaches: no hacen falta para sentir el mecanismo.
@@ -77,12 +80,22 @@ def horquilla(sol, x, y, ojo, mej, c, tornillo):
     alto = c["prof"] - 0.2                              # el cono no toca el fondo del avellanado
     sol = sol.union(cono(x, y, c["rf"] + (e0 - m0), c["rf"] - alto, m0, e0 + alto))
     sol = sol.union(cono(x, y, c["rf"] + (m1 - e1), c["rf"] - alto, m1, e1 - alto))
-    if tornillo:                                        # cabeza fresada arriba, rosca en la mejilla de abajo
+    if tornillo == "arriba":                            # M3 × 12, cabeza fresada arriba rebajada 1 mm
         sol = sol.cut(cil(x, y, M3["piloto"], zb0 - 1, zb1 + 1))
         sol = sol.cut(cil(x, y, M3["paso"], (e0 + e1) / 2, zb1 + 1))
         sol = sol.cut(cil(x, y, M3["cab"], zb1 - M3["rebaje_cab"], zb1 + 1))
         sol = sol.cut(cono(x, y, M3["cab"] / 2, M3["paso"] / 2, zb1 - M3["rebaje_cab"],
                            zb1 - M3["rebaje_cab"] - (M3["cab"] - M3["paso"]) / 2))
+    elif tornillo == "arriba_ras":                      # cabeza fresada al ras de la cara de arriba
+        sol = sol.cut(cil(x, y, M3["piloto"], zb0 - 1, zb1 + 1))
+        sol = sol.cut(cil(x, y, M3["paso"], (e0 + e1) / 2, zb1 + 1))
+        sol = sol.cut(cono(x, y, M3["cab"] / 2 + 0.5, M3["paso"] / 2, zb1 + 0.5, zb1 - (M3["cab"] - M3["paso"]) / 2))
+    elif tornillo == "abajo":                           # cabeza fresada abajo, rebajada 0,2 (carro)
+        zc = zb0 + 0.2
+        sol = sol.cut(cil(x, y, M3["piloto"], zb0 - 1, zb1 + 1))
+        sol = sol.cut(cil(x, y, M3["paso"], zb0 - 1, (e0 + e1) / 2))
+        sol = sol.cut(cil(x, y, M3["cab"], zb0 - 1, zc))
+        sol = sol.cut(cono(x, y, M3["cab"] / 2, M3["paso"] / 2, zc, zc + (M3["cab"] - M3["paso"]) / 2))
     return sol
 
 
@@ -140,6 +153,8 @@ def horquilla_union(sol, x, y):
 # En B van repartidos a lo largo de toda la columna, al lado del riel, porque el carro tiende a
 # abrir las mitades; en A alcanza con dos más los de Q1 y Q2.
 UNION_A = [(7.5, 57.0), (6.5, 153.0)]
+# carro: lomo macizo solo entre y = 8 y 38 (el resto lo barren los eslabones)
+UNION_CARRO = [(8.0, 12.0), (8.0, 28.0)]
 UNION_B = [(6.5, 9.0), (13.5, 24.0), (13.6, 50.0), (13.6, 80.0), (13.6, 110.0), (13.6, 140.0), (13.6, 170.0)]
 
 Y_TRABA_CARRO = E.DP / 2                             # tornillo de la traba, en el marco del carro
@@ -159,11 +174,11 @@ def piezas_prototipo():
     # barra A
     a = E.barra_a()
     for y in (E.Y0, E.Y0 + E.DP):
-        a = horquilla(a, E.D_A, y, E.Z_MED, E.Z_MED_CORTE, CONO_LARGO, "rosca")
+        a = horquilla(a, E.D_A, y, E.Z_MED, E.Z_MED_CORTE, CONO_LARGO, "arriba")
     a = unir_mitades(a, UNION_A)
     # barra B (con la tapa incorporada: el carro entra antes de cerrar las mitades)
     b = E.barra_b().union(E.tapa())
-    b = horquilla(b, E.E_B, E.Y0, E.Z_CORTO, E.Z_PLACA_CORTE[0], CONO_CORTO, "rosca")
+    b = horquilla(b, E.E_B, E.Y0, E.Z_CORTO, E.Z_PLACA_CORTE[0], CONO_CORTO, "arriba")
     b = unir_mitades(b, UNION_B)
     # ranura de la traba en el ala de arriba de B
     ps = [E.cinematica(w)["p"] for w in (E.W_MIN, E.W_MAX)]
@@ -174,13 +189,18 @@ def piezas_prototipo():
     # carro: conos en P1 y P2, sin tornillos; agujero piloto de la traba
     k = E.carro()
     for y in (0.0, E.DP):
-        k = horquilla(k, E.E_B, y, E.Z_MED, E.Z_MED_CORTE, CONO_LARGO, None)
+        k = horquilla(k, E.E_B, y, E.Z_MED, E.Z_MED_CORTE, CONO_LARGO, "abajo")
     k = k.cut(cil(xt, Y_TRABA_CARRO, M3["piloto"], E.Z_CARRO[0] + 1.0, E.ESP))
+    for x, y in UNION_CARRO:                            # M3 × 8 desde abajo, cabeza rebajada 0,2
+        zc = E.Z_CARRO[0] + 0.2
+        k = k.cut(cil(x, y, M3["piloto"], ZM, zc + 8.4)).cut(cil(x, y, M3["paso"], zc, ZM))
+        k = k.cut(cil(x, y, M3["cab"], E.Z_CARRO[0] - 1, zc))
+        k = k.cut(cono(x, y, M3["cab"] / 2, M3["paso"] / 2, zc, zc + (M3["cab"] - M3["paso"]) / 2))
     # eslabón 1: ojos en Q1 y P1; horquilla en C (el corto entra en la embocadura)
     l1 = E.eslabon1()
     for x in (0.0, E.L2):
         l1 = ojo(l1, x, 0, E.Z_MED, CONO_LARGO)
-    l1 = horquilla(l1, E.L1, 0, E.Z_CORTO, E.Z_EMBOC, CONO_CORTO, None)   # C: se pega apretando, como el carro
+    l1 = horquilla(l1, E.L1, 0, E.Z_CORTO, E.Z_EMBOC, CONO_CORTO, "arriba_ras")
     # eslabón 2 y corto: enteros
     l2 = E.eslabon2()
     for x in (0.0, E.L2):
@@ -204,7 +224,7 @@ def partir(sol, nombre):
     bb = sol.val().BoundingBox()
     abajo = sol.intersect(E.caja(-500, 500, -500, 500, bb.zmin - 1, ZM))
     arriba = sol.intersect(E.caja(-500, 500, -500, 500, ZM, bb.zmax + 1))
-    if nombre in ("carro", "eslabon_1"):          # luz para la cola: los conos asientan antes que el plano
+    if nombre in ("carro", "eslabon_1"):          # luz en la partición: los conos asientan antes que el plano
         abajo = abajo.cut(E.caja(-500, 500, -500, 500, ZM - SPLIT_GAP / 2, ZM + 1))
         arriba = arriba.cut(E.caja(-500, 500, -500, 500, ZM - 1, ZM + SPLIT_GAP / 2))
     return abajo, arriba
