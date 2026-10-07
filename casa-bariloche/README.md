@@ -1,4 +1,4 @@
-# Casa Bariloche: vivienda de renta de 2 plantas (etapa 1)
+# Casa Bariloche: vivienda de renta de 2 plantas (etapa 1, revisión 2)
 
 Anteproyecto completo de una casa de 36 m² cubiertos para 1 o 2 personas, en construcción en seco (entramado de madera). Todo sale de un **único modelo paramétrico** en JavaScript: modelo 3D, planos, cómputo de materiales, despiece de placas y lista de cortes de madera.
 
@@ -6,13 +6,14 @@ Anteproyecto completo de una casa de 36 m² cubiertos para 1 o 2 personas, en co
 
 ## Cómo verlo
 
-Abrí **`dist/casa-bariloche.html`** en cualquier navegador. Es un único archivo, sin instalar nada y sin conexión. Tiene cinco pestañas:
+Abrí **`dist/casa-bariloche.html`** en cualquier navegador. Es un único archivo, sin instalar nada y sin conexión. Tiene seis pestañas:
 
 | Pestaña | Qué tiene |
 |---|---|
 | **Modelo 3D** | Vistas predefinidas (exterior, pared de servicios, interior, plantas cortadas, instalaciones con rayos X, estructura, despiece de OSB y de yeso, escalera, baño), 22 capas que se prenden y apagan, cortes horizontales y verticales, modo día, atardecer y noche, y descarga de imagen. Al pasar el mouse sobre cualquier pieza (montante, placa, caño, caja eléctrica, mueble) se ve su nombre y material; con un clic, el detalle. |
-| **Planos** | Plantas de arquitectura con amoblamiento y cotas, fachadas y cortes, eléctrico de PB y PA con planilla de cajas, unifilar, sanitaria, gas, pared de servicios, fundación con pases, entrepiso, techo y entramado de cada muro. Todos se descargan en SVG. |
-| **Cómputo** | 111 ítems calculados desde el modelo, marcados como DURABLE, ECONÓMICO o ESTÁNDAR. Se pueden cargar precios unitarios para obtener el total, y descargar el CSV. |
+| **Estudio** | Antes del detalle: tres alternativas de disposición (A, B, C) medidas en una grilla de 2,5 cm. Para cada recorrido (entrada→escalera, entrada→baño, cocina, sillas, sillón) da el ancho libre real del paso más angosto. Se eligió C: entrada por el hall, sillón bajo los compensados, mesa con dos sillas contra el ventanal. |
+| **Planos** | Plantas de arquitectura con amoblamiento y cotas, fachadas y cortes, eléctrico de PB y PA con cada caño numerado, planilla de tramos (qué cables van por cada caño y qué diámetro necesita) y verificación de reglas AEA 90364-7-770, unifilar, sanitaria, gas, pared de servicios, fundación con pases, entrepiso, techo y entramado de cada muro. Todos se descargan en SVG. |
+| **Cómputo** | 121 ítems calculados desde el modelo, marcados como DURABLE, ECONÓMICO o ESTÁNDAR. Se pueden cargar precios unitarios para obtener el total, y descargar el CSV. |
 | **Despiece** | Cada placa de yeso, cementicia y OSB tiene un código, una posición (mapa por cara) y un plan de corte optimizado. Incluye la lista de compra de maderas en largos comerciales, con los cortes de cada barra, y el pedido de chapas a medida. |
 | **Memoria** | Decisiones del proyecto: seco contra mampostería, techo sin entretecho, cálculo del calefactor, criterio de materiales, colores, normativa y preguntas para la próxima etapa. |
 
@@ -30,9 +31,11 @@ Los planos y el cómputo también están exportados en `docs/` para verlos sin a
 |---|---|
 | Exterior | 4,80 x 3,80 m, 2 plantas, techo a dos aguas a 30° |
 | Superficie | 36,4 m² cubiertos · 26,5 m² útiles |
-| Placas | 48 de yeso (41 estándar + 7 RH) · 4 cementicias · 39 de OSB (33 de 11 mm + 6 de 18 mm) |
+| Placas | 47 de yeso (40 estándar + 7 RH) · 4 cementicias · 41 de OSB (35 de 11 mm horizontales y trabadas + 6 de 18 mm) |
+| Aislación | Lana de vidrio 150 mm en muros y techo, barrera de vapor interior, barrera hidrófuga respirable en muros, membrana bajo chapa (tipo Wichi Roofing) en techo |
 | Calefacción | Tiro balanceado de 3.000 kcal/h. La pérdida calculada es de ≈ 2,6 kW con −12 °C afuera |
-| Instalación eléctrica | 4 circuitos, 25 cajas rectangulares y 6 octogonales |
+| Instalación eléctrica | 4 circuitos + datos, caño de acero semipesado (madera: AEA 770.10.3.2), 26 cajas rectangulares, 6 octogonales y 1 de paso, 31 tramos de caño sin derivaciones en T |
+| Disposición | 1,02 m libres entrada→escalera y entrada→baño; mesa 72x65 con 2 sillas; 2 camas de 1 plaza que se unen en 160x190 |
 
 ## Estructura del código
 
@@ -42,18 +45,23 @@ src/geom.js      primitivas, despiece de placas sobre caras y empaquetado (placa
 src/model.js     EL MODELO: parámetros, estructura, envolvente, aberturas, escalera,
                  cocina, baño, muebles e instalaciones (agua, desagües, gas, electricidad)
 src/takeoff.js   cómputo de materiales
+src/studies.js   estudio de disposición y circulaciones (alternativas A/B/C)
 src/plans.js     planos SVG
 src/viewer.js    visor 3D (three.js)
 src/app.js       interfaz (pestañas)
 docs/memoria.md  memoria (se compila dentro de la app)
 tools/build.mjs  arma dist/casa-bariloche.html y exporta docs/
 tools/shots.mjs  capturas del 3D con Chromium headless
+tools/fetch_assets.py  descarga texturas, muebles glTF y HDRI de Poly Haven (CC0) a assets/
 ```
+
+Las texturas PBR, los muebles 3D y el cielo HDRI son de [Poly Haven](https://polyhaven.com), licencia CC0 (ver `assets/LICENCIA.md`). Quedan embebidos en el HTML, que sigue funcionando sin conexión.
 
 Para cambiar algo (una medida, una abertura, la posición de una caja) se edita `src/model.js` y se vuelve a generar todo:
 
 ```
 npm install
+python3 tools/fetch_assets.py     # solo si falta assets/ (requiere Pillow)
 npm run build                     # dist/ + docs/planos + docs/computo
 node tools/shots.mjs docs/img     # capturas (opcional)
 ```

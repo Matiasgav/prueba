@@ -4,7 +4,73 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { GroundedSkybox } from 'three/addons/objects/GroundedSkybox.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { SPECS } from './specs.js';
+import { ASSETS } from './assets.gen.js';
+
+// ---------------------------------------------------------------- texturas PBR (Poly Haven, CC0)
+// material -> [textura, escala (m por repetición), mapas, mezcla del color de la especificación (0 = color de la foto)]
+const TEXMAP = {
+  spc: ['oak_wood_planks', 1.6, 'dnr', 0],
+  porcelanato: ['brushed_concrete', 1.2, 'dnr', 0.1],
+  siding: ['japanese_cedar_planks', 1.0, 'dnr', 0.55, true],
+  deck: ['wood_floor_deck', 1.2, 'dnr', 0],
+  lenga: ['fine_grained_wood', 0.8, 'dn', 0.55],
+  pasamanos: ['fine_grained_wood', 0.8, 'dn', 0.55],
+  mesa: ['fine_grained_wood', 0.8, 'dn', 0.35],
+  escritorio: ['fine_grained_wood', 0.8, 'dn', 0.35],
+  mesa_luz: ['fine_grained_wood', 0.8, 'dn', 0.35],
+  zanca: ['fine_grained_wood', 1.2, 'dn', 0.2],
+  laminada: ['fine_grained_wood', 1.5, 'dn', 0.3],
+  pino_2x6: ['fine_grained_wood', 1.5, 'dn', 0.2], pino_2x8: ['fine_grained_wood', 1.5, 'dn', 0.2], pino_2x3: ['fine_grained_wood', 1.5, 'dn', 0.2],
+  pino_2x2: ['fine_grained_wood', 1.5, 'dn', 0.2], pino_1x2: ['fine_grained_wood', 1.5, 'dn', 0.2],
+  textil_mostaza: ['rough_linen', 0.35, 'dn', 0.85], textil_terracota: ['rough_linen', 0.35, 'dn', 0.85],
+  cama_simple: ['rough_linen', 0.35, 'dn', 0.5], respaldo: ['rough_linen', 0.35, 'dn', 0.85],
+  cortina: ['rough_linen', 0.5, 'dn', 0.6],
+  pintura_blanco: ['painted_plaster_wall', 1.6, 'n', 1], pintura_salvia: ['painted_plaster_wall', 1.6, 'n', 1], pintura_antihongo: ['painted_plaster_wall', 1.6, 'n', 1],
+  grava: ['gravel', 1.0, 'dn', 0],
+};
+const texCache = {};
+function tex(name, kind, srgb) {
+  const key = `${name}_${kind}`;
+  if (texCache[key]) return texCache[key];
+  const url = ASSETS.tex[key];
+  if (!url) return null;
+  const t = new THREE.TextureLoader().load(url);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.anisotropy = 8;
+  if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+  texCache[key] = t;
+  return t;
+}
+function b64buf(b64) {
+  const bin = atob(b64);
+  const u = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  return u.buffer;
+}
+// UV por proyección en caja (coordenadas del mundo) para que las texturas tengan escala real
+function worldUV(geo, scale, rot) {
+  const g = geo.index ? geo.toNonIndexed() : geo;
+  if (!g.attributes.normal) g.computeVertexNormals();
+  const p = g.attributes.position, n = g.attributes.normal;
+  const uv = new Float32Array(p.count * 2);
+  for (let i = 0; i < p.count; i++) {
+    const ax = Math.abs(n.getX(i)), ay = Math.abs(n.getY(i)), az = Math.abs(n.getZ(i));
+    let u, v;
+    if (ay >= ax && ay >= az) { u = p.getX(i); v = p.getZ(i); } else if (ax >= az) { u = p.getZ(i); v = p.getY(i); } else { u = p.getX(i); v = p.getY(i); }
+    uv[2 * i] = (rot ? v : u) / scale;
+    uv[2 * i + 1] = (rot ? u : v) / scale;
+  }
+  g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  return g;
+}
 
 // modelo (x,y,z) -> three (x, z, -y)
 const V = (p) => new THREE.Vector3(p[0], p[2], -p[1]);
@@ -57,7 +123,7 @@ function matFor(key, cache, opts = {}) {
   if (opts.shade !== undefined) color.offsetHSL(0, 0, (opts.shade - 0.5) * 0.08);
   let m;
   const P = { color, roughness: 0.8, metalness: 0 };
-  if (/chapa|zinguer|canaleta|zocalo_chapa|visera/.test(key)) Object.assign(P, { roughness: 0.5, metalness: 0.3 });
+  if (/chapa|zinguer|canaleta|zocalo_chapa|visera/.test(key)) Object.assign(P, { roughness: 0.62, metalness: 0.15 });
   if (/hierro_negro/.test(key)) Object.assign(P, { roughness: 0.5, metalness: 0.4 });
   if (/griferia|herrajes|bacha|accesorios/.test(key)) Object.assign(P, { roughness: 0.2, metalness: 0.9 });
   if (/porcelanato|ceramica|inodoro|lavatorio|plato/.test(key)) Object.assign(P, { roughness: 0.25 });
@@ -71,7 +137,16 @@ function matFor(key, cache, opts = {}) {
   } else if (/chapa_muro|chapa_techo/.test(key)) {
     m = new THREE.MeshStandardMaterial({ ...P, side: THREE.DoubleSide });
   } else {
+    const tm = TEXMAP[key];
+    if (tm) {
+      const [name, , maps, mix] = tm;
+      if (maps.includes('d')) { P.map = tex(name, 'diffuse', true); P.color = new THREE.Color('#ffffff').lerp(color, mix); }
+      if (maps.includes('n')) { P.normalMap = tex(name, 'nor_gl', false); P.normalScale = new THREE.Vector2(0.8, 0.8); }
+      if (maps.includes('r')) { P.roughnessMap = tex(name, 'rough', false); P.roughness = 1; }
+    }
     m = new THREE.MeshStandardMaterial(P);
+    m.userData.texScale = tm?.[1];
+    m.userData.texRot = tm?.[4];
   }
   cache[k] = m;
   return m;
@@ -197,59 +272,31 @@ function rng(seed) {
 function buildSurroundings(scene) {
   const g = new THREE.Group();
   g.name = 'surroundings';
-  // terreno con textura procedural
+  // césped real (Poly Haven) alrededor de la casa, con borde difuminado hacia el fondo fotográfico
   const c = document.createElement('canvas');
-  c.width = c.height = 512;
+  c.width = c.height = 256;
   const ctx = c.getContext('2d');
-  ctx.fillStyle = '#6f8452';
-  ctx.fillRect(0, 0, 512, 512);
-  const r = rng(7);
-  for (let i = 0; i < 9000; i++) {
-    const v = 90 + r() * 70;
-    ctx.fillStyle = `rgba(${v * 0.75 | 0},${v | 0},${v * 0.55 | 0},${0.25 + r() * 0.3})`;
-    ctx.fillRect(r() * 512, r() * 512, 1 + r() * 3, 1 + r() * 3);
-  }
-  const tex = new THREE.CanvasTexture(c);
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(30, 30);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  const ground = new THREE.Mesh(new THREE.CircleGeometry(80, 64), new THREE.MeshStandardMaterial({ map: tex, roughness: 1 }));
+  const gr = ctx.createRadialGradient(128, 128, 40, 128, 128, 128);
+  gr.addColorStop(0, '#fff');
+  gr.addColorStop(0.75, '#fff');
+  gr.addColorStop(1, '#000');
+  ctx.fillStyle = gr;
+  ctx.fillRect(0, 0, 256, 256);
+  const alpha = new THREE.CanvasTexture(c);
+  const gd = tex('leafy_grass', 'diffuse', true), gn = tex('leafy_grass', 'nor_gl', false);
+  for (const t of [gd, gn]) t.repeat.set(16, 16);
+  const ground = new THREE.Mesh(new THREE.CircleGeometry(16, 64), new THREE.MeshStandardMaterial({ map: gd, normalMap: gn, color: '#b9c39a', roughness: 1, alphaMap: alpha, transparent: true, depthWrite: false }));
   ground.rotation.x = -Math.PI / 2;
-  ground.position.set(2.2, -0.151, -1.7);
+  ground.position.set(2.2, -0.149, -1.7);
   ground.receiveShadow = true;
+  ground.renderOrder = -1;
   g.add(ground);
-  // árboles (cipreses / coihues estilizados)
-  const trunkM = new THREE.MeshStandardMaterial({ color: '#5a4430', roughness: 1 });
-  const leafM = [new THREE.MeshStandardMaterial({ color: '#2f4a2a', roughness: 1 }), new THREE.MeshStandardMaterial({ color: '#3d5a2f', roughness: 1 }), new THREE.MeshStandardMaterial({ color: '#284127', roughness: 1 })];
-  const rr = rng(42);
-  for (let i = 0; i < 46; i++) {
-    const ang = rr() * Math.PI * 2;
-    const dist = 12 + rr() * 30;
-    const x = 2.2 + Math.cos(ang) * dist, z = -1.7 + Math.sin(ang) * dist;
-    if (x < -2 && Math.abs(z + 1.5) < 4) continue; // frente libre (acceso)
-    const h = 5 + rr() * 9;
-    const t = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.2, h * 0.3, 6), trunkM);
-    t.position.set(x, h * 0.15 - 0.15, z);
-    const crown = new THREE.Mesh(new THREE.ConeGeometry(h * 0.22, h * 0.85, 7), leafM[i % 3]);
-    crown.position.set(x, h * 0.3 + h * 0.42 - 0.15, z);
-    g.add(t, crown);
-  }
-  // cerros con nieve
-  const mM = new THREE.MeshStandardMaterial({ color: '#5d6f83', roughness: 1, flatShading: true });
-  const sM = new THREE.MeshStandardMaterial({ color: '#f4f6f8', roughness: 0.9, flatShading: true });
-  const rm = rng(3);
-  for (let i = 0; i < 14; i++) {
-    const ang = Math.PI * 0.15 + (i / 14) * Math.PI * 1.7;
-    const dist = 140 + rm() * 60;
-    const h = 40 + rm() * 55;
-    const rad = 45 + rm() * 40;
-    const x = Math.cos(ang) * dist, z = Math.sin(ang) * dist;
-    const m = new THREE.Mesh(new THREE.ConeGeometry(rad, h, 7, 1), mM);
-    m.position.set(x, h / 2 - 2, z);
-    const s = new THREE.Mesh(new THREE.ConeGeometry(rad * 0.32, h * 0.32, 7, 1), sM);
-    s.position.set(x, h - 2 - h * 0.16 + 0.2, z);
-    g.add(m, s);
-  }
+  // captador de sombras (sobre el suelo fotográfico)
+  const sh = new THREE.Mesh(new THREE.CircleGeometry(30, 48), new THREE.ShadowMaterial({ opacity: 0.35 }));
+  sh.rotation.x = -Math.PI / 2;
+  sh.position.set(2.2, -0.148, -1.7);
+  sh.receiveShadow = true;
+  g.add(sh);
   scene.add(g);
   return g;
 }
@@ -274,7 +321,7 @@ export function createViewer(container, model, opts = {}) {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.0;
+  renderer.toneMappingExposure = 1.12;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.localClippingEnabled = true;
@@ -287,13 +334,33 @@ export function createViewer(container, model, opts = {}) {
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   scene.environmentIntensity = 0.45;
+  // HDRI de montaña (Poly Haven "alps_field", CC0): iluminación + fondo proyectado sobre el suelo
+  const ENV_ROT = -1.24;
+  let skybox = null;
+  try {
+    const hdr = new RGBELoader().parse(b64buf(ASSETS.hdr));
+    const dt = new THREE.DataTexture(hdr.data, hdr.width, hdr.height, THREE.RGBAFormat, hdr.type);
+    dt.mapping = THREE.EquirectangularReflectionMapping;
+    dt.colorSpace = THREE.LinearSRGBColorSpace;
+    dt.needsUpdate = true;
+    scene.environment = pmrem.fromEquirectangular(dt).texture;
+    scene.environmentIntensity = 1.15;
+    scene.environmentRotation = new THREE.Euler(0, ENV_ROT, 0);
+    const bgt = new THREE.TextureLoader().load(ASSETS.bg);
+    bgt.mapping = THREE.EquirectangularReflectionMapping;
+    bgt.colorSpace = THREE.SRGBColorSpace;
+    skybox = new GroundedSkybox(bgt, 9, 120);
+    skybox.position.set(2.2, 9 - 0.15, -1.7);
+    skybox.rotation.y = ENV_ROT;
+    scene.add(skybox);
+  } catch (e) { console.warn('HDRI', e); }
   const skies = {
     dia: skyTexture('#7fa7d6', '#dfe9f2'),
     tarde: skyTexture('#5a6fa0', '#f2b98a'),
     noche: skyTexture('#060b18', '#1d2a44'),
   };
   scene.background = skies.dia;
-  scene.fog = new THREE.Fog('#dfe9f2', 60, 260);
+  scene.fog = null;
 
   const camera = new THREE.PerspectiveCamera(40, 1, 0.05, 600);
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -301,10 +368,13 @@ export function createViewer(container, model, opts = {}) {
   controls.dampingFactor = 0.08;
   controls.maxPolarAngle = Math.PI * 0.495;
 
-  const hemi = new THREE.HemisphereLight('#e2ecf7', '#5d5a48', 0.75);
+  const hemi = new THREE.HemisphereLight('#e2ecf7', '#5d5a48', 0.35);
   scene.add(hemi);
-  const sun = new THREE.DirectionalLight('#fff4e0', 2.4);
-  sun.position.set(-8, 14, 10);
+  const sun = new THREE.DirectionalLight('#fff1dc', 2.6);
+  // dirección del sol de la foto (u 0,60 / v 0,26 del equirectangular), rotada igual que el fondo
+  const sd = new THREE.Vector3(0.59, 0.685, 0.43).applyAxisAngle(new THREE.Vector3(0, 1, 0), ENV_ROT);
+  const SUN_DAY = sd.clone().multiplyScalar(18).add(new THREE.Vector3(2.2, 0, -1.7));
+  sun.position.copy(SUN_DAY);
   sun.target.position.set(2.2, 1.5, -1.7);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
@@ -331,6 +401,7 @@ export function createViewer(container, model, opts = {}) {
     try { geo = geometryFor(el); } catch (e) { console.warn('geom', el.id, e); continue; }
     if (!geo) continue;
     const mat = matFor(el.paint ?? el.mat, cache, { shade: el.shade });
+    if (mat.userData.texScale) geo = worldUV(geo, mat.userData.texScale, mat.userData.texRot);
     const mesh = new THREE.Mesh(geo, mat);
     mesh.userData.el = el;
     mesh.userData.baseMat = mat;
@@ -343,6 +414,32 @@ export function createViewer(container, model, opts = {}) {
       const b = new THREE.Box3().setFromObject(mesh);
       lightPts.push(b.getCenter(new THREE.Vector3()));
     }
+  }
+  // muebles de catálogo (glTF embebidos)
+  const loader = new GLTFLoader();
+  const glbCache = {};
+  for (const el of model.elements.filter((e) => e.kind === 'glb')) {
+    const holder = new THREE.Group();
+    holder.position.copy(V(el.pos));
+    holder.rotation.y = el.rotY;
+    holder.scale.set(...el.scale);
+    (groups[el.layer] ?? scene).add(holder);
+    if (el.layer === 'iluminacion') lightPts.push(V([el.pos[0], el.pos[1], el.pos[2] + 0.3]));
+    const data = ASSETS.glb[el.model];
+    if (!data) continue;
+    glbCache[el.model] ??= new Promise((res, rej) => loader.parse(b64buf(data), '', res, rej));
+    glbCache[el.model].then((g) => {
+      const o = g.scene.clone(true);
+      o.traverse((m) => {
+        if (!m.isMesh) return;
+        m.castShadow = m.receiveShadow = true;
+        m.userData.el = el;
+        m.userData.baseMat = m.material;
+        meshes.push(m);
+      });
+      holder.add(o);
+      refreshMaterials();
+    }).catch((e) => console.warn('glb', el.model, e));
   }
   // luces interiores (modo noche)
   const nightLights = new THREE.Group();
@@ -449,6 +546,8 @@ export function createViewer(container, model, opts = {}) {
     state.panels = !!p.panels;
     setClip(p.clip ?? null);
     surroundings.visible = !p.only || p.only.includes('entorno');
+    if (skybox) skybox.visible = surroundings.visible && state.mode !== 'noche';
+    scene.background = skybox?.visible ? null : skies[state.mode];
     refreshMaterials();
     if (moveCam && p.cam) flyTo(p.cam[0], p.cam[1]);
     opts.onChange?.();
@@ -459,17 +558,17 @@ export function createViewer(container, model, opts = {}) {
   }
   function setMode(mode) {
     state.mode = mode;
-    const night = mode === 'noche';
-    scene.background = skies[mode];
-    scene.background = skies[mode];
-    scene.fog?.color.set(mode === 'dia' ? '#dfe9f2' : mode === 'tarde' ? '#e9b993' : '#121a2c');
-    sun.intensity = mode === 'dia' ? 2.4 : mode === 'tarde' ? 1.6 : 0.05;
-    sun.color.set(mode === 'tarde' ? '#ffb070' : '#fff4e0');
-    sun.position.set(mode === 'tarde' ? 10 : -8, mode === 'tarde' ? 5 : 14, 10);
-    hemi.intensity = night ? 0.08 : mode === 'tarde' ? 0.5 : 0.75;
-    scene.environmentIntensity = night ? 0.05 : 0.45;
-    for (const l of nightLights.children) l.intensity = night ? 2.2 : mode === 'tarde' ? 0.6 : 0;
-    for (const k of Object.keys(cache)) if (k.startsWith('luminaria')) cache[k].emissiveIntensity = night ? 3 : 0.4;
+    const night = mode === 'noche', dusk = mode === 'tarde';
+    if (skybox) skybox.visible = !night && surroundings.visible;
+    scene.background = skybox && !night ? null : skies[mode];
+    sun.intensity = night ? 0.03 : dusk ? 1.4 : 2.6;
+    sun.color.set(dusk ? '#ffb070' : '#fff1dc');
+    if (dusk) sun.position.set(2.2 + 14, 4, -1.7 + 8); else sun.position.copy(SUN_DAY);
+    hemi.intensity = night ? 0.04 : 0.35;
+    scene.environmentIntensity = night ? 0.03 : dusk ? 0.5 : 1.15;
+    renderer.toneMappingExposure = night ? 1.1 : 1.12;
+    for (const l of nightLights.children) l.intensity = night ? 2.2 : dusk ? 0.8 : 0;
+    for (const k of Object.keys(cache)) if (k.startsWith('luminaria')) cache[k].emissiveIntensity = night ? 3 : dusk ? 1.2 : 0.4;
   }
 
   // ---------------- interacción
@@ -483,7 +582,8 @@ export function createViewer(container, model, opts = {}) {
     const r = renderer.domElement.getBoundingClientRect();
     mouse.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(mouse, camera);
-    const vis = meshes.filter((m) => m.parent.visible && !state.ghost.has(m.userData.el.layer));
+    const shown = (o) => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };
+    const vis = meshes.filter((m) => shown(m) && !state.ghost.has(m.userData.el.layer));
     const hits = ray.intersectObjects(vis, false).filter((h) => !state.clip || clipPlane.distanceToPoint(h.point) >= -1e-4);
     return hits[0]?.object ?? null;
   }
@@ -515,9 +615,19 @@ export function createViewer(container, model, opts = {}) {
     opts.onSelect?.(o ? o.userData.el : null);
   });
 
+  // oclusión ambiental (GTAO) para un render más realista
+  const composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  const gtao = new GTAOPass(scene, camera, 800, 600);
+  gtao.updateGtaoMaterial({ radius: 0.35, distanceExponent: 1, thickness: 1, scale: 1 });
+  gtao.blendIntensity = 0.85;
+  composer.addPass(gtao);
+  composer.addPass(new OutputPass());
+  state.hq = opts.hq ?? true;
   function resize() {
     const w = container.clientWidth, h = container.clientHeight;
     renderer.setSize(w, h);
+    composer.setSize(w, h);
     labelR.setSize(w, h);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
@@ -537,7 +647,7 @@ export function createViewer(container, model, opts = {}) {
       if (fly.k >= 1) fly = null;
     }
     controls.update();
-    renderer.render(scene, camera);
+    if (state.hq) composer.render(); else renderer.render(scene, camera);
     if (labelGroup.visible) labelR.render(scene, camera);
   }
   camera.position.set(...PRESETS.exterior.cam[0]);
@@ -550,6 +660,7 @@ export function createViewer(container, model, opts = {}) {
     const prev = { vis: Object.fromEntries(LAYERS.map((L) => [L.id, groups[L.id].visible])), clip: state.clip, sur: surroundings.visible, mode: state.mode, panels: state.panels, ghost: state.ghost };
     for (const L of LAYERS) groups[L.id].visible = only ? only.includes(L.id) : !layersOff.includes(L.id);
     surroundings.visible = false;
+    if (skybox) skybox.visible = false;
     state.ghost = new Set();
     state.panels = false;
     refreshMaterials();
@@ -576,6 +687,7 @@ export function createViewer(container, model, opts = {}) {
     scene.fog = fog;
     for (const L of LAYERS) groups[L.id].visible = prev.vis[L.id];
     surroundings.visible = prev.sur;
+    if (skybox) skybox.visible = prev.sur && prev.mode !== 'noche';
     state.ghost = prev.ghost;
     state.panels = prev.panels;
     setClip(prev.clip);
@@ -590,8 +702,9 @@ export function createViewer(container, model, opts = {}) {
     return renderer.domElement.toDataURL('image/png');
   }
 
+  const setHQ = (v) => { state.hq = v; };
   return {
-    applyPreset, setLayer, setClip, setMode, flyTo, orthoShot, shot, groups, state, PRESETS,
+    setHQ, applyPreset, setLayer, setClip, setMode, flyTo, orthoShot, shot, groups, state, PRESETS,
     isLayerOn: (id) => groups[id].visible,
     setRunning: (r) => { const was = running; running = r; if (r && !was) loop(); },
     camera, controls, refreshMaterials,

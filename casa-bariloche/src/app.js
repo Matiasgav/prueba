@@ -5,6 +5,7 @@ import { createViewer, LAYERS, PRESETS } from './viewer.js';
 import { planArq, planElec, planAgua, planGas, servicesWall, planEstructura, wallFraming, faceMap, sheetSvg, unifilar } from './plans.js';
 import { SPECS, PALETA } from './specs.js';
 import { MEMORIA_HTML } from './memoria.gen.js';
+import { analyze, studySvg } from './studies.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -33,6 +34,7 @@ function showTab(id) {
   if (id === 'planos') renderPlanos();
   if (id === 'despiece') renderDespiece();
   if (id === 'computo') renderComputo();
+  if (id === 'estudio') renderEstudio();
   try { localStorage.setItem('casa.tab', id); } catch {}
 }
 for (const b of tabs) b.addEventListener('click', () => showTab(b.dataset.tab));
@@ -87,6 +89,7 @@ function initViewer() {
     if (c) { const [mn, mx] = ranges[c.axis]; Object.assign(clipV, { min: mn, max: mx, step: 0.01 }); clipV.value = c.v; }
     clipOut.textContent = c ? (c.axis === 'y' ? `altura ${nf(c.v)} m` : '') : '';
   }
+  $('#hq').addEventListener('change', (e) => viewer.setHQ(e.target.checked));
   $('#shot').addEventListener('click', () => {
     const a = document.createElement('a');
     a.href = viewer.shot();
@@ -115,7 +118,7 @@ function renderPlanos() {
   h += `<nav class="toc">${['Arquitectura', 'Fachadas y cortes', 'Electricidad', 'Sanitaria', 'Gas', 'Pared de servicios', 'Estructura', 'Entramados'].map((t) => `<a href="#pl-${t.split(' ')[0]}">${t}</a>`).join('')}</nav>`;
   h += `<h2 id="pl-Arquitectura">Arquitectura</h2><div class="grid2">${card('Planta baja', planArq(m, 'PB'), 'planta-baja.svg')}${card('Planta alta', planArq(m, 'PA'), 'planta-alta.svg')}</div>`;
   h += `<h2 id="pl-Fachadas">Fachadas y cortes (render ortográfico del modelo 3D)</h2><div class="grid2" id="ortho"><p class="muted">Generando vistas…</p></div>`;
-  h += `<h2 id="pl-Electricidad">Instalación eléctrica</h2><div class="grid2">${card('Eléctrico PB', planElec(m, 'PB'), 'electrico-pb.svg')}${card('Eléctrico PA', planElec(m, 'PA'), 'electrico-pa.svg')}</div>${card('Unifilar', unifilar(), 'unifilar.svg')}${elecTable()}`;
+  h += `<h2 id="pl-Electricidad">Instalación eléctrica</h2><div class="grid2">${card('Eléctrico PB', planElec(m, 'PB'), 'electrico-pb.svg')}${card('Eléctrico PA', planElec(m, 'PA'), 'electrico-pa.svg')}</div>${card('Unifilar', unifilar(), 'unifilar.svg')}${elecTable()}${segTable()}${rulesTable()}`;
   h += `<h2 id="pl-Sanitaria">Instalación sanitaria</h2>${card('Agua y desagües', planAgua(m), 'sanitaria.svg')}`;
   h += `<h2 id="pl-Gas">Gas</h2>${card('Gas', planGas(m), 'gas.svg')}`;
   h += `<h2 id="pl-Pared">Pared de servicios</h2>${card('Pared de servicios (vista exterior sin registros)', servicesWall(m), 'pared-servicios.svg', 'El corazón del concepto: retirás un registro atornillado y tenés a la vista llaves de paso, uniones y conexiones.')}`;
@@ -127,6 +130,40 @@ function renderPlanos() {
 function elecTable() {
   const rows = model.elec.boxes.map((b) => `<tr><td><b>${b.id}</b></td><td>${b.tipo === 'oct' ? 'octogonal' : 'rect. 5x10'}</td><td>${b.circuito}</td><td>${b.nivel}</td><td>${b.tipo === 'oct' ? 'techo' : nf(b.alturaPiso * 100, 0) + ' cm'}</td><td>${esc(b.desc)}</td></tr>`).join('');
   return `<details class="card"><summary>Planilla de cajas eléctricas (${model.elec.boxes.length})</summary><table class="t"><thead><tr><th>ID</th><th>Caja</th><th>Circuito</th><th>Nivel</th><th>Altura</th><th>Uso</th></tr></thead><tbody>${rows}</tbody></table></details>`;
+}
+function segTable() {
+  const rows = model.elec.conduits.map((c) => `<tr><td><b>${c.n || '—'}</b></td><td>${esc(c.circuito)}</td><td>${esc(c.from)} → ${esc(c.to)}</td><td class="n">${nf(c.len)}</td><td class="n">${c.curves}</td><td>${esc(c.rs)}</td><td>${c.cables.map((k) => `${k.sec ? nf(k.sec) + ' mm² ' : ''}${esc(k.desc)} <span class="muted">(${esc(k.color)})</span>`).join('<br>')}</td></tr>`).join('');
+  return `<details class="card" open><summary>Planilla de tramos de cañería y conductores (${model.elec.conduits.length})</summary><p class="muted small">Cada tramo es un caño de acero entre dos cajas. Conductores IRAM NM 247-3. Colores AEA: fase marrón, neutro celeste, protección verde-amarillo, retornos negro, viajeros de combinación gris.</p><div class="scroll"><table class="t"><thead><tr><th>Tramo</th><th>Circ.</th><th>Desde → hasta</th><th class="n">Long. (m)</th><th class="n">Curvas</th><th>Caño</th><th>Cables que lleva</th></tr></thead><tbody>${rows}</tbody></table></div></details>`;
+}
+function rulesTable() {
+  const rows = model.elec.rules.map((r) => `<tr><td>${r.pass ? '<span class="crit DURABLE">CUMPLE</span>' : '<span class="crit ECONOMICO">REVISAR</span>'}</td><td>${esc(r.rule)}</td><td>${esc(r.detail)}</td></tr>`).join('');
+  return `<details class="card" open><summary>Verificación automática — AEA 90364-7-770</summary><table class="t"><thead><tr><th></th><th>Regla</th><th>Resultado en el proyecto</th></tr></thead><tbody>${rows}</tbody></table></details>`;
+}
+let estudioDone = false;
+function renderEstudio() {
+  if (estudioDone) return;
+  estudioDone = true;
+  const res = analyze();
+  const col = (w) => (w >= 0.8 ? 'DURABLE' : w >= 0.6 ? 'ESTANDAR' : 'ECONOMICO');
+  const routes = res[0].routes.map((r) => r.name);
+  const head = `<tr><th>Recorrido (ancho libre mínimo del mejor camino)</th>${res.map((r) => `<th>${esc(r.name.split(' — ')[0])}</th>`).join('')}</tr>`;
+  const body = routes.map((name) => `<tr><td>${esc(name)}</td>${res.map((r) => { const q = r.routes.find((x) => x.name === name); return `<td>${q ? `<span class="crit ${col(q.w)}">${nf(q.w)} m</span>` : '—'}</td>`; }).join('')}</tr>`).join('');
+  const extra = [
+    ['Sillas para comer', (r) => r.seatsDining], ['Asientos de estar', (r) => r.seatsLiving],
+    ['¿Se come en el sillón?', (r) => (r.eatOnSofa ? 'sí ✗' : 'no ✓')], ['¿El sillón mira al TV?', (r) => (r.sofaFacesTv ? 'sí ✓' : 'no ✗')],
+    ['¿La entrada cruza el estar?', (r) => (r.crossesLiving ? 'sí ✗' : 'no ✓')],
+  ].map(([t, f]) => `<tr><td>${t}</td>${res.map((r) => `<td>${f(r)}</td>`).join('')}</tr>`).join('');
+  $('#pane-estudio').innerHTML = `<div class="memo"><h2>Estudio de disposición de la planta baja</h2>
+  <p>Antes de detallar, se compararon alternativas de ubicación de muebles y de acceso con un análisis de circulación: el plano se discretiza en una grilla de 2,5 cm, se calcula para cada punto libre la distancia al obstáculo más cercano (muros, escalera, mesada, muebles) y, para cada recorrido de uso diario, el <b>ancho libre mínimo</b> del mejor camino posible. Referencias de diseño: pasos de 0,80–0,90 m para circulación principal y 0,60 m entre muebles (valores habituales de Neufert, <i>Arte de proyectar en arquitectura</i>, y Panero y Zelnik, <i>Las dimensiones humanas en los espacios interiores</i>).</p>
+  <p><span class="crit DURABLE">≥ 0,80</span> cómodo · <span class="crit ESTANDAR">0,60–0,80</span> estrecho · <span class="crit ECONOMICO">&lt; 0,60</span> incómodo o bloqueado (con la silla ocupada o el mueble en uso).</p>
+  <div class="scroll"><table class="t">${head}${body}${extra}</table></div>
+  <div class="grid3">${res.map((r) => `<section class="card"><h3>${esc(r.name)}</h3><p class="muted small">${esc(r.resumen)}</p><div class="draw">${studySvg(r)}</div></section>`).join('')}</div>
+  <h3>Conclusión</h3>
+  <ul><li>La <b>versión 1</b> no funcionaba: para ir de la entrada a la escalera o al baño había que pasar por 17 cm entre la mesa y el tabique, se comía en el banco-sofá y había una sola silla.</li>
+  <li>Poner un sillón contra la escalera y la mesa en el medio (<b>B</b>) bloquea la cocina: el planta baja tiene 14,6 m² y la franja libre entre escalera y mesada es de sólo 1,0 m.</li>
+  <li>La <b>alternativa C</b> resuelve con tres decisiones: entrar por el hall (junto a la escalera y el baño, así el estar-comedor queda sin paso cruzado), usar el nicho de 1,90 m de alto bajo los escalones compensados para el sillón (espacio que antes se perdía) y poner la mesa con dos sillas contra el ventanal, mirando la vista. Todas las circulaciones principales quedan entre 0,77 y 1,02 m.</li>
+  <li>Punto ajustado que queda: con alguien sentado en la segunda silla, el paso entre la silla y la mesada es de 0,47 m. Se acepta para 1–2 personas (cuando se cocina, la silla se empuja bajo la mesa).</li>
+  <li>Planta alta: con el pedido de “una cama doble o dos simples” se pasó de 3 plazas a <b>dos camas de 1 plaza que se unen (160x190)</b>: sirven a una pareja o a dos personas, liberan lugar para dos mesas de luz y dejan 0,76 m de paso a cada lado.</li></ul></div>`;
 }
 function renderOrtho() {
   if (!viewer) return;
@@ -218,7 +255,7 @@ $('#pane-memoria').innerHTML = `<article class="memo">${MEMORIA_HTML}<h2>Paleta 
 // ------------------------------------------------------------------ arranque
 initViewer();
 if (window.__ARTIFACT__) document.documentElement.classList.add('artifact');
-const TABS = ['3d', 'planos', 'computo', 'despiece', 'memoria'];
+const TABS = ['3d', 'estudio', 'planos', 'computo', 'despiece', 'memoria'];
 let start = '3d';
 try { const h = location.hash.slice(1); start = TABS.includes(h) ? h : new URLSearchParams(location.search).get('tab') || localStorage.getItem('casa.tab') || '3d'; } catch {}
 if (!TABS.includes(start)) start = '3d';

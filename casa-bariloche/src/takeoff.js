@@ -74,7 +74,8 @@ export function takeoff(model) {
   const roofA = roofArea(D);
   R('5. Aislaciones y barreras', 'lana_150', wallA + roofA, 'm²', `muros ${r2(wallA)} m² + techo ${r2(roofA)} m²`);
   R('5. Aislaciones y barreras', 'barrera_vapor', (wallA + roofA) * 1.12, 'm²', 'con solapes 10 cm + cinta');
-  R('5. Aislaciones y barreras', 'membrana', (wallA + roofA * 1.1) * 1.12, 'm²', 'muros + bajo chapa de techo');
+  R('5. Aislaciones y barreras', 'membrana', wallA * 1.15, 'm²', 'sobre el OSB de muros, solapes 15 cm, encintada');
+  R('5. Aislaciones y barreras', 'membrana_techo', roofA * 1.2 * 1.15, 'm²', 'sobre cabios, bajo contraclavaderas (incluye aleros)');
 
   // ---------------- Envolvente exterior ----------------
   const chapaMuro = elements.filter((x) => x.kind === 'ribbed' && x.mat === 'chapa_muro');
@@ -165,28 +166,43 @@ export function takeoff(model) {
   }
   R('13. Desagües', 'camara', 1, 'u', 'CI 60x60 + boca de acceso 30x30 cocina + pileta de patio Ø63 baño');
   R('14. Gas', 'rejilla', 2, 'u', 'alta y baja (cocina)');
-  // electricidad
-  const nb = (t) => elec.boxes.filter((b) => b.tipo === t).length;
-  R('15. Electricidad', 'caja_rect', nb('rect'), 'u', elec.boxes.filter((b) => b.tipo === 'rect').map((b) => b.id).join(', '));
-  R('15. Electricidad', 'caja_oct', nb('oct'), 'u', elec.boxes.filter((b) => b.tipo === 'oct').map((b) => b.id).join(', '));
-  R('15. Electricidad', 'caja_cuad', 3, 'u', 'derivaciones en cielorraso PB (estimado)');
-  const condLen = elec.conduits.reduce((s, c) => s + c.len, 0);
-  R('15. Electricidad', 'conduit', condLen * 1.1, 'ml', `${r2(condLen)} ml en modelo + 10%`);
+  // electricidad (cantidades exactas desde la planilla de tramos)
+  const nb = (t) => elec.boxes.filter((b) => b.tipo === t);
+  R('15. Electricidad', 'caja_rect', nb('rect').length, 'u', nb('rect').map((b) => b.id).join(', '));
+  R('15. Electricidad', 'caja_oct', nb('oct').length, 'u', nb('oct').map((b) => b.id).join(', '));
+  R('15. Electricidad', 'caja_cuad', nb('cuad').length, 'u', 'CP (acometida)');
+  const byRs = {};
+  let curvas = 0;
+  for (const c of elec.conduits) {
+    if (c.circuito === 'AC' && c.from === 'Pilar') continue;
+    byRs[c.rs] = (byRs[c.rs] ?? 0) + c.len;
+    curvas += c.curves;
+  }
+  for (const [rs, l] of Object.entries(byRs)) R('15. Electricidad', 'conduit', Math.ceil((l * 1.1) / 3) , 'tiras de 3 m', `${rs}: ${r2(l)} ml en modelo + 10%`, `Caño de acero semipesado ${rs} roscado`);
+  R('15. Electricidad', 'conduit', curvas + 10, 'u', 'curvas a 90° de acero roscadas (según planilla) + 10 de reserva', 'Curvas de acero semipesado');
+  R('15. Electricidad', 'conduit', elec.conduits.length * 2 + 20, 'u', 'cuplas, tuercas y boquillas', 'Cuplas, tuercas y boquillas de acero');
   const cab = {};
   for (const c of elec.conduits) {
-    const ci = CIRC[c.circuito];
-    const sec = c.circuito === 'Acometida' ? '4 mm² (acometida)' : ci.cable.includes('1,5') ? '1,5 mm²' : '2,5 mm²';
-    cab[sec] = (cab[sec] ?? 0) + (c.len + 0.4) * (c.circuito === 'Acometida' ? 2 : 2);
-    cab['PE 2,5 mm² verde-amarillo'] = (cab['PE 2,5 mm² verde-amarillo'] ?? 0) + c.len + 0.4;
+    if (c.circuito === 'TD') continue;
+    for (const k of c.cables) {
+      const key = `${k.sec} mm² ${k.color}`;
+      cab[key] = (cab[key] ?? 0) + c.len + 0.3;
+    }
   }
-  for (const [s, l] of Object.entries(cab)) R('15. Electricidad', 'cable', l * 1.15, 'ml', `+15% (incluye retornos de llaves)`, `Cable ${s}`);
-  R('15. Electricidad', 'luminaria', elec.boxes.filter((b) => /^(L\d|A\d|LE|LB|LK)/.test(b.id)).length, 'u', elec.boxes.filter((b) => /^(L\d|A\d|LE|LB|LK)/.test(b.id)).map((b) => b.id).join(', '));
-  R('15. Electricidad', 'caja_rect', elec.boxes.filter((b) => b.tipo === 'rect' && !/^(A\d|LE|LB|LK|TT)/.test(b.id)).length, 'u', 'módulos: tomas dobles 10A, llaves de 1 y 2 puntos, combinación', 'Llaves y tomas (línea estándar blanca)');
+  for (const [s2, l] of Object.entries(cab).sort()) R('15. Electricidad', 'cable', Math.ceil(l * 1.1), 'ml', 'suma de tramos + 30 cm por caja + 10%', `Cable IRAM NM 247-3 ${s2}`);
+  const td = elec.conduits.filter((c) => c.circuito === 'TD').reduce((a, c) => a + c.len, 0);
+  R('15. Electricidad', 'conduit_td', Math.ceil(td * 1.2 + 2), 'ml', 'UTP cat. 6 + coaxil RG6 + fibra drop hasta el router', 'Cableado de datos/TV');
+  const lum = elec.boxes.filter((b) => /^(L\d|A\d|LE|LB|LK)/.test(b.id));
+  R('15. Electricidad', 'luminaria', lum.length, 'u', lum.map((b) => b.id).join(', '));
+  const disp = elec.boxes.filter((b) => b.tipo === 'rect' && /^(S|T)/.test(b.id) && b.id !== 'TT');
+  R('15. Electricidad', 'caja_rect', disp.length, 'u', 'tomas 2x10+T con obturador (IRAM 2071) y llaves de 1, 2 y 4 módulos, combinación', 'Llaves y tomas (línea estándar blanca)');
 
   // ---------------- Muebles ----------------
-  for (const s of ['cama_doble', 'cama_simple', 'placard', 'escritorio', 'mesa', 'mesa_luz', 'zapatero', 'banco']) R('16. Amoblamiento', s, 1, 'u');
-  R('16. Amoblamiento', 'silla', 2, 'u');
-  R('16. Amoblamiento', 'textil_mostaza', 1, 'jgo', 'acolchados, almohadones, colchoneta del banco (fundas lavables)');
+  R('16. Amoblamiento', 'cama_simple', 2, 'u', '2 camas de 1 plaza que se unen en 160x190 (pareja o dos personas)');
+  for (const s3 of ['respaldo', 'placard', 'escritorio', 'mesa', 'sillon', 'tv']) R('16. Amoblamiento', s3, 1, 'u');
+  R('16. Amoblamiento', 'mesa_luz', 3, 'u', '2 mesas de luz + mesa auxiliar del estar');
+  R('16. Amoblamiento', 'silla', 3, 'u', '2 sillas de comedor + 1 silla de escritorio');
+  R('16. Amoblamiento', 'textil_mostaza', 1, 'jgo', 'acolchados, almohadones (fundas lavables)');
 
   return { rows, sheets, wood, sheetsWall: lensW, lensT };
 }

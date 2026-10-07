@@ -72,6 +72,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .draw{overflow:auto;background:var(--draw);border-radius:6px}
 .draw svg,.card img{max-width:100%;height:auto;display:block}
 .card img{background:#fff;border-radius:6px}
+.scroll{overflow-x:auto}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:14px}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px}
 .flow{display:flex;flex-wrap:wrap;gap:10px}
 .card.mini{padding:6px;margin:0;background:#fff}
@@ -90,7 +92,7 @@ details summary{cursor:pointer;font-weight:600}
 .track{display:flex;height:16px;background:repeating-linear-gradient(45deg,#ddd,#ddd 4px,#eee 4px,#eee 8px);border-radius:3px;overflow:hidden}
 .track i{display:block;background:#d9b77e;border-right:2px solid #fff;font-style:normal;font-size:9.5px;color:#3d2a0c;text-align:center;line-height:16px;overflow:hidden}
 .bar em{color:var(--muted);font-style:normal}
-.memo{max-width:980px;margin:0 auto}
+.memo{max-width:1100px;margin:0 auto}
 .memo table{border-collapse:collapse;width:100%;font-size:13px;margin:8px 0 14px}
 .memo th,.memo td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
 .memo th{background:var(--chip)}
@@ -120,6 +122,7 @@ details summary{cursor:pointer;font-weight:600}
 </header>
 <nav class="tabs">
   <button data-tab="3d" class="on">Modelo 3D</button>
+  <button data-tab="estudio">Estudio de disposición</button>
   <button data-tab="planos">Planos</button>
   <button data-tab="computo">Cómputo</button>
   <button data-tab="despiece">Despiece placas y maderas</button>
@@ -137,6 +140,7 @@ details summary{cursor:pointer;font-weight:600}
       <input type="range" id="clipV" min="0" max="1" step="0.01" value="0"><div class="small muted" id="clipOut"></div>
       <h4>Pieza seleccionada</h4>
       <div id="info"><p class="muted">Hacé clic en cualquier pieza para ver su material y medidas.</p></div>
+      <label class="small"><input type="checkbox" id="hq" checked> Calidad alta (oclusión ambiental)</label>
       <button id="shot">Descargar imagen</button>
       <h4>Capas</h4>
       <div id="layers"></div>
@@ -144,6 +148,7 @@ details summary{cursor:pointer;font-weight:600}
     </aside>
     <div id="view"></div>
   </section>
+  <section class="pane" id="pane-estudio" hidden></section>
   <section class="pane" id="pane-planos" hidden></section>
   <section class="pane" id="pane-computo" hidden></section>
   <section class="pane" id="pane-despiece" hidden></section>

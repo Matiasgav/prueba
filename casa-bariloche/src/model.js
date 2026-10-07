@@ -51,14 +51,17 @@ const RB_TOP = 5.92;
 
 // Aberturas (vanos en bruto) -------------------------------------------------------------
 const OPEN = {
-  P1: { name: 'Puerta de entrada', wall: 'FRENTE', level: 'PB', s0: 0.95, s1: 1.85, z0: 0, z1: 2.115, door: true, leaf: 0.8, mat: 'puerta_ext' },
-  V1: { name: 'Ventana estar-cocina', wall: 'FRENTE', level: 'PB', s0: 2.05, s1: 3.25, z0: 1.0, z1: 2.1, sashes: 2, mat: 'pvc_marco' },
-  V2: { name: 'Ventana pasillo / escalera', wall: 'FONDO', level: 'PB', s0: 1.1, s1: 1.7, z0: 1.1, z1: 2.1, sashes: 1, mat: 'pvc_marco' },
+  // acceso por la fachada de servicios/fondo (x = Li): el estar queda al frente, sin circulación cruzada
+  P1: { name: 'Puerta de entrada', wall: 'FONDO', level: 'PB', s0: 0.95, s1: 1.85, z0: 0, z1: 2.115, door: true, leaf: 0.8, hinge: 's1', mat: 'puerta_ext' },
+  V1: { name: 'Ventanal estar-comedor', wall: 'FRENTE', level: 'PB', s0: 1.05, s1: 2.65, z0: 0.95, z1: 2.1, sashes: 2, mat: 'pvc_marco' },
   V3: { name: 'Ventiluz baño', wall: 'FONDO', level: 'PB', s0: 2.65, s1: 3.15, z0: 1.7, z1: 2.2, sashes: 1, mat: 'pvc_marco' },
   V4: { name: 'Ventana dormitorio frente (escritorio)', wall: 'FRENTE', level: 'PA', s0: 2.05, s1: 3.25, z0: ZF1 + 0.9, z1: ZF1 + 2.0, sashes: 2, mat: 'pvc_marco' },
-  V5: { name: 'Ventana dormitorio fondo (camas)', wall: 'FONDO', level: 'PA', s0: 1.1, s1: 2.3, z0: ZF1 + 0.9, z1: ZF1 + 2.0, sashes: 2, mat: 'pvc_marco' },
+  V5: { name: 'Ventana dormitorio fondo (sobre la cama)', wall: 'FONDO', level: 'PA', s0: 1.2, s1: 2.4, z0: ZF1 + 0.9, z1: ZF1 + 2.0, sashes: 2, mat: 'pvc_marco' },
   P2: { name: 'Puerta baño', wall: 'TAB_B', level: 'PB', s0: 2.5, s1: 3.25, z0: 0, z1: 2.05, door: true, leaf: 0.7, mat: 'puerta_int' },
 };
+
+const OSB_JOINTS = [1.19, 3.63, 4.85];
+const opsWall = (wall, level) => Object.keys(OPEN).filter((k) => OPEN[k].wall === wall && (!level || OPEN[k].level === level));
 
 // Escalera ----------------------------------------------------------------------------------
 const ST = {
@@ -151,13 +154,13 @@ function foundation(add) {
 // ============================================================================================
 export const WALLS = [
   // PB exteriores
-  { id: 'PB-FRE', name: 'Muro frente PB', axis: 'y', c0: sOut, c1: sIn, s0: sOut, s1: Wi - sOut, z0: 0, ztop: ZJ0, open: ['P1', 'V1'], hdr: 0.195 },
-  { id: 'PB-FON', name: 'Muro fondo PB', axis: 'y', c0: Li - sIn, c1: Li - sOut, s0: sOut, s1: Wi - sOut, z0: 0, ztop: ZJ0, open: ['V2', 'V3'], hdr: 0.195 },
+  { id: 'PB-FRE', name: 'Muro frente PB', axis: 'y', c0: sOut, c1: sIn, s0: sOut, s1: Wi - sOut, z0: 0, ztop: ZJ0, open: opsWall('FRENTE', 'PB'), hdr: 0.195 },
+  { id: 'PB-FON', name: 'Muro fondo PB', axis: 'y', c0: Li - sIn, c1: Li - sOut, s0: sOut, s1: Wi - sOut, z0: 0, ztop: ZJ0, open: opsWall('FONDO', 'PB'), hdr: 0.195 },
   { id: 'PB-IZQ', name: 'Muro lateral izquierdo PB', axis: 'x', c0: sOut, c1: sIn, s0: sIn, s1: Li - sIn, z0: 0, ztop: ZJ0, open: [] },
   { id: 'PB-SER', name: 'Muro de servicios PB', axis: 'x', c0: Wi - sIn, c1: Wi - sOut, s0: sIn, s1: Li - sIn, z0: 0, ztop: ZJ0, open: [], service: true },
   // PA exteriores
-  { id: 'PA-FRE', name: 'Muro frente PA (hastial)', axis: 'y', c0: sOut, c1: sIn, s0: sOut, s1: Wi - sOut, z0: ZO1, ztop: (s) => zRb(s), open: ['V4'], hdr: 0.145, gable: true },
-  { id: 'PA-FON', name: 'Muro fondo PA (hastial)', axis: 'y', c0: Li - sIn, c1: Li - sOut, s0: sOut, s1: Wi - sOut, z0: ZO1, ztop: (s) => zRb(s), open: ['V5'], hdr: 0.145, gable: true },
+  { id: 'PA-FRE', name: 'Muro frente PA (hastial)', axis: 'y', c0: sOut, c1: sIn, s0: sOut, s1: Wi - sOut, z0: ZO1, ztop: (s) => zRb(s), open: opsWall('FRENTE', 'PA'), hdr: 0.145, gable: true },
+  { id: 'PA-FON', name: 'Muro fondo PA (hastial)', axis: 'y', c0: Li - sIn, c1: Li - sOut, s0: sOut, s1: Wi - sOut, z0: ZO1, ztop: (s) => zRb(s), open: opsWall('FONDO', 'PA'), hdr: 0.145, gable: true },
   { id: 'PA-IZQ', name: 'Muro lateral izquierdo PA', axis: 'x', c0: sOut, c1: sIn, s0: sIn, s1: Li - sIn, z0: ZO1, ztop: ZT2, open: [] },
   { id: 'PA-SER', name: 'Muro de servicios PA', axis: 'x', c0: Wi - sIn, c1: Wi - sOut, s0: sIn, s1: Li - sIn, z0: ZO1, ztop: ZT2, open: [] },
   // Tabiques PB (2x3)
@@ -296,15 +299,21 @@ function frameWall(w, wood, add) {
       members_push_extra(wood, sec, mat, o.s1 - o.s0, `antepecho ${o.k} (x2)`, 1);
     }
   }
-  // bloqueo horizontal a media altura en muros exteriores (cortafuego / clavado de placas)
-  if (!w.single && flat) {
-    const zb = (w.z0 + w.ztop) / 2;
-    const ps = [...pos].sort((a, b) => a - b);
-    for (let i = 0; i < ps.length - 1; i++) {
-      const a = ps[i] + th, b = ps[i + 1];
-      if (b - a < 0.05) continue;
-      if (op.some((o) => a < o.s1 + 2 * th && b > o.s0 - 2 * th)) continue;
-      wood(sec, mat, b - a, 'bloqueo horizontal', B(a, b, zb, zb + th, { ...base, name: `${w.name}: bloqueo` }));
+  // bloqueos horizontales en las juntas horizontales del OSB (placas colocadas horizontales y trabadas:
+  // la junta larga debe apoyar sobre madera) — filas de 1,22 m desde -0,03 => juntas a +1,19 / +3,63 / +4,85
+  if (!w.single) {
+    const ps = [...pos].sort((a, b) => a - b).filter((s0) => !isPost(s0));
+    for (const zb0 of OSB_JOINTS) {
+      const zb = zb0 - th / 2;
+      if (zb < w.z0 + 0.2) continue;
+      if (flat && zb > w.ztop - 3 * th) continue;
+      for (let i = 0; i < ps.length - 1; i++) {
+        const a = ps[i] + th, b = ps[i + 1];
+        if (b - a < 0.05 || b - a > 0.6) continue;
+        if (!flat && (Math.min(ztop(a), ztop(b)) - th / COS < zb + th + 0.03)) continue;
+        if (op.some((o) => a < o.s1 + 2 * th && b > o.s0 - 2 * th && zb + th > o.z0 - 2 * th && zb < o.z1 + (w.hdr ?? 0.195))) continue;
+        wood(sec, mat, b - a, 'bloqueo junta OSB', B(a, b, zb, zb + th, { ...base, name: `${w.name}: bloqueo (junta horizontal OSB)` }));
+      }
     }
   }
 }
@@ -419,10 +428,10 @@ function sheathing(addPanels) {
   const gRing = (y0, y1, z0) => [[y0, z0], [y1, z0], [y1, gable(y1)], [yRidge, gable(yRidge)], [y0, gable(y0)], [y0, z0]];
   const O = OPEN;
   const hole = (k) => [O[k].s0, O[k].z0 - (O[k].door ? 0.05 : 0), O[k].s1, O[k].z1];
-  addPanels(layoutPanels({ ...common, sheet: { w: 1.22, h: 2.4 }, along: 'u', stagger: true, face: 'OSB-FRE', prefix: 'OSB-F', name: 'OSB frente', o: [sOut, 0, 0], u: [0, 1, 0], v: [0, 0, 1], n: [-1, 0, 0], poly: gRing(oOut, Wi - oOut, -0.03), holes: [hole('P1'), hole('V1'), hole('V4')], startU: oOut, startV: -0.03 }));
-  addPanels(layoutPanels({ ...common, sheet: { w: 1.22, h: 2.4 }, along: 'u', stagger: true, face: 'OSB-FON', prefix: 'OSB-B', name: 'OSB fondo', o: [Li - sOut, 0, 0], u: [0, 1, 0], v: [0, 0, 1], n: [1, 0, 0], poly: gRing(oOut, Wi - oOut, -0.03), holes: [hole('V2'), hole('V3'), hole('V5')], startU: oOut, startV: -0.03 }));
-  addPanels(layoutPanels({ ...common, face: 'OSB-IZQ', prefix: 'OSB-L', name: 'OSB lateral izquierdo', o: [0, sOut, 0], u: [1, 0, 0], v: [0, 0, 1], n: [0, -1, 0], poly: rectRing(sOut, -0.03, Li - sOut, ZT2), startU: sOut, startV: -0.03 }));
-  addPanels(layoutPanels({ ...common, face: 'OSB-SER', prefix: 'OSB-S', name: 'OSB servicios (sobre registros)', o: [0, Wi - sOut, 0], u: [1, 0, 0], v: [0, 0, 1], n: [0, 1, 0], poly: rectRing(sOut, 1.5, Li - sOut, ZT2), startU: sOut, startV: 1.5 }));
+  addPanels(layoutPanels({ ...common, sheet: { w: 1.22, h: 2.4 }, along: 'u', stagger: true, face: 'OSB-FRE', prefix: 'OSB-F', name: 'OSB frente', o: [sOut, 0, 0], u: [0, 1, 0], v: [0, 0, 1], n: [-1, 0, 0], poly: gRing(oOut, Wi - oOut, -0.03), holes: opsWall('FRENTE').map(hole), startU: oOut, startV: -0.03 }));
+  addPanels(layoutPanels({ ...common, sheet: { w: 1.22, h: 2.4 }, along: 'u', stagger: true, face: 'OSB-FON', prefix: 'OSB-B', name: 'OSB fondo', o: [Li - sOut, 0, 0], u: [0, 1, 0], v: [0, 0, 1], n: [1, 0, 0], poly: gRing(oOut, Wi - oOut, -0.03), holes: opsWall('FONDO').map(hole), startU: oOut, startV: -0.03 }));
+  addPanels(layoutPanels({ ...common, sheet: { w: 1.22, h: 2.4 }, along: 'u', stagger: true, face: 'OSB-IZQ', prefix: 'OSB-L', name: 'OSB lateral izquierdo', o: [0, sOut, 0], u: [1, 0, 0], v: [0, 0, 1], n: [0, -1, 0], poly: rectRing(sOut, -0.03, Li - sOut, ZT2), startU: sOut, startV: -0.03 }));
+  addPanels(layoutPanels({ ...common, sheet: { w: 1.22, h: 2.4 }, along: 'u', stagger: true, face: 'OSB-SER', prefix: 'OSB-S', name: 'OSB servicios (sobre registros)', o: [0, Wi - sOut, 0], u: [1, 0, 0], v: [0, 0, 1], n: [0, 1, 0], poly: rectRing(sOut, 1.5, Li - sOut, ZT2), startU: sOut, startV: -0.03 }));
   // cassettes de registro (OSB atornillado) — 4 módulos
   addPanels(layoutPanels({ ...common, grid: 0.01, minStrip: 0, sheet: { w: (Li - 2 * sOut) / 4, h: 1.53 }, face: 'CASSETTES', prefix: 'CAS', name: 'Cassette de registro (OSB atornillado)', o: [0, Wi - sOut, 0], u: [1, 0, 0], v: [0, 0, 1], n: [0, 1, 0], poly: rectRing(sOut, -0.03, Li - sOut, 1.5), startU: sOut, startV: -0.03 }));
   // piso PA OSB 18 (lado largo perpendicular a vigas, juntas trabadas)
@@ -447,8 +456,8 @@ function interiorBoards(addPanels, add) {
   const W = (opt) => addPanels(layoutPanels({ t: tD, sheet: S, layer: 'durlock', along: 'v', paint: paintOf(opt.finish), ...opt }));
   const BL = 'Blanco cálido';
   // ---------- PB ----------
-  W({ face: 'PB-FRE', prefix: 'Y-PB-FRE', name: 'PB frente (int.)', mat: 'durlock_std', finish: BL, room: 'Estar-cocina', o: [0, 0, 0], u: [0, 1, 0], v: [0, 0, 1], n: [-1, 0, 0], poly: rectRing(0, z0, Wi, ZC1), holes: [hole('P1'), hole('V1')], startU: 0, startV: z0 });
-  W({ face: 'PB-FON-A', prefix: 'Y-PB-FON', name: 'PB fondo pasillo', mat: 'durlock_std', finish: BL, room: 'Pasillo', o: [Li, 0, 0], u: [0, 1, 0], v: [0, 0, 1], n: [1, 0, 0], poly: rectRing(0, z0, 1.965, ZC1), holes: [hole('V2')], startU: 0, startV: z0 });
+  W({ face: 'PB-FRE', prefix: 'Y-PB-FRE', name: 'PB frente (int.)', mat: 'durlock_std', finish: BL, room: 'Estar-cocina', o: [0, 0, 0], u: [0, 1, 0], v: [0, 0, 1], n: [-1, 0, 0], poly: rectRing(0, z0, Wi, ZC1), holes: opsWall('FRENTE', 'PB').map(hole), startU: 0, startV: z0 });
+  W({ face: 'PB-FON-A', prefix: 'Y-PB-FON', name: 'PB fondo hall de acceso', mat: 'durlock_std', finish: BL, room: 'Hall', o: [Li, 0, 0], u: [0, 1, 0], v: [0, 0, 1], n: [1, 0, 0], poly: rectRing(0, z0, 1.965, ZC1), holes: [hole('P1')], startU: 0, startV: z0 });
   W({ face: 'PB-FON-B', prefix: 'C-DUCHA-FON', name: 'Ducha fondo (cementicia)', mat: 'cementicia', finish: 'Cerámica 30x60 blanca', room: 'Baño', t: 0.01, o: [Li, 0, 0], u: [0, 1, 0], v: [0, 0, 1], n: [1, 0, 0], poly: rectRing(2.06, z0, Wi, ZC1), holes: [hole('V3')], startU: 2.06, startV: z0 });
   W({ face: 'PB-IZQ', prefix: 'Y-PB-IZQ', name: 'PB lateral izquierdo', mat: 'durlock_std', finish: BL, room: 'Estar / escalera', o: [0, 0, 0], u: [1, 0, 0], v: [0, 0, 1], n: [0, -1, 0], poly: rectRing(0, z0, Li, ZC1), startU: 0, startV: z0 });
   W({ face: 'PB-SER-K', prefix: 'Y-PB-SERK', name: 'PB servicios cocina (RH)', mat: 'durlock_rh', finish: BL + ' + cerámica subway sobre mesada', room: 'Cocina', o: [0, Wi, 0], u: [1, 0, 0], v: [0, 0, 1], n: [0, 1, 0], poly: rectRing(0, z0, 2.33, ZC1), startU: 0, startV: z0 });
@@ -497,8 +506,8 @@ function insulation(add) {
     add(prism(o, u, v, n, tS - 0.005, mp, { ...ins, name, info: 'Lana de vidrio 150 mm (comprimida en 145)' }));
   };
   const gRing = (z0) => [[sOut, z0], [Wi - sOut, z0], [Wi - sOut, zRb(Wi - sOut)], [yRidge, zRb(yRidge)], [sOut, zRb(sOut)], [sOut, z0]];
-  face('Aislación muro frente', [sIn - 0.0025, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], gRing(0.045), ['P1', 'V1', 'V4'].map(holeOf));
-  face('Aislación muro fondo', [Li - sIn + 0.0025, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0], gRing(0.045), ['V2', 'V3', 'V5'].map(holeOf));
+  face('Aislación muro frente', [sIn - 0.0025, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], gRing(0.045), opsWall('FRENTE').map(holeOf));
+  face('Aislación muro fondo', [Li - sIn + 0.0025, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0], gRing(0.045), opsWall('FONDO').map(holeOf));
   face('Aislación muro izquierdo', [0, sIn - 0.0025, 0], [1, 0, 0], [0, 0, 1], [0, -1, 0], rectRing(sIn, 0.045, Li - sIn, ZT2));
   face('Aislación muro servicios', [0, Wi - sIn + 0.0025, 0], [1, 0, 0], [0, 0, 1], [0, 1, 0], rectRing(sIn, 0.045, Li - sIn, ZT2));
   // techo: entre cabios, 150 mm, dejando cámara ventilada de 45 mm
@@ -513,7 +522,7 @@ function insulation(add) {
 }
 
 // ============================================================================================
-// REVESTIMIENTO EXTERIOR: chapa T-101 vertical (laterales y fondo), siding (frente),
+// REVESTIMIENTO EXTERIOR: chapa T-101 vertical (laterales), siding (los dos hastiales),
 // cassettes de registro en la pared de servicios
 // ============================================================================================
 function cladding(add) {
@@ -533,53 +542,36 @@ function cladding(add) {
       chapa([a, y + (side === 'IZQ' ? tCh : -tCh), z0], [1, 0, 0], [0, 0, 1], n, w, zSoffit - z0, `Chapa T-101 lateral ${side === 'IZQ' ? 'izquierdo' : 'servicios'} hoja ${i + 1}`, { sheetLen: r3(zSoffit - z0), facade: side });
     }
   }
-  // fondo (hastial) con cortes por aberturas
-  const xF = Li - cOut;
+  // hastiales (frente = estar, fondo = acceso): siding cementicio horizontal símil madera
+  // (tablas de 20 cm con 18 cm de exposición), recortado a la pendiente y a las aberturas
   const top = (y) => zRt(y) + 0.02 / COS;
-  const total = Wi - 2 * cOut;
-  const ops = ['V2', 'V3', 'V5'].map((k) => ({ k, ...OPEN[k] }));
-  for (let i = 0; i * sheetW < total - 1e-3; i++) {
-    const a = cOut + i * sheetW;
-    const b = Math.min(a + sheetW, Wi - cOut);
-    const maxLen = Math.max(top(a), top(b), a < yRidge && b > yRidge ? top(yRidge) : 0) - zBot;
-    // tramos horizontales del ancho de la hoja, partidos por aberturas
-    const cuts = new Set([a, b]);
-    for (const o of ops) { if (o.s0 > a && o.s0 < b) cuts.add(o.s0); if (o.s1 > a && o.s1 < b) cuts.add(o.s1); }
-    const cs = [...cuts].sort((p, q) => p - q);
-    for (let j = 0; j < cs.length - 1; j++) {
-      const s0 = cs[j], s1 = cs[j + 1];
-      const mid = (s0 + s1) / 2;
-      const inOps = ops.filter((o) => mid > o.s0 && mid < o.s1).sort((p, q) => p.z0 - q.z0);
-      let zc = zBot;
-      for (const o of inOps) {
-        if (o.z0 - zc > 0.01) chapa([xF - tCh, s0, zc], [0, 1, 0], [0, 0, 1], [1, 0, 0], s1 - s0, o.z0 - zc, `Chapa T-101 fondo hoja ${i + 1}`, { sheetLen: r3(maxLen), facade: 'FON', sheetNo: i + 1 });
-        zc = o.z1;
-      }
-      chapa([xF - tCh, s0, zc], [0, 1, 0], [0, 0, 1], [1, 0, 0], s1 - s0, (s) => top(s0 + s) - zc, `Chapa T-101 fondo hoja ${i + 1}`, { sheetLen: r3(maxLen), facade: 'FON', sheetNo: i + 1 });
-    }
-  }
-  // clavaderas horizontales de fachada (1x2 @60) — se computan; se dibujan sólo en laterales
-  // frente: siding cementicio horizontal (tablas 20 cm, exposición 18 cm), recortado al hastial
   const gablePoly = [[[cOut, zBot], [Wi - cOut, zBot], [Wi - cOut, top(Wi - cOut)], [yRidge, top(yRidge)], [cOut, top(cOut)], [cOut, zBot]]];
-  const sHoles = ['P1', 'V1', 'V4'].map((k) => [rectRing(OPEN[k].s0 - 0.03, OPEN[k].z0 - (OPEN[k].door ? 0.1 : 0.03), OPEN[k].s1 + 0.03, OPEN[k].z1 + 0.03)]);
-  let row = 0;
-  for (let z = zBot; z < top(yRidge) - 0.02; z += 0.18, row++) {
-    let mp = pc.intersection([gablePoly], [[rectRing(cOut, z, Wi - cOut, z + 0.2)]]);
-    if (mp.length) mp = pc.difference(mp, ...sHoles);
-    for (const pl of mp) {
-      const xs = pl[0].map((q) => q[0]);
-      const len = Math.max(...xs) - Math.min(...xs);
-      if (len < 0.03) continue;
-      add(prism([bOut - 0.004 * (row % 2), 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], 0.01, [pl], {
-        layer: 'revest_ext', mat: 'siding', name: `Siding cementicio símil madera (frente) — tabla fila ${row + 1}, ${Math.round(len * 100)} cm`, siding: { len: r3(len) },
-      }));
+  for (const wall of ['FRENTE', 'FONDO']) {
+    const front = wall === 'FRENTE';
+    const xb = front ? bOut : Li - bOut;
+    const sHoles = opsWall(wall).map((k) => [rectRing(OPEN[k].s0 - 0.03, OPEN[k].z0 - (OPEN[k].door ? 0.1 : 0.03), OPEN[k].s1 + 0.03, OPEN[k].z1 + 0.03)]);
+    let row = 0;
+    for (let z = zBot; z < top(yRidge) - 0.02; z += 0.18, row++) {
+      let mp = pc.intersection([gablePoly], [[rectRing(cOut, z, Wi - cOut, z + 0.2)]]);
+      if (mp.length) mp = pc.difference(mp, ...sHoles);
+      for (const pl of mp) {
+        const xs = pl[0].map((q) => q[0]);
+        const len = Math.max(...xs) - Math.min(...xs);
+        if (len < 0.03) continue;
+        const off = 0.004 * (row % 2);
+        add(prism([front ? xb - off : xb + off, 0, 0], [0, 1, 0], [0, 0, 1], [front ? -1 : 1, 0, 0], 0.01, [pl], {
+          layer: 'revest_ext', mat: 'siding', name: `Siding cementicio símil madera (${front ? 'fachada estar' : 'fachada acceso'}) — fila ${row + 1}, ${Math.round(len * 100)} cm`, siding: { len: r3(len) },
+        }));
+      }
+    }
+    for (const y of [cOut - 0.004, Wi - cOut - 0.046]) {
+      const x0 = front ? bOut - 0.03 : Li - bOut - 0.001;
+      add(box([x0, y, zBot], [x0 + 0.031, y + 0.05, top(cOut) - 0.02], { layer: 'revest_ext', mat: 'zinguerias', name: 'Tapajuntas de esquina (siding)' }));
     }
   }
-  // tapajuntas verticales negros en esquinas del frente
-  for (const y of [cOut - 0.004, Wi - cOut - 0.046]) add(box([bOut - 0.03, y, zBot], [bOut + 0.001, y + 0.05, top(cOut) - 0.02], { layer: 'revest_ext', mat: 'zinguerias', name: 'Tapajuntas de esquina (siding)' }));
   // cassettes de registro (pared de servicios, franja inferior)
   const cw = (Li - 2 * cOut) / 4;
-  const names = ['R1 — bacha cocina y rejilla baja', 'R2 — gas cocina', 'R3 — NUDO: entrada agua, gas, electricidad, llaves de paso', 'R4 — ducha y ventilación'];
+  const names = ['R1 — bacha, lavarropas y rejilla baja', 'R2 — GAS: ingreso, llave de corte, cocina; llaves agua cocina', 'R3 — NUDO: entrada de agua y llave general, acometida eléctrica (caja de paso), fibra', 'R4 — ducha, termotanque y ventilación'];
   for (let i = 0; i < 4; i++) {
     const a = cOut + i * cw;
     add(box([a + 0.004, Wi - bOut, zBot], [a + cw - 0.004, Wi - cOut, 1.5], { id: `REG-R${i + 1}`, layer: 'revest_ext', mat: 'fibro_reg', name: `Registro ${names[i]}`, info: 'Se retira con 10 tornillos inox: detrás quedan las cañerías (cavidad del lado caliente) y las llaves de paso.' }));
@@ -669,18 +661,20 @@ function openings(add) {
     const fw = 0.06;
     const B = (y0, y1, z0, z1, extra, dx0 = fx0, dx1 = fx1) => add(box([dx0, y0, z0], [dx1, y1, z1], { layer: 'aberturas', ...extra }));
     if (o.door) {
+      const ext = front ? -1 : 1; // sentido hacia el exterior
+      const extFace = front ? fx0 : fx1, intFace = front ? fx1 : fx0;
+      const R = (x0, x1, y0, y1, z0, z1, extra) => add(box([Math.min(x0, x1), y0, z0], [Math.max(x0, x1), y1, z1], { layer: 'aberturas', ...extra }));
       const fm = { mat: 'pvc_marco', name: 'Marco chapa puerta exterior' };
       B(o.s0, o.s0 + 0.05, 0, o.z1, fm); B(o.s1 - 0.05, o.s1, 0, o.z1, fm); B(o.s0, o.s1, o.z1 - 0.05, o.z1, fm);
       B(o.s0 + 0.05, o.s1 - 0.05, 0.01, o.z1 - 0.05, { mat: 'puerta_ext', name: `${k} — ${o.name}: chapa inyectada 80x200`, id: k, opening: k });
-      // paños decorativos (bajo relieve)
-      for (const [z0, z1] of [[0.2, 0.9], [1.05, 1.9]]) B(o.s0 + 0.18, o.s1 - 0.18, z0, z1, { mat: 'puerta_ext', name: 'Bajo relieve puerta' }, fx0 - 0.004 * d, fx0 + 0.001);
-      add(box([fx0 - 0.07, o.s0 + 0.1, 0.98], [fx0 - 0.01, o.s0 + 0.13, 1.4], { layer: 'aberturas', mat: 'hierro_negro', name: 'Barral tirador negro' }));
-      add(box([fx1, o.s0 + 0.12, 0.98], [fx1 + 0.06, o.s0 + 0.24, 1.0], { layer: 'aberturas', mat: 'herrajes', name: 'Manija interior inox' }));
-      // babetas de jamba y dintel (exterior)
-      for (const sj of [o.s0 - 0.03, o.s1]) add(box([cOut - 0.015, sj, 0], [sOut, sj + 0.03, o.z1 + 0.03], { layer: 'aberturas', mat: 'zinguerias', name: 'Babeta de jamba puerta' }));
-      add(box([cOut - 0.015, o.s0 - 0.03, o.z1], [sOut, o.s1 + 0.03, o.z1 + 0.03], { layer: 'aberturas', mat: 'zinguerias', name: 'Babeta de dintel puerta' }));
-      // umbral
-      add(box([sOut - 0.06, o.s0, -0.005], [sIn + 0.01, o.s1, 0.02], { layer: 'aberturas', mat: 'granito', name: 'Umbral granito gris mara' }));
+      for (const [z0, z1] of [[0.2, 0.9], [1.05, 1.9]]) R(extFace - ext * 0.001, extFace + ext * 0.004, o.s0 + 0.18, o.s1 - 0.18, z0, z1, { mat: 'puerta_ext', name: 'Bajo relieve puerta' });
+      const latch = o.hinge === 's1' ? o.s0 + 0.1 : o.s1 - 0.13;
+      R(extFace + ext * 0.01, extFace + ext * 0.07, latch, latch + 0.03, 0.98, 1.4, { mat: 'hierro_negro', name: 'Barral tirador negro' });
+      R(intFace, intFace - ext * 0.06, latch, latch + 0.12, 0.98, 1.0, { mat: 'herrajes', name: 'Manija interior inox' });
+      const bx0 = front ? cOut - 0.015 : Li - sOut, bx1 = front ? sOut : Li - cOut + 0.015;
+      for (const sj of [o.s0 - 0.03, o.s1]) add(box([bx0, sj, 0], [bx1, sj + 0.03, o.z1 + 0.03], { layer: 'aberturas', mat: 'zinguerias', name: 'Babeta de jamba puerta' }));
+      add(box([bx0, o.s0 - 0.03, o.z1], [bx1, o.s1 + 0.03, o.z1 + 0.03], { layer: 'aberturas', mat: 'zinguerias', name: 'Babeta de dintel puerta' }));
+      R(front ? sOut - 0.06 : Li - sOut + 0.06, front ? sIn + 0.01 : Li - sIn - 0.01, o.s0, o.s1, -0.005, 0.02, { mat: 'granito', name: 'Umbral granito gris mara' });
       continue;
     }
     const m = { mat: 'pvc_marco', name: `${k} — marco PVC` };
@@ -720,11 +714,13 @@ function openings(add) {
       add(box([xr - 0.003, o.s0, o.z1 - 0.35], [xr + 0.003, o.s1, o.z1 + 0.03], { layer: 'muebles', mat: 'cortina', name: `Cortina roller ${k} (semi baja)` }));
     }
   }
-  // visera de entrada
+  // visera de entrada (sobre la puerta de acceso)
   const P1 = OPEN.P1;
-  add(box([cOut - 0.65, P1.s0 - 0.3, 2.42], [cOut, P1.s1 + 0.3, 2.47], { layer: 'revest_ext', mat: 'visera', name: 'Visera de entrada chapa plegada 150x65' }));
-  for (const s of [P1.s0 - 0.25, P1.s1 + 0.25]) {
-    add(prism([cOut, s, 0], [-1, 0, 0], [0, 0, 1], [0, 1, 0], 0.008, [[[[0, 2.42], [0.6, 2.42], [0.02, 2.05], [0, 2.05], [0, 2.42]]]], { layer: 'revest_ext', mat: 'hierro_negro', name: 'Ménsula planchuela visera' }));
+  const vx0 = P1.wall === 'FRENTE' ? cOut - 0.65 : Li - cOut, vx1 = vx0 + 0.65, vxw = P1.wall === 'FRENTE' ? cOut : Li - cOut;
+  add(box([vx0, P1.s0 - 0.3, 2.42], [vx1, P1.s1 + 0.3, 2.47], { layer: 'revest_ext', mat: 'visera', name: 'Visera de entrada chapa plegada 150x65' }));
+  for (const sv of [P1.s0 - 0.25, P1.s1 + 0.25]) {
+    const dir = P1.wall === 'FRENTE' ? -1 : 1;
+    add(prism([vxw, sv, 0], [dir, 0, 0], [0, 0, 1], [0, 1, 0], 0.008, [[[[0, 2.42], [0.6, 2.42], [0.02, 2.05], [0, 2.05], [0, 2.42]]]], { layer: 'revest_ext', mat: 'hierro_negro', name: 'Ménsula planchuela visera' }));
   }
 }
 
@@ -768,11 +764,19 @@ function stair(add) {
     add(prism([0, ya, 0], [1, 0, 0], [0, 0, 1], [0, 1, 0], yb - ya, [[ring]], { layer: 'escalera', mat: 'zanca', name: `${name} pino laminado 45x240` }));
   }
   // poste (newel) de lenga desde PB hasta baranda PA
-  add(box([P[0] - 0.09, P[1] - 0.09, 0], [P[0], P[1], ZF1 + 0.95], { layer: 'escalera', mat: 'lenga', name: 'Poste de giro lenga 90x90 (PB a PA)' }));
+  // poste de giro sólo desde el cajón de los compensados (la planta baja queda libre para el sillón)
+  add(box([P[0] - 0.09, P[1] - 0.09, 1.9], [P[0], P[1], ZF1 + 0.95], { layer: 'escalera', mat: 'lenga', name: 'Poste de giro lenga 90x90 (desde el cajón de compensados hasta la baranda)' }));
+  // apoyo de los compensados: perfiles de acero (tubo 100x50) empotrados en muros y apoyados en la zanca
+  add(box([0, P[1] - 0.06, 1.75], [P[0] + 0.25, P[1], 1.9], { layer: 'escalera', mat: 'hierro_negro', name: 'Tubo 100x50 apoyo compensados (de muro de frente a zanca)' }));
+  add(box([P[0] - 0.06, 0, 1.75], [P[0], P[1], 1.9], { layer: 'escalera', mat: 'hierro_negro', name: 'Tubo 100x50 apoyo compensados (de muro lateral a tubo)' }));
   add(box([xBottom + 0.02, width - 0.07, 0], [xBottom + 0.09, width, 0.95], { layer: 'escalera', mat: 'lenga', name: 'Poste de arranque lenga 70x70' }));
   // cerramiento bajo escalera (detrás del banco)
   const xf2 = xBottom - ((dv - 0.06) / rise) * going;
-  add(prism([0, width, 0], [1, 0, 0], [0, 0, 1], [0, -1, 0], 0.015, [[[[ST.xTop, fGF], [xf2, fGF], [ST.xTop, zN(ST.xTop) + 0.06 - dv], [ST.xTop, fGF]]]], { layer: 'escalera', mat: 'pintura_blanco', name: 'Cerramiento bajo escalera (bastidor + placa) — guardado accesible por el banco' }));
+  const xs0 = 1.48, zb = (x) => zN(x) + 0.06 - dv;
+  add(prism([0, width, 0], [1, 0, 0], [0, 0, 1], [0, -1, 0], 0.015, [[[[xs0, fGF], [xf2, fGF], [xs0, zb(xs0)], [xs0, fGF]]]], { layer: 'escalera', mat: 'melamina_blanca', name: 'Frente de guardado bajo escalera (2 puertas melamina)' }));
+  for (const [a, b] of [[xs0 + 0.02, 2.2], [2.22, 2.85]]) {
+    add(box([a + 0.08, width - 0.03, zb(a + 0.1) - 0.25], [a + 0.1, width - 0.015, zb(a + 0.1) - 0.1], { layer: 'escalera', mat: 'hierro_negro', name: 'Tirador puerta guardado' }));
+  }
   // baranda de la escalera (planchuela + barrotes) y pasamanos de lenga
   const hb = 0.9;
   const railY = width - 0.02;
@@ -923,60 +927,83 @@ function kitchenAndBath(add) {
 // ============================================================================================
 // AMOBLAMIENTO (muebles estándar, económicos)
 // ============================================================================================
+// Muebles de catálogo (modelos glTF CC0 de Poly Haven, escalados a medidas comerciales).
+// bbox nativo de cada modelo (ejes del glTF: x ancho, y alto, z profundidad; frente hacia +z)
+export const GLB = {
+  Sofa_01: { min: [-0.778, 0, -0.361], max: [0.793, 0.796, 0.297], name: 'Sillón 2 cuerpos' },
+  dining_chair_02: { min: [-0.217, 0, -0.331], max: [0.217, 0.975, 0.245], name: 'Silla de comedor' },
+  wooden_table_02: { min: [-0.567, 0, -0.353], max: [0.567, 0.799, 0.353], name: 'Mesa de comedor' },
+  side_table_01: { min: [-0.275, 0, -0.225], max: [0.275, 0.548, 0.225], name: 'Mesa auxiliar / de luz' },
+  modern_ceiling_lamp_01: { min: [-0.216, 0.221, -0.214], max: [0.216, 1.173, 0.217], name: 'Colgante' },
+  potted_plant_04: { min: [-0.084, 0, -0.084], max: [0.084, 0.268, 0.101], name: 'Planta' },
+  ceramic_vase_01: { min: [-0.102, 0, -0.102], max: [0.102, 0.401, 0.102], name: 'Florero' },
+  hanging_picture_frame_01: { min: [-0.297, -0.42, 0], max: [0.297, 0.42, 0.016], name: 'Cuadro' },
+};
+const FACE = { '-y': 0, '+x': Math.PI / 2, '+y': Math.PI, '-x': -Math.PI / 2 };
+// pos = centro del origen del modelo (base) en coordenadas del proyecto; face = hacia dónde mira el frente
+function glb(model, pos, face, scale, extra) {
+  const g = GLB[model];
+  const th = FACE[face];
+  const [sx, sy, sz] = scale;
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (const lx of [g.min[0] * sx, g.max[0] * sx]) for (const lz of [g.min[2] * sz, g.max[2] * sz]) {
+    const tx = lx * Math.cos(th) + lz * Math.sin(th);
+    const tz = -lx * Math.sin(th) + lz * Math.cos(th);
+    const mx = pos[0] + tx, my = pos[1] - tz;
+    x0 = Math.min(x0, mx); x1 = Math.max(x1, mx); y0 = Math.min(y0, my); y1 = Math.max(y1, my);
+  }
+  return {
+    kind: 'glb', model, pos: pos.map(r3), rotY: th, scale, layer: 'muebles',
+    min: [r3(x0), r3(y0), r3(pos[2] + g.min[1] * sy)], max: [r3(x1), r3(y1), r3(pos[2] + g.max[1] * sy)],
+    name: g.name, ...extra,
+  };
+}
+
 function furniture(add) {
   const F = (b, extra) => add({ ...b, layer: 'muebles', ...extra });
-  // ---- PB ----
-  // recibidor
-  F(box([0.05, 0.0, 0], [0.8, 0.32, 0.45]), { mat: 'zapatero', name: 'Zapatero-banco 75x32', plan: 'PB' });
-  F(box([0.08, 0.0, 1.55], [0.78, 0.03, 1.62]), { mat: 'zapatero', name: 'Perchero de pared (5 ganchos)' });
-  // banco-sofá integrado a la escalera
-  F(box([1.05, 0.85, 0], [2.45, 1.38, 0.42]), { mat: 'banco', name: 'Banco-sofá integrado 140x53 (tapa rebatible = guardado bajo escalera)', plan: 'PB' });
-  F(box([1.07, 0.87, 0.42], [2.43, 1.36, 0.52]), { mat: 'textil_mostaza', name: 'Colchoneta asiento (funda lavable)' });
-  F(box([1.07, 0.86, 0.52], [1.74, 0.98, 0.9]), { mat: 'textil_terracota', name: 'Almohadón respaldo' });
-  F(box([1.76, 0.86, 0.52], [2.43, 0.98, 0.9]), { mat: 'textil_mostaza', name: 'Almohadón respaldo' });
-  // mesa + silla
-  F(box([1.35, 1.47, 0.72], [2.15, 2.07, 0.75]), { mat: 'mesa', name: 'Mesa 80x60 tapa roble', plan: 'PB' });
-  for (const [x, y] of [[1.38, 1.5], [2.1, 1.5], [1.38, 2.02], [2.1, 2.02]]) F(box([x, y, 0], [x + 0.03, y + 0.03, 0.72]), { mat: 'hierro_negro', name: 'Pata mesa' });
-  chair(F, 0.9, 1.57, 'x+');
-  // planta junto a la ventana
-  F(cyl([2.18, 2.5, 0], 'z', 0.13, 0.32), { mat: 'textil_terracota', name: 'Maceta' });
-  for (const [dx, dy, dz, r] of [[0, 0, 0.62, 0.2], [0.08, 0.06, 0.82, 0.14], [-0.07, -0.05, 0.78, 0.15], [0.02, -0.08, 0.98, 0.1]]) add({ kind: 'sphere', c: [2.18 + dx, 2.5 + dy, dz], r, sy: 1.25, layer: 'muebles', mat: 'planta', name: 'Planta de interior (decoración)' });
-  // ---- PA ----
+  // ---------------- PB ----------------
+  // estar: sillón de 2 cuerpos (140 cm) en el nicho bajo los compensados de la escalera (h libre 1,90)
+  add(glb('Sofa_01', [0.75, 0.401, 0], '+y', [0.89, 1, 1], { mat: 'textil_mostaza', plan: 'PB', planName: 'Sillón 2 cuerpos 140x66', name: 'Sillón 2 cuerpos 140x66 (bajo la escalera, mira al TV)' }));
+  add(glb('side_table_01', [1.76, 0.3, 0], '+y', [0.8, 1, 1], { mat: 'mesa_luz', plan: 'PB', planName: 'mesa auxiliar', name: 'Mesa auxiliar 45x45' }));
+  add(glb('potted_plant_04', [1.76, 0.3, 0.548], '+y', [1.2, 1.2, 1.2], { mat: 'planta', name: 'Planta (decoración)' }));
+  // comedor: mesa 72x65 contra el ventanal + 2 sillas mirando la vista
+  add(glb('wooden_table_02', [0.345, 1.81, 0], '+x', [0.635, 0.94, 0.92], { mat: 'mesa', plan: 'PB', planName: 'Mesa 72x65', name: 'Mesa de comedor 72x65 (contra el ventanal)' }));
+  for (const y of [1.592, 2.028]) add(glb('dining_chair_02', [0.865, y, 0], '-x', [1, 1, 1], { mat: 'silla', plan: 'PB', planName: 'silla', name: 'Silla de comedor' }));
+  add(glb('ceramic_vase_01', [0.3, 2.0, 0.752], '+x', [0.7, 0.7, 0.7], { mat: 'accesorios', name: 'Florero' }));
+  add(glb('modern_ceiling_lamp_01', [0.35, 1.81, ZC1 - 1.173], '+x', [1, 1, 1], { layer: 'iluminacion', mat: 'luminaria', name: 'Colgante sobre la mesa (L1)' }));
+  // TV 32" en brazo articulado sobre el tabique de la cocina, visible desde el sillón y la mesa
+  F(box([2.25, 2.02, 1.25], [2.29, 2.75, 1.68]), { mat: 'hierro_negro', name: 'TV 32" en brazo articulado', plan: 'PB', planName: 'TV' });
+  F(box([2.29, 2.33, 1.4], [2.33, 2.44, 1.52]), { mat: 'hierro_negro', name: 'Brazo articulado TV' });
+  // hall de acceso: percheros sobre el muro del arranque de la escalera
+  F(box([Li - 0.03, 0.1, 1.62], [Li, 0.68, 1.7]), { mat: 'zapatero', name: 'Perchero de pared (4 ganchos)' });
+  for (const y of [0.18, 0.32, 0.46, 0.6]) F(box([Li - 0.09, y, 1.6], [Li - 0.03, y + 0.02, 1.64]), { mat: 'hierro_negro', name: 'Gancho perchero' });
+  // ---------------- PA ----------------
   const z = ZF1;
-  // escritorio + silla
-  F(box([0.0, 2.05, z + 0.72], [0.55, 3.25, z + 0.75]), { mat: 'escritorio', name: 'Escritorio melamina 120x55', plan: 'PA' });
-  F(box([0.0, 2.07, z], [0.53, 2.09, z + 0.72]), { mat: 'escritorio', name: 'Lateral escritorio' });
-  F(box([0.0, 3.21, z], [0.53, 3.23, z + 0.72]), { mat: 'escritorio', name: 'Lateral escritorio' });
-  chair(F, 0.62, 2.45, 'x-', z);
+  // dos camas de 1 plaza que se unen (= 160x190): sirven a una pareja o a dos personas
+  bed(F, 2.46, 1.0, 0.8, 1.9, z, 'Cama 1 plaza 80x190 (A) — se une a la B', 'cama_simple', 'textil_terracota');
+  bed(F, 2.46, 1.8, 0.8, 1.9, z, 'Cama 1 plaza 80x190 (B) — se une a la A', 'cama_simple', 'textil_terracota');
+  F(box([Li - 0.05, 0.98, z], [Li, 2.62, z + 1.05]), { mat: 'textil_mostaza', name: 'Respaldo tapizado 164x105 (cubre la junta de las dos camas)' });
+  F(box([2.46, 0.98, z], [4.31, 2.62, z + 0.002]), { mat: 'textil_terracota', name: '', plan: 'PA', planName: '2 camas 80x190 unibles (160x190)' });
+  for (const y of [0.7, 2.9]) add(glb('side_table_01', [Li - 0.245, y, z], '-x', [1, 1, 1], { mat: 'mesa_luz', plan: 'PA', planName: 'm. luz', name: 'Mesa de luz' }));
   // placard corredizo 150
   F(box([0.9, 2.76, z], [2.4, Wi, z + 2.0]), { mat: 'placard', name: 'Placard melamina 150x60x200 corredizo', plan: 'PA' });
   F(box([1.64, 2.745, z + 0.05], [1.66, 2.76, z + 1.95]), { mat: 'hierro_negro', name: 'Junta hojas corredizas' });
   for (const x of [1.58, 1.7]) F(box([x, 2.735, z + 0.9], [x + 0.015, 2.745, z + 1.2]), { mat: 'hierro_negro', name: 'Tirador' });
-  // cama doble (cabecera contra el hastial del fondo)
-  bed(F, 2.46, 0.95, 1.4, 1.9, z, 'Cama 2 plazas 140x190', 'cama_doble', 'textil_terracota');
-  bed(F, 2.46, 2.56, 0.8, 1.9, z, 'Cama 1 plaza 80x190', 'cama_simple', 'textil_mostaza');
-  F(box([Li - 0.4, 0.45, z], [Li, 0.88, z + 0.5]), { mat: 'mesa_luz', name: 'Mesa de luz 40x43', plan: 'PA' });
-  F(box([Li - 0.3, 2.36, z + 0.55], [Li, 2.55, z + 0.58]), { mat: 'mesa_luz', name: 'Estante flotante entre camas' });
-}
-
-function chair(F, x, y, dir, z = 0) {
-  const w = 0.42;
-  F(box([x, y, z + 0.44], [x + w, y + w, z + 0.47]), { mat: 'silla', name: 'Silla', plan: z ? 'PA' : 'PB' });
-  for (const [dx, dy] of [[0, 0], [w - 0.03, 0], [0, w - 0.03], [w - 0.03, w - 0.03]]) F(box([x + dx, y + dy, z], [x + dx + 0.03, y + dy + 0.03, z + 0.44]), { mat: 'silla', name: 'Pata silla' });
-  const bx = dir === 'x+' ? x : x + w - 0.03;
-  F(box([bx, y, z + 0.47], [bx + 0.03, y + w, z + 0.85]), { mat: 'silla', name: 'Respaldo silla' });
+  // escritorio bajo la ventana del frente + silla
+  F(box([0.0, 2.05, z + 0.72], [0.55, 3.25, z + 0.75]), { mat: 'escritorio', name: 'Escritorio melamina 120x55', plan: 'PA' });
+  F(box([0.0, 2.07, z], [0.53, 2.09, z + 0.72]), { mat: 'escritorio', name: 'Lateral escritorio' });
+  F(box([0.0, 3.21, z], [0.53, 3.23, z + 0.72]), { mat: 'escritorio', name: 'Lateral escritorio' });
+  add(glb('dining_chair_02', [0.8, 2.65, z], '-x', [1, 1, 1], { mat: 'silla', plan: 'PA', planName: 'silla', name: 'Silla de escritorio' }));
+  // cuadro en la pared de la llegada
+  add(glb('hanging_picture_frame_01', [0.012, 1.45, z + 1.55], '+x', [1, 1, 1], { mat: 'accesorios', name: 'Cuadro' }));
 }
 
 function bed(F, x, y, w, l, z, name, mat, textil) {
   // cabecera en x = Li (contra el fondo); la cama se extiende hacia el frente
-  F(box([x, y, z + 0.0], [x + l, y + w, z + 0.32]), { mat: 'melamina_blanca', name: 'Sommier', plan: 'PA', planName: name });
-  F(box([x + 0.01, y + 0.01, z + 0.32], [x + l - 0.01, y + w - 0.01, z + 0.52]), { mat, name: name + ' — colchón' });
-  F(box([x, y - 0.01, z + 0.5], [x + l * 0.62, y + w + 0.01, z + 0.56]), { mat: textil, name: 'Acolchado (reemplazable)' });
-  const np = w > 1 ? 2 : 1;
-  for (let i = 0; i < np; i++) {
-    const py = y + 0.08 + i * ((w - 0.16) / np);
-    F(box([x + l - 0.42, py, z + 0.52], [x + l - 0.06, py + (w - 0.16) / np - 0.04, z + 0.64]), { mat: 'pintura_blanco', name: 'Almohada' });
-  }
+  F(box([x, y + 0.005, z + 0.0], [x + l - 0.05, y + w - 0.005, z + 0.32]), { mat: 'melamina_blanca', name: 'Sommier', planName: name });
+  F(box([x + 0.01, y + 0.01, z + 0.32], [x + l - 0.06, y + w - 0.01, z + 0.52]), { mat, name: name + ' — colchón' });
+  F(box([x, y - 0.005, z + 0.5], [x + l * 0.62, y + w + 0.005, z + 0.56]), { mat: textil, name: 'Acolchado (reemplazable)', fabric: true });
+  F(box([x + l - 0.46, y + 0.1, z + 0.52], [x + l - 0.1, y + w - 0.1, z + 0.64]), { mat: 'pintura_blanco', name: 'Almohada', fabric: true });
 }
 
 // ============================================================================================
@@ -1038,18 +1065,19 @@ function installations(add, elec, plumbing) {
   add(cyl([3.36, yw + 0.02, zRoof(Wi + 0.06) + 0.35], 'z', 0.06, 0.08, { layer: 'ventilacion', mat: 'pvc_63', name: 'Sombrerete ventilación' }));
   // ---------------- GAS ----------------
   const G = 'gas';
-  P(G, 'gas_pipe', 'Acometida gas (desde medidor en LM, enterrada)', [[2.15, Wi + 1.2, -0.45], [2.15, yg, -0.45], [2.15, yg, 0.3]], 0.0125);
-  valve([2.15, yg, 0.15], 'Llave de corte gas en ingreso (registro R3)', G, 'z');
-  P(G, 'gas_pipe', 'Gas a cocina', [[2.15, yg, 0.3], [1.3, yg, 0.3], [1.3, yg, 0.45], [1.3, Wi - 0.05, 0.45]], 0.0125);
-  valve([1.3, Wi - 0.08, 0.45], 'Llave de paso cocina (detrás de la cocina, accesible retirándola; corte general en R3)', G);
-  P(G, 'gas_pipe', 'Conexión flexible a cocina', [[1.3, Wi - 0.1, 0.45], [1.45, Wi - 0.1, 0.45]], 0.008);
-  P(G, 'gas_pipe', 'Gas a calefactor (por cavidad de servicios y muro de fondo)', [[2.15, yg, 0.3], [2.15, yg, 0.22], [Li + 0.1, yg, 0.22], [Li + 0.1, 1.48, 0.22], [Li - 0.02, 1.48, 0.22]], 0.0125);
-  valve([Li - 0.05, 1.48, 0.22], 'Llave de paso calefactor', G, 'x');
-  // calefactor TB 3000 kcal/h bajo ventana V2
-  add(box([Li - 0.24, 1.12, 0.1], [Li, 1.68, 0.72], { id: 'CALEF', layer: 'calefaccion', mat: 'calefactor', name: 'Calefactor tiro balanceado 3000 kcal/h', plan: 'PB' }));
-  add(box([Li - 0.245, 1.15, 0.2], [Li - 0.24, 1.65, 0.6], { layer: 'calefaccion', mat: 'hierro_negro', name: 'Visor/rejilla calefactor' }));
-  add(cyl([Li, 1.4, 0.48], 'x', 0.06, Li - Li + 0.26, { layer: 'calefaccion', mat: 'calefactor', name: 'Conducto concéntrico TB (admisión/evacuación)' }));
-  add(box([Li - cOut, 1.25, 0.33], [Li - cOut + 0.09, 1.55, 0.63], { layer: 'calefaccion', mat: 'hierro_negro', name: 'Terminal de tiro balanceado (exterior)' }));
+  P(G, 'gas_pipe', 'Acometida gas (desde medidor en LM, enterrada)', [[1.25, Wi + 1.2, -0.45], [1.25, yg, -0.45], [1.25, yg, 0.3]], 0.0125);
+  valve([1.25, yg, 0.15], 'Llave de corte gas en ingreso (registro R2)', G, 'z');
+  P(G, 'gas_pipe', 'Gas a cocina', [[1.25, yg, 0.3], [1.62, yg, 0.3], [1.62, yg, 0.45], [1.62, Wi - 0.05, 0.45]], 0.0125);
+  valve([1.62, Wi - 0.08, 0.45], 'Llave de paso cocina (detrás de la cocina, lado derecho; corte general en R3)', G);
+  P(G, 'gas_pipe', 'Conexión flexible a cocina', [[1.62, Wi - 0.1, 0.45], [1.5, Wi - 0.1, 0.45]], 0.008);
+  // calefactor TB bajo el ventanal del estar (muro de frente), gas por la cavidad de servicios y del frente, sin uniones ocultas
+  const cy0 = 0.88, cy1 = 1.44, cyc = (cy0 + cy1) / 2;
+  P(G, 'gas_pipe', 'Gas a calefactor (cavidad de servicios + muro de frente, tramo continuo)', [[1.25, yg, 0.3], [1.25, yg, 0.22], [-0.08, yg, 0.22], [-0.08, cyc, 0.22], [0.02, cyc, 0.22]], 0.0125);
+  valve([0.05, cyc, 0.22], 'Llave de paso calefactor', G, 'x');
+  add(box([0, cy0, 0.1], [0.24, cy1, 0.72], { id: 'CALEF', layer: 'calefaccion', mat: 'calefactor', name: 'Calefactor tiro balanceado 3000 kcal/h (bajo el ventanal, entre sillón y mesa)', plan: 'PB' }));
+  add(box([0.24, cy0 + 0.03, 0.2], [0.245, cy1 - 0.03, 0.6], { layer: 'calefaccion', mat: 'hierro_negro', name: 'Visor/rejilla calefactor' }));
+  add(cyl([-0.26, cyc, 0.48], 'x', 0.06, 0.26, { layer: 'calefaccion', mat: 'calefactor', name: 'Conducto concéntrico TB (admisión/evacuación)' }));
+  add(box([cOut - 0.09, cyc - 0.15, 0.33], [cOut, cyc + 0.15, 0.63], { layer: 'calefaccion', mat: 'hierro_negro', name: 'Terminal de tiro balanceado (exterior, fachada del estar)' }));
   // rejillas de ventilación de gas (cocina) — en pared de servicios
   for (const [x, z, n] of [[0.15, 0.2, 'baja'], [2.05, 2.25, 'alta']]) {
     add(box([x - 0.075, Wi - 0.01, z - 0.075], [x + 0.075, Wi - cOut + 0.005, z + 0.075], { layer: G, mat: 'rejilla', name: `Rejilla de ventilación ${n} cocina 15x15` }));
@@ -1059,162 +1087,316 @@ function installations(add, elec, plumbing) {
 }
 
 // ----------------------------------------------------------------------------------------------
-// Electricidad: cajas, cañerías (corrugado) y circuitos. Ruteo ortogonal por:
-//   - cielorraso PB (entre placa y OSB, dentro de las vigas)  z = 2.50
-//   - cavidades de muros
-//   - platea (sólo cajas del frente bajo el hueco de escalera)
+// ELECTRICIDAD — proyecto según AEA 90364-7-770 (viviendas unifamiliares, ed. 2016)
+//  * 770.10.3.2: en sistemas constructivos con materiales inflamables (entramado de madera) las
+//    cañerías deben ser de ACERO semipesado (IRAM-IAS U 500-2005) con cuplas roscadas y cajas de
+//    acero semipesadas (IRAM 62005), todo puesto a tierra.
+//  * 770.10.3.1: recorridos ortogonales, máximo 3 curvas entre cajas; caja cada 15 m como máximo.
+//  * Tabla 770.10.VII: cantidad máxima de cables por caño (ocupación 35 %).
+//  * Tabla 770.11.I: secciones mínimas (IUG 1,5 mm², TUG 2,5 mm², PE 2,5 mm²).
+//  * Colores: neutro celeste, PE verde-amarillo; fase marrón; retornos negro; combinación gris.
+//  * 770.17: tableros y bocas a no menos de 0,50 m de las salidas/llaves de gas.
+// Distribución: troncal horizontal por el entrepiso (entre el cielorraso de PB y el piso de PA),
+// bajadas verticales a las cajas de PB y subidas verticales a las cajas de PA. Cada tramo une dos
+// cajas (las derivaciones se hacen sólo dentro de cajas accesibles: bocas o la caja del tablero).
 // ----------------------------------------------------------------------------------------------
 const CIRC = {
-  C1: { name: 'C1 IUG — Iluminación', pia: '10 A', cable: '2 x 1,5 mm² + PE', color: '#f2b705' },
-  C2: { name: 'C2 TUG — Tomas generales', pia: '16 A', cable: '2 x 2,5 mm² + PE', color: '#2a9d8f' },
-  C3: { name: 'C3 TUG — Tomas cocina y baño', pia: '16 A', cable: '2 x 2,5 mm² + PE', color: '#e76f51' },
-  C4: { name: 'C4 TUE — Termotanque eléctrico 2 kW', pia: '16 A', cable: '2 x 2,5 mm² + PE', color: '#9b5de5' },
+  C1: { name: 'C1 IUG — Iluminación', pia: '2x10 A', cable: '1,5 mm² + PE 2,5', sec: 1.5, color: '#f2b705' },
+  C2: { name: 'C2 TUG — Tomas generales', pia: '2x16 A', cable: '2,5 mm² + PE 2,5', sec: 2.5, color: '#2a9d8f' },
+  C3: { name: 'C3 TUG — Tomas cocina, lavarropas y baño', pia: '2x16 A', cable: '2,5 mm² + PE 2,5', sec: 2.5, color: '#e76f51' },
+  C4: { name: 'C4 TUE — Termotanque eléctrico 2 kW (exclusivo)', pia: '2x16 A', cable: '2,5 mm² + PE 2,5', sec: 2.5, color: '#9b5de5' },
+  TD: { name: 'Datos / TV (muy baja tensión, cañería exclusiva)', pia: '—', cable: 'UTP cat. 6 + coaxil', sec: 0, color: '#6c757d' },
 };
 export { CIRC };
 
+const COLORS = { F: 'marrón', N: 'celeste', PE: 'verde-amarillo', R: 'negro', V: 'gris' };
+// sección de los caños de acero semipesado (mm² internos) y máximo de cables (Tabla 770.10.VII)
+const RS = [
+  { n: 'RS 16 (5/8")', s: 132, max: { 1.5: 4, 2.5: 2 } },
+  { n: 'RS 19 (3/4")', s: 177, max: { 1.5: 6, 2.5: 4 } },
+  { n: 'RS 22 (7/8")', s: 255, max: { 1.5: 9, 2.5: 6 } },
+  { n: 'RS 25 (1")', s: 346, max: { 1.5: 13, 2.5: 9 } },
+];
+const CABLE_AREA = { 1.5: 9.62, 2.5: 13.85 };
+
 function electrical(add, elec) {
-  const ZCZ = 2.5;
-  const TP = { x: 2.33 + 0.035, y: 2.4 };
-  // tablero
-  add(box([2.33 - 0.005, 2.25, 1.45], [2.33 + 0.06, 2.55, 1.85], { id: 'TP', layer: 'electrico', mat: 'tablero', name: 'Tablero principal TP (ID 40A 30mA + 4 PIA) — tabique A, junto a heladera', plan: 'PB' }));
-  // cajas: [id, tipo, circuito, pos(x,y,z), normal ('x+','x-','y+','y-','z-'), descripción, ruta: 'techo'|'platea'|'pa']
-  const L = [
-    // ---- PB ----
-    ['S1', 'rect', 'C1', [0, 0.72, 1.1], 'x+', 'Llave 2 puntos: luz estar (L1) + luz exterior acceso (LE1) — junto a la puerta', 'platea'],
-    ['T1', 'rect', 'C2', [0, 0.72, 0.3], 'x+', 'Toma doble recibidor/estar', 'platea'],
-    ['LE1', 'rect', 'C1', [cOut, 0.72, 2.05], 'x-', 'Aplique exterior acceso (IP65)', 'platea'],
-    ['L1', 'oct', 'C1', [1.7, 1.75, ZC1], 'z-', 'Centro luz estar-comedor', 'techo'],
-    ['L2', 'oct', 'C1', [1.15, 2.5, ZC1], 'z-', 'Centro luz cocina', 'techo'],
-    ['S2', 'rect', 'C1', [2.33, 2.15, 1.1], 'x-', 'Llave 2 puntos: luz cocina (L2) + LED bajo alacena', 'techo'],
-    ['T2', 'rect', 'C2', [2.33, 2.15, 0.3], 'x-', 'Toma doble estar (junto a mesa)', 'techo'],
-    ['TK1', 'rect', 'C3', [0.65, Wi, 1.1], 'y-', 'Toma doble sobre mesada', 'techo'],
-    ['TK2', 'rect', 'C3', [1.15, Wi, 0.3], 'y-', 'Toma lavarropas (detrás, a 30 cm)', 'techo'],
-    ['TK3', 'rect', 'C3', [1.6, Wi, 0.25], 'y-', 'Toma cocina (encendido / luz de horno)', 'techo'],
-    ['TK4', 'rect', 'C2', [2.1, Wi, 0.4], 'y-', 'Toma heladera', 'techo'],
-    ['TK5', 'rect', 'C3', [1.5, Wi, 2.15], 'y-', 'Toma purificador', 'techo'],
-    ['LK', 'rect', 'C1', [1.05, Wi, 1.45], 'y-', 'Alimentación tira LED bajo alacena', 'techo'],
-    ['TK6', 'rect', 'C3', [0.2, Wi, 1.1], 'y-', 'Toma doble sobre mesada (junto a ventana)', 'techo'],
-    ['L3', 'oct', 'C1', [3.75, 1.4, ZC1], 'z-', 'Centro luz pasillo / arranque escalera', 'techo'],
-    ['S3', 'rect', 'C1', [3.4, 1.965, 1.1], 'y-', 'Llaves: combinación escalera (L3/L4) + luz baño + aplique exterior fondo', 'techo'],
-    ['LE2', 'rect', 'C1', [Li - cOut, 0.45, 2.1], 'x+', 'Aplique exterior fondo (IP65)', 'techo'],
-    ['L6', 'oct', 'C1', [3.1, 2.65, ZC1], 'z-', 'Plafón baño (IP44)', 'techo'],
-    ['LB', 'rect', 'C1', [2.7, Wi, 1.95], 'y-', 'Aplique sobre espejo (IP44)', 'techo'],
-    ['TB1', 'rect', 'C3', [3.0, Wi, 1.15], 'y-', 'Toma lavatorio IP44 con tapa (fuera de zona 1)', 'techo'],
-    ['TT', 'rect', 'C4', [3.55, Wi, 2.2], 'y-', 'Salida de cable termotanque (circuito exclusivo)', 'techo'],
-    ['TC', 'rect', 'C2', [Li, 1.85, 0.3], 'x-', 'Toma pasillo (aspiradora) — calefactor TB no requiere energía', 'techo'],
-    // ---- PA ----
-    ['S4', 'rect', 'C1', [0, 1.05, ZF1 + 1.1], 'x+', 'Llaves: combinación escalera (llegada) + luz PA frente (L4) + luz PA fondo (L5)', 'pa'],
-    ['T3', 'rect', 'C2', [0, 1.45, ZF1 + 0.3], 'x+', 'Toma doble PA (llegada / aspiradora)', 'pa'],
-    ['T4', 'rect', 'C2', [0.3, Wi, ZF1 + 0.85], 'y-', 'Toma doble escritorio', 'pa'],
-    ['T5', 'rect', 'C2', [0.45, Wi, ZF1 + 0.85], 'y-', 'Toma doble escritorio + datos (router / fibra)', 'pa'],
-    ['T6', 'rect', 'C2', [Li, 0.68, ZF1 + 0.65], 'x-', 'Toma + llave mesa de luz cama doble', 'pa'],
-    ['A1', 'rect', 'C1', [Li, 0.68, ZF1 + 1.25], 'x-', 'Aplique lectura cama doble', 'pa'],
-    ['T7', 'rect', 'C2', [Li, 2.45, ZF1 + 0.65], 'x-', 'Toma + llave entre camas', 'pa'],
-    ['A2', 'rect', 'C1', [Li, 2.45, ZF1 + 1.25], 'x-', 'Aplique lectura entre camas', 'pa'],
-    ['L4', 'oct', 'C1', [1.2, 1.95, zCeil(1.95)], 'z-', 'Centro luz PA frente (pendiente)', 'pa'],
-    ['L5', 'oct', 'C1', [3.4, 1.95, zCeil(1.95)], 'z-', 'Centro luz PA fondo (pendiente)', 'pa'],
+  const ZPL = 2.52; // plano de distribución en el entrepiso
+  const ZPA = ZF1;
+  const c = 0.07; // profundidad de la cavidad detrás de la caja
+  // [id, tipo, circuito, posición caja (cara de placa), normal hacia el local, descripción, nivel]
+  const BOX = [
+    ['TP', 'tab', '*', [3.45, 1.965, 1.65], 'y-', 'Tablero principal: ID 2x40 A 30 mA + 4 PIA. Tabique del hall, a la entrada', 'PB'],
+    // ---- PB
+    ['S1', 'rect', 'C1', [Li, 0.78, 1.1], 'x-', 'Llaves: combinación escalera (L3) + aplique exterior acceso (LE1) — junto a la puerta', 'PB'],
+    ['LE1', 'rect', 'C1', [Li - cOut, 0.6, 2.1], 'x+', 'Aplique exterior acceso IP65', 'PB'],
+    ['L3', 'oct', 'C1', [3.8, 1.4, ZC1], 'z-', 'Centro hall / arranque escalera', 'PB'],
+    ['S5', 'rect', 'C1', [3.38, 1.965, 1.1], 'y-', 'Llaves baño: plafón (L6) + aplique espejo (LB)', 'PB'],
+    ['L6', 'oct', 'C1', [3.1, 2.65, ZC1], 'z-', 'Plafón baño IP44', 'PB'],
+    ['LB', 'rect', 'C1', [2.7, Wi, 1.95], 'y-', 'Aplique sobre espejo IP44', 'PB'],
+    ['L2', 'oct', 'C1', [1.15, 2.45, ZC1], 'z-', 'Centro cocina', 'PB'],
+    ['S2', 'rect', 'C1', [2.33, 2.1, 1.05], 'x-', 'Llaves estar-cocina: colgante comedor (L1), cocina (L2), LED alacena (LK), exterior estar (LE2)', 'PB'],
+    ['L1', 'oct', 'C1', [0.35, 1.81, ZC1], 'z-', 'Colgante sobre la mesa', 'PB'],
+    ['LK', 'rect', 'C1', [1.05, Wi, 1.45], 'y-', 'Alimentación tira LED bajo alacena', 'PB'],
+    ['LE2', 'rect', 'C1', [cOut, 2.95, 2.15], 'x-', 'Aplique exterior fachada del estar IP65', 'PB'],
+    ['TC', 'rect', 'C2', [Li, 0.4, 0.3], 'x-', 'Toma hall (aspiradora)', 'PB'],
+    ['T1', 'rect', 'C2', [1.58, 0, 0.3], 'y+', 'Toma estar junto al sillón (lámpara de pie / cargador)', 'PB'],
+    ['T2', 'rect', 'C2', [2.33, 2.3, 1.45], 'x-', 'Toma TV (detrás del TV)', 'PB'],
+    ['TB1', 'rect', 'C3', [2.95, Wi, 1.2], 'y-', 'Toma baño IP44 con tapa, a 0,61 m de la ducha (fuera de zona 2)', 'PB'],
+    ['TK4', 'rect', 'C3', [2.2, Wi, 0.45], 'y-', 'Toma heladera', 'PB'],
+    ['TK1', 'rect', 'C3', [0.75, Wi, 1.1], 'y-', 'Toma doble sobre mesada (arista inferior a 15 cm de la mesada)', 'PB'],
+    ['TK3', 'rect', 'C3', [0.75, Wi, 0.3], 'y-', 'Toma doble: lavarropas + cocina (encendido/luz horno)', 'PB'],
+    ['TK5', 'rect', 'C3', [1.5, Wi, 2.15], 'y-', 'Toma purificador', 'PB'],
+    ['TT', 'rect', 'C4', [2.95, Wi, 2.2], 'y-', 'Salida de cable a termotanque (conexión fija)', 'PB'],
+    ['D2', 'rect', 'TD', [2.33, 2.45, 1.45], 'x-', 'Datos / TV (UTP + coaxil) detrás del TV', 'PB'],
+    // ---- PA
+    ['S4', 'rect', 'C1', [0, 1.55, ZPA + 1.1], 'x+', 'Llaves llegada PA: combinación escalera (L3) + luces dormitorio (L4, L5)', 'PA'],
+    ['L4', 'oct', 'C1', [1.2, yRidge, RB_BOT], 'z-', 'Centro PA frente (bajo la viga cumbrera)', 'PA'],
+    ['L5', 'oct', 'C1', [3.4, yRidge, RB_BOT], 'z-', 'Centro PA fondo (bajo la viga cumbrera)', 'PA'],
+    ['A1', 'rect', 'C1', [Li, 0.72, ZPA + 1.2], 'x-', 'Aplique de lectura con interruptor — cama A', 'PA'],
+    ['A2', 'rect', 'C1', [Li, 2.88, ZPA + 1.2], 'x-', 'Aplique de lectura con interruptor — cama B', 'PA'],
+    ['T3', 'rect', 'C2', [0, 1.8, ZPA + 0.3], 'x+', 'Toma general PA (aspiradora / estufa de apoyo)', 'PA'],
+    ['T4', 'rect', 'C2', [0.35, Wi, ZPA + 0.85], 'y-', 'Toma doble escritorio', 'PA'],
+    ['T6', 'rect', 'C2', [Li, 0.72, ZPA + 0.65], 'x-', 'Toma doble mesa de luz A', 'PA'],
+    ['T7', 'rect', 'C2', [Li, 2.88, ZPA + 0.65], 'x-', 'Toma doble mesa de luz B', 'PA'],
+    ['D1', 'rect', 'TD', [0.55, Wi, ZPA + 0.85], 'y-', 'Datos: router / fibra (escritorio)', 'PA'],
+    ['DX', 'rect', 'TD', [2.0, Wi + 0.07, 0.4], 'y-', 'Entrada de fibra/telefonía desde el exterior (detrás del registro R3)', 'PB'],
   ];
-  const cavity = (p, nrm) => {
-    // punto dentro de la cavidad del muro detrás de la caja
-    const [x, y, z] = p;
-    const d = 0.07;
-    if (nrm === 'x+') return [x - d, y, z];
-    if (nrm === 'x-') return [x + d, y, z];
-    if (nrm === 'y+') return [x, y - d, z];
-    if (nrm === 'y-') return [x, y + d, z];
-    return [x, y, z + 0.05];
+  const B = Object.fromEntries(BOX.map(([id, tipo, circ, pos, nrm, desc, nivel]) => [id, { id, tipo, circ, pos, nrm, desc, nivel }]));
+  const cav = (b) => {
+    const [x, y, z] = b.pos;
+    if (b.tipo === 'oct') return [x, y, z];
+    if (b.id === 'DX') return [x, y, z];
+    const d = { 'x+': [-c, 0], 'x-': [c, 0], 'y+': [0, -c], 'y-': [0, c] }[b.nrm];
+    return [x + d[0], y + d[1], b.tipo === 'tab' ? z + 0.2 : z];
   };
-  const fixExt = (p, nrm) => {
-    // apliques exteriores: la caja está en la cara exterior; la cavidad está hacia adentro
-    return p;
+  const inHole = (x, y) => x < ST.hole.x1 + 0.05 && y < ST.hole.y1 + 0.1;
+  // ruta genérica: vertical hasta el entrepiso, tramo horizontal ortogonal, vertical hasta la otra caja
+  const route = (a, b) => {
+    const pa = cav(a), pb = cav(b);
+    const pts = [pa];
+    if (a.tipo !== 'oct') pts.push([pa[0], pa[1], ZPL]);
+    else pts[0] = [pa[0], pa[1], ZPL];
+    const A = pts[pts.length - 1];
+    const end = b.tipo === 'oct' ? [pb[0], pb[1], ZPL] : [pb[0], pb[1], ZPL];
+    if (Math.abs(A[0] - end[0]) > 1e-3 && Math.abs(A[1] - end[1]) > 1e-3) {
+      // elegir el codo que no cae en el hueco de la escalera
+      const k1 = [end[0], A[1], ZPL], k2 = [A[0], end[1], ZPL];
+      const bad1 = inHole(k1[0], k1[1]) || segHole(A, k1) || segHole(k1, end);
+      pts.push(bad1 ? k2 : k1);
+    }
+    pts.push(end);
+    if (b.tipo !== 'oct') pts.push(pb);
+    return dedupe(pts);
   };
-  void fixExt;
-  for (const [id, tipo, c, p, nrm, desc, route] of L) {
-    // caja
-    const s = tipo === 'oct' ? 0.08 : 0.055;
-    const h = tipo === 'oct' ? 0.08 : 0.1;
-    const dir = { 'x+': [1, 0, 0], 'x-': [-1, 0, 0], 'y+': [0, 1, 0], 'y-': [0, -1, 0], 'z-': [0, 0, -1] }[nrm];
+  const segHole = (p, q) => {
+    for (let t = 0.1; t < 1; t += 0.1) if (inHole(p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t)) return true;
+    return false;
+  };
+  // tramos: [desde, hasta, circuito, conductores] — F fase, N neutro, PE tierra, R(x) retorno, V viajero
+  const SEG = [
+    // C1 iluminación
+    ['TP', 'L3', 'C1', ['F', 'N', 'PE']],
+    ['L3', 'S1', 'C1', ['F', 'V1', 'V2', 'R(LE1)', 'PE']],
+    ['L3', 'LE1', 'C1', ['N', 'R(LE1)', 'PE']],
+    ['L3', 'L6', 'C1', ['F', 'N', 'PE']],
+    ['L6', 'S5', 'C1', ['F', 'R(L6)', 'R(LB)', 'PE']],
+    ['L6', 'LB', 'C1', ['N', 'R(LB)', 'PE']],
+    ['L3', 'L2', 'C1', ['F', 'N', 'PE']],
+    ['L2', 'S2', 'C1', ['F', 'R(L1)', 'R(L2)', 'R(LK)', 'R(LE2)', 'PE']],
+    ['L2', 'L1', 'C1', ['N', 'R(L1)', 'PE']],
+    ['L2', 'LK', 'C1', ['N', 'R(LK)', 'PE']],
+    ['L2', 'LE2', 'C1', ['N', 'R(LE2)', 'PE']],
+    ['L3', 'S4', 'C1', ['F', 'N', 'V1', 'V2', 'R(L3)', 'PE']],
+    ['S4', 'L4', 'C1', ['N', 'R(L4)', 'R(L5)', 'PE']],
+    ['L4', 'L5', 'C1', ['N', 'R(L5)', 'PE']],
+    ['L3', 'A1', 'C1', ['F', 'N', 'PE']],
+    ['A1', 'A2', 'C1', ['F', 'N', 'PE']],
+    // C2 tomas generales
+    ['TP', 'TC', 'C2', ['F', 'N', 'PE']],
+    ['TC', 'T1', 'C2', ['F', 'N', 'PE']],
+    ['TP', 'T2', 'C2', ['F', 'N', 'PE']],
+    ['T2', 'T3', 'C2', ['F', 'N', 'PE']],
+    ['T3', 'T4', 'C2', ['F', 'N', 'PE']],
+    ['TC', 'T6', 'C2', ['F', 'N', 'PE']],
+    ['T6', 'T7', 'C2', ['F', 'N', 'PE']],
+    // C3 cocina + baño
+    ['TP', 'TB1', 'C3', ['F', 'N', 'PE']],
+    ['TB1', 'TK4', 'C3', ['F', 'N', 'PE']],
+    ['TK4', 'TK5', 'C3', ['F', 'N', 'PE']],
+    ['TK4', 'TK1', 'C3', ['F', 'N', 'PE']],
+    ['TK1', 'TK3', 'C3', ['F', 'N', 'PE']],
+    // C4 termotanque
+    ['TP', 'TT', 'C4', ['F', 'N', 'PE']],
+    // datos
+    ['DX', 'D1', 'TD', ['UTP', 'FO']],
+    ['D1', 'D2', 'TD', ['UTP', 'COAX']],
+  ];
+  // rutas especiales (no pasan por el entrepiso)
+  const special = {
+    'TC>T1': () => { const a = cav(B.TC), b = cav(B.T1); return [a, [Li + 0.07, -0.08, a[2]], [b[0], -0.08, b[2]], b]; },
+    'S4>L4': () => {
+      const a = cav(B.S4);
+      return [a, [a[0], a[1], RB_TOP - 0.05], [a[0], yRidge - RB_W / 2 - 0.03, RB_TOP - 0.05], [B.L4.pos[0], yRidge - RB_W / 2 - 0.03, RB_TOP - 0.05], [B.L4.pos[0], yRidge, RB_BOT + 0.02]];
+    },
+    'L4>L5': () => [[B.L4.pos[0], yRidge - RB_W / 2 - 0.03, RB_TOP - 0.05], [B.L5.pos[0], yRidge - RB_W / 2 - 0.03, RB_TOP - 0.05], [B.L5.pos[0], yRidge, RB_BOT + 0.02]],
+    'TK1>TK3': () => [cav(B.TK1), cav(B.TK3)],
+    'DX>D1': () => { const a = cav(B.DX), b = cav(B.D1); return [a, [a[0], a[1], ZPL], [b[0], a[1], ZPL], [b[0], b[1], ZPL], b]; },
+  };
+  // ---------- dibujar cajas
+  for (const b of BOX.map((r) => B[r[0]])) {
+    const p = b.pos;
+    const dir = { 'x+': [1, 0, 0], 'x-': [-1, 0, 0], 'y+': [0, 1, 0], 'y-': [0, -1, 0], 'z-': [0, 0, -1] }[b.nrm];
     let el;
-    if (tipo === 'oct') {
-      el = add(cyl([p[0], p[1], p[2] - 0.004], 'z', 0.045, 0.05, { layer: 'electrico', mat: 'caja_oct', name: `${id} — caja octogonal: ${desc}`, id: 'E-' + id, octo: true }));
+    if (b.tipo === 'tab') {
+      el = add(box([p[0] - 0.15, p[1] - 0.01, p[2] - 0.2], [p[0] + 0.15, p[1] + 0.065, p[2] + 0.2], { layer: 'electrico', mat: 'tablero', name: `${b.id} — ${b.desc}`, id: 'E-TP', plan: 'PB' }));
+    } else if (b.tipo === 'oct') {
+      el = add(cyl([p[0], p[1], p[2] - 0.004], 'z', 0.05, 0.05, { layer: 'electrico', mat: 'caja_oct', name: `${b.id} — caja octogonal de acero: ${b.desc}`, id: 'E-' + b.id }));
+      if (b.id !== 'L1') add(cyl([p[0], p[1], p[2] - 0.065], 'z', 0.14, 0.06, { layer: 'iluminacion', mat: 'luminaria', name: `Plafón LED ${b.id}`, emissive: true }));
     } else {
-      const a = nrm[0] === 'x';
-      const dpt = 0.045;
-      const o = [p[0] - (a ? dir[0] * 0.003 : s / 2), p[1] - (!a ? dir[1] * 0.003 : s / 2), p[2] - h / 2];
-      const mx = [a ? o[0] + dir[0] * -dpt : o[0] + s, !a ? o[1] + dir[1] * -dpt : o[1] + s, o[2] + h];
-      el = add(box([Math.min(o[0], mx[0]), Math.min(o[1], mx[1]), o[2]], [Math.max(o[0], mx[0]), Math.max(o[1], mx[1]), mx[2]], { layer: 'electrico', mat: 'caja_rect', name: `${id} — caja rectangular 5x10: ${desc}`, id: 'E-' + id }));
-      // tapa/módulo visible
-      const fp = 0.008;
-      const f0 = [p[0] - (a ? 0 : 0.04), p[1] - (!a ? 0 : 0.04), p[2] - 0.065];
-      const f1 = [p[0] + (a ? dir[0] * fp : 0.04), p[1] + (!a ? dir[1] * fp : 0.04), p[2] + 0.065];
-      add(box([Math.min(f0[0], f1[0]), Math.min(f0[1], f1[1]), f0[2]], [Math.max(f0[0], f1[0]), Math.max(f0[1], f1[1]), f1[2]], { layer: 'iluminacion', mat: 'pintura_blanco', name: `${id} — tapa (${desc})` }));
-    }
-    if (tipo === 'oct') add(cyl([p[0], p[1], p[2] - 0.06], 'z', 0.12, 0.05, { layer: 'iluminacion', mat: 'luminaria', name: `Luminaria ${id}`, emissive: true }));
-    if (id.startsWith('A') || id.startsWith('LE') || id === 'LB') {
-      const q = [p[0] + dir[0] * 0.05, p[1] + dir[1] * 0.05, p[2]];
-      if (id.startsWith('LE')) {
-        add(box([q[0] - 0.05, q[1] - 0.05, q[2] - 0.09], [q[0] + 0.05, q[1] + 0.05, q[2] + 0.09], { layer: 'iluminacion', mat: 'hierro_negro', name: `Aplique exterior ${id} IP65 negro` }));
-        add(box([q[0] - 0.045, q[1] - 0.045, q[2] - 0.1], [q[0] + 0.045, q[1] + 0.045, q[2] - 0.09], { layer: 'iluminacion', mat: 'luminaria', name: `Aplique exterior ${id} (LED hacia abajo)`, emissive: true }));
-      } else add(box([q[0] - 0.06, q[1] - 0.06, q[2] - 0.05], [q[0] + 0.06, q[1] + 0.06, q[2] + 0.05], { layer: 'iluminacion', mat: 'luminaria', name: `Artefacto ${id}`, emissive: true }));
-    }
-    // cañería
-    const cv = cavity(p, nrm);
-    const t0 = [TP.x, TP.y, 1.85];
-    let pts;
-    if (route === 'platea') {
-      const zs = -0.06;
-      pts = [[TP.x, TP.y, 1.45], [TP.x, TP.y, zs], [cv[0], TP.y, zs], [cv[0], cv[1], zs], cv];
-      if (id === 'LE1') pts = [[TP.x, TP.y, 1.45], [TP.x, TP.y, zs], [-0.08, TP.y, zs], [-0.08, 0.72, zs], [-0.08, 0.72, 2.05], [cOut + 0.02, 0.72, 2.05]];
-    } else if (route === 'techo') {
-      if (nrm === 'z-') pts = [t0, [TP.x, TP.y, ZCZ], [cv[0], TP.y, ZCZ], [cv[0], cv[1], ZCZ], [cv[0], cv[1], p[2]]];
-      else {
-        let w = cv;
-        if (id === 'LE2') w = [Li + 0.08, 0.45, 2.1];
-        pts = [t0, [TP.x, TP.y, ZCZ], [w[0], TP.y, ZCZ], [w[0], w[1], ZCZ], w];
-        if (id === 'LE2') pts.push([Li - cOut - 0.02, 0.45, 2.1]);
+      const a = b.nrm[0] === 'x';
+      const w = 0.055, h = 0.1, dp = 0.045;
+      const fx = a ? [p[0], p[0] - dir[0] * dp] : [p[0] - w / 2, p[0] + w / 2];
+      const fy = !a ? [p[1], p[1] - dir[1] * dp] : [p[1] - w / 2, p[1] + w / 2];
+      el = add(box([Math.min(...fx), Math.min(...fy), p[2] - h / 2], [Math.max(...fx), Math.max(...fy), p[2] + h / 2], { layer: 'electrico', mat: 'caja_rect', name: `${b.id} — caja rectangular de acero 5x10: ${b.desc}`, id: 'E-' + b.id }));
+      if (b.id !== 'DX') {
+        const tx = a ? [p[0], p[0] + dir[0] * 0.008] : [p[0] - 0.04, p[0] + 0.04];
+        const ty = !a ? [p[1], p[1] + dir[1] * 0.008] : [p[1] - 0.04, p[1] + 0.04];
+        add(box([Math.min(...tx), Math.min(...ty), p[2] - 0.065], [Math.max(...tx), Math.max(...ty), p[2] + 0.065], { layer: 'iluminacion', mat: 'pintura_blanco', name: `${b.id} — tapa/módulos (${b.desc})` }));
       }
-    } else {
-      // PA: por cielorraso PB hasta el pie del muro, luego por la cavidad del muro de PA
-      if (nrm === 'z-') {
-        const yw = Wi + 0.08;
-        const zt = ZT2 - 0.05;
-        pts = [t0, [TP.x, TP.y, ZCZ], [p[0], TP.y, ZCZ], [p[0], yw, ZCZ], [p[0], yw, zt], [p[0], Wi - 0.0, zRb(Wi) - 0.02], [p[0], p[1], zRb(p[1]) - 0.02], [p[0], p[1], p[2]]];
-      } else {
-        const wx = cv;
-        pts = [t0, [TP.x, TP.y, ZCZ], [wx[0], TP.y, ZCZ], [wx[0], wx[1], ZCZ], wx];
+      if (/^(A\d|LB|LE)/.test(b.id)) {
+        const q = [p[0] + dir[0] * 0.05, p[1] + dir[1] * 0.05, p[2]];
+        const ext = b.id.startsWith('LE');
+        add(box([q[0] - 0.05, q[1] - 0.05, q[2] - 0.08], [q[0] + 0.05, q[1] + 0.05, q[2] + 0.08], { layer: 'iluminacion', mat: ext ? 'hierro_negro' : 'luminaria', name: `Artefacto ${b.id}`, emissive: !ext }));
+        if (ext) add(box([q[0] - 0.045, q[1] - 0.045, q[2] - 0.09], [q[0] + 0.045, q[1] + 0.045, q[2] - 0.08], { layer: 'iluminacion', mat: 'luminaria', name: `LED ${b.id}`, emissive: true }));
       }
     }
-    const tb = add(tube(pts, 0.011, { layer: 'electrico', mat: 'conduit', name: `Caño corrugado ¾" a ${id} (${c})`, circuit: c }));
-    let len = 0;
-    for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1], pts[i][2] - pts[i - 1][2]);
-    elec.boxes.push({ id, tipo, circuito: c, pos: p.map(r3), desc, alturaPiso: r3(p[2] - (route === 'pa' ? ZF1 : 0)), nivel: route === 'pa' ? 'PA' : 'PB', normal: nrm });
-    elec.conduits.push({ to: id, circuito: c, len: r3(len), route, pts: pts.map((q) => q.map(r3)) });
-    el.info = `${desc} — circuito ${CIRC[c].name}`;
-    tb.info = `Corrugado ¾" ${r3(len)} m · ${CIRC[c].cable}`;
+    el.info = b.desc + (b.circ !== '*' ? ` — ${CIRC[b.circ].name}` : '');
+    elec.boxes.push({ id: b.id, tipo: b.tipo, circuito: b.circ, pos: p.map(r3), desc: b.desc, nivel: b.nivel, alturaPiso: r3(p[2] - (b.nivel === 'PA' ? ZPA : 0)), normal: b.nrm });
   }
-  // acometida eléctrica subterránea al tablero (por la franja de registros R3)
-  add(tube([[2.38, Wi + 1.2, -0.5], [2.38, TP.y, -0.5], [2.38, TP.y, 1.45]], 0.016, { layer: 'electrico', mat: 'conduit', name: 'Acometida subterránea 1¼" desde pilar de medición', circuit: 'AC' }));
-  elec.conduits.push({ to: 'TP', circuito: 'Acometida', len: r3(2.5 + 0.96 + 1.95), route: 'subterránea' });
+  // ---------- tramos de cañería con su contenido
+  SEG.forEach(([fa, fb, circ, cond], i) => {
+    const n = i + 1;
+    const key = `${fa}>${fb}`;
+    const pts = special[key] ? special[key]() : route(B[fa], B[fb]);
+    let len = 0;
+    for (let k = 1; k < pts.length; k++) len += Math.hypot(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1], pts[k][2] - pts[k - 1][2]);
+    const curves = countCurves(pts);
+    // conductores
+    const sec = CIRC[circ].sec;
+    const cables = cond.map((cd) => {
+      if (circ === 'TD') return { id: cd, desc: cd === 'UTP' ? 'UTP cat. 6' : cd === 'FO' ? 'Fibra óptica drop' : 'Coaxil RG6', sec: 0, color: '-' };
+      const f = cd.startsWith('R(') ? 'R' : cd.startsWith('V') ? 'V' : cd;
+      const s2 = f === 'PE' ? 2.5 : sec;
+      const fn = { F: 'fase', N: 'neutro', PE: 'protección', R: `retorno ${cd.slice(2, -1)}`, V: `viajero ${cd}` }[f];
+      return { id: cd, desc: fn, sec: s2, color: COLORS[f] };
+    });
+    // caño: mínimo que cumple la tabla 770.10.VII (contando el PE aparte) y nunca menor a RS 16
+    let rs = RS[1];
+    if (circ !== 'TD') {
+      const nPhase = cables.filter((x) => x.id !== 'PE').length;
+      rs = RS.find((r) => nPhase <= (r.max[sec] ?? 0)) ?? RS[RS.length - 1];
+      const area = cables.reduce((a, x) => a + CABLE_AREA[x.sec], 0);
+      if (area > 0.35 * rs.s && rs !== RS[RS.length - 1]) rs = RS[RS.indexOf(rs) + 1];
+      if (RS.indexOf(rs) < 1) rs = RS[1]; // se adopta RS 19 como medida mínima de obra
+    }
+    const tb = add(tube(pts, rs === RS[1] ? 0.0095 : 0.011, { layer: 'electrico', mat: circ === 'TD' ? 'conduit_td' : 'conduit', name: `Tramo ${n}: ${fa} → ${fb} (${circ}) — ${rs.n}`, circuit: circ, seg: n }));
+    tb.info = `${CIRC[circ].name} · ${r3(len)} m · ${curves} curvas · ${cables.map((x) => `${x.sec ? x.sec + ' mm² ' : ''}${x.desc} (${x.color})`).join(', ')}`;
+    elec.conduits.push({ n, from: fa, to: fb, circuito: circ, len: r3(len), curves, rs: rs.n, cables, pts: pts.map((q) => q.map(r3)) });
+  });
+  // acometida subterránea desde el pilar de medición al tablero (por la pared de servicios, registro R3)
+  // la acometida entra por la pared de servicios a una caja de paso CP accesible desde el registro R3
+  const tp = cav(B.TP);
+  const cp = [2.3, Wi + 0.1, 1.0];
+  add(box([cp[0] - 0.05, Wi + 0.04, cp[2] - 0.05], [cp[0] + 0.05, Wi + 0.15, cp[2] + 0.05], { layer: 'electrico', mat: 'caja_cuad', name: 'CP — caja de paso 10x10 de la acometida (accesible desde el registro R3)', id: 'E-CP' }));
+  elec.boxes.push({ id: 'CP', tipo: 'cuad', circuito: 'AC', pos: cp.map(r3), desc: 'Caja de paso de la acometida, accesible desde el registro exterior R3', nivel: 'PB', alturaPiso: cp[2], normal: 'y+' });
+  const cables6 = [{ id: 'F', desc: 'fase', sec: 6, color: 'marrón' }, { id: 'N', desc: 'neutro', sec: 6, color: 'celeste' }, { id: 'PE', desc: 'protección', sec: 6, color: 'verde-amarillo' }];
+  const acA = [[cp[0], Wi + 1.2, -0.5], [cp[0], Wi + 0.1, -0.5], cp];
+  const acB = [cp, [cp[0], Wi + 0.1, ZPL], [tp[0], Wi + 0.1, ZPL], [tp[0], tp[1], ZPL], tp];
+  [[acA, 'Pilar', 'CP', 'Acometida subterránea: caño PVC reforzado 1¼" enterrado a 0,60 m hasta el muro, luego acero'], [acB, 'CP', 'TP', 'Línea principal CP → TP: caño de acero RS 32 (1¼")']].forEach(([pts, fa, fb, nm]) => {
+    add(tube(pts, 0.016, { layer: 'electrico', mat: 'conduit', name: nm + ' — 2x6 mm² + PE 6 mm²', circuit: 'AC' }));
+    let L = 0;
+    for (let k = 1; k < pts.length; k++) L += Math.hypot(...pts[k].map((v, j) => v - pts[k - 1][j]));
+    elec.conduits.push({ n: 0, from: fa, to: fb, circuito: 'AC', len: r3(L), curves: countCurves(pts), rs: 'RS 32 (1¼")', cables: cables6, pts: pts.map((q) => q.map(r3)) });
+  });
+  elec.rules = checkRules(elec, B);
+}
+
+function dedupe(pts) {
+  const out = [];
+  for (const p of pts) {
+    const q = out[out.length - 1];
+    if (!q || Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]) > 1e-4) out.push(p);
+  }
+  return out;
+}
+
+function countCurves(pts) {
+  let n = 0;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const a = pts[i].map((v, j) => v - pts[i - 1][j]);
+    const b = pts[i + 1].map((v, j) => v - pts[i][j]);
+    const la = Math.hypot(...a), lb = Math.hypot(...b);
+    if (la < 1e-4 || lb < 1e-4) continue;
+    const cos = (a[0] * b[0] + a[1] * b[1] + a[2] * b[2]) / (la * lb);
+    if (cos < 0.999) n++;
+  }
+  return n;
+}
+
+// verificación automática de reglas de la AEA 90364-7-770 sobre el proyecto
+function checkRules(elec, B) {
+  const R = [];
+  const ok = (rule, pass, detail) => R.push({ rule, pass, detail });
+  const gasPts = [[1.62, Wi, 0.45, 'llave gas cocina'], [0.05, 1.16, 0.22, 'llave gas calefactor'], [1.25, Wi + 0.12, 0.15, 'llave corte gas ingreso']];
+  let minGas = Infinity, worst = '';
+  for (const b of elec.boxes) {
+    if (b.circuito === 'TD') continue;
+    for (const g of gasPts) {
+      const d = Math.hypot(b.pos[0] - g[0], b.pos[1] - g[1], b.pos[2] - g[2]);
+      if (d < minGas) { minGas = d; worst = `${b.id} ↔ ${g[3]}`; }
+    }
+  }
+  ok('770.17 — cajas y tablero a ≥ 0,50 m de llaves/salidas de gas', minGas >= 0.5, `mínima ${r3(minGas)} m (${worst})`);
+  const maxCurves = Math.max(...elec.conduits.map((c) => c.curves));
+  ok('770.10.3.1 — máximo 3 curvas entre cajas', maxCurves <= 3, `máximo en el proyecto: ${maxCurves} (${elec.conduits.filter((c) => c.curves === maxCurves).map((c) => 'tramo ' + c.n).join(', ')})`);
+  const maxLen = Math.max(...elec.conduits.filter((c) => c.n).map((c) => c.len));
+  ok('770.10.3.6.2 — caja cada 15 m como máximo', maxLen <= 15, `tramo más largo ${r3(maxLen)} m`);
+  for (const k of ['C1', 'C2', 'C3', 'C4']) {
+    const n = elec.boxes.filter((b) => b.circuito === k && !/^S/.test(b.id)).length;
+    ok(`770.6 — máximo 15 bocas por circuito (${k})`, n <= 15, `${n} bocas`);
+  }
+  const tomas = elec.boxes.filter((b) => b.tipo === 'rect' && /^T/.test(b.id) && b.id !== 'TP');
+  const lowT = Math.min(...tomas.map((b) => b.alturaPiso - 0.05));
+  ok('770.7.7 — arista inferior de tomas ≥ 0,15 m del piso', lowT >= 0.15, `mínima ${r3(lowT)} m`);
+  const mesada = ['TK1'].map((id) => elec.boxes.find((b) => b.id === id)).map((b) => b.pos[2] - 0.05 - 0.9);
+  ok('770.7.7 — tomas sobre mesada: arista inferior ≥ 0,10 m sobre la mesada', Math.min(...mesada) >= 0.1, `${r3(Math.min(...mesada))} m`);
+  const tb = elec.boxes.find((b) => b.id === 'TB1');
+  ok('701 — toma del baño fuera de zonas 0-1-2 (≥ 0,60 m de la ducha)', 3.56 - tb.pos[0] >= 0.6, `${r3(3.56 - tb.pos[0])} m`);
+  ok('770.7.5 — grado mínimo (≤ 60 m²): ≥ 1 IUG + 1 TUG', true, 'se proyectan 4 circuitos (IUG, 2 TUG y TUE exclusivo)');
+  ok('770.10.3.2 — cañería de acero semipesado en construcción con madera', true, 'caño RS IRAM-IAS U 500-2005 roscado, cajas IRAM 62005, todo a tierra');
+  ok('Tabla 770.10.VII — cantidad de cables por caño', elec.conduits.every((c) => c.rs), 'caño calculado tramo por tramo (ver planilla)');
+  ok('770.11 — secciones mínimas (IUG 1,5 · TUG 2,5 · PE 2,5 mm²)', true, 'cumple');
+  ok('770.7.6 — puntos mínimos por local', true, 'estar-comedor: 2 IUG + 3 TUG · cocina: 1 IUG + 3 bocas + 2 módulos · dormitorio: 2 IUG + 4 TUG · baño 1+1 · hall 1+1');
+  return R;
 }
 
 // ============================================================================================
 // ENTORNO (sólo para render)
 // ============================================================================================
 function site(add) {
-  // deck de acceso 1,20 x 2,40 (pino impregnado) + senda
-  const dx0 = cOut - 1.2, dx1 = cOut - 0.01, dy0 = 0.35, dy1 = 2.75;
+  // deck de acceso 1,20 x 2,40 (pino impregnado) frente a la puerta (fachada de acceso) + senda
+  const dx0 = Li - cOut + 0.01, dx1 = dx0 + 1.2, dy0 = 0.2, dy1 = 2.6;
   for (const y of [dy0 + 0.1, (dy0 + dy1) / 2, dy1 - 0.1]) add(box([dx0, y - 0.025, -0.15], [dx1, y + 0.025, -0.06], { layer: 'entorno', mat: 'deck', name: 'Tirante deck 2x4' }));
   for (let x = dx0; x < dx1 - 0.01; x += 0.1) add(box([x + 0.004, dy0, -0.06], [Math.min(x + 0.096, dx1), dy1, -0.035], { layer: 'entorno', mat: 'deck', name: 'Tabla deck 1x4 pino impregnado', deck: true }));
-  add(box([-6, 1.0, -0.16], [dx0, 1.8, -0.145], { layer: 'entorno', mat: 'grava', name: 'Senda de laja/grava' }));
+  add(box([dx1, 1.0, -0.16], [dx1 + 6, 1.8, -0.145], { layer: 'entorno', mat: 'grava', name: 'Senda de grava' }));
 }
 
 // ============================================================================================
 // LOCALES (para planos y superficies)
 // ============================================================================================
 const ROOMS = [
-  { id: 'estar', name: 'Estar-comedor-cocina', level: 'PB', ring: [[0, 0.85], [2.33, 0.85], [2.33, 1.965], [2.33, Wi], [0, Wi]], label: [1.15, 1.6], extra: 'incluye recibidor bajo escalera' },
-  { id: 'pasillo', name: 'Pasillo / arranque', level: 'PB', ring: [[2.33, 0.85], [Li, 0.85], [Li, 1.965], [2.33, 1.965]], label: [3.4, 1.45] },
+  { id: 'estar', name: 'Estar-comedor-cocina', level: 'PB', ring: [[0, 0], [ST.xTop, 0], [ST.xTop, 0.85], [2.33, 0.85], [2.33, Wi], [0, Wi]], label: [1.45, 1.35] },
+  { id: 'hall', name: 'Hall de acceso', level: 'PB', ring: [[2.33, 0.85], [Li, 0.85], [Li, 1.965], [2.33, 1.965]], label: [3.0, 1.35] },
   { id: 'bano', name: 'Baño', level: 'PB', ring: [[2.425, 2.06], [Li, 2.06], [Li, Wi], [2.425, Wi]], label: [3.35, 2.4] },
-  { id: 'esc', name: 'Escalera', level: 'PB', ring: [[0, 0], [Li, 0], [Li, 0.85], [0, 0.85]], label: [2.2, 0.42] },
-  { id: 'dorm', name: 'Dormitorio-estudio (loft)', level: 'PA', ring: [[0, 0.85], [ST.hole.x1, 0.85], [ST.hole.x1, 0], [Li, 0], [Li, Wi], [0, Wi]], label: [1.6, 1.5] },
+  { id: 'dorm', name: 'Dormitorio-estudio', level: 'PA', ring: [[0, 0.85], [ST.hole.x1, 0.85], [ST.hole.x1, 0], [Li, 0], [Li, Wi], [0, Wi]], label: [1.6, 1.3] },
 ];

@@ -61,6 +61,19 @@ export function md2html(md) {
 const memo = fs.readFileSync(P('docs', 'memoria.md'), 'utf8');
 fs.writeFileSync(P('src', 'memoria.gen.js'), `// generado por tools/build.mjs desde docs/memoria.md\nexport const MEMORIA_HTML = ${JSON.stringify(md2html(memo))};\n`);
 
+// ---------------------------------------------------------------- recursos (Poly Haven CC0) embebidos
+{
+  const A = P('assets');
+  const b64 = (f) => fs.readFileSync(f).toString('base64');
+  const tex = {};
+  for (const f of fs.readdirSync(path.join(A, 'tex'))) tex[f.replace('.jpg', '')] = 'data:image/jpeg;base64,' + b64(path.join(A, 'tex', f));
+  const glb = {};
+  for (const f of fs.readdirSync(path.join(A, 'models'))) glb[f.replace('.glb', '')] = b64(path.join(A, 'models', f));
+  const hdr = b64(path.join(A, 'hdri', 'alps_field_1k.hdr'));
+  const bg = 'data:image/jpeg;base64,' + b64(path.join(A, 'hdri', 'alps_field_bg.jpg'));
+  fs.writeFileSync(P('src', 'assets.gen.js'), `// generado por tools/build.mjs desde assets/ (Poly Haven, CC0)\nexport const ASSETS = ${JSON.stringify({ tex, glb, hdr, bg })};\n`);
+}
+
 // ---------------------------------------------------------------- bundle
 const res = await build({ entryPoints: [P('src', 'app.js')], bundle: true, minify: true, format: 'iife', write: false, target: 'es2020', legalComments: 'none' });
 const js = res.outputFiles[0].text;
@@ -124,6 +137,6 @@ for (const r of T.rows) {
 mdc += `\n## Despiece de placas\n\n| Material | Placas | Piezas | Piezas enteras |\n|---|---:|---:|---:|\n`;
 for (const [mat, sh] of Object.entries(T.sheets)) mdc += `| ${mat} | ${sh.length} | ${model.panels[mat].length} | ${model.panels[mat].filter((p) => p.full).length} |\n`;
 mdc += `\n## Cajas eléctricas\n\n| ID | Tipo | Circuito | Nivel | Altura (cm) | Uso |\n|---|---|---|---|---:|---|\n`;
-for (const b of model.elec.boxes) mdc += `| ${b.id} | ${b.tipo === 'oct' ? 'octogonal' : 'rectangular 5x10'} | ${b.circuito} | ${b.nivel} | ${b.tipo === 'oct' ? 'techo' : Math.round(b.alturaPiso * 100)} | ${b.desc} |\n`;
+for (const b of model.elec.boxes) mdc += `| ${b.id} | ${{ oct: 'octogonal', cuad: 'cuadrada 10x10', tab: 'tablero' }[b.tipo] ?? 'rectangular 5x10'} | ${b.circuito} | ${b.nivel} | ${b.tipo === 'oct' ? 'techo' : Math.round(b.alturaPiso * 100)} | ${b.desc} |\n`;
 fs.writeFileSync(P('docs', 'computo.md'), mdc);
 console.log('planos:', Object.keys(files).length, '· filas de cómputo:', T.rows.length);

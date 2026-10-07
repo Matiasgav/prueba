@@ -123,17 +123,19 @@ function wallsPlan(tf, D, level, opts = {}) {
     if (o.door) {
       // puerta de entrada: abre hacia adentro, bisagra del lado s1
       const r = o.leaf;
-      const hy = o.s1 - 0.05, hx = 0;
-      s += line(tf, [hx, hy], [hx + r, hy], 'thin', 'stroke-width="1.6"');
-      s += `<path d="M${tf.P(hx + r, hy)} A${r * S},${r * S} 0 0 1 ${tf.P(hx, hy - r)}" class="swing"/>`;
+      const hy = o.s1 - 0.05, hx = front ? 0 : Li, d = front ? 1 : -1;
+      s += line(tf, [hx, hy], [hx + d * r, hy], 'thin', 'stroke-width="1.6"');
+      const arc = [];
+      for (let t = 0; t <= Math.PI / 2 + 1e-6; t += Math.PI / 24) arc.push(tf.P(hx + d * r * Math.cos(t), hy - r * Math.sin(t)));
+      s += `<polyline points="${arc.join(' ')}" class="swing"/>`;
       s += text(tf, front ? -0.45 : Li + 0.45, (o.s0 + o.s1) / 2, `${k}`, 'lbl');
     } else {
       const xm = front ? D.sOut + 0.03 : Li - D.sOut - 0.03;
       s += line(tf, [xm - 0.02, o.s0], [xm - 0.02, o.s1], 'glass');
       s += line(tf, [xm + 0.02, o.s0], [xm + 0.02, o.s1], 'glass');
       s += line(tf, [front ? 0 : Li, o.s0], [front ? 0 : Li, o.s1], 'thin');
-      s += text(tf, front ? -0.42 : Li + 0.42, (o.s0 + o.s1) / 2, `${k} ${cm(o.s1 - o.s0)}x${cm(o.z1 - o.z0)}`, 'lbls');
-      if (opts.sill) s += text(tf, front ? -0.42 : Li + 0.42, (o.s0 + o.s1) / 2, `antepecho ${cm(o.z0 - (level === 'PA' ? D.ZF1 : 0))}`, 'lbls', 'middle', 'dy="13"');
+      const sill = opts.sill ? ` · ap. ${cm(o.z0 - (level === 'PA' ? D.ZF1 : 0))}` : '';
+      s += text(tf, front ? -0.33 : Li + 0.33, (o.s0 + o.s1) / 2, `${k} ${cm(o.s1 - o.s0)}x${cm(o.z1 - o.z0)}${sill}`, 'lbls', 'middle', 'dy="4"');
     }
   }
   return s;
@@ -185,7 +187,7 @@ function stairPlan(tf, D, level) {
 
 // ------------------------------------------------------------------ muebles y artefactos en planta
 function footprint(el) {
-  if (el.kind === 'box') return { t: 'r', x0: el.min[0], y0: el.min[1], x1: el.max[0], y1: el.max[1] };
+  if (el.kind === 'box' || el.kind === 'glb') return { t: 'r', x0: el.min[0], y0: el.min[1], x1: el.max[0], y1: el.max[1] };
   if (el.kind === 'cyl' && el.axis === 'z') return { t: 'c', x: el.c[0], y: el.c[1], r: el.r };
   return null;
 }
@@ -200,7 +202,7 @@ function furniturePlan(tf, model, level, faint = false) {
     if (f.t === 'r') s += rectXY(tf, f.x0, f.y0, f.x1, f.y1, cls);
     else s += `<circle cx="${r2(tf.X(f.x, f.y))}" cy="${r2(tf.Y(f.x, f.y))}" r="${f.r * S}" class="${cls}"/>`;
     if (!faint) {
-      const lbl = shortName(el.planName ?? el.name);
+      const lbl = el.planName && el.kind === 'glb' ? el.planName : el.planName && !/Cama 1 plaza/.test(el.planName) ? el.planName : shortName(el.name);
       if (lbl) {
         const cx = f.t === 'r' ? (f.x0 + f.x1) / 2 : f.x, cy = f.t === 'r' ? (f.y0 + f.y1) / 2 : f.y;
         s += text(tf, cx, cy, lbl, 'lbls', 'middle', 'dy="4"');
@@ -307,48 +309,54 @@ export function planElec(model, level) {
   const { tf, D } = basePlan(model, level);
   let { b } = basePlan(model, level);
   const lv = (bx) => bx.nivel === level;
+  const boxes = Object.fromEntries(model.elec.boxes.map((x) => [x.id, x]));
+  const tags = [];
   for (const c of model.elec.conduits) {
-    if (!c.pts) continue;
-    const bx = model.elec.boxes.find((x) => x.id === c.to);
-    if (!bx || !lv(bx)) continue;
-    const col = CIRC[c.circuito]?.color ?? '#555';
+    const A = boxes[c.from], Bx = boxes[c.to];
+    const onLevel = (A && lv(A)) || (Bx && lv(Bx)) || (c.from === 'Pilar' && level === 'PB');
+    if (!onLevel) continue;
+    const col = c.circuito === 'AC' ? '#333' : CIRC[c.circuito]?.color ?? '#555';
     const pts = c.pts.map(([x, y]) => tf.P(x, y)).join(' ');
-    b += `<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.6" stroke-dasharray="${c.route === 'platea' ? '2 3' : '7 4'}" opacity=".85"/>`;
+    b += `<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round" ${c.circuito === 'TD' ? 'stroke-dasharray="5 3"' : ''}/>`;
+    // etiqueta en el medio del tramo horizontal más largo
+    let best = null;
+    for (let i = 1; i < c.pts.length; i++) {
+      const [x0, y0] = c.pts[i - 1], [x1, y1] = c.pts[i];
+      const L = Math.hypot(x1 - x0, y1 - y0);
+      if (!best || L > best.L) best = { L, x: (x0 + x1) / 2, y: (y0 + y1) / 2 };
+    }
+    if (best && c.n) tags.push({ x: tf.X(best.x, best.y), y: tf.Y(best.x, best.y), n: c.n, col });
   }
-  // tablero
-  if (level === 'PB') {
-    b += rectXY(tf, 2.33, 2.25, 2.39, 2.55, '', 'fill="#222"');
-    b += text(tf, 2.36, 2.4, 'TP', 'lbl', 'middle', 'dx="-22" dy="4" font-weight="700"');
-  }
+  for (const t of tags) b += `<circle cx="${r2(t.x)}" cy="${r2(t.y)}" r="8.5" fill="#fff" stroke="${t.col}" stroke-width="1.6"/><text x="${r2(t.x)}" y="${r2(t.y) + 3.5}" font-size="9.5" font-weight="700" text-anchor="middle" ${FONT}>${t.n}</text>`;
   const groupsLbl = {};
   for (const bx of model.elec.boxes.filter(lv)) {
     const [x, y] = bx.pos;
     const cx = r2(tf.X(x, y)), cy = r2(tf.Y(x, y));
-    const col = CIRC[bx.circuito].color;
+    const col = bx.circuito === '*' || bx.circuito === 'AC' ? '#222' : CIRC[bx.circuito].color;
     let sym;
-    if (bx.tipo === 'oct') sym = `<circle cx="${cx}" cy="${cy}" r="9" fill="#fff" stroke="${col}" stroke-width="2"/><path d="M${cx - 6},${cy - 6} L${cx + 6},${cy + 6} M${cx - 6},${cy + 6} L${cx + 6},${cy - 6}" stroke="${col}" stroke-width="1.6"/>`;
+    if (bx.tipo === 'tab') sym = `<rect x="${cx - 14}" y="${cy - 6}" width="28" height="12" fill="#222"/><text x="${cx}" y="${cy + 4}" font-size="9" fill="#fff" text-anchor="middle" ${FONT}>TP</text>`;
+    else if (bx.tipo === 'cuad') sym = `<rect x="${cx - 7}" y="${cy - 7}" width="14" height="14" fill="#fff" stroke="#222" stroke-width="2"/><path d="M${cx - 7},${cy - 7} L${cx + 7},${cy + 7}" stroke="#222"/>`;
+    else if (bx.tipo === 'oct') sym = `<circle cx="${cx}" cy="${cy}" r="9" fill="#fff" stroke="${col}" stroke-width="2"/><path d="M${cx - 6},${cy - 6} L${cx + 6},${cy + 6} M${cx - 6},${cy + 6} L${cx + 6},${cy - 6}" stroke="${col}" stroke-width="1.6"/>`;
     else if (/^S/.test(bx.id)) sym = `<circle cx="${cx}" cy="${cy}" r="7" fill="${col}"/><text x="${cx}" y="${cy + 3.5}" font-size="9" fill="#fff" text-anchor="middle" ${FONT}>S</text>`;
     else if (/^(A|LE|LB|LK)/.test(bx.id)) sym = `<circle cx="${cx}" cy="${cy}" r="7" fill="#fff" stroke="${col}" stroke-width="2"/><path d="M${cx - 7},${cy} A7,7 0 0 1 ${cx + 7},${cy} Z" fill="${col}"/>`;
+    else if (/^D/.test(bx.id)) sym = `<rect x="${cx - 7}" y="${cy - 7}" width="14" height="14" fill="#fff" stroke="${col}" stroke-width="2"/><text x="${cx}" y="${cy + 3.5}" font-size="8" text-anchor="middle" ${FONT}>D</text>`;
     else sym = `<rect x="${cx - 7}" y="${cy - 7}" width="14" height="14" fill="#fff" stroke="${col}" stroke-width="2"/><path d="M${cx - 4},${cy} L${cx + 4},${cy}" stroke="${col}" stroke-width="2"/>`;
     b += sym;
-    const key = `${Math.round(x * 20)}_${Math.round(y * 20)}`;
-    (groupsLbl[key] ??= { cx, cy, items: [] }).items.push(`${bx.id} ${bx.tipo === 'oct' ? 'techo' : 'h' + cm(bx.alturaPiso)}`);
+    // agrupa rótulos de cajas a menos de 40 cm en planta para que no se pisen
+    const key = Object.keys(groupsLbl).find((k) => Math.hypot(groupsLbl[k].x - x, groupsLbl[k].y - y) < 0.4) ?? `${x}_${y}`;
+    (groupsLbl[key] ??= { cx, cy, x, y, items: [] }).items.push(`${bx.id} ${bx.tipo === 'oct' ? 'techo' : bx.tipo === 'tab' ? '' : 'h' + cm(bx.alturaPiso)}`);
   }
   for (const g of Object.values(groupsLbl)) {
-    g.items.forEach((t, i) => { b += `<text x="${g.cx + 11}" y="${g.cy - 4 + i * 12}" font-size="10" font-weight="600" fill="#222" ${FONT}>${t}</text>`; });
+    g.items.forEach((t, i) => { b += `<text x="${g.cx + 11}" y="${g.cy - 4 + i * 12}" font-size="10" font-weight="600" fill="#222" paint-order="stroke" stroke="#fff" stroke-width="3" ${FONT}>${t}</text>`; });
   }
   let lg = '';
   Object.entries(CIRC).forEach(([k, c], i) => {
-    lg += `<rect x="${(i % 2) * 360}" y="${Math.floor(i / 2) * 22}" width="22" height="4" fill="${c.color}"/><text x="${(i % 2) * 360 + 30}" y="${Math.floor(i / 2) * 22 + 6}" font-size="11" ${FONT}>${esc(c.name)} · PIA ${c.pia} · ${esc(c.cable)}</text>`;
+    lg += `<rect x="${(i % 2) * 380}" y="${Math.floor(i / 2) * 20}" width="22" height="4" fill="${c.color}"/><text x="${(i % 2) * 380 + 30}" y="${Math.floor(i / 2) * 20 + 6}" font-size="11" ${FONT}>${esc(c.name)} · ${esc(c.cable)}</text>`;
   });
-  lg += `<g transform="translate(0,52)"><circle cx="8" cy="0" r="7" fill="#fff" stroke="#333" stroke-width="2"/><path d="M3,-5 L13,5 M3,5 L13,-5" stroke="#333"/><text x="22" y="4" font-size="11" ${FONT}>boca de techo (caja octogonal)</text>
-  <rect x="200" y="-7" width="14" height="14" fill="#fff" stroke="#333" stroke-width="2"/><text x="222" y="4" font-size="11" ${FONT}>toma (caja rect. 5x10)</text>
-  <circle cx="368" cy="0" r="7" fill="#333"/><text x="368" y="3.5" font-size="9" fill="#fff" text-anchor="middle">S</text><text x="382" y="4" font-size="11" ${FONT}>llave de luz</text>
-  <circle cx="488" cy="0" r="7" fill="#fff" stroke="#333" stroke-width="2"/><path d="M481,0 A7,7 0 0 1 495,0 Z" fill="#333"/><text x="502" y="4" font-size="11" ${FONT}>aplique</text>
-  <line x1="580" y1="0" x2="620" y2="0" stroke="#333" stroke-dasharray="7 4" stroke-width="1.6"/><text x="626" y="4" font-size="11" ${FONT}>cañería por cielorraso/muro</text>
-  <line x1="580" y1="18" x2="620" y2="18" stroke="#333" stroke-dasharray="2 3" stroke-width="1.6"/><text x="626" y="22" font-size="11" ${FONT}>cañería embutida en platea</text></g>
-  <text x="0" y="96" font-size="11" fill="#555" ${FONT}>h = altura de eje de caja sobre piso terminado. Tomas a h 30 / 110 (mesada) / 85 (escritorio) / 65 (mesas de luz). Tablero con disyuntor 40A 30mA, PAT con jabalina.</text>`;
-  return sheetWrap(tf, `Instalación eléctrica — ${level === 'PB' ? 'planta baja' : 'planta alta'}`, 'Ubicación de cada caja según el amoblamiento propuesto · circuitos AEA 90364 (vivienda)', b, lg);
+  lg += `<text x="0" y="72" font-size="11" fill="#555" ${FONT}>Cañería de acero semipesado roscada y cajas de acero (AEA 770.10.3.2, construcción con madera).</text>
+  <text x="0" y="88" font-size="11" fill="#555" ${FONT}>Cada línea es un caño entre dos cajas; el número remite a la planilla de tramos (conductores por caño).</text>
+  <text x="0" y="104" font-size="11" fill="#555" ${FONT}>Distribución horizontal por el entrepiso; bajadas verticales a cada caja. h = altura del eje de la caja sobre piso terminado.</text>`;
+  return sheetWrap(tf, `Instalación eléctrica — ${level === 'PB' ? 'planta baja' : 'planta alta'}`, 'Circuitos, cajas y tramos de cañería numerados · AEA 90364-7-770', b, lg);
 }
 
 function pipesPlan(model, level, layers, title, sub, legendItems) {
