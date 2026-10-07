@@ -377,21 +377,44 @@ def agujeros_acople(sol, x, largo=LARGO):
     return sol
 
 
-R_LATERAL = ESP / 2   # lateral exterior en semicilindro (R 6,5) y puntas con el mismo radio
+# Lateral exterior: arco R 5 centrado en el eje de acople, tangente al plano de la cara exterior.
+# Cubre un giro de ±GIRO_ACOPLE alrededor del eje sin pasar ese plano; fuera del arco siguen rectas
+# tangentes hasta las caras anchas, con un chaflán de CHAFLAN_NARIZ en esas aristas.
+GIRO_ACOPLE = 25.0
+R_NARIZ = X_ACOPLE
+CHAFLAN_NARIZ = 0.5
+
+
+def perfil_lateral(ancho):
+    """Contorno de la sección (x, z) de una barra con la cara exterior en x = 0."""
+    zc, R, g = ESP / 2, R_NARIZ, math.radians(GIRO_ACOPLE)
+    a1, a2 = math.pi - g, math.pi + g
+    def corte(a, zp):
+        u = (math.cos(a), math.sin(a))
+        return np.array([X_ACOPLE + (R - (zp - zc) * u[1]) / u[0], zp])
+    sup, inf = corte(a1, ESP), corte(a2, 0.0)
+    arco = [np.array([X_ACOPLE + R * math.cos(t), zc + R * math.sin(t)]) for t in np.linspace(a1, a2, 41)]
+    def chaflan(esq, hacia_cara, hacia_arco):
+        d1 = (hacia_cara - esq) / np.linalg.norm(hacia_cara - esq)
+        d2 = (hacia_arco - esq) / np.linalg.norm(hacia_arco - esq)
+        return [esq + CHAFLAN_NARIZ * d1, esq + CHAFLAN_NARIZ * d2]
+    pts = [np.array([ancho, 0.0]), np.array([ancho, ESP])]
+    pts += chaflan(sup, np.array([ancho, ESP]), arco[0])
+    pts += arco
+    pts += chaflan(inf, arco[-1], np.array([ancho, 0.0]))
+    return [(float(p[0]), float(p[1])) for p in pts]
 
 
 def barra_base(ancho, exterior_izq=True, largo=LARGO):
-    """Barra con el lateral exterior en semicilindro R 6,5 a todo lo largo. Las puntas
-    (caras de 13 x ancho) quedan planas; la cara interior lleva un redondeo de 0,3."""
-    r = R_LATERAL
-    piezas = [
-        cq.Solid.makeBox(ancho - r, largo, ESP, cq.Vector(r, 0, 0)),
-        cq.Solid.makeCylinder(r, largo, cq.Vector(r, 0, r), cq.Vector(0, 1, 0)),
-    ]
-    b = cq.Workplane().add(piezas[0])
-    for p in piezas[1:]:
-        b = b.union(cq.Workplane().add(p))
-    b = b.intersect(caja(0, ancho, 0, largo, 0, ESP))
+    """Barra con el lateral exterior en arco R 5 centrado en el eje de acople (giro ±25°) a todo lo
+    largo. Las puntas (caras de 13 x ancho) quedan planas; la cara interior lleva un redondeo de 0,3."""
+    p = perfil_lateral(ancho)
+    a_ini, a_fin = p[4], p[-3]                      # extremos del arco
+    zc, R = ESP / 2, R_NARIZ
+    medio = (X_ACOPLE - R, zc)
+    wp = cq.Workplane("XZ").moveTo(*p[0]).lineTo(*p[1]).lineTo(*p[2]).lineTo(*p[3]).lineTo(*a_ini)
+    wp = wp.threePointArc(medio, a_fin).lineTo(*p[-2]).lineTo(*p[-1]).close()
+    b = wp.extrude(-largo)
     if not exterior_izq:
         b = b.mirror("YZ").translate((ancho, 0, 0))
     try:
