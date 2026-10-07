@@ -42,6 +42,12 @@ PERNO = dict(nombre=f"pasador templado Ø{E.D_PERNO:g}", d=E.D_PERNO,
              corte_doble_rotura=_CORTE_ISO8734[E.D_PERNO],
              sigma_flexion=1500.0)           # admisible a flexión (acero templado 550-650 HV)
 PERNO["corte_doble_fluencia"] = 0.75 * PERNO["corte_doble_rotura"]
+# Q1, Q2, O y C: pasadores remachados (punta maciza) en 17-4PH H1150, que admite el remachado.
+# Fluencia mínima de la condición (AMS 5643): 725 MPa; rotura 931 MPa.
+PERNO_REM = dict(nombre=f"pasador remachado 17-4PH H1150 Ø{E.D_PERNO:g}", d=E.D_PERNO,
+                 corte_doble_fluencia=2 * math.pi * E.D_PERNO ** 2 / 4 * 0.577 * 725.0,
+                 sigma_flexion=725.0)
+REMACHADOS = ("Q1", "Q2", "O", "C")
 F_BRY_MAX = 1.5                               # aplastamiento admisible máximo = 1,5 Sy (e/D >= 1,5)
 
 
@@ -165,10 +171,11 @@ def orejeta(F_parte, poly, centro, t, d, nombre, mat=AL):
 
 def perno(Fm, t_medio, t_ext, juego, nombre):
     out = {}
-    out[f"perno {nombre}: corte doble"] = PERNO["corte_doble_fluencia"] / Fm
+    pm = PERNO_REM if nombre in REMACHADOS else PERNO
+    out[f"perno {nombre}: corte doble"] = pm["corte_doble_fluencia"] / Fm
     m = Fm / 2 * (t_ext / 2 + juego + t_medio / 4)
-    sigma = 32 * m / (math.pi * PERNO["d"] ** 3)
-    out[f"perno {nombre}: flexión"] = PERNO["sigma_flexion"] / sigma
+    sigma = 32 * m / (math.pi * pm["d"] ** 3)
+    out[f"perno {nombre}: flexión"] = pm["sigma_flexion"] / sigma
     return out
 
 

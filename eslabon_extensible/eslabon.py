@@ -24,7 +24,8 @@ Piezas:
   eslabón 1      lado del paralelogramo con vientre en gota hacia B y embocadura del corto en C
   eslabón 2      lado del paralelogramo (biela), vientre hacia A
   eslabón corto  una pieza, O-C
-  pernos Ø5      pasadores ISO 8734 m6 templados, a presión en las mejillas; el ojo gira sobre ellos
+  pernos Ø5      P1, P2: ISO 8734 m6 templados, a presión, tapados por las alas de B
+                 Q1, Q2, O, C: 17-4PH H1150 a presión y remachados (punta maciza) al ras de las caras
   arandela       resorte de disco 8 × 5,2 × 0,4 en Q1, Q2, P1 y P2 (≈ 250 N de precarga)
   arandela_corto arandela ondulada en O y C (solo juego axial)
 La traba del carro queda pendiente: el modelo no la incluye.
@@ -370,6 +371,37 @@ def cil_z(x, y, d, z0, z1):
     return cq.Workplane("XY").workplane(offset=z0).center(x, y).circle(d / 2).extrude(z1 - z0)
 
 
+# Pasadores remachados (Q1, Q2, O, C): 17-4PH H1150 a presión, con las dos puntas macizas rebatidas
+# por remachado radial contra un avellanado de 0,3 x 45° y terminadas al ras de la cara.
+AVELL_PERNO = 0.3
+
+
+def _cono_avellanado(x, y, z_cara, sentido, d=None, a=AVELL_PERNO):
+    """Cono de avellanado a 45° en la boca de un agujero; sentido = +1 si la cara mira a +z."""
+    d = d or D_PERNO
+    h = a + 0.5
+    base = z_cara + sentido * 0.5
+    return cq.Solid.makeCone(d / 2 + a + 0.5, d / 2 - 0.5 + 0.0, h + 0.5,
+                             cq.Vector(x, y, base), cq.Vector(0, 0, -sentido))
+
+
+def avellanar(sol, x, y, z0, z1):
+    """Avellana las dos bocas de un agujero de pasador remachado (caras en z0 y z1)."""
+    for z, sg in ((z0, -1), (z1, 1)):
+        sol = sol.cut(cq.Workplane().add(_cono_avellanado(x, y, z, sg)))
+    return sol
+
+
+def pasador_remachado(z0, z1):
+    """Pasador Ø5 con las cabezas formadas: llenan el avellanado y quedan al ras de las caras."""
+    p = cil_z(0, 0, D_PERNO, z0, z1)
+    for z, sg in ((z0, -1), (z1, 1)):
+        cab = (cq.Workplane().add(cq.Solid.makeCone(D_PERNO / 2, D_PERNO / 2 + AVELL_PERNO, AVELL_PERNO,
+                                                    cq.Vector(0, 0, z - sg * AVELL_PERNO), cq.Vector(0, 0, sg))))
+        p = p.union(cab)
+    return p
+
+
 def agujeros_acople(sol, x, largo=LARGO):
     for y0, sentido in ((0.0, 1), (largo, -1)):
         h = (cq.Workplane("XZ", origin=(0, y0, 0)).center(x, Z_EJE)
@@ -445,6 +477,7 @@ def barra_a():
 
     for y in (Y0, Y0 + DP):
         b = b.cut(cil_z(D_A, y, D_PERNO, -1, ESP + 1))
+        b = avellanar(b, D_A, y, 0.0, ESP)
     return cortar_cable(b, "A", box(-5, -1, BWA + 1, LARGO_A + 1))
 
 
@@ -465,6 +498,7 @@ def barra_b():
     corto = redondear_con_cara(corto, box(-10, -5, 0, LARGO + 5), 4.0).intersection(huella)
     b = cortar(b, corto, Z_PLACA_CORTE)
     b = b.cut(cil_z(E_B, Y0, D_PERNO, -1, ESP + 1))
+    b = avellanar(b, E_B, Y0, 0.0, ESP)
     return cortar_cable(b, "B", box(-1, -1, BWB + 5, LARGO + 1))
 
 
@@ -541,6 +575,7 @@ def eslabon1():
     sol = cortar(sol, embocadura().intersection(perfil_eslabon1().buffer(1)), [Z_EMBOC])
     for x in (0.0, L1, L2):
         sol = sol.cut(cil_z(x, 0, D_PERNO, -1, ESP + 1))
+    sol = avellanar(sol, L1, 0, *Z_MED)
     for x in (0.0, L2):
         sol = rebaje_arandela(sol, x, 0, Z_MED[1])
     return cortar_cable(sol, "eslabon1", perfil_eslabon1().buffer(1))
@@ -575,12 +610,13 @@ def eslabon_corto():
 
 
 def perno():
-    return cil_z(0, 0, D_PERNO, 0, ESP)
+    """Perno de O: remachado al ras de las dos caras de B."""
+    return pasador_remachado(0, ESP)
 
 
 def perno_c():
-    """Perno de C: atraviesa las dos alas de la embocadura del eslabón 1."""
-    return cil_z(0, 0, D_PERNO, Z_MED[0], Z_MED[1])
+    """Perno de C: atraviesa las dos alas de la embocadura del eslabón 1, remachado al ras."""
+    return pasador_remachado(*Z_MED)
 
 
 def perno_p():
@@ -589,10 +625,8 @@ def perno_p():
 
 
 def perno_a():
-    """Pernos Q1 y Q2: al ras de la superficie curva del lateral de A."""
-    y = LARGO / 2
-    p = cil_z(D_A, y, D_PERNO, 0, ESP).intersect(barra_base(BWA))
-    return p.translate((-D_A, -y, 0))
+    """Pernos Q1 y Q2: remachados al ras de las dos caras de A."""
+    return pasador_remachado(0, ESP)
 
 
 # ---------------------------------------------------------------- cable Ø4 de largo fijo
