@@ -15,8 +15,8 @@ Cómo se adapta:
     fricción. En P1 y P2 no hay lugar para tornillos (las alas de B están encima): ahí los conos
     se asientan al pegar las dos mitades del carro apretándolas.
   * Sin tuercas: todos los M3 roscan directo en el plástico (agujero piloto de 2,7).
-  * Las mitades de A y de B se unen con tornillos M3 (cabeza fresada arriba, rosca abajo) donde
-    entran, y con pegamento en toda la cara de partición (en el tramo del riel no entra un tornillo).
+  * Las mitades de A y de B se unen con tornillos M3 × 12 (cabeza fresada al ras arriba, rosca en
+    la mitad de abajo). En B van a lo largo de toda la columna, al lado del riel.
   * Tornillería: solo M3 × 12 de cabeza fresada (los que hay a mano). En C no entra (un M3 × 8
     asomaría por abajo del eslabón 1): ahí, como en P1 y P2, los conos se asientan al pegar las
     mitades apretándolas.
@@ -127,21 +127,20 @@ def unir_mitades(sol, puntos):
 
 
 def horquilla_union(sol, x, y):
-    """Tornillo de unión: pasa la mitad de arriba y rosca en la de abajo (sin tuerca)."""
-    zb0, zb1 = 0.0, E.ESP
-    sol = sol.cut(cil(x, y, M3["piloto"], zb0 - 1, zb1 + 1))
-    sol = sol.cut(cil(x, y, M3["paso"], ZM, zb1 + 1))
-    sol = sol.cut(cil(x, y, M3["cab"], zb1 - M3["rebaje_cab"], zb1 + 1))
-    return sol.cut(cono(x, y, M3["cab"] / 2, M3["paso"] / 2, zb1 - M3["rebaje_cab"],
-                        zb1 - M3["rebaje_cab"] - (M3["cab"] - M3["paso"]) / 2))
+    """Tornillo de unión M3 × 12: cabeza fresada al ras arriba, pasa la mitad de arriba y rosca en la
+    de abajo (piloto ciego: la cara de abajo queda lisa). Sin tuerca."""
+    sol = sol.cut(cil(x, y, M3["piloto"], 0.6, E.ESP + 1))
+    sol = sol.cut(cil(x, y, M3["paso"], ZM, E.ESP + 1))
+    return sol.cut(cono(x, y, M3["cab"] / 2 + 0.5, M3["paso"] / 2, E.ESP + 0.5,
+                        E.ESP - (M3["cab"] - M3["paso"]) / 2))
 
 
 # ---------------------------------------------------------------- piezas
-# Tornillos que unen las mitades: solo donde entran la cabeza y el tornillo sin tocar
-# huecos (búsqueda en /tmp con columnas_macizas). En el tramo del riel de B y en el voladizo de A
-# no entran: ahí las mitades se pegan (CA en gel o epoxi) sobre la cara de partición.
-UNION_A = [(10.5, 9.0), (7.5, 57.0), (9.5, 78.0), (6.5, 153.0)]
-UNION_B = [(6.5, 9.0), (13.5, 24.0), (12.5, 36.0)]
+# Tornillos que unen las mitades (M3 × 12, cabeza al ras): solo donde entran sin tocar huecos.
+# En B van repartidos a lo largo de toda la columna, al lado del riel, porque el carro tiende a
+# abrir las mitades; en A alcanza con dos más los de Q1 y Q2.
+UNION_A = [(7.5, 57.0), (6.5, 153.0)]
+UNION_B = [(6.5, 9.0), (13.5, 24.0), (13.6, 50.0), (13.6, 80.0), (13.6, 110.0), (13.6, 140.0), (13.6, 170.0)]
 
 Y_TRABA_CARRO = E.DP / 2                             # tornillo de la traba, en el marco del carro
 

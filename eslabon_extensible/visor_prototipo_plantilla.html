@@ -56,7 +56,7 @@ td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:righ
 <div class="wrap">
   <header>
     <h1>Prototipo impreso del eslabón</h1>
-    <p>Mitades por el plano medio, sin soportes; pivotes de doble cono con M3 × 12 que roscan directo en el plástico.</p>
+    <p>Mitades por el plano medio, sin soportes; pivotes de doble cono; tornillos M3 × 12 que roscan directo en el plástico, repartidos a lo largo de la barra B.</p>
   </header>
   <div class="stage">
     <canvas id="vista" aria-label="Modelo 3D del prototipo"></canvas>
@@ -84,7 +84,7 @@ td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:righ
     </div>
     <div class="card">
       <h2>Para armar</h2>
-      <div class="facts"><span>11 × M3 × 12 avellanado</span><span>sin tuercas</span><span>piloto Ø2,7</span><span>CA en gel o epoxi</span><span>PETG · sin soportes</span></div>
+      <div class="facts"><span>13 × M3 × 12 avellanado</span><span>sin tuercas</span><span>piloto Ø2,7</span><span>CA en gel o epoxi</span><span>PETG · sin soportes</span></div>
     </div>
   </aside>
 </div>
@@ -145,8 +145,8 @@ const screws = [];
 function addScrew(pieza, x, y, ztop){ const s = tornillo(12); scene.add(s); screws.push({s, pieza, x, y, ztop}); }
 addScrew("barra_A", I.D_A, I.Y0, I.ESP-1); addScrew("barra_A", I.D_A, I.Y0+I.DP, I.ESP-1);
 addScrew("barra_B", I.E_B, I.Y0, I.ESP-1);
-for (const [x,y] of I.union_a) addScrew("barra_A", x, y, I.ESP-1);
-for (const [x,y] of I.union_b) addScrew("barra_B", x, y, I.ESP-1);
+for (const [x,y] of I.union_a) addScrew("barra_A", x, y, I.ESP);
+for (const [x,y] of I.union_b) addScrew("barra_B", x, y, I.ESP);
 const traba = {s: tornillo(12)}; scene.add(traba.s);
 
 // cama de impresión
