@@ -71,6 +71,7 @@ El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) 
 | `torsion.py` | Rigidez y resistencia al alabeo entre ejes (fuera del plano), en `salida/torsion.json`. |
 | `ajuste_vientres.py` | Busca la profundidad máxima de los vientres de los eslabones largos. |
 | `ANALISIS.md` | Informe de resistencia. |
+| `prototipo_3d.py`, `PROTOTIPO.md` | Prototipo para imprimir en 3D (mitades sin soportes, pivotes de doble cono con M3). STL orientados en `salida/prototipo/`. |
 | `visor.html` | Visor 3D con la carga admisible a cada ancho. Lo genera `eslabon.py`. |
 | `salida/capacidad.json` | Capacidad por modo de falla cada 2,5 mm de ancho. |
 | `salida/ensamble_W35.step`, `ensamble_W70.step`, `ensamble_W105.step` | Ensambles en tres posiciones, con el cable. |
