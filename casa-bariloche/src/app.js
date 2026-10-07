@@ -217,8 +217,11 @@ $('#pane-memoria').innerHTML = `<article class="memo">${MEMORIA_HTML}<h2>Paleta 
 
 // ------------------------------------------------------------------ arranque
 initViewer();
+if (window.__ARTIFACT__) document.documentElement.classList.add('artifact');
+const TABS = ['3d', 'planos', 'computo', 'despiece', 'memoria'];
 let start = '3d';
-try { start = new URLSearchParams(location.search).get('tab') || localStorage.getItem('casa.tab') || '3d'; } catch {}
+try { const h = location.hash.slice(1); start = TABS.includes(h) ? h : new URLSearchParams(location.search).get('tab') || localStorage.getItem('casa.tab') || '3d'; } catch {}
+if (!TABS.includes(start)) start = '3d';
 showTab(start);
 const pp = new URLSearchParams(location.search).get('preset');
 if (pp && PRESETS[pp]) { viewer.applyPreset(pp, false); const p = PRESETS[pp]; viewer.camera.position.set(...p.cam[0]); viewer.controls.target.set(...p.cam[1]); }

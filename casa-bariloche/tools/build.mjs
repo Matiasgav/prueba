@@ -67,6 +67,15 @@ const js = res.outputFiles[0].text;
 const html = fs.readFileSync(P('src', 'index.html'), 'utf8').replace('<!--APP-->', () => `<script>${js.replace(/<\/script/g, '<\\/script')}</script>`);
 fs.mkdirSync(P('dist'), { recursive: true });
 fs.writeFileSync(P('dist', 'casa-bariloche.html'), html);
+// variante para publicar como Artifact (el visor agrega su propio esqueleto de documento)
+const art = html
+  .replace(/<!doctype html>\s*/i, '')
+  .replace(/<html[^>]*>\s*/i, '').replace(/<\/html>\s*$/i, '')
+  .replace(/<head>\s*/i, '').replace(/<\/head>\s*/i, '')
+  .replace(/<meta charset="utf-8">\s*/i, '').replace(/<meta name="viewport"[^>]*>\s*/i, '')
+  .replace(/<body>\s*/i, '').replace(/<\/body>\s*/i, '')
+  .replace('<!--ARTFLAG-->', '');
+fs.writeFileSync(P('dist', 'casa-bariloche.artifact.html'), art.replace('<script>', '<script>window.__ARTIFACT__=true;</script><script>'));
 console.log('dist/casa-bariloche.html', (html.length / 1024).toFixed(0), 'KB');
 
 // ---------------------------------------------------------------- planos y cómputo al repo
