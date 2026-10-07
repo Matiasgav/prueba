@@ -20,12 +20,13 @@ Piezas:
   barra A        lado fijo, pivotes Q1 y Q2
   barra B        columna exterior + bloque del pivote O + riel en C del carro, abierto en y = 190
   tapa           cierra la boca del riel en y = 190
-  carro          corre en el riel de B, retenido por ganchos bajo las alas; lleva P1 y P2
+  carro          corre en el riel de B, retenido por los labios de las alas; lleva P1 y P2
   eslabón 1      lado del paralelogramo con vientre en gota hacia B y embocadura del corto en C
   eslabón 2      lado del paralelogramo (biela), vientre hacia A
   eslabón corto  una pieza, O-C
-  pernos Ø5      pasadores templados rectificados g6
-  arandela       arandela ondulada de precarga en cada pivote (juego axial cero)
+  pernos Ø5      pasadores ISO 8734 m6 templados, a presión en las mejillas; el ojo gira sobre ellos
+  arandela       resorte de disco 8 × 5,2 × 0,4 en Q1, Q2, P1 y P2 (≈ 250 N de precarga)
+  arandela_corto arandela ondulada en O y C (solo juego axial)
 La traba del carro queda pendiente: el modelo no la incluye.
 
 Uso:
@@ -87,8 +88,12 @@ R_GOTA = 60.0
 DX_GOTA1 = 0.0                             # vientre simétrico: los dos eslabones largos son iguales, espejados
 QUILLA = 9.9                                # profundidad del vientre (eslabón 1 hacia B, eslabón 2 hacia A)
 PANZA_2 = QUILLA
-# pivote precargado: arandela ondulada de acero en un rebaje de la cara superior del ojo
-ARANDELA = dict(d_int=D_PERNO + 0.2, d_ext=7.9, rebaje=0.15, alto=0.25)
+# pivotes de los eslabones largos (Q1, Q2, P1, P2): resorte de disco 8 × 5,2 × 0,4 (h0 0,2) en un rebaje
+# de la cara superior del ojo. Con el ojo apoyado en la mejilla de abajo queda comprimido 0,15 mm: ≈ 250 N.
+# El modelo dibuja el ojo centrado y el resorte como un anillo plano del alto que le queda en esa posición.
+ARANDELA = dict(d_int=D_PERNO + 0.2, d_ext=8.0, rebaje=0.25, alto=0.35)
+# pivotes del eslabón corto (O, C): arandela ondulada liviana, solo para el juego axial
+ARANDELA_CORTO = dict(d_int=D_PERNO + 0.2, d_ext=7.9, rebaje=0.15, alto=0.25)
 
 
 def configurar(d_a=10.0, e_b=6.3, columna=8.6, gap_min=0.8, margen_l2=4.0):
@@ -511,9 +516,9 @@ def _contorno_estadio(largo, r):
     return lambda wp: wp.center(largo / 2, 0).slot2D(largo + 2 * r, 2 * r)
 
 
-def rebaje_arandela(sol, x, y, z_cara):
-    """Rebaje anular en la cara superior de un ojo para la arandela ondulada de precarga."""
-    a = ARANDELA
+def rebaje_arandela(sol, x, y, z_cara, a=None):
+    """Rebaje anular en la cara superior de un ojo para el resorte de precarga."""
+    a = a or ARANDELA
     anillo = (cq.Workplane("XY").workplane(offset=z_cara - a["rebaje"]).center(x, y)
               .circle(a["d_ext"] / 2).circle(a["d_int"] / 2).extrude(a["rebaje"] + 1))
     return sol.cut(anillo)
@@ -548,18 +553,24 @@ def eslabon2():
     return sol
 
 
-def arandela():
-    a = ARANDELA
-    z0 = Z_MED[1] - a["rebaje"]
+def arandela(a=None, z_cara=None):
+    """Resorte de disco de los eslabones largos (anillo plano equivalente en el modelo)."""
+    a = a or ARANDELA
+    z0 = (Z_MED[1] if z_cara is None else z_cara) - a["rebaje"]
     return (cq.Workplane("XY").workplane(offset=z0).circle(a["d_ext"] / 2 - 0.1)
             .circle(a["d_int"] / 2 + 0.05).extrude(a["alto"] - 0.01))
+
+
+def arandela_corto():
+    """Arandela ondulada de los pivotes del eslabón corto (O y C)."""
+    return arandela(ARANDELA_CORTO, Z_CORTO[1])
 
 
 def eslabon_corto():
     """Eslabón corto de una pieza, embutido en el eslabón 1 (C) y en la horquilla de B (O)."""
     sol = pieza_miembro(_contorno_estadio(L1, R_CORTO), Z_CORTO, [0.0, L1])
     for x in (0.0, L1):
-        sol = rebaje_arandela(sol, x, 0, Z_CORTO[1])
+        sol = rebaje_arandela(sol, x, 0, Z_CORTO[1], ARANDELA_CORTO)
     return sol
 
 
@@ -691,6 +702,7 @@ PIEZAS = {
     "perno_A": perno_a,
     "perno_C": perno_c,
     "arandela": arandela,
+    "arandela_corto": arandela_corto,
 }
 
 COLORES = {
@@ -699,7 +711,7 @@ COLORES = {
     "eslabon_1": (0.20, 0.45, 0.80), "eslabon_2": (0.35, 0.60, 0.90),
     "eslabon_corto": (0.15, 0.65, 0.45), "tapa": (0.55, 0.60, 0.66), "perno_P": (0.85, 0.85, 0.85),
     "cable": (0.10, 0.10, 0.11),
-    "perno": (0.85, 0.85, 0.85), "perno_A": (0.85, 0.85, 0.85), "perno_C": (0.85, 0.85, 0.85), "arandela": (0.70, 0.72, 0.75),
+    "perno": (0.85, 0.85, 0.85), "perno_A": (0.85, 0.85, 0.85), "perno_C": (0.85, 0.85, 0.85), "arandela": (0.10, 0.37, 0.71), "arandela_corto": (0.70, 0.72, 0.75),
 }
 
 
@@ -721,8 +733,7 @@ def poses(w):
     for n in ("Q1", "Q2", "P1", "P2", "C", "O"):
         tipo = {"Q1": "perno_A", "Q2": "perno_A", "C": "perno_C", "P1": "perno_P", "P2": "perno_P"}.get(n, "perno")
         r.append((f"perno_{n}", tipo, (*k[n], 0), 0))
-        dz = Z_CORTO[1] - Z_MED[1] if n in ("C", "O") else 0.0
-        r.append((f"arandela_{n}", "arandela", (*k[n], dz), 0))
+        r.append((f"arandela_{n}", "arandela_corto" if n in ("C", "O") else "arandela", (*k[n], 0), 0))
     return r
 
 

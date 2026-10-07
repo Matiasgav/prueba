@@ -31,7 +31,7 @@ El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) 
 - **Embocadura en C.** El eslabón corto entra en una ranura central del eslabón 1, que queda con dos alas de 2,15 mm.
 - **Riel en C oculto, guiado por las alas.** El carro corre en un canal de B cerrado arriba y abajo por alas de 1,2 mm que trabajan con la columna: la cara ancha es continua y no se ve el carro. Las alas lo guían en z; la columna lo apoya hacia B y un labio de 1,5 × 0,9 mm en el borde interior de cada ala lo retiene hacia A. No hay guía mecanizada en la columna. El canal se abre en la punta de y = 190 para armar y se cierra con una tapa.
 - **Eslabones largos iguales, espejados y planos.** Mismo contorno con vientre simétrico en arco (R 60, tangente a los ojos, 9,9 mm de profundidad): el 1 hacia B y el 2 hacia A. Espesor constante de 7 mm.
-- **Pivotes Ø5 en doble corte, precargados.** Pasador templado y rectificado m6 (ISO 8734), a presión en las dos mejillas y al ras: no tiene seguros ni piezas que se puedan soltar. El ojo gira sobre el pasador (F7/m6). Una arandela ondulada de acero, en un rebaje de 0,15 mm del ojo, elimina el juego axial y mantiene las caras en contacto, lo que hace al conjunto firme contra el alabeo.
+- **Pivotes Ø5 en doble corte, precargados.** Pasador templado y rectificado m6 (ISO 8734), a presión en las dos mejillas y al ras: no tiene seguros ni piezas que se puedan soltar. El ojo, de acero templado, se rectifica sobre el pasador (2 a 16 µm). En Q1, Q2, P1 y P2, un resorte de disco 8 × 5,2 × 0,4 empuja el ojo contra la mejilla con ≈ 250 N: no hay juego axial y el ojo no cabecea hasta ≈ 1 N·m por pivote. Regular cuesta unos 10 N. Ver [cortes](img/articulaciones_cortes.png) y [justificación](img/articulaciones_justificacion.png).
 - **Cable Ø4 oculto, de largo fijo.** Entra por el lateral de B, rodea O, sigue el lado de afuera del eslabón corto, pasa por encima de C, baja por el lado de afuera del eslabón 1, rodea Q1 y sale por el lateral de A. En los tres pivotes gira por afuera a R 7: los giros suman siempre 180°, así que el largo es 124,8 mm en todo el recorrido. Dentro de las barras hace curvas fijas de R 5. Los ojos de los eslabones hacen de polea. Ver [el esquema](img/cable_recorrido.png).
 - **Lateral exterior en arco R 5** centrado en el eje de acople, de ±25°, con caras planas arriba y abajo y chaflán de 0,5 mm en el encuentro, a todo lo largo de las dos barras; las puntas (caras de 13 × ancho) son planas.
 - **Terminación:** bisel de 0,3 mm en las aristas exteriores y agujeros de acople avellanados. Barras, carro y tapa con anodizado natural sobre granallado; eslabones pavonados en negro (óxido negro, acabado estándar del proveedor, 0 a 30 µm: no afecta los ajustes).
@@ -58,7 +58,8 @@ El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) 
 | Eslabón 2 | 1 | **17-4PH H900.** Mismo contorno que el 1, espejado: vientre de 9,9 mm hacia A. Sin embocadura. |
 | Eslabón corto | 1 | **17-4PH H900.** 42,7 mm entre centros, 2,5 mm de espesor, R 4,5. |
 | Pasador Ø5 | 6 | ISO 8734 m6, inoxidable martensítico templado 550 a 650 HV. A presión en las mejillas (H7/m6), el ojo gira con F7/m6. Largos: 13 (Q1, Q2, O), 9,8 (P1, P2), 7 (C). |
-| Arandela ondulada | 6 | Acero inoxidable para resortes, Ø5,2 × 7,9, 0,25 mm comprimida. |
+| Resorte de disco | 4 | Q1, Q2, P1, P2. 8 × 5,2 × 0,4, h0 0,2, inoxidable para resortes (1.4568), a pedido. Comprimido 0,15 mm: ≈ 250 N. |
+| Arandela ondulada | 2 | O y C. Inoxidable para resortes, Ø5,2 × 7,9, 0,25 mm comprimida. |
 
 ## Archivos
 
