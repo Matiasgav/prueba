@@ -81,7 +81,7 @@ A W = 50 la más débil queda a 2.690 N (margen 2,5) y a W = 70 a 4.736 N (marge
 Tres piezas por pivote, sin tornillos ni seguros:
 
 1. **Pasador fijo.** Ø5 m6 templado y rectificado (ISO 8734 tipo A, inoxidable martensítico 1.4125, 550 a 650 HV), **a presión en las dos mejillas** y al ras de las dos caras. No gira contra el aluminio, así que el agujero blando no se gasta, y queda empotrado en los dos extremos.
-2. **Ojo que gira sobre el pasador.** El ojo es del mismo eslabón de 17-4PH H900 (≈ 44 HRC) y se rectifica (o se lapea) a Ø5 +0,014/+0,020: holgura de 2 a 16 µm con el pasador. Acero duro contra acero más duro (58 HRC), con grasa de MoS2.
+2. **Ojo que gira sobre el pasador.** El ojo es del mismo eslabón de 17-4PH H900 (≈ 44 HRC) se escaria a Ø5 H6 y se **aparea** con un pasador medido: holgura de 0 a 3 µm (ver «Que los pasadores no se salgan y que no haya juego radial»). Acero duro contra acero más duro (58 HRC), con grasa de MoS2.
 3. **Resorte de disco (Belleville) 8 × 5,2 × 0,4, h0 = 0,2**, en acero inoxidable para resortes (1.4568). Va en un rebaje de 0,25 mm de la cara de arriba del ojo y empuja el ojo contra la mejilla de abajo con unos 250 N. Lo usan Q1, Q2, P1 y P2. En O y C (eslabón corto de 2,5 mm) va una arandela ondulada liviana (≈ 30 N): el corto es una biela que no toma momentos fuera del plano, y un rebaje de 0,25 mm en una pieza de 2,5 le sacaría un 10 % a los ojos que hoy son los más débiles.
 
 **Ajustes:**
@@ -89,11 +89,50 @@ Tres piezas por pivote, sin tornillos ni seguros:
 | Lugar | Medida | Resultado |
 |---|---|---|
 | Pasador | Ø5 m6 (+0,004/+0,012), de catálogo | – |
-| Agujero en las mejillas (7075) | Ø5 −0,008/−0,003, **escariado después de anodizar** | interferencia 7 a 20 µm |
-| Agujero del ojo (17-4PH H900) | Ø5 +0,014/+0,020, rectificado o lapeado después del envejecido y del pavonado | holgura 2 a 16 µm (se puede aparear a 4 a 8 µm) |
+| Agujero en las mejillas (7075) | Ø5 −0,008/−0,003, **escariado después de anodizar**; abajo, ciego (piso de 0,8 y 0,3 de cámara de aire) | interferencia 7 a 20 µm + Loctite 648 |
+| Agujero del ojo (17-4PH H900) | Ø5 H6, escariado después del envejecido y del pavonado; medido con calibres de 1 µm | apareado con un pasador clasificado: holgura 0 a 3 µm |
 | Pila axial: luz de la horquilla − espesor del ojo − (rebaje) | 0,45 ± 0,05 mm de alojamiento del resorte | resorte comprimido 0,15 ± 0,05 → 180 a 320 N |
 
 Interferencia de 20 µm en la mejilla más fina (carro, 1,6 mm, anillo de Ø9): presión de 116 MPa y 220 MPa de tensión tangencial en el borde del agujero. En la barra A, 190 MPa. Hace falta 150 a 440 N para sacar el pasador por cada mejilla del carro y 400 a 1.140 N en la barra A. El resorte no carga el pasador en sentido axial: empuja entre las dos mejillas, y esa fuerza la toma el cuerpo de la horquilla, que es de una sola pieza.
+
+### Que los pasadores no se salgan y que no haya juego radial
+
+![Retención de los pasadores y juego radial](img/pasadores_retencion_juego.png)
+
+**Pasadores.** En servicio no tienen fuerza axial. El resorte empuja entre las dos mejillas y esa fuerza la toma la horquilla, que es de una sola pieza. Los momentos fuera del plano flexionan el pasador, no lo empujan. Igual se retienen con margen:
+
+| Pivote | Retención | Para sacarlo |
+|---|---|---:|
+| P1, P2 | Las alas de B tapan las dos puntas: no pueden salir. | – |
+| Q1, Q2 | Agujero **ciego** en la mejilla de abajo (tope de forma); arriba, interferencia 7 a 20 µm + Loctite 648 en aluminio desnudo. | ≥ 850 N |
+| O | Ídem en la barra B (mejilla de 5,15). | ≥ 1.500 N |
+| C | Ídem en las alas del eslabón 1 (acero contra acero, interferencia 4 a 10 µm). | ≥ 950 N |
+
+- El agujero ciego deja el piso de 0,8 mm y 0,3 mm de cámara de aire. El aire comprimido empuja unos 10 N: no importa. Así la cara de abajo queda lisa, sin pasadores a la vista.
+- Al armar, a cada pasador se le aplica un empuje axial de 300 N como prueba de aceptación.
+- Calentar a +50 °C le saca 3 µm de interferencia al aluminio: sigue apretado.
+- En el agujero ciego, el apoyo del pasador en la mejilla de abajo baja a 1,8 mm (Q) y 1,25 mm (C). Lo que queda debajo es material macizo: el aplastamiento sigue con margen ≥ 3.
+
+**Juego radial.** En el aluminio es cero por la interferencia. En el ojo depende de la holgura. **A anchos chicos el mecanismo la multiplica:** con la traba fija, el cambio de largo efectivo del eslabón 1 y del corto se ve 7,4 y 7,5 veces en la distancia entre ejes. Cada uno tiene dos pivotes, así que al invertir la carga (tracción ↔ compresión):
+
+| Holgura en cada ojo | W = 35 | W = 50 | W = 70 | W = 105 |
+|---|---:|---:|---:|---:|
+| 16 µm (rectificado sin aparear, peor caso) | 0,48 mm | 0,20 mm | 0,10 mm | 0,04 mm |
+| 8 µm (H6 sin aparear) | 0,24 mm | 0,10 mm | 0,05 mm | 0,02 mm |
+| **3 µm (apareado)** | **0,09 mm** | **0,04 mm** | **0,02 mm** | **0,01 mm** |
+
+Por eso el ojo se **aparea**:
+
+1. Se escarian los ojos a 5 H6 y se mide cada uno con calibres pasa/no pasa de 1 µm.
+2. Los pasadores (m6, banda de 8 µm) se clasifican con un micrómetro.
+3. Cada ojo va con un pasador entre 0 y 3 µm más chico.
+
+Es medición y clasificación, no un mecanizado especial. Para comparar: a W = 35 la elasticidad del conjunto es de 6,7 mm/kN, así que 0,09 mm equivalen a la deformación con 13 N.
+
+- **Control del conjunto armado:** ±20 N entre ejes a W = 35, con comparador. El juego al invertir debe ser ≤ 0,10 mm.
+- **Desgaste:** las articulaciones giran solo al regular y sin carga, acero de 44 HRC sobre 58 HRC con grasa. No se espera que la holgura crezca.
+- **Juego cero absoluto, si se necesitara:** pivote cónico precargado, con dos medios pasadores de punta a 7°. Con μ ≈ 0,1 el cono queda casi autobloqueado y el resorte lo mantiene asentado aunque haya carga. Es una estimación sin verificar y requiere mecanizado apareado de conos.
+- **El carro tiene la misma amplificación:** cada 0,01 mm de juego del carro en el riel (o en la traba) son 0,075 mm entre ejes a W = 35. La traba tiene que apretar el carro sin juego.
 
 ### Justificación
 
@@ -103,9 +142,9 @@ Interferencia de 20 µm en la mejilla más fina (carro, 1,6 mm, anillo de Ø9): 
 
 **Los tres juegos de una articulación y cómo se elimina cada uno:**
 
-- **Radial** (ojo contra pasador). En las mejillas no hay juego, por la interferencia. En el ojo quedan 2 a 16 µm, que es un giro de 0,005° del eslabón de 85 mm: no se siente.
+- **Radial** (ojo contra pasador). En las mejillas no hay juego, por la interferencia. En el ojo quedan 0 a 3 µm, apareando. Ojo: a W = 35 el mecanismo multiplica por 15 el juego entre ejes (ver más abajo).
 - **Axial** (luz entre el ojo y las mejillas). El resorte de disco empuja el ojo contra la mejilla de abajo, así que la luz es cero sin importar la tolerancia de mecanizado: el resorte la absorbe.
-- **Inclinación** (el eslabón «cabecea» sobre el pasador). Es la que se siente al torcer el conjunto. La precarga apoya la cara del ojo y sostiene un momento de unos 250 N × 4 mm ≈ 1 N·m por pivote sin que el ojo se despegue. Si se pasa de ahí, el ojo apoya en el pasador después de ≤ 0,14° (16 µm en 7 mm de largo) y de nuevo es contacto metal-metal.
+- **Inclinación** (el eslabón «cabecea» sobre el pasador). Es la que se siente al torcer el conjunto. La precarga apoya la cara del ojo y sostiene un momento de unos 250 N × 4 mm ≈ 1 N·m por pivote sin que el ojo se despegue. Si se pasa de ahí, el ojo apoya en el pasador después de ≤ 0,03° (3 µm en 7 mm de largo) y de nuevo es contacto metal-metal.
 
 **Fricción al regular.** La precarga hace un torque de fricción de unos 0,19 N·m por pivote (μ = 0,12). Llevado al ancho, cuesta unos **10 N para abrir o cerrar** de W = 35 a 70, 15 N a W = 90 y 28 N cerca de W = 105. Se siente firme y amortiguado, no flojo. Además, ayuda a que el mecanismo no se mueva solo mientras se traba.
 
@@ -224,7 +263,7 @@ Las tensiones de los eslabones se evalúan fuera de los agujeros de los pasadore
 - **Qué cede.** Los eslabones largos, que son planos de 7 mm, a flexión fuera del plano y a torsión, sobre todo junto a los ojos. Las barras casi no participan. En My, a anchos chicos los eslabones quedan casi paralelos a las barras y trabajan a torsión: dos placas de 7 mm. Ahí está la flexibilidad.
 - **Hipótesis que hay que tener presentes:**
   - Los pivotes se suponen rígidos fuera del plano. Eso vale con el resorte de precarga (hasta ≈ 1 N·m por pivote) y el pasador a presión.
-  - Juego adicional sin carga, estimado: hasta unos 0,2° por articulación por el juego del pasador (ojo rectificado: 2 a 16 µm en 7 mm de ojo; con la precarga solo aparece por encima de ≈ 1 N·m por pivote) y unos 0,13° del carro entre las alas (0,1 mm por lado). Se suma a lo de la tabla hasta que el juego se cierra.
+  - Juego adicional sin carga, estimado: hasta unos 0,2° por articulación por el juego del pasador (ojo apareado: 0 a 3 µm en 7 mm de ojo; con la precarga solo aparece por encima de ≈ 1 N·m por pivote) y unos 0,13° del carro entre las alas (0,1 mm por lado). Se suma a lo de la tabla hasta que el juego se cierra.
   - La torsión de cada sección se aproxima como sección maciza (A⁴/40 Ip), con un error esperable de ±30 %.
   - No incluye pandeo lateral ni concentración de tensiones.
 - **Qué la subiría:** eslabones más altos en z (hoy 7 mm; la rigidez fuera del plano crece con el cubo del espesor) o en material más rígido. Con acero, la rigidez sube unas 2,8 veces por el módulo, y la capacidad con la fluencia.
@@ -255,7 +294,7 @@ Fuerzas internas por cada newton entre ejes:
 - **Labios de las alas:** voladizos de 0,9 mm de alto y 1,5 mm de ancho sobre alas de 1,2, cargados a media altura, con la carga repartida a lo largo del carro.
 - **Ojos y agujeros:** aplastamiento, desgarro (2·t·(e − d/2·cos 40°)·τy) y tracción neta. La distancia al borde se mide sobre el contorno real, en la dirección de la fuerza.
 - **Pandeo:** Euler o Johnson para las piezas comprimidas, articulado en ambos extremos.
-- **Rigidez:** energía de deformación (axial y flexión) de eslabones, barras y carro, sin el juego radial de los pernos (2 a 16 µm por articulación).
+- **Rigidez:** energía de deformación (axial y flexión) de eslabones, barras y carro, sin el juego radial de los pernos (0 a 3 µm por articulación, apareados).
 - **Qué no se analiza:**
   - Cargas fuera del plano y torsión: van aparte, en `torsion.py` (ver la sección «Torsión y alabeo entre ejes»).
   - Concentración de tensiones en los agujeros (Kt): no cambia la fluencia estática de un material dúctil, pero sí la fatiga.
