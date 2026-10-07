@@ -61,7 +61,7 @@ HOLG_PLANO = 0.3              # juego en el plano entre piezas que se mueven
 # capas
 T_ESL = 7.0                                # espesor de los eslabones largos
 Z_MED = (ESP / 2 - T_ESL / 2, ESP / 2 + T_ESL / 2)   # eslabones largos
-ALA = 1.5                                 # alas del riel de B: tapan el carro y trabajan con la columna
+ALA = 1.2                                 # alas del riel de B: tapan el carro y trabajan con la columna
 Z_CANAL = (ALA, ESP - ALA)                 # interior del riel
 Z_CARRO = (ALA + HOLG, ESP - ALA - HOLG)   # el carro corre entre las alas
 T_CORTO = 2.5                              # espesor del eslabón corto (solo trabaja a tracción y compresión)

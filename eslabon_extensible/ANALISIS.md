@@ -1,4 +1,4 @@
-# Análisis de resistencia: eslabón regulable v9
+# Análisis de resistencia: eslabón regulable v10
 
 Cuánta fuerza aguanta el eslabón entre sus ejes de acople y qué pieza falla primero, en todo el rango de ancho de 35 a 105 mm. El cálculo lo hace `analisis.py` sobre la geometría real del CAD (`eslabon.py`). Los resultados quedan en `salida/capacidad.json`.
 
@@ -10,13 +10,15 @@ Carga entre ejes hasta la primera fluencia, sin coeficiente de seguridad. Es el 
 
 | Ancho W [mm] | Carga a fluencia [N] | Carga de trabajo estática, ÷ 1,5 [N] | Limita | Flexibilidad entre ejes [mm/kN] | Fuerza sobre la traba [N por N] |
 |---:|---:|---:|---|---:|---:|
-| 35 | 716 | 477 | desgarro del ojo O del eslabón corto | 6,3 | 7,48 |
-| 45 | 1.004 | 669 | flexión del eslabón 1 | 2,8 | 3,88 |
-| 50 | 1.093 | 729 | flexión del eslabón 1 | 2,3 | 3,09 |
-| 60 | 1.223 | 815 | flexión de la barra A | 1,7 | 2,13 |
-| 70 | 1.317 | 878 | flexión de la barra A | 1,3 | 1,55 |
-| 90 | 1.459 | 972 | flexión de la barra A | 0,9 | 0,81 |
+| 35 | 738 | 492 | flexión de la barra A | 6,7 | 7,48 |
+| 45 | 1.007 | 671 | flexión de la barra A | 3,0 | 3,88 |
+| 50 | 1.095 | 730 | flexión de la barra A | 2,4 | 3,09 |
+| 60 | 1.223 | 816 | flexión de la barra A | 1,7 | 2,13 |
+| 70 | 1.317 | 878 | flexión de la barra A | 1,4 | 1,55 |
+| 90 | 1.459 | 973 | flexión de la barra A | 0,9 | 0,81 |
 | 105 | 1.572 | 1.048 | flexión de la barra A | 0,7 | 0,32 |
+
+La barra A limita en todo el rango. Las articulaciones quedan por encima: a W = 35 la más débil llega a fluencia con 1.156 N entre ejes, un 57 % más que la barra A (ver «Articulaciones»).
 
 Comparación:
 
@@ -31,11 +33,65 @@ Comparación:
 | v7 (cable Ø4 oculto de largo fijo) | 480 N | 716 N | 955 N | 1.152 N |
 | v8 (eslabones en 17-4PH) | 578 N | 833 N | 984 N | 1.152 N |
 | v9 (barra A de 175 mm) | 665 N | 972 N | 1.160 N | 1.372 N |
-| **v9 (barra A de 165 mm)** | **716 N** | **1.093 N** | **1.317 N** | **1.572 N** |
+| v9 (barra A de 165 mm) | 716 N | 1.093 N | 1.317 N | 1.572 N |
+| **v10 (articulaciones reforzadas, eslabones H900)** | **738 N** | **1.095 N** | **1.317 N** | **1.572 N** |
 
 \* Las cifras de la v4 y anteriores se calcularon con un error en la lectura del contorno de las piezas (`contorno_capa` armaba el polígono con tramos en orden inconsistente). Afectaba sobre todo las mejillas del carro y de las barras. Está corregido en la v5; las versiones anteriores no se recalcularon.
 
 Para cargas cíclicas (vibración, ciclos de arranque y parada), usá **menos de un tercio** de la carga a fluencia. El 7075 tiene baja resistencia a la fatiga con concentradores, y los agujeros de los pernos en ligamentos finos lo son.
+
+## Qué cambió en la v10: lateral R 5 y articulaciones reforzadas
+
+- **Lateral exterior.** El semicilindro R 6,5 pasa a un arco R 5 centrado en el eje de acople, de ±25° respecto del plano medio, con caras planas arriba y abajo y un chaflán de 0,5 mm en el encuentro. Recupera material en la nariz de las dos barras.
+- **Eslabones en 17-4PH H900** (SUS630 envejecido a 482 °C, la condición estándar de mayor resistencia): Sy = 1.170 MPa, Su = 1.310 MPa. Es un tratamiento de catálogo, sin mecanizado especial; hay que pedirlo así en Rapid Direct, con certificado. Se mecaniza en condición A (solubilizado) y se envejece después: el cambio dimensional es de −0,05 %, unos 0,04 mm en 85 mm entre centros, dentro del juego. El pavonado va después del envejecido.
+- **Alas de B de 1,2 mm** (antes 1,5). Las mejillas del carro pasan de 1,3 a 1,6 mm: la tracción neta en P2 sube de 948 a 1.167 N a W = 35. La barra B baja de 1.478 a 1.257 N, todavía por encima de la barra A.
+- **Resultado:** ninguna articulación limita. A W = 35 los ojos del eslabón corto pasan de 716 a 1.156 N y la capacidad la fija la barra A (738 N). Verificado sin choques entre piezas ni con el cable, de W = 35 a 105.
+
+## Articulaciones
+
+Seis pivotes Ø5: Q1 y Q2 en la barra A, P1 y P2 en el carro, O en la barra B y C en el eslabón 1. Todos trabajan en doble corte: un ojo entre dos mejillas.
+
+**Fuerza en cada pivote con la carga a fluencia de la estructura** (la del eslabón corto pasa por O y por C):
+
+| W [mm] | Carga entre ejes [N] | Q1 [N] | Q2 y P2 [N] | O y C [N] | Corte en el pasador [MPa] |
+|---:|---:|---:|---:|---:|---:|
+| 35 | 738 | 4.731 | 4.772 | 5.573 | 142 |
+| 50 | 1.095 | 2.896 | 3.040 | 3.550 | 90 |
+| 70 | 1.317 | 1.755 | 2.077 | 2.426 | 62 |
+| 105 | 1.572 | 484 | 1.412 | 1.650 | 42 |
+
+Los pivotes ven hasta 7,5 veces la carga entre ejes a W = 35. Margen de cada articulación sobre la carga que rompe la estructura (barra A), a W = 35:
+
+| Articulación | Modo que manda | Carga entre ejes a fluencia [N] | Margen |
+|---|---|---:|---:|
+| O y C (eslabón corto, 2,5 mm) | desgarro del ojo | 1.156 | 1,57 |
+| P2 (carro) | tracción neta de la mejilla de 1,6 mm | 1.167 | 1,58 |
+| O, Q1, Q2 | flexión del pasador | 1.696 | 2,30 |
+| P2 | flexión del pasador | 2.150 | 2,91 |
+| C | aplastamiento de las alas del eslabón 1 | 3.022 | 4,09 |
+| O y C | corte doble del pasador | 3.060 | 4,15 |
+| Q1, Q2 (barra A) | tracción neta de la mejilla | 3.356 | 4,55 |
+
+A W = 50 la más débil queda a 2.690 N (margen 2,5) y a W = 70 a 4.736 N (margen 3,6).
+
+**Especificación para que sean robustas:**
+
+- **Pasador:** Ø5 m6 templado y rectificado (ISO 8734 tipo A, 550 a 650 HV), en inoxidable martensítico (1.4125). Fijo a presión en las dos mejillas (5 H7/m6 en las mejillas = interferencia), así no gira contra el aluminio y no se sale. El ojo gira sobre el pasador con 5 F7/m6 (juego de 6 a 30 µm). Un pasador común sin templar (ISO 2338) no sirve: la flexión en O llega a unos 600 MPa a la carga máxima.
+- **Retención:** el pasador entra a presión y queda al ras de las dos caras; no hay seguros, tuercas ni anillos que puedan perderse. Para desarmar hay que sacarlo con un botador.
+- **Juego axial:** una arandela ondulada inoxidable Ø5,2 × 7,9 en un rebaje de 0,15 mm del ojo mantiene las caras en contacto. Es la que hace firme el conjunto al alabeo.
+- **Bordes:** el agujero del ojo con un chaflán de 0,2 mm y las caras del ojo con Ra 0,8, para que la arandela no marque el pavonado.
+- **Ojos en acero contra mejillas en aluminio:** el aplastamiento sobre el aluminio queda a margen 4 o más; el pasador fijo en el aluminio evita el desgaste del agujero blando.
+
+**Secuencia de armado:**
+
+1. Subconjunto carro: eslabón 1 y eslabón 2 en sus horquillas P1 y P2, con sus arandelas; se prensan los pasadores P1 y P2 (largo 9,8).
+2. Eslabón corto en la embocadura C del eslabón 1, con su arandela; se prensa el pasador C (largo 7).
+3. Se mete el subconjunto en el canal de B desde la punta abierta de y = 190, bajo los labios de las alas. Una vez adentro, los pasadores P quedan encerrados por las alas y no pueden salirse.
+4. Se coloca el cable en sus túneles alrededor de O, C y Q1, con el mecanismo abierto (W ≈ 70), antes de cerrar O y Q1.
+5. Pasador O a través de B y el eslabón corto; pasadores Q1 y Q2 a través de A y los eslabones largos (largo 13).
+6. Tapa en y = 190.
+
+El armado del cable en el punto 4 está planteado pero no verificado en el CAD: hay que confirmarlo en el primer prototipo.
 
 ## Qué cambió en la v9: barra A acortada
 
@@ -120,20 +176,20 @@ Cálculo fuera del plano con `torsion.py` (emparrillado de vigas con secciones m
 
 | W [mm] | Mx: rigidez [N·m/°] | Mx: capacidad a fluencia [N·m] | My: rigidez [N·m/°] | My: capacidad a fluencia [N·m] |
 |---:|---:|---:|---:|---:|
-| 35 | 56,0 | 87,0 (barra A) | 5,9 | 11,1 (eslabón 1) |
-| 50 | 48,4 | 55,1 (barra A) | 6,2 | 11,2 (barra A) |
-| 70 | 36,9 | 39,1 (barra A) | 6,5 | 11,2 (barra A) |
-| 90 | 26,7 | 30,2 (barra A) | 6,8 | 11,2 (barra A) |
-| 105 | 20,1 | 24,2 (barra A) | 7,8 | 11,2 (barra A) |
+| 35 | 57,0 | 98,7 (barra A) | 6,1 | 13,2 (barra A) |
+| 50 | 49,2 | 62,2 (barra A) | 6,4 | 13,2 (barra A) |
+| 70 | 37,5 | 43,6 (barra A) | 6,7 | 13,2 (barra A) |
+| 90 | 27,1 | 33,3 (barra A) | 7,1 | 13,2 (barra A) |
+| 105 | 20,4 | 26,6 (barra A) | 8,1 | 13,2 (barra A) |
 
 Las tensiones de los eslabones se evalúan fuera de los agujeros de los pasadores: ahí el momento lo toma el pasador. Verificación aparte de ojos y pasadores con 3 N·m: la peor articulación pasa unos 2,3 N·m, lo que da unos 490 N de cupla sobre el pasador. Eso es unos 80 MPa de flexión en el pasador templado, unos 45 MPa de aplastamiento en el ojo y unos 75 MPa en las mejillas del carro: todo con margen amplio.
 
-- **Deformación.** Con Mx, a W = 70, cada N·m gira 0,029° (0,09 mm de desnivel entre las puntas de A, en 180 mm). Con My cada N·m gira 0,13° a 0,17°: es la dirección floja. Con 3 N·m gira 0,4° a 0,5°, más el juego de las articulaciones.
-- **Rotura (estimada).** La rotura llega aproximadamente a 1,6 veces la fluencia: reserva plástica de las secciones (≈ 1,4) por Su/Sy del 7075 (1,14). En My, la fluencia es 11 N·m y la rotura ≈ 18 N·m; en Mx, la rotura ≈ 40 N·m a W = 105 y bastante más a anchos chicos.
+- **Deformación.** Con Mx, a W = 70, cada N·m gira 0,027° (0,09 mm de desnivel entre las puntas de A, en 180 mm). Con My cada N·m gira 0,12° a 0,16°: es la dirección floja. Con 3 N·m gira 0,4° a 0,5°, más el juego de las articulaciones.
+- **Rotura (estimada).** La rotura llega aproximadamente a 1,6 veces la fluencia: reserva plástica de las secciones (≈ 1,4) por Su/Sy del 7075 (1,14). En My, la fluencia es 13 N·m y la rotura ≈ 21 N·m; en Mx, la rotura ≈ 43 N·m a W = 105 y bastante más a anchos chicos.
 - **Qué cede.** Los eslabones largos, que son planos de 7 mm, a flexión fuera del plano y a torsión, sobre todo junto a los ojos. Las barras casi no participan. En My, a anchos chicos los eslabones quedan casi paralelos a las barras y trabajan a torsión: dos placas de 7 mm. Ahí está la flexibilidad.
 - **Hipótesis que hay que tener presentes:**
   - Los pivotes se suponen rígidos fuera del plano. Eso vale con la arandela de precarga y el pasador ajustado.
-  - Juego adicional sin carga, estimado: hasta unos 0,2° por articulación por el juego del pasador (H7/g6: 4 a 24 µm en 7 mm de ojo) y unos 0,13° del carro entre las alas (0,1 mm por lado). Se suma a lo de la tabla hasta que el juego se cierra.
+  - Juego adicional sin carga, estimado: hasta unos 0,2° por articulación por el juego del pasador (F7/m6: 6 a 30 µm en 7 mm de ojo) y unos 0,13° del carro entre las alas (0,1 mm por lado). Se suma a lo de la tabla hasta que el juego se cierra.
   - La torsión de cada sección se aproxima como sección maciza (A⁴/40 Ip), con un error esperable de ±30 %.
   - No incluye pandeo lateral ni concentración de tensiones.
 - **Qué la subiría:** eslabones más altos en z (hoy 7 mm; la rigidez fuera del plano crece con el cubo del espesor) o en material más rígido. Con acero, la rigidez sube unas 2,8 veces por el módulo, y la capacidad con la fluencia.
@@ -151,20 +207,20 @@ Fuerzas internas por cada newton entre ejes:
 
 1. **A anchos chicos los eslabones largos quedan casi paralelos a las barras.** A W = 35 solo una fracción chica de su fuerza axial empuja en X, y el Scott Russell amplifica igual: el carro recibe p/s veces la carga. Esto viene del recorrido pedido (35 a 105) en 190 mm de largo.
 2. **El paralelogramo se agarra de A solo en la mitad inferior** (Q1 a 20 mm, Q2 a 93 mm). La carga del acople de y = 185 recorre la barra como un voladizo. Por eso la barra A limita desde W = 75.
-3. **Todo vive en 13 mm de espesor:** 7 mm de eslabón, 1,5 de ala y 1,3 de mejilla del carro. En C el eslabón 1 tiene dos alas de 2,15 mm alrededor del corto, y de 1,3 mm donde pasa el cable.
+3. **Todo vive en 13 mm de espesor:** 7 mm de eslabón, 1,2 de ala y 1,6 de mejilla del carro. En C el eslabón 1 tiene dos alas de 2,15 mm alrededor del corto, y de 1,3 mm donde pasa el cable.
 
 ## Hipótesis
 
 - **Carga:** F en la dirección del ancho (X), repartida mitad y mitad entre los dos agujeros de acople de cada barra (A: y = 5 y y = 160; B: y = 5 y y = 185), sobre el eje de cada agujero (a 5 mm de la cara exterior).
-- **Material:** barras, carro y tapa en 7075-T651, valores típicos: Sy = 503 MPa, Su = 572 MPa, E = 71,7 GPa, τy = 0,577 Sy. Eslabones en 17-4PH (SUS630) de catálogo: Sy = 725 MPa (mínimo del rango del proveedor), E = 197 GPa. El admisible de aplastamiento es Sy·e/D, con un máximo de 1,5 Sy.
-- **Pernos:** pasadores Ø5 templados (550 a 650 HV), rectificados g6. El corte doble de fluencia se toma como 0,75 × 30,8 kN, la rotura mínima de ISO 8734 para Ø5. A flexión se admiten 1500 MPa, con el momento de horquilla F/2·(t_mejilla/2 + juego + t_medio/4).
+- **Material:** barras, carro y tapa en 7075-T651, valores típicos: Sy = 503 MPa, Su = 572 MPa, E = 71,7 GPa, τy = 0,577 Sy. Eslabones en 17-4PH (SUS630) H900: Sy = 1.170 MPa, Su = 1.310 MPa, E = 197 GPa. El admisible de aplastamiento es Sy·e/D, con un máximo de 1,5 Sy.
+- **Pernos:** pasadores Ø5 ISO 8734 m6, templados (550 a 650 HV), fijos a presión en las mejillas; el ojo gira sobre el pasador. El corte doble de fluencia se toma como 0,75 × 30,8 kN, la rotura mínima de ISO 8734 para Ø5. A flexión se admiten 1500 MPa, con el momento de horquilla F/2·(t_mejilla/2 + juego + t_medio/4).
 - **Mecanismo:** con el carro trabado es isostático, y la estática da todas las fuerzas. La traba se supone ideal, en el medio del carro.
 - **Barras y carro:** vigas con secciones medidas cada 0,5 mm sobre el CAD. Se toma N/A + M·c/I con los dos términos del mismo signo, lo que es conservador.
 - **Eslabón 1:** viga con la sección real medida sobre el sólido del CAD cada 0,25 mm (vientre, embocadura y agujeros).
-- **Labios de las alas:** voladizos de 0,9 mm de alto y 1,5 mm de ancho, cargados a media altura, con la carga repartida a lo largo del carro.
+- **Labios de las alas:** voladizos de 0,9 mm de alto y 1,5 mm de ancho sobre alas de 1,2, cargados a media altura, con la carga repartida a lo largo del carro.
 - **Ojos y agujeros:** aplastamiento, desgarro (2·t·(e − d/2·cos 40°)·τy) y tracción neta. La distancia al borde se mide sobre el contorno real, en la dirección de la fuerza.
 - **Pandeo:** Euler o Johnson para las piezas comprimidas, articulado en ambos extremos.
-- **Rigidez:** energía de deformación (axial y flexión) de eslabones, barras y carro, sin el juego radial de los pernos (H7/g6: hasta unos 0,02 mm por articulación).
+- **Rigidez:** energía de deformación (axial y flexión) de eslabones, barras y carro, sin el juego radial de los pernos (F7/m6: hasta unos 0,03 mm por articulación).
 - **Qué no se analiza:**
   - Cargas fuera del plano y torsión: van aparte, en `torsion.py` (ver la sección «Torsión y alabeo entre ejes»).
   - Concentración de tensiones en los agujeros (Kt): no cambia la fluencia estática de un material dúctil, pero sí la fatiga.
@@ -175,28 +231,28 @@ Carga entre ejes [N] que lleva cada modo a la fluencia, ordenados por W = 35. Es
 
 | Modo de falla | W = 35 | W = 50 | W = 70 | W = 105 |
 |---|---:|---:|---:|---:|
-| eslabón corto ojo O: desgarro | 716 | 1.667 | 2.935 | 5.153 |
-| eslabón corto ojo C: desgarro | 716 | 1.667 | 2.935 | 5.153 |
-| barra A: flexión + axial | 738 | 1.094 | 1.317 | 1.572 |
-| eslabón 1: flexión + axial | 758 | 1.093 | 1.437 | 3.415 |
-| carro mejilla P2: tracción neta | 948 | 2.398 | 5.332 | 27.948 |
-| eslabón corto ojo O: tracción neta | 960 | 2.235 | 3.935 | 6.910 |
-| eslabón corto ojo C: tracción neta | 960 | 2.235 | 3.935 | 6.910 |
-| carro: flexión + axial | 1.051 | 2.772 | 5.129 | 8.284 |
-| eslabón corto ojo O: aplastamiento | 1.080 | 2.515 | 4.427 | 7.774 |
-| eslabón corto ojo C: aplastamiento | 1.080 | 2.515 | 4.427 | 7.774 |
-| carro mejilla P2: desgarro | 1.202 | 2.958 | 6.100 | 4.715 |
-| carro mejilla P2: aplastamiento | 1.429 | 3.466 | 6.218 | 6.874 |
-| eslabón corto fuera del plano: pandeo | 1.457 | 3.392 | 5.972 | 10.486 |
-| barra B: flexión + axial | 1.478 | 2.438 | 3.474 | 7.131 |
+| barra A: flexión + axial | 738 | 1.095 | 1.317 | 1.572 |
+| eslabón corto ojo O: desgarro | 1.156 | 2.690 | 4.736 | 8.316 |
+| eslabón corto ojo C: desgarro | 1.156 | 2.690 | 4.736 | 8.316 |
+| carro mejilla P2: tracción neta | 1.167 | 2.951 | 6.562 | 34.397 |
+| eslabón 1: flexión + axial | 1.223 | 1.764 | 2.319 | 5.510 |
+| barra B: flexión + axial | 1.257 | 2.086 | 2.984 | 6.184 |
+| carro mejilla P2: desgarro | 1.479 | 3.641 | 7.508 | 5.803 |
+| carro: flexión + axial | 1.501 | 3.488 | 6.070 | 10.887 |
+| eslabón corto ojo O: tracción neta | 1.550 | 3.607 | 6.351 | 11.151 |
+| eslabón corto ojo C: tracción neta | 1.550 | 3.607 | 6.351 | 11.151 |
 | perno O: flexión | 1.696 | 3.948 | 6.951 | 12.205 |
 | perno Q2: flexión | 1.726 | 4.018 | 7.073 | 12.419 |
 | perno Q1: flexión | 1.741 | 4.217 | 8.372 | 36.273 |
-| eslabón 1 alas en C: aplastamiento | 1.873 | 4.359 | 5.050 | 13.475 |
-| perno P2: flexión | 2.279 | 5.303 | 9.336 | 16.394 |
-| eslabón 2 ojo P2: desgarro | 2.340 | 5.447 | 9.589 | 16.838 |
-| eslabón 2 ojo Q2: desgarro | 2.340 | 5.447 | 9.589 | 16.838 |
-| eslabón 1 ojo Q1: desgarro | 2.363 | 5.718 | 11.353 | 49.194 |
+| eslabón corto ojo O: aplastamiento | 1.744 | 4.058 | 7.144 | 12.545 |
+| eslabón corto ojo C: aplastamiento | 1.744 | 4.058 | 7.144 | 12.545 |
+| carro mejilla P2: aplastamiento | 1.759 | 4.265 | 7.653 | 8.460 |
+| perno P2: flexión | 2.150 | 5.003 | 8.808 | 15.466 |
+| eslabón 1 alas en C: aplastamiento | 3.022 | 7.034 | 8.149 | 21.745 |
+| perno C: corte doble | 3.060 | 7.122 | 12.538 | 22.017 |
+| perno O: corte doble | 3.060 | 7.122 | 12.538 | 22.017 |
+| barra A mejilla Q1: tracción neta | 3.356 | 8.144 | 16.287 | 85.285 |
+| barra A mejilla Q2: tracción neta | 3.375 | 8.405 | 17.986 | 116.475 |
 
 ## Cómo subir más la capacidad
 

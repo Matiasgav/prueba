@@ -35,7 +35,7 @@ AL = dict(nombre="7075-T651", Sy=503.0, Su=572.0, E=71700.0)
 AL["tau_y"] = 0.577 * AL["Sy"]
 # eslabones (los dos largos y el corto): inoxidable 17-4PH (SUS630) de catálogo, sin tratamiento
 # especial: se toma la fluencia más baja del rango publicado por el proveedor (725 MPa)
-ESL = dict(nombre="17-4PH (SUS630)", Sy=725.0, Su=930.0, E=197000.0, G=76000.0)
+ESL = dict(nombre="17-4PH (SUS630) H900", Sy=1170.0, Su=1310.0, E=197000.0, G=76000.0)
 ESL["tau_y"] = 0.577 * ESL["Sy"]
 _CORTE_ISO8734 = {4.0: 19.7e3, 5.0: 30.8e3, 6.0: 44.2e3}   # corte doble mínimo de rotura, ISO 8734
 PERNO = dict(nombre=f"pasador templado Ø{E.D_PERNO:g}", d=E.D_PERNO,

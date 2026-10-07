@@ -1,6 +1,6 @@
-# Eslabón de ancho regulable (doble Scott Russell) — v9
+# Eslabón de ancho regulable (doble Scott Russell) — v10
 
-Modelo 3D paramétrico en CadQuery de un eslabón de **190 × 13 mm** (barra B de 190, barra A de 165) cuyo **ancho se regula a mano entre 35 y 105 mm**. Está pensado para mecanizar: barras y carro en **aluminio 7075-T651** anodizado natural granallado (gris claro), eslabones en **acero inoxidable 17-4PH pavonado negro** (óxido negro), con pivotes templados y precargados.
+Modelo 3D paramétrico en CadQuery de un eslabón de **190 × 13 mm** (barra B de 190, barra A de 165) cuyo **ancho se regula a mano entre 35 y 105 mm**. Está pensado para mecanizar: barras y carro en **aluminio 7075-T651** anodizado natural granallado (gris claro), eslabones en **acero inoxidable 17-4PH H900 pavonado negro** (óxido negro), con pivotes templados y precargados.
 
 ![Isométrica a W = 35 mm, barras transparentes](img/iso_W35.png)
 ![Cable a W = 70 mm](img/cable_W70.png)
@@ -14,11 +14,13 @@ Fuerza entre los ejes de acople hasta la primera fluencia, tanto en tracción co
 
 | W | 35 | 45 | 50 | 70 | 105 mm |
 |---|---:|---:|---:|---:|---:|
-| Carga a fluencia | 716 | 1.004 | 1.093 | 1.317 | 1.572 N |
-| Carga de trabajo estática (÷ 1,5) | 477 | 669 | 729 | 878 | 1.048 N |
-| Flexibilidad entre ejes | 6,3 | 2,8 | 2,3 | 1,3 | 0,7 mm/kN |
+| Carga a fluencia | 738 | 1.007 | 1.095 | 1.317 | 1.572 N |
+| Carga de trabajo estática (÷ 1,5) | 492 | 671 | 730 | 878 | 1.048 N |
+| Flexibilidad entre ejes | 6,7 | 3,0 | 2,4 | 1,4 | 0,7 mm/kN |
 
-Alabeo entre ejes (cupla alrededor del ancho, Mx): rigidez de 52 a 20 N·m/° y capacidad a fluencia de 91 a 24 N·m según el ancho. Alrededor del largo (My) es la dirección floja: de 5,8 a 7,6 N·m/° y 11 N·m a fluencia (rotura estimada ≈ 18 N·m).
+Alabeo entre ejes (cupla alrededor del ancho, Mx): rigidez de 57 a 20 N·m/° y capacidad a fluencia de 99 a 27 N·m según el ancho. Alrededor del largo (My) es la dirección floja: de 6,1 a 8,1 N·m/° y 13 N·m a fluencia (rotura estimada ≈ 21 N·m).
+
+Limita la barra A en todo el rango; las seis articulaciones quedan por encima, con margen 1,57 o más a W = 35 (ver «Articulaciones» en el análisis).
 
 El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) está en **[ANALISIS.md](ANALISIS.md)**.
 
@@ -27,11 +29,11 @@ El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) 
 - **Paralelogramo** de dos eslabones largos (85,3 mm entre centros), con pivotes separados 73 mm: Q1 y Q2 en la barra A, P1 y P2 en un carro que corre en la barra B.
 - **Eslabón corto** del Scott Russell (42,7 mm, una pieza de 2,5 mm: es una biela, solo trabaja a tracción y compresión): une el pivote O de B con el punto medio C del eslabón 1. Así Q1 se mueve en línea recta perpendicular a B, y la barra A se traslada sin girar.
 - **Embocadura en C.** El eslabón corto entra en una ranura central del eslabón 1, que queda con dos alas de 2,15 mm.
-- **Riel en C oculto, guiado por las alas.** El carro corre en un canal de B cerrado arriba y abajo por alas de 1,5 mm que trabajan con la columna: la cara ancha es continua y no se ve el carro. Las alas lo guían en z; la columna lo apoya hacia B y un labio de 1,5 × 0,9 mm en el borde interior de cada ala lo retiene hacia A. No hay guía mecanizada en la columna. El canal se abre en la punta de y = 190 para armar y se cierra con una tapa.
+- **Riel en C oculto, guiado por las alas.** El carro corre en un canal de B cerrado arriba y abajo por alas de 1,2 mm que trabajan con la columna: la cara ancha es continua y no se ve el carro. Las alas lo guían en z; la columna lo apoya hacia B y un labio de 1,5 × 0,9 mm en el borde interior de cada ala lo retiene hacia A. No hay guía mecanizada en la columna. El canal se abre en la punta de y = 190 para armar y se cierra con una tapa.
 - **Eslabones largos iguales, espejados y planos.** Mismo contorno con vientre simétrico en arco (R 60, tangente a los ojos, 9,9 mm de profundidad): el 1 hacia B y el 2 hacia A. Espesor constante de 7 mm.
-- **Pivotes Ø5 en doble corte, precargados.** Pasador rectificado g6, a presión en las mejillas. Una arandela ondulada de acero, en un rebaje de 0,15 mm del ojo, elimina el juego axial y mantiene las caras en contacto, lo que hace al conjunto firme contra el alabeo.
+- **Pivotes Ø5 en doble corte, precargados.** Pasador templado y rectificado m6 (ISO 8734), a presión en las dos mejillas y al ras: no tiene seguros ni piezas que se puedan soltar. El ojo gira sobre el pasador (F7/m6). Una arandela ondulada de acero, en un rebaje de 0,15 mm del ojo, elimina el juego axial y mantiene las caras en contacto, lo que hace al conjunto firme contra el alabeo.
 - **Cable Ø4 oculto, de largo fijo.** Entra por el lateral de B, rodea O, sigue el lado de afuera del eslabón corto, pasa por encima de C, baja por el lado de afuera del eslabón 1, rodea Q1 y sale por el lateral de A. En los tres pivotes gira por afuera a R 7: los giros suman siempre 180°, así que el largo es 124,8 mm en todo el recorrido. Dentro de las barras hace curvas fijas de R 5. Los ojos de los eslabones hacen de polea. Ver [el esquema](img/cable_recorrido.png).
-- **Lateral exterior en semicilindro R 6,5** a todo lo largo de las dos barras; las puntas (caras de 13 × ancho) son planas. Los pernos Q1 y Q2 quedan al ras de la superficie curva.
+- **Lateral exterior en arco R 5** centrado en el eje de acople, de ±25°, con caras planas arriba y abajo y chaflán de 0,5 mm en el encuentro, a todo lo largo de las dos barras; las puntas (caras de 13 × ancho) son planas.
 - **Terminación:** bisel de 0,3 mm en las aristas exteriores y agujeros de acople avellanados. Barras, carro y tapa con anodizado natural sobre granallado; eslabones pavonados en negro (óxido negro, acabado estándar del proveedor, 0 a 30 µm: no afecta los ajustes).
 
 ## Requisitos
@@ -48,14 +50,14 @@ El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) 
 
 | Pieza | Cant. | Notas |
 |---|---:|---|
-| Barra A | 1 | 7075-T651. 14,2 × 165 × 13 (acortada 25 mm del lado del voladizo; muesca de 1,4 × 7,2 mm en la esquina interior de la punta), lateral exterior en semicilindro R 6,5. Horquillas en Q1 y Q2, pivotes a 10 mm de la cara exterior. Túnel del cable alrededor de Q1. |
-| Barra B | 1 | 7075-T651. 20,0 × 190 × 13, lateral exterior en semicilindro R 6,5. Columna de 8,6 mm y riel en C con alas de 1,5 mm y labios, alojamiento oculto del eslabón corto y túnel del cable en O. |
+| Barra A | 1 | 7075-T651. 14,2 × 165 × 13 (acortada 25 mm del lado del voladizo; muesca de 1,4 × 7,2 mm en la esquina interior de la punta), lateral exterior en arco R 5 ±25°. Horquillas en Q1 y Q2, pivotes a 10 mm de la cara exterior. Túnel del cable alrededor de Q1. |
+| Barra B | 1 | 7075-T651. 20,0 × 190 × 13, lateral exterior en arco R 5 ±25°. Columna de 8,6 mm y riel en C con alas de 1,2 mm y labios, alojamiento oculto del eslabón corto y túnel del cable en O. |
 | Tapa | 1 | Cierra la boca del riel en y = 190; entra como el carro, bajo los labios. |
-| Carro | 1 | 7075-T651. 11,4 mm de ancho, 9,8 mm de alto entre las alas, con el escalón de los labios. Horquillas en P1 y P2 (73 mm entre centros), mejillas de 1,3 mm. |
-| Eslabón 1 | 1 | **17-4PH.** 85,3 mm entre centros, 7 mm de espesor, ojos R 4,5, vientre de 9,9 mm hacia B, embocadura de 2,7 mm en C y túnel del cable alrededor de C. |
-| Eslabón 2 | 1 | **17-4PH.** Mismo contorno que el 1, espejado: vientre de 9,9 mm hacia A. Sin embocadura. |
-| Eslabón corto | 1 | **17-4PH.** 42,7 mm entre centros, 2,5 mm de espesor, R 4,5. |
-| Pasador Ø5 | 6 | Templado 550 a 650 HV, rectificado g6, a presión en las mejillas. Largos: 13 (Q1, Q2, O), 9,8 (P1, P2), 7 (C). |
+| Carro | 1 | 7075-T651. 11,4 mm de ancho, 9,8 mm de alto entre las alas, con el escalón de los labios. Horquillas en P1 y P2 (73 mm entre centros), mejillas de 1,6 mm. |
+| Eslabón 1 | 1 | **17-4PH H900.** 85,3 mm entre centros, 7 mm de espesor, ojos R 4,5, vientre de 9,9 mm hacia B, embocadura de 2,7 mm en C y túnel del cable alrededor de C. |
+| Eslabón 2 | 1 | **17-4PH H900.** Mismo contorno que el 1, espejado: vientre de 9,9 mm hacia A. Sin embocadura. |
+| Eslabón corto | 1 | **17-4PH H900.** 42,7 mm entre centros, 2,5 mm de espesor, R 4,5. |
+| Pasador Ø5 | 6 | ISO 8734 m6, inoxidable martensítico templado 550 a 650 HV. A presión en las mejillas (H7/m6), el ojo gira con F7/m6. Largos: 13 (Q1, Q2, O), 9,8 (P1, P2), 7 (C). |
 | Arandela ondulada | 6 | Acero inoxidable para resortes, Ø5,2 × 7,9, 0,25 mm comprimida. |
 
 ## Archivos

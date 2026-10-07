@@ -17,7 +17,7 @@ import eslabon as E
 
 T_LONCHA = 0.05
 Ea, G, Sy = 71700.0, 26900.0, 503.0                    # barras: 7075-T651
-E_ESL, G_ESL, SY_ESL = 197000.0, 76000.0, 725.0         # eslabones: 17-4PH (SUS630)
+E_ESL, G_ESL, SY_ESL = 197000.0, 76000.0, 1170.0        # eslabones: 17-4PH (SUS630)
 
 
 def _sec(sol, y):
