@@ -10,13 +10,13 @@ Carga entre ejes hasta la primera fluencia, sin coeficiente de seguridad. Es el 
 
 | Ancho W [mm] | Carga a fluencia [N] | Carga de trabajo estática, ÷ 1,5 [N] | Limita | Flexibilidad entre ejes [mm/kN] | Fuerza sobre la traba [N por N] |
 |---:|---:|---:|---|---:|---:|
-| 35 | 738 | 492 | flexión de la barra A | 6,7 | 7,48 |
-| 45 | 1.007 | 671 | flexión de la barra A | 3,0 | 3,88 |
-| 50 | 1.095 | 730 | flexión de la barra A | 2,4 | 3,09 |
-| 60 | 1.223 | 816 | flexión de la barra A | 1,7 | 2,13 |
-| 70 | 1.317 | 878 | flexión de la barra A | 1,4 | 1,55 |
-| 90 | 1.459 | 973 | flexión de la barra A | 0,9 | 0,81 |
-| 105 | 1.572 | 1.048 | flexión de la barra A | 0,7 | 0,32 |
+| 35 | 733 | 489 | flexión de la barra A | 6,7 | 7,48 |
+| 45 | 1.000 | 666 | flexión de la barra A | 3,0 | 3,88 |
+| 50 | 1.087 | 724 | flexión de la barra A | 2,4 | 3,09 |
+| 60 | 1.215 | 810 | flexión de la barra A | 1,7 | 2,13 |
+| 70 | 1.307 | 872 | flexión de la barra A | 1,4 | 1,55 |
+| 90 | 1.449 | 966 | flexión de la barra A | 0,9 | 0,81 |
+| 105 | 1.561 | 1.041 | flexión de la barra A | 0,7 | 0,32 |
 
 La barra A limita en todo el rango. Las articulaciones quedan por encima: a W = 35 la más débil llega a fluencia con 1.156 N entre ejes, un 57 % más que la barra A (ver «Articulaciones»).
 
@@ -34,7 +34,8 @@ Comparación:
 | v8 (eslabones en 17-4PH) | 578 N | 833 N | 984 N | 1.152 N |
 | v9 (barra A de 175 mm) | 665 N | 972 N | 1.160 N | 1.372 N |
 | v9 (barra A de 165 mm) | 716 N | 1.093 N | 1.317 N | 1.572 N |
-| **v10 (articulaciones reforzadas, eslabones H900)** | **738 N** | **1.095 N** | **1.317 N** | **1.572 N** |
+| v10 (articulaciones reforzadas, eslabones H900) | 738 N | 1.095 N | 1.317 N | 1.572 N |
+| **v10 (pasadores remachados al ras)** | **733 N** | **1.087 N** | **1.307 N** | **1.561 N** |
 
 \* Las cifras de la v4 y anteriores se calcularon con un error en la lectura del contorno de las piezas (`contorno_capa` armaba el polígono con tramos en orden inconsistente). Afectaba sobre todo las mejillas del carro y de las barras. Está corregido en la v5; las versiones anteriores no se recalcularon.
 
@@ -80,7 +81,7 @@ A W = 50 la más débil queda a 2.690 N (margen 2,5) y a W = 70 a 4.736 N (marge
 
 Tres piezas por pivote, sin tornillos ni seguros:
 
-1. **Pasador fijo.** Ø5 m6 templado y rectificado (ISO 8734 tipo A, inoxidable martensítico 1.4125, 550 a 650 HV), **a presión en las dos mejillas** y al ras de las dos caras. No gira contra el aluminio, así que el agujero blando no se gasta, y queda empotrado en los dos extremos.
+1. **Pasador fijo.** En P1 y P2: Ø5 m6 templado y rectificado (ISO 8734 tipo A, 1.4125), a presión y tapado por las alas de B. En Q1, Q2, O y C: Ø5 rectificado de 17-4PH H1150 (fluencia mínima 725 MPa), a presión y **remachado con punta maciza** contra un avellanado de 0,3 × 45° en las dos caras, al ras (ver `img/pasador_remachado.png`). No gira contra el aluminio, así que el agujero blando no se gasta, y queda empotrado en los dos extremos.
 2. **Ojo que gira sobre el pasador.** El ojo es del mismo eslabón de 17-4PH H900 (≈ 44 HRC) se escaria a Ø5 H6 y se **aparea** con un pasador medido: holgura de 0 a 3 µm (ver «Que los pasadores no se salgan y que no haya juego radial»). Acero duro contra acero más duro (58 HRC), con grasa de MoS2.
 3. **Resorte de disco (Belleville) 8 × 5,2 × 0,4, h0 = 0,2**, en acero inoxidable para resortes (1.4568). Va en un rebaje de 0,25 mm de la cara de arriba del ojo y empuja el ojo contra la mejilla de abajo con unos 250 N. Lo usan Q1, Q2, P1 y P2. En O y C (eslabón corto de 2,5 mm) va una arandela ondulada liviana (≈ 30 N): el corto es una biela que no toma momentos fuera del plano, y un rebaje de 0,25 mm en una pieza de 2,5 le sacaría un 10 % a los ojos que hoy son los más débiles.
 
@@ -89,7 +90,7 @@ Tres piezas por pivote, sin tornillos ni seguros:
 | Lugar | Medida | Resultado |
 |---|---|---|
 | Pasador | Ø5 m6 (+0,004/+0,012), de catálogo | – |
-| Agujero en las mejillas (7075) | Ø5 −0,008/−0,003, **escariado después de anodizar**; abajo, ciego (piso de 0,8 y 0,3 de cámara de aire) | interferencia 7 a 20 µm + Loctite 648 |
+| Agujero en las mejillas (7075) | Ø5 −0,008/−0,003, **escariado después de anodizar**, avellanado 0,3 × 45° en las dos caras (Q, O, C) | interferencia 7 a 20 µm; remachado al ras |
 | Agujero del ojo (17-4PH H900) | Ø5 H6, escariado después del envejecido y del pavonado; medido con calibres de 1 µm | apareado con un pasador clasificado: holgura 0 a 3 µm |
 | Pila axial: luz de la horquilla − espesor del ojo − (rebaje) | 0,45 ± 0,05 mm de alojamiento del resorte | resorte comprimido 0,15 ± 0,05 → 180 a 320 N |
 
@@ -99,19 +100,21 @@ Interferencia de 20 µm en la mejilla más fina (carro, 1,6 mm, anillo de Ø9): 
 
 ![Retención de los pasadores y juego radial](img/pasadores_retencion_juego.png)
 
+> La retención de esa figura (agujero ciego + adhesivo) quedó reemplazada por el remachado al ras ([dibujo](img/pasador_remachado.png), [opciones comparadas](img/pasadores_opciones.png)). La parte de juego radial sigue vigente.
+
 **Pasadores.** En servicio no tienen fuerza axial. El resorte empuja entre las dos mejillas y esa fuerza la toma la horquilla, que es de una sola pieza. Los momentos fuera del plano flexionan el pasador, no lo empujan. Igual se retienen con margen:
 
 | Pivote | Retención | Para sacarlo |
 |---|---|---:|
 | P1, P2 | Las alas de B tapan las dos puntas: no pueden salir. | – |
-| Q1, Q2 | Agujero **ciego** en la mejilla de abajo (tope de forma); arriba, interferencia 7 a 20 µm + Loctite 648 en aluminio desnudo. | ≥ 850 N |
-| O | Ídem en la barra B (mejilla de 5,15). | ≥ 1.500 N |
-| C | Ídem en las alas del eslabón 1 (acero contra acero, interferencia 4 a 10 µm). | ≥ 950 N |
+| Q1, Q2 | Pasante, a presión y **remachado** en las dos puntas (radial, con tope de altura): las cabezas llenan un avellanado de 0,3 × 45° y quedan al ras. Traba de forma en los dos sentidos. | se rompe la cabeza (≈ 2 kN) |
+| O | Ídem en la barra B. | ídem |
+| C | Ídem en las alas del eslabón 1. | ídem |
 
-- El agujero ciego deja el piso de 0,8 mm y 0,3 mm de cámara de aire. El aire comprimido empuja unos 10 N: no importa. Así la cara de abajo queda lisa, sin pasadores a la vista.
-- Al armar, a cada pasador se le aplica un empuje axial de 300 N como prueba de aceptación.
-- Calentar a +50 °C le saca 3 µm de interferencia al aluminio: sigue apretado.
-- En el agujero ciego, el apoyo del pasador en la mejilla de abajo baja a 1,8 mm (Q) y 1,25 mm (C). Lo que queda debajo es material macizo: el aplastamiento sigue con margen ≥ 3.
+- Punta maciza: la cabeza es chica (0,3 mm) para que la fuerza de remachado sea baja y la deformación no llegue al ojo, que empieza 2,9 mm (Q), 5,15 (O) o 2,15 (C) más adentro. Verificar con muestras: par de giro del ojo antes y después, y corte de un pivote.
+- El remachado radial con tope de altura deja la cabeza al ras. La cara muestra la textura en roseta del punzón.
+- Material del pasador remachado: 17-4PH H1150 (33 HRC, alargamiento ≥ 16 %), porque un pasador templado no se puede rebatir. Con 725 MPa de fluencia mínima, la flexión del pasador de O llega a fluencia con 820 N entre ejes a W = 35: margen 1,12 sobre la barra A (733 N). Si las muestras muestran que el remachado anda bien en H1075 (fluencia mínima 860 MPa), el margen sube a 1,33.
+- El avellanado le saca un poco de sección a la barra A: la capacidad baja de 738 a 733 N a W = 35.
 
 **Juego radial.** En el aluminio es cero por la interferencia. En el ojo depende de la holgura. **A anchos chicos el mecanismo la multiplica:** con la traba fija, el cambio de largo efectivo del eslabón 1 y del corto se ve 7,4 y 7,5 veces en la distancia entre ejes. Cada uno tiene dos pivotes, así que al invertir la carga (tracción ↔ compresión):
 
@@ -133,6 +136,27 @@ Es medición y clasificación, no un mecanizado especial. Para comparar: a W = 3
 - **Desgaste:** las articulaciones giran solo al regular y sin carga, acero de 44 HRC sobre 58 HRC con grasa. No se espera que la holgura crezca.
 - **Juego cero absoluto, si se necesitara:** pivote cónico precargado, con dos medios pasadores de punta a 7°. Con μ ≈ 0,1 el cono queda casi autobloqueado y el resorte lo mantiene asentado aunque haya carga. Es una estimación sin verificar y requiere mecanizado apareado de conos.
 - **El carro tiene la misma amplificación:** cada 0,01 mm de juego del carro en el riel (o en la traba) son 0,075 mm entre ejes a W = 35. La traba tiene que apretar el carro sin juego.
+
+### Cómo se resuelve en la industria (estado del arte)
+
+Búsqueda de cómo se diseñan pivotes robustos, de alta carga, en poco espacio y sin juego, y qué se toma para este diseño:
+
+| Solución | Cómo saca el juego | Dónde se usa | ¿Entra acá? |
+|---|---|---|---|
+| **Pasador expansor** (pasador con puntas cónicas y casquillos partidos que se expanden al apretar un tornillo) | El cono expande el casquillo contra el agujero: contacto en 360°, juego cero, se reajusta con el desgaste ([Nord-Lock Expander](https://www.nord-lock.com/contentassets/1fca4e0e95384ccd8c922910216f7643/00005_ex_expander_system_brochure_en_2018-09_sg_lr.pdf), [estudio](https://doi.org/10.3390/applmech3010003)) | Maquinaria pesada, grúas, excavadoras | La idea sí; el producto no: necesita tornillos y tapas en las puntas, y no existe en Ø5 |
+| **Rodamientos de contacto angular precargados** | Precarga axial del par: sin juego interno ([NASA TM-111458](https://ntrs.nasa.gov/api/citations/19960020453/downloads/19960020453.pdf), [AMiBA](https://arxiv.org/pdf/0902.2335)) | Estructuras desplegables, telescopios, robots | No: un par de 5 mm de agujero no entra en un ojo de Ø9 × 7 y aguanta mucho menos que el pasador directo |
+| **Buje a presión en la orejeta + pasador con ajuste deslizante cerrado** | La interferencia saca el juego en la orejeta; el deslizamiento queda en una sola superficie, dura | Orejetas y horquillas de aviación ([ForceMate](https://www.fatiguetech.com/document-librar/forcemate-brochure.pdf), [fatiga con y sin interferencia](https://www.sciencedirect.com/science/article/abs/pii/0043164877900382)) | **Sí, es lo que se adoptó:** el pasador va a presión en el aluminio (no desliza ahí) y gira en el ojo de acero |
+| **Superficies de desgaste en piezas duras, sin movimiento en el aluminio** | Se evita el desgaste y el «coining» del agujero blando ([patente de montaje de motor](https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/5303880)) | Montajes de motores de avión | Sí: acero sobre acero, el aluminio no desliza |
+| **Pivote de conos precargados** (dos conos apretados por un resorte) | Los conos centran sin juego; el costo es fricción y desgaste ([patente de rótula](https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/6676325)) | Rótulas de dirección, instrumentos | Es la mejora posible si 0 a 3 µm no alcanza (ver abajo) |
+
+**Qué dice la bibliografía que aplica acá:**
+- El fretting (desgaste por microdeslizamiento) es el modo de falla típico de pasadores en orejetas con cargas que se repiten. Se evita con interferencia, que anula el microdeslizamiento, y con superficies duras donde hay giro. Las dos cosas están en el diseño.
+- La interferencia mejora la vida a fatiga de la orejeta mientras la tensión esté por debajo de un nivel crítico. Las interferencias de 7 a 20 µm de acá son moderadas.
+- Precargar para sacar el juego trae fricción. En este mecanismo no es un problema, porque las articulaciones solo giran al regular y sin carga.
+
+**Lo que este diseño tiene en común con la práctica profesional:** pasador fijo y retenido por forma (remachado), giro acero sobre acero apareado, precarga axial con resorte de disco, y el aluminio sin ningún movimiento relativo.
+
+**Mejora disponible para juego «cero absoluto»: pivote de conos precargado.** El ojo lleva dos asientos cónicos y el pasador dos conos: uno integral y otro que es un anillo ajustado a presión sobre el pasador, empujado por el resorte. El juego radial se va a cero y se autocompensa con el desgaste, como en el pasador expansor. El costo: conos apareados (rectificado de conos), más fricción al regular y un armado más delicado. Si la medición del conjunto apareado (≤ 0,10 mm entre ejes a W = 35) no alcanza, es el paso siguiente.
 
 ### Justificación
 
