@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 277.55999999999995 420.7" width="277.55999999999995" height="420.7">
+<style>
+ .wall{fill:#2b2f33} .wallc{fill:#cfcac0;stroke:#2b2f33;stroke-width:1.2}
+ .ins{fill:url(#ins)} .thin{stroke:#2b2f33;stroke-width:.8;fill:none}
+ .open{fill:#fff;stroke:none} .glass{stroke:#3b82c4;stroke-width:1.2;fill:none}
+ .swing{stroke:#555;stroke-width:.8;fill:none;stroke-dasharray:4 3}
+ .furn{fill:#f6f3ec;stroke:#7a6f60;stroke-width:1} .furnhi{fill:none;stroke:#7a6f60;stroke-width:1;stroke-dasharray:6 4}
+ .art{fill:#fff;stroke:#3a4a5a;stroke-width:1.2}
+ .lbl{font-size:12px;fill:#333} .lbls{font-size:10px;fill:#555} .room{font-size:15px;font-weight:600;fill:#222}
+ .area{font-size:12px;fill:#666} .dim{stroke:#a33;stroke-width:.8;fill:none} .dimt{font-size:11px;fill:#a33}
+ .ttl{font-size:20px;font-weight:700;fill:#1f2933} .sub{font-size:12px;fill:#52606d}
+ .stair{stroke:#555;stroke-width:.8;fill:#efe7dc} .staird{stroke:#777;stroke-width:.8;fill:none;stroke-dasharray:5 4}
+ .ghost{opacity:.35} .grid{stroke:#e6e2da;stroke-width:.5}
+</style>
+<defs>
+ <pattern id="ins" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="10" height="10" fill="#f6e7a5"/><line x1="0" y1="0" x2="0" y2="10" stroke="#d8b84c" stroke-width="2"/></pattern>
+ <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker>
+ <marker id="tick" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M2,8 L8,2" stroke="#a33" stroke-width="1.4"/></marker>
+</defs><rect width="100%" height="100%" fill="#fff"/><text x="24" y="30" class="ttl" font-family='Inter, Arial, sans-serif'>Tabique cocina/baño — entramado</text><text x="24" y="50" class="sub" font-family='Inter, Arial, sans-serif'>7 piezas · 14,29 ml · 2x3 @40</text><text x="24" y="66" class="sub" font-family='Inter, Arial, sans-serif'>izquierda = lateral ciego</text><polygon points="60.06,380.7 217.56,380.7 217.56,375.3 60.06,375.3" fill="#d9a95a" stroke="#7d5a26" stroke-width=".7"><title>2x3 — 131.3 cm — solera inferior</title></polygon><polygon points="60.06,95.4 217.56,95.4 217.56,90 60.06,90" fill="#d9a95a" stroke="#7d5a26" stroke-width=".7"><title>2x3 — 131.3 cm — solera superior</title></polygon><polygon points="60,375.3 65.4,375.3 65.4,95.4 60,95.4" fill="#f1dcb3" stroke="#7d5a26" stroke-width=".7"><title>2x3 — 233.3 cm — montante</title></polygon><polygon points="99.72,375.3 105.12,375.3 105.12,95.4 99.72,95.4" fill="#f1dcb3" stroke="#7d5a26" stroke-width=".7"><title>2x3 — 233.3 cm — montante</title></polygon><polygon points="147.72,375.3 153.12,375.3 153.12,95.4 147.72,95.4" fill="#f1dcb3" stroke="#7d5a26" stroke-width=".7"><title>2x3 — 233.3 cm — montante</title></polygon><polygon points="195.6,375.3 201,375.3 201,95.4 195.6,95.4" fill="#f1dcb3" stroke="#7d5a26" stroke-width=".7"><title>2x3 — 233.3 cm — montante</title></polygon><polygon points="212.16,375.3 217.56,375.3 217.56,95.4 212.16,95.4" fill="#f1dcb3" stroke="#7d5a26" stroke-width=".7"><title>2x3 — 233.3 cm — montante</title></polygon></svg>
