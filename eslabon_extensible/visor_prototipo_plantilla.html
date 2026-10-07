@@ -1,0 +1,232 @@
+<title>Prototipo impreso del eslabón</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: banco de trabajo — visor 3D grande a la izquierda, ficha de impresión a la derecha; en teléfono se apilan. */
+:root{
+  --bg:#eef1f4; --panel:#ffffff; --ink:#1d232b; --muted:#5b6673; --line:#d6dce3;
+  --accent:#d9692b; --accent-ink:#ffffff; --canvas:#e3e8ee; --bed:#2b3138; --grid:#3a424b;
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Public Sans",ui-sans-serif,system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14181d; --panel:#1b2026; --ink:#e7ebef; --muted:#97a2ae; --line:#2c333b;
+  --accent:#f08a4b; --accent-ink:#1b1206; --canvas:#1e242b; --bed:#0f1215; --grid:#262d35; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14181d; --panel:#1b2026; --ink:#e7ebef; --muted:#97a2ae; --line:#2c333b;
+  --accent:#f08a4b; --accent-ink:#1b1206; --canvas:#1e242b; --bed:#0f1215; --grid:#262d35; color-scheme:dark}
+html,body{height:100%}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5;padding-inline:16px;padding-block:16px;box-sizing:border-box}
+.wrap{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+@media (max-width:860px){.wrap{grid-template-columns:minmax(0,1fr)}}
+header{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+h1{font-family:var(--f-display);font-weight:600;font-size:1.75rem;margin:0;letter-spacing:-.01em;text-wrap:balance}
+header p{margin:0;color:var(--muted);max-width:62ch}
+.stage{position:relative;background:var(--canvas);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:0}
+#vista{display:block;width:100%;height:min(68vh,620px);min-height:340px;touch-action:none}
+.bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding:10px 12px;border-top:1px solid var(--line);background:var(--panel)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{font:500 13px var(--f-body);color:var(--ink);background:transparent;border:0;padding:7px 12px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.seg button:focus-visible,.chk input:focus-visible,input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.w{display:flex;align-items:center;gap:8px;flex:1 1 220px;min-width:0}
+.w label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.w input{flex:1;min-width:0;accent-color:var(--accent)}
+.w output{font:500 13px var(--f-mono);font-variant-numeric:tabular-nums;min-width:62px;text-align:right}
+.chk{display:flex;align-items:center;gap:6px;font-size:13px}
+.hint{position:absolute;left:12px;top:10px;font:12px var(--f-mono);color:var(--muted);pointer-events:none}
+aside{display:flex;flex-direction:column;gap:12px;min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.card h2{font:600 12px var(--f-body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td{padding:5px 0;border-top:1px solid var(--line);vertical-align:top}
+tr:first-child td{border-top:0}
+td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;color:var(--muted)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:7px;vertical-align:-1px}
+.facts{display:flex;flex-wrap:wrap;gap:6px}
+.facts span{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 9px}
+.card p{margin:0;color:var(--muted);font-size:13px}
+.card p+p{margin-top:6px}
+.err{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);text-align:center;padding:16px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+<div class="wrap">
+  <header>
+    <h1>Prototipo impreso del eslabón</h1>
+    <p>Mitades por el plano medio, sin soportes; pivotes de doble cono con M3 × 12 que roscan directo en el plástico.</p>
+  </header>
+  <div class="stage">
+    <canvas id="vista" aria-label="Modelo 3D del prototipo"></canvas>
+    <div class="hint" id="hint">arrastrá para girar · rueda para acercar</div>
+    <div class="err" id="err" hidden>No se pudo cargar el visor 3D.</div>
+    <div class="bar">
+      <div class="seg" role="group" aria-label="Vista">
+        <button id="m-armado" aria-pressed="true">Armado</button>
+        <button id="m-despiece" aria-pressed="false">Despiece</button>
+        <button id="m-cama" aria-pressed="false">Sobre la cama</button>
+      </div>
+      <div class="w" id="wbox"><label for="ancho">Ancho</label><input id="ancho" type="range" min="35" max="105" step="0.5" value="70"><output id="wval">70,0 mm</output></div>
+      <label class="chk"><input id="tornillos" type="checkbox" checked> Tornillos</label>
+    </div>
+  </div>
+  <aside>
+    <div class="card">
+      <h2>Piezas a imprimir</h2>
+      <table id="lista"></table>
+    </div>
+    <div class="card">
+      <h2>Plano de impresión</h2>
+      <p>Cada pieza va con su cara exterior sobre la cama, tal como vienen los STL: las cargas del mecanismo quedan a lo largo de los filamentos. Las mitades «arriba» ya vienen dadas vuelta.</p>
+      <p>En «Sobre la cama» se ven exactamente así, en una cama de 220 × 200 mm.</p>
+    </div>
+    <div class="card">
+      <h2>Para armar</h2>
+      <div class="facts"><span>11 × M3 × 12 avellanado</span><span>sin tuercas</span><span>piloto Ø2,7</span><span>CA en gel o epoxi</span><span>PETG · sin soportes</span></div>
+    </div>
+  </aside>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const D = __DATA__;
+const I = D.info;
+const COL = {barra_A:0xc6ccd4, barra_B:0xa9b2bd, carro:0xe0893a, eslabon_1:0x2f6fd1, eslabon_2:0x5b93e6, eslabon_corto:0x22a072, arandela_traba:0x8b939c, tornillo:0x6e757d};
+const NOM = {barra_A:"Barra A", barra_B:"Barra B", carro:"Carro", eslabon_1:"Eslabón 1", eslabon_2:"Eslabón 2", eslabon_corto:"Eslabón corto", arandela_traba:"Arandela de la traba"};
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+try { if (!window.THREE || !THREE.OrbitControls) throw 0; } catch(e) { document.getElementById("err").hidden = false; throw e; }
+
+const canvas = document.getElementById("vista");
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 1, 3000);
+camera.up.set(0,0,1);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x6b7380, 0.75));
+const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(-120,-200,260); scene.add(sun);
+const fill = new THREE.DirectionalLight(0xffffff, 0.3); fill.position.set(200,150,80); scene.add(fill);
+
+function geo(m, flip){
+  const g = new THREE.BufferGeometry();
+  const v = new Float32Array(m.v);
+  if (flip) for (let i=0;i<v.length;i+=3){ v[i+1]=-v[i+1]; v[i+2]=-v[i+2]; }
+  g.setAttribute("position", new THREE.BufferAttribute(v,3));
+  g.setIndex(m.i); g.computeVertexNormals(); return g;
+}
+const mats = {};
+for (const k in COL) mats[k] = new THREE.MeshStandardMaterial({color:COL[k], roughness:0.62, metalness:k==="tornillo"?0.6:0.04});
+const edge = new THREE.LineBasicMaterial({color:0x10151b, transparent:true, opacity:0.18});
+
+// piezas en su marco (para el armado) y en la cama
+const asm = {}, bed = {};
+for (const n in D.mallas){
+  const c = D.cama[n], pieza = c.pieza;
+  const g = geo(D.mallas[n], false);
+  const m = new THREE.Mesh(g, mats[pieza]); m.add(new THREE.LineSegments(new THREE.EdgesGeometry(g, 28), edge));
+  const grp = new THREE.Group(); grp.add(m); scene.add(grp); asm[n] = {grp, pieza, lado: n.endsWith("_arriba")?"arriba":(n.endsWith("_abajo")?"abajo":"")};
+  const gb = geo(D.mallas[n], c.flip); gb.translate(...c.t);
+  const mb = new THREE.Mesh(gb, mats[pieza]); mb.add(new THREE.LineSegments(new THREE.EdgesGeometry(gb, 28), edge));
+  const gr2 = new THREE.Group(); gr2.add(mb); scene.add(gr2); bed[n] = {grp:gr2, c};
+}
+// tornillos M3 x 12 avellanados (cabeza rebajada 1 mm)
+function tornillo(L){
+  const g = new THREE.Group();
+  const cab = new THREE.Mesh(new THREE.CylinderGeometry(3.0, 1.5, 1.65, 24), mats.tornillo);
+  cab.rotation.x = Math.PI/2; cab.position.z = -0.825; g.add(cab);
+  const sh = new THREE.Mesh(new THREE.CylinderGeometry(1.45, 1.45, L-1.65, 16), mats.tornillo);
+  sh.rotation.x = Math.PI/2; sh.position.z = -1.65-(L-1.65)/2; g.add(sh);
+  return g;
+}
+const screws = [];
+function addScrew(pieza, x, y, ztop){ const s = tornillo(12); scene.add(s); screws.push({s, pieza, x, y, ztop}); }
+addScrew("barra_A", I.D_A, I.Y0, I.ESP-1); addScrew("barra_A", I.D_A, I.Y0+I.DP, I.ESP-1);
+addScrew("barra_B", I.E_B, I.Y0, I.ESP-1);
+for (const [x,y] of I.union_a) addScrew("barra_A", x, y, I.ESP-1);
+for (const [x,y] of I.union_b) addScrew("barra_B", x, y, I.ESP-1);
+const traba = {s: tornillo(12)}; scene.add(traba.s);
+
+// cama de impresión
+const BED = {w:220, h:200};
+const bedGrp = new THREE.Group(); scene.add(bedGrp);
+const plate = new THREE.Mesh(new THREE.BoxGeometry(BED.w+10, BED.h+10, 2), new THREE.MeshStandardMaterial({color:0x2b3138, roughness:0.9}));
+plate.position.set(BED.w/2, BED.h/2, -1.01); bedGrp.add(plate);
+const grid = new THREE.GridHelper(BED.w, 22, 0x3a424b, 0x3a424b); grid.rotation.x = Math.PI/2; grid.position.set(BED.w/2, BED.h/2, 0.01); grid.scale.set(1, BED.h/BED.w, 1); bedGrp.add(grid);
+const LAYOUT = { // x, y, rotar 90°
+  barra_B_abajo:[4,4,0], barra_B_arriba:[28,4,0], barra_A_abajo:[52,14,0], barra_A_arriba:[70,14,0],
+  carro_abajo:[90,4,0], carro_arriba:[106,4,0],
+  eslabon_1_abajo:[138,2,1], eslabon_1_arriba:[156,2,1], eslabon_2:[174,2,1], eslabon_corto:[205,2,1], arandela_traba:[198,110,0]
+};
+for (const n in bed){
+  const [x,y,r] = LAYOUT[n] || [0,0,0], g = bed[n].grp, t = bed[n].c.tam;
+  if (r){ g.rotation.z = Math.PI/2; g.position.set(x + t[1], y, 0); } else g.position.set(x, y, 0);
+}
+
+function kin(w){
+  const xq=I.D_A, xo=w-I.D_B, s=xo-xq, p=Math.sqrt(I.L2*I.L2-s*s);
+  const Q1=[xq,I.Y0], P1=[xq+s,I.Y0+p], C=[(Q1[0]+P1[0])/2,(Q1[1]+P1[1])/2], O=[xo,I.Y0];
+  return {xb:w-I.BWB, p, Q1, Q2:[xq,I.Y0+I.DP], O, aL:Math.atan2(p,s), aC:Math.atan2(C[1]-O[1],C[0]-O[0])};
+}
+let modo = "armado";
+const EXPL = {barra_A:{abajo:0,arriba:34}, barra_B:{abajo:0,arriba:34}, carro:{abajo:6,arriba:26}, eslabon_1:{abajo:12,arriba:22}, eslabon_2:{"":16}, eslabon_corto:{"":20}};
+function pose(w){
+  const k = kin(w), ex = modo==="despiece";
+  const P = {barra_A:[0,0,0], barra_B:[k.xb,0,0], carro:[k.xb,I.Y0+k.p,0], eslabon_1:[k.Q1[0],k.Q1[1],k.aL], eslabon_2:[k.Q2[0],k.Q2[1],k.aL], eslabon_corto:[k.O[0],k.O[1],k.aC]};
+  for (const n in asm){
+    const a = asm[n], q = P[a.pieza];
+    a.grp.visible = modo!=="cama" && !!q; if (!q) continue;
+    a.grp.position.set(q[0], q[1], ex ? (EXPL[a.pieza][a.lado] || 0) : 0); a.grp.rotation.z = q[2];
+  }
+  const ver = document.getElementById("tornillos").checked && modo!=="cama";
+  for (const sc of screws){
+    const q = P[sc.pieza]; sc.s.visible = ver;
+    sc.s.position.set(q[0]+sc.x, q[1]+sc.y, sc.ztop + (ex ? 50 : 0));
+  }
+  traba.s.visible = ver; traba.s.position.set(k.xb + I.x_traba, I.Y0 + k.p + I.y_traba, I.ESP + 2 + (ex?50:0));
+  for (const n in bed) bed[n].grp.visible = modo==="cama";
+  bedGrp.visible = modo==="cama";
+}
+function encuadre(){
+  if (modo==="cama"){ controls.target.set(BED.w/2, BED.h/2, 0); camera.position.set(BED.w/2-20, -110, 300); }
+  else { controls.target.set(40, 95, 8); camera.position.set(-110, -140, 170); }
+  controls.update();
+}
+function tema(){
+  scene.background = new THREE.Color(css("--canvas") || "#e3e8ee");
+  plate.material.color.set(css("--bed") || "#2b3138");
+  grid.material.color.set(css("--grid") || "#3a424b");
+}
+tema();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", tema);
+new MutationObserver(tema).observe(document.documentElement, {attributes:true, attributeFilter:["data-theme"]});
+
+const ancho = document.getElementById("ancho"), wval = document.getElementById("wval");
+function setW(){ const w = +ancho.value; wval.textContent = w.toFixed(1).replace(".", ",") + " mm"; pose(w); }
+ancho.addEventListener("input", setW);
+document.getElementById("tornillos").addEventListener("change", setW);
+for (const m of ["armado","despiece","cama"]){
+  document.getElementById("m-"+m).addEventListener("click", () => {
+    const prev = modo; modo = m;
+    for (const b of ["armado","despiece","cama"]) document.getElementById("m-"+b).setAttribute("aria-pressed", String(b===m));
+    document.getElementById("wbox").style.visibility = m==="cama" ? "hidden" : "visible";
+    setW(); if ((prev==="cama") !== (m==="cama")) encuadre();
+  });
+}
+// lista de piezas
+const tb = document.getElementById("lista");
+for (const n of Object.keys(LAYOUT)){
+  const c = D.cama[n]; if (!c) continue;
+  const lado = n.endsWith("_arriba") ? " · arriba" : n.endsWith("_abajo") ? " · abajo" : "";
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td><span class="sw" style="background:#${COL[c.pieza].toString(16).padStart(6,"0")}"></span>${NOM[c.pieza]}${lado}</td><td class="n">${c.tam.map(v=>String(v).replace(".",",")).join(" × ")}</td>`;
+  tb.appendChild(tr);
+}
+function resize(){ const r = canvas.getBoundingClientRect(); renderer.setSize(r.width, r.height, false); camera.aspect = r.width/r.height; camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(canvas);
+canvas.addEventListener("pointerdown", () => { document.getElementById("hint").hidden = true; }, {once:true});
+resize(); setW(); encuadre();
+(function loop(){ controls.update(); renderer.render(scene, camera); requestAnimationFrame(loop); })();
+</script>

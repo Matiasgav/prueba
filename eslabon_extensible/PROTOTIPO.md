@@ -4,12 +4,14 @@ Un modelo para **tener en la mano**: sentir cómo trabaja el mecanismo, dónde f
 
 ![Prototipo armado y piezas sobre la cama](img/prototipo_3d.png)
 
+Para verlo en 3D (armado con el ancho regulable, despiece y piezas sobre la cama): `visor_prototipo.html`.
+
 Los STL están en `salida/prototipo/`, **ya orientados para imprimir**. Los genera `python prototipo_3d.py`, que además verifica que no haya choques entre piezas de W = 35 a 105. El ensamble a W = 70 está en `salida/prototipo/ensamble_prototipo_W70.step`.
 
 ## Cómo se adaptó
 
 - **Mitades por el plano medio.** El diseño es simétrico en el espesor. Por eso las barras A y B, el carro y el eslabón 1 se parten en dos mitades por z = 6,5. Cada mitad se imprime con su **cara exterior sobre la cama** y todos los huecos quedan abiertos hacia arriba: **no hace falta ningún soporte**. Las mitades «arriba» ya vienen dadas vuelta en el STL. El eslabón 2 y el eslabón corto se imprimen enteros, acostados.
-- **Articulaciones sin juego: pivote de doble cono.** Cada ojo tiene un avellanado a 45° en las dos caras, y cada mejilla un cono macho que entra en él. El tornillo no apoya en el ojo: solo aprieta. Al ajustarlo, las mejillas flexionan un poco y asientan los conos, así que el juego radial y axial se va a cero aunque la impresión no sea precisa. El par del tornillo regula la fricción. Es el mismo principio de los pasadores expansores y de los pivotes de conos precargados.
+- **Articulaciones sin juego: pivote de doble cono.** Cada ojo tiene un avellanado a 45° en las dos caras, y cada mejilla un cono macho que entra en él. El tornillo no apoya en el ojo: solo aprieta. Donde no entra un tornillo (P1, P2 y C), los conos se asientan al pegar las mitades apretándolas. Al ajustarlo, las mejillas flexionan un poco y asientan los conos, así que el juego radial y axial se va a cero aunque la impresión no sea precisa. El par del tornillo regula la fricción. Es el mismo principio de los pasadores expansores y de los pivotes de conos precargados.
 
 ![Pivote de doble cono](img/prototipo_pivote.png)
 
@@ -46,14 +48,15 @@ Los STL están en `salida/prototipo/`, **ya orientados para imprimir**. Los gene
 
 | | Cant. | Dónde |
 |---|---:|---|
-| M3 × 12 cabeza fresada (DIN 7991 / ISO 10642) | 10 | Pivotes Q1, Q2 y O (3) + uniones de las mitades de A (4) y de B (3) |
-| Tuerca M3 (DIN 934) | 10 | En los hexágonos de la cara de abajo de A y de B |
-| M3 × 6 cabeza fresada | 1 | Pivote C (rosca en el ala de abajo del eslabón 1) |
-| M3 × 10 cabeza fresada | 1 | Traba (con la arandela impresa) |
+| M3 × 12 cabeza fresada (DIN 7991 / ISO 10642) | 11 | Pivotes Q1, Q2 y O (3) + uniones de las mitades de A (4) y de B (3) + traba (1) |
 | Pegamento CA en gel o epoxi de 5 min | – | Mitades del carro, del eslabón 1 y de B (y de A, opcional) |
 | Grasa de PTFE o silicona | – | En los conos |
 
-Las cabezas quedan rebajadas 1 mm bajo la cara, así que no sobresale nada. Las tuercas entran a presión en el hexágono; si cuesta, se tiran desde adentro con el tornillo.
+**Sin tuercas: todos los tornillos roscan directo en el plástico.** La mitad de arriba tiene agujero de paso (Ø3,4) y la de abajo un agujero piloto de Ø2,7, donde el tornillo hace su propia rosca. La punta del M3 × 12 queda al ras de la cara de abajo. No hace falta ningún otro largo: en C no va tornillo (un M3 × 8 asomaría 2 mm por abajo del eslabón 1) y los M4 que tenés no se usan. Las cabezas quedan rebajadas 1 mm bajo la cara de arriba, así que no sobresale nada.
+
+- La primera vez, pasar cada tornillo solo y sacarlo, así forma la rosca sin arrastrar las piezas.
+- No apretar de más: en plástico la rosca se barre. Alcanza con que la cabeza asiente.
+- Si el piloto salió chico (cuesta mucho), repasarlo con una mecha de 2,5 mm. Si salió grande (el tornillo gira loco), una gota de CA en el agujero y volver a roscar cuando seque.
 
 ## Armado (en este orden)
 
@@ -61,23 +64,21 @@ Las cabezas quedan rebajadas 1 mm bajo la cara, así que no sobresale nada. Las 
 2. **C (eslabón 1 + corto).**
    1. Sobre `eslabon_1_abajo` poner el ojo C del corto en su cono.
    2. Poner pegamento en la cara de partición del eslabón 1, lejos de C y de los ojos, y cerrar con `eslabon_1_arriba`.
-   3. Atornillar el M3 × 6 en C hasta que el corto gire sin juego.
+   3. **Apretar las dos mitades mientras fragua**, como el carro: los conos de C asientan antes que el plano (hay 0,15 mm de luz para la cola), así que el corto queda sin juego. Mover el corto mientras fragua para comprobar que gira.
 3. **Carro (P1, P2).**
    1. Sobre `carro_abajo` poner el ojo P1 del eslabón 1 y el ojo P2 del eslabón 2 en sus conos.
    2. Poner pegamento en el lomo y cerrar con `carro_arriba`.
    3. **Apretar las dos mitades con la mano o una pinza mientras fragua.** Los conos asientan antes que el plano (hay 0,15 mm de luz para la cola), así que P1 y P2 quedan sin juego.
 4. **B.**
-   1. Tuercas en los hexágonos de `barra_B_abajo`.
-   2. Meter el carro en el riel y apoyar el ojo O del corto en su cono.
-   3. Poner pegamento en la cara de partición de la columna (el tramo del riel, donde no entra tornillo) y cerrar con `barra_B_arriba`.
-   4. Poner los 3 tornillos de unión y el de O.
+   1. Meter el carro en el riel y apoyar el ojo O del corto en su cono.
+   2. Poner pegamento en la cara de partición de la columna (el tramo del riel, donde no entra tornillo) y cerrar con `barra_B_arriba`.
+   3. Poner los 3 tornillos de unión y el de O.
 5. **A.**
-   1. Tuercas en los hexágonos de `barra_A_abajo`.
-   2. Apoyar los ojos Q1 (eslabón 1) y Q2 (eslabón 2) en sus conos.
-   3. Cerrar con `barra_A_arriba`.
-   4. Poner los 4 tornillos de unión y los de Q1 y Q2. En A el pegamento es opcional: sin pegar se puede desarmar.
-6. **Ajuste.** Apretar cada pivote (Q1, Q2, O, C) hasta que **no haya juego al torcer y empujar**, pero el mecanismo todavía se mueva con la mano. Si queda duro, aflojar 1/8 de vuelta.
-7. **Traba.** Arandela impresa sobre la ranura de B y M3 × 10 hasta el agujero del carro. Se afloja para regular el ancho y se aprieta para cargar.
+   1. Apoyar los ojos Q1 (eslabón 1) y Q2 (eslabón 2) en sus conos.
+   2. Cerrar con `barra_A_arriba`.
+   3. Poner los 4 tornillos de unión y los de Q1 y Q2. En A el pegamento es opcional: sin pegar se puede desarmar.
+6. **Ajuste.** Apretar cada pivote con tornillo (Q1, Q2 y O) hasta que **no haya juego al torcer y empujar**, pero el mecanismo todavía se mueva con la mano. Si queda duro, aflojar 1/8 de vuelta.
+7. **Traba.** Arandela impresa sobre la ranura de B y M3 × 12 hasta el agujero del carro. Se afloja para regular el ancho y se aprieta para cargar.
 
 ## Qué esperar y qué mirar
 
