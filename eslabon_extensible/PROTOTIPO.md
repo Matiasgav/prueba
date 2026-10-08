@@ -19,7 +19,7 @@ Los STL están en `salida/prototipo/`, **ya orientados para imprimir**. Los gene
   - 0,45 mm en el plano entre piezas que se mueven;
   - 0,25 mm entre ojos y mejillas, y entre el carro y las alas de B.
 - **Simplificado:** sin cable, sin resortes de disco y sin remaches.
-- **Traba provisoria con perno.** Un tornillo M3 pasa por uno de los 5 agujeros del ala de arriba de B (W = 35, 55, 70, 85 y 105) y rosca en el carro; hace de perno. No es la traba definitiva (todavía está pendiente). Sirve para cargar el mecanismo.
+- **Traba provisoria por fricción.** Un tornillo M3 × 12 de cabeza cilíndrica, con una arandela plana impresa, pasa por una ranura del ala de arriba de B y rosca en el carro; al apretarlo, el carro queda pinzado contra el ala. No es la traba definitiva (todavía está pendiente). Sirve para cargar el mecanismo.
 
 ## Cambios después de la primera impresión (barra B v2)
 
@@ -29,14 +29,15 @@ En la v1, la ranura de la traba cortaba el ala de arriba de B a lo largo y dejab
 
 - **Alas de 2,4 mm** (antes 1,2): B crece 1,2 mm hacia afuera en cada cara y queda de **15,4 mm** de espesor (A sigue de 13). El riel y el carro quedan donde estaban.
 - **Labios de 1,65 × 1,3 mm** (antes 1,5 × 0,9).
-- **Traba positiva:** en lugar de la ranura, **5 agujeros** en el ala de arriba, uno por cada ancho a probar: **W = 35, 55, 70, 85 y 105**. El tornillo pasa por el agujero y rosca en el carro: hace de perno, no depende de la fricción. Contando desde la punta de O (y = 0), los agujeros están en y = 82,3 (W 105), 115,8 (W 85), 128,1 (W 70), 135,8 (W 55) y 141,0 (W 35). A anchos chicos el carro casi no se mueve (de W = 35 a 55 recorre 5 mm), por eso no entran agujeros para anchos intermedios ahí.
+- **Traba con ranura, como antes, pero en un ala de 2,4:** la franja del lado de A que queda al costado de la ranura es 8 veces más rígida que la de 1,2 que se cortó. El tornillo es un **M3 × 12 de cabeza cilíndrica** sobre la **arandela plana** impresa, que apoya a los dos lados de la ranura. Al apretarlo pinza el carro contra el ala: el ancho se regula de forma continua.
+- Los tornillos de unión de B que quedan al lado de la ranura (2) van **desde abajo**, para que su cabeza no toque la ranura.
 
-**Qué reimprimir:** solo `barra_B_abajo` y `barra_B_arriba`. A, los eslabones y la arandela no cambian.
+**Qué reimprimir:** `barra_B_abajo`, `barra_B_arriba` y `arandela_traba` (ahora plana). A y los eslabones no cambian.
 
 **El carro que ya imprimiste se arregla a mano** (o se reimprime `carro_abajo` y `carro_arriba`, que ya vienen así):
 1. **Sacar con lima la pestaña fina** del borde del lado de A, en las dos caras del carro y a todo lo largo: es la tira de ~2 mm de ancho y 0,55 mm de espesor que queda sobre la muesca de los labios. No hace falta (el carro se retiene con el escalón de la muesca) y deja lugar al labio más alto. Limar hasta la cara de la mejilla, sin tocar el escalón.
 
-Tornillos de B en la v2: los de unión quedan rebajados 1,2 mm y el de O 2,2 mm; son los mismos M3 × 12. La traba sigue siendo M3 × 12 con la arandela impresa sobre el agujero elegido.
+Tornillos de B en la v2: los de unión quedan rebajados 1,2 mm y el de O 2,2 mm; son los mismos M3 × 12. La traba es un M3 × 12 de cabeza cilíndrica con la arandela plana impresa (`arandela_traba`, reimprimir: ya no lleva avellanado).
 
 ## Impresión
 
@@ -65,7 +66,8 @@ Tornillos de B en la v2: los de unión quedan rebajados 1,2 mm y el de O 2,2 mm;
 
 | | Cant. | Dónde |
 |---|---:|---|
-| M3 × 12 cabeza fresada (DIN 7991 / ISO 10642) | 13 | Pivotes Q1, Q2 y O (3) + uniones de A (2) y de B (7) + traba (1) |
+| M3 × 12 cabeza fresada (DIN 7991 / ISO 10642) | 14 | Pivotes Q1, Q2 y O (3) + uniones de A (2) y de B (8: 6 desde arriba y 2 desde abajo) |
+| M3 × 12 cabeza cilíndrica | 1 | Traba, con la arandela plana impresa |
 | M3 × 12 **acortado a 9,5 mm** | 2 | Pivotes P1 y P2, desde abajo del carro |
 | M3 × 8 cabeza fresada | 2 | Unión de las mitades del carro (lomo), desde abajo |
 | M3 × 8 **acortado a 7 mm** | 1 | Pivote C, desde arriba del eslabón 1 |
@@ -98,7 +100,7 @@ Tornillos de B en la v2: los de unión quedan rebajados 1,2 mm y el de O 2,2 mm;
    2. Cerrar con `barra_A_arriba`.
    3. Poner los 2 tornillos de unión y los de Q1 y Q2. Sin pegamento: A se puede desarmar.
 6. **Ajuste.** Apretar cada pivote (Q1, Q2 y O; P1, P2 y C ya se ajustaron antes de cerrar B) hasta que **no haya juego al torcer y empujar**, pero el mecanismo todavía se mueva con la mano. Si queda duro, aflojar 1/8 de vuelta.
-7. **Traba.** La arandela impresa va apoyada sobre la cara de arriba de B, encima del agujero del ancho elegido y M3 × 12 hasta el agujero del carro. Se saca para regular el ancho y se vuelve a poner en el agujero que coincide.
+7. **Traba.** La arandela plana impresa va apoyada sobre la cara de arriba de B, encima de la ranura. El M3 × 12 de cabeza cilíndrica pasa por la arandela y la ranura y rosca en el carro. Se afloja para regular el ancho y se aprieta para cargar.
 
 ## Qué esperar y qué mirar
 
@@ -113,7 +115,7 @@ Tornillos de B en la v2: los de unión quedan rebajados 1,2 mm y el de O 2,2 mm;
   La carga estimada del prototipo es una escala gruesa por material, no un cálculo de la pieza impresa. Se va a deformar entre 30 y 100 veces más.
 - **El orden de los puntos débiles no es el mismo que en metal.** En metal los eslabones son de acero y las barras de aluminio. En el prototipo todo es del mismo plástico, así que los eslabones y los ojos se debilitan más que las barras. Lo que el prototipo sí muestra bien es la **geometría**: dónde se concentra la flexión, qué se abre y qué se tuerce.
 - **Lo que el análisis anticipa, para mirar:**
-  1. **La traba a anchos chicos.** A W = 35 el carro recibe 7,5 veces la carga entre ejes. Mirá cómo trabaja el tornillo de la traba y el ala alrededor del agujero: es el punto crítico real que falta resolver en el diseño definitivo.
+  1. **La traba a anchos chicos.** A W = 35 el carro recibe 7,5 veces la carga entre ejes. La traba por fricción va a resbalar primero: es el punto crítico real que falta resolver en el diseño definitivo.
   2. **La barra A** flexionando en la punta del voladizo (lado de y = 165).
   3. **Los ojos del eslabón corto**, en O y en C.
   4. **Las mejillas del carro** en P2.

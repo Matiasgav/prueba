@@ -23,9 +23,9 @@ Cómo se adapta:
       cara de abajo del carro; un M3 × 12 entero asomaría por arriba contra el ala de B).
       C: M3 × 8 desde arriba, cabeza al ras, ACORTADO a 7 mm (el eslabón 1 tiene 7 mm).
     Las mitades del carro se unen además con 2 × M3 × 8 desde abajo en el lomo.
-  * Traba provisoria: un tornillo M3 × 12 (con la arandela impresa) pasa por uno de los agujeros del
-    ala de arriba de B y rosca en el carro: hace de perno (traba positiva). Un agujero por ancho a
-    probar: W = 35, 55, 70, 85 y 105.
+  * Traba provisoria: un tornillo M3 × 12 de cabeza cilíndrica, con la arandela plana impresa, pasa
+    por una ranura del ala de arriba de B y rosca en el carro: al apretarlo pinza el carro contra el
+    ala (por fricción, ancho continuo). Con el ala de 2,4 la franja del lado de A queda rígida.
   * B v2: alas 1,2 mm más gruesas hacia afuera (B queda de 15,4 de espesor) y labios más grandes.
   * Sin cable, sin resortes de disco y sin remaches: no hacen falta para sentir el mecanismo.
 
@@ -150,6 +150,17 @@ def horquilla_union(sol, x, y):
                         E.ESP - (M3["cab"] - M3["paso"]) / 2))
 
 
+def unir_mitades_abajo(sol, puntos):
+    """Tornillo de unión M3 × 12 puesto desde abajo: cabeza fresada al ras de la cara de abajo,
+    rosca en la mitad de arriba (piloto ciego: la cara de arriba queda lisa)."""
+    zb0 = sol.val().BoundingBox().zmin
+    for x, y in puntos:
+        sol = sol.cut(cil(x, y, M3["piloto"], ZM, zb0 + 12.4))
+        sol = sol.cut(cil(x, y, M3["paso"], zb0 - 1, ZM))
+        sol = sol.cut(cono(x, y, M3["cab"] / 2 + 0.5, M3["paso"] / 2, zb0 - 0.5, zb0 + (M3["cab"] - M3["paso"]) / 2))
+    return sol
+
+
 # ---------------------------------------------------------------- piezas
 # Tornillos que unen las mitades (M3 × 12, cabeza al ras): solo donde entran sin tocar huecos.
 # En B van repartidos a lo largo de toda la columna, al lado del riel, porque el carro tiende a
@@ -157,12 +168,11 @@ def horquilla_union(sol, x, y):
 UNION_A = [(7.5, 57.0), (6.5, 153.0)]
 # carro: lomo macizo solo entre y = 8 y 38 (el resto lo barren los eslabones)
 UNION_CARRO = [(8.0, 12.0), (8.0, 28.0)]
-UNION_B = [(6.5, 9.0), (13.5, 24.0), (13.6, 48.0), (13.6, 76.0), (13.6, 104.0), (13.6, 152.0), (13.6, 176.0)]  # lejos de los agujeros de la traba
+UNION_B = [(6.5, 9.0), (13.5, 24.0), (13.6, 48.0), (13.6, 76.0), (13.6, 152.0), (13.6, 176.0)]
+# al lado de la ranura de la traba la cabeza de arriba la tocaría: ahí van desde abajo
+UNION_B_ABAJO = [(13.6, 100.0), (13.6, 124.0)]
 
 Y_TRABA_CARRO = E.DP / 2                             # tornillo de la traba, en el marco del carro
-# Un agujero en el ala de B por cada ancho a probar. A anchos chicos el carro casi no se mueve
-# (de W = 35 a 55 recorre 5 mm), así que no entran agujeros para anchos más cercanos.
-ANCHOS_TRABA = (35, 55, 70, 85, 105)
 
 # v2 de B (después de imprimir la v1): la ranura de la traba cortaba el ala de arriba a lo largo y la
 # dejaba suelta. Ahora: alas más gruesas hacia afuera (+1,2 por cara: B pasa de 13 a 15,4), labios
@@ -204,11 +214,14 @@ def piezas_prototipo():
     for z, sg in ((0.05, -1), (E.ESP - 0.05, 1)):
         for cara in _huella(b, z):
             b = b.union(cq.Workplane().add(cq.Solid.extrudeLinear(cara, cq.Vector(0, 0, sg * (ALA_EXTRA + 0.05)))))
-    # traba: fila de agujeros en el ala de arriba (el tornillo pasa por uno y rosca en el carro)
-    ys_traba = [E.Y0 + E.cinematica(w)["p"] + Y_TRABA_CARRO for w in ANCHOS_TRABA]
+    # traba: ranura en el ala de arriba (ala de 2,4: la franja del lado de A queda rígida); tornillo
+    # M3 × 12 de cabeza cilíndrica sobre una arandela plana, rosca en el carro
+    ys_traba = [E.Y0 + E.cinematica(w)["p"] + Y_TRABA_CARRO for w in (E.W_MIN, E.W_MAX)]
     y0, y1 = min(ys_traba), max(ys_traba)
-    for y in ys_traba:
-        b = b.cut(cil(xt, y, M3["paso"], E.Z_CANAL[1] - 0.5, E.ESP + ALA_EXTRA + 1))
+    ranura = (cq.Workplane("XY").workplane(offset=E.Z_CANAL[1] - 0.5).center(xt, (y0 + y1) / 2)
+              .slot2D(y1 - y0 + M3["paso"], M3["paso"], 90).extrude(E.ESP + ALA_EXTRA + 1))
+    b = b.cut(ranura)
+    b = unir_mitades_abajo(b, UNION_B_ABAJO)
     # carro: conos en P1 y P2, sin tornillos; agujero piloto de la traba
     k = E.carro()
     for y in (0.0, E.DP):
@@ -239,10 +252,9 @@ def piezas_prototipo():
 
 
 def arandela_traba():
-    """Arandela de la traba: apoya sobre la cara de B, a los lados de la ranura; aloja la cabeza fresada."""
+    """Arandela plana de la traba: apoya sobre la cara de B a los dos lados de la ranura."""
     w = cil(0, 0, 10.0, 0, 2.0)
-    w = w.cut(cil(0, 0, M3["paso"], -1, 3))
-    return w.cut(cono(0, 0, M3["cab"] / 2, M3["paso"] / 2, 2.0, 2.0 - (M3["cab"] - M3["paso"]) / 2))
+    return w.cut(cil(0, 0, M3["paso"], -1, 3))          # plana: tornillo de cabeza cilíndrica
 
 
 def partir(sol, nombre):
@@ -315,7 +327,7 @@ if __name__ == "__main__":
     for n, p in piezas.items():
         assert p.val().isValid(), n
     print("uniones A:", info["union_a"], " uniones B:", info["union_b"], " traba x:", round(info["x_traba"], 1),
-          " agujeros traba y:", [round(float(v), 1) for v in info["agujeros_traba"]])
+          " ranura y:", [round(float(v), 1) for v in info["ranura"]])
     for w in (35, 45, 60, 80, 105):
         print(f"W={w}: choques={choques(piezas, w) or 'ninguno'}")
     impresas = exportar(piezas)

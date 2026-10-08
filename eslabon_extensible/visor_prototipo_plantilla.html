@@ -84,7 +84,7 @@ td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:righ
     </div>
     <div class="card">
       <h2>Para armar</h2>
-      <div class="facts"><span>15 × M3 × 12 avellanado (2 acortados a 9,5)</span><span>3 × M3 × 8 (1 acortado a 7)</span><span>sin tuercas</span><span>piloto Ø2,7</span><span>CA en gel o epoxi</span><span>PETG · sin soportes</span></div>
+      <div class="facts"><span>16 × M3 × 12 avellanado (2 acortados a 9,5)</span><span>1 × M3 × 12 cabeza cilíndrica (traba)</span><span>3 × M3 × 8 (1 acortado a 7)</span><span>sin tuercas</span><span>piloto Ø2,7</span><span>CA en gel o epoxi</span><span>PETG · sin soportes</span></div>
     </div>
   </aside>
 </div>
@@ -148,6 +148,7 @@ addScrew("barra_A", I.D_A, I.Y0, I.ESP-1); addScrew("barra_A", I.D_A, I.Y0+I.DP,
 addScrew("barra_B", I.E_B, I.Y0, I.ESP-1);
 for (const [x,y] of I.union_a) addScrew("barra_A", x, y, I.ESP);
 for (const [x,y] of I.union_b) addScrew("barra_B", x, y, I.ESP);
+for (const [x,y] of (I.union_b_abajo||[])) addScrew("barra_B", x, y, -1.2, 12, true);
 addScrew("carro", I.E_B, 0, I.z_carro0+0.2, 9.5, true); addScrew("carro", I.E_B, I.DP, I.z_carro0+0.2, 9.5, true);
 for (const [x,y] of I.union_carro) addScrew("carro", x, y, I.z_carro0+0.2, 8, true);
 addScrew("eslabon_1", I.L1, 0, 10, 7);
