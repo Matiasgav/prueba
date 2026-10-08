@@ -19,7 +19,25 @@ Los STL están en `salida/prototipo/`, **ya orientados para imprimir**. Los gene
   - 0,45 mm en el plano entre piezas que se mueven;
   - 0,25 mm entre ojos y mejillas, y entre el carro y las alas de B.
 - **Simplificado:** sin cable, sin resortes de disco y sin remaches.
-- **Traba provisoria por fricción.** Un tornillo M3 pasa por una ranura del ala de arriba de B y rosca en el carro; al apretarlo, el carro queda pinzado contra el ala. No es la traba definitiva (todavía está pendiente). Sirve para cargar el mecanismo.
+- **Traba provisoria con perno.** Un tornillo M3 pasa por uno de los agujeros del ala de arriba de B (cada 5 mm) y rosca en el carro; hace de perno. Hay una posición cada 2,5 mm de recorrido del carro. No es la traba definitiva (todavía está pendiente). Sirve para cargar el mecanismo.
+
+## Cambios después de la primera impresión (barra B v2)
+
+![Barra B v2](img/prototipo_B_v2.png)
+
+En la v1, la ranura de la traba cortaba el ala de arriba de B a lo largo y dejaba una franja de 1,2 mm suelta, que se rompe. Además los labios (la guía del carro) eran chicos. La v2:
+
+- **Alas de 2,4 mm** (antes 1,2): B crece 1,2 mm hacia afuera en cada cara y queda de **15,4 mm** de espesor (A sigue de 13). El riel y el carro quedan donde estaban.
+- **Labios de 1,65 × 1,3 mm** (antes 1,5 × 0,9).
+- **Traba positiva:** en lugar de la ranura, una fila de agujeros cada 5 mm en el ala de arriba. El tornillo pasa por uno y rosca en el carro: hace de perno, no depende de la fricción. Con dos agujeros en el carro, a 2,5 mm, hay una posición cada 2,5 mm de recorrido del carro.
+
+**Qué reimprimir:** solo `barra_B_abajo` y `barra_B_arriba`. A, los eslabones y la arandela no cambian.
+
+**El carro que ya imprimiste se arregla a mano** (o se reimprime `carro_abajo` y `carro_arriba`, que ya vienen así):
+1. **Sacar con lima la pestaña fina** del borde del lado de A, en las dos caras del carro y a todo lo largo: es la tira de ~2 mm de ancho y 0,55 mm de espesor que queda sobre la muesca de los labios. No hace falta (el carro se retiene con el escalón de la muesca) y deja lugar al labio más alto. Limar hasta la cara de la mejilla, sin tocar el escalón.
+2. **Agujerear con mecha de 2,5 mm** un segundo agujero de traba, en el lomo, 2,5 mm más cerca de P1 que el que ya tiene (misma distancia al borde), de lado a lado.
+
+Tornillos de B en la v2: los de unión quedan rebajados 1,2 mm y el de O 2,2 mm; son los mismos M3 × 12. La traba sigue siendo M3 × 12 con la arandela impresa sobre el agujero elegido.
 
 ## Impresión
 
@@ -37,7 +55,7 @@ Los STL están en `salida/prototipo/`, **ya orientados para imprimir**. Los gene
 | Pieza (STL) | Cant. | Medidas en la cama |
 |---|---:|---|
 | `barra_A_abajo`, `barra_A_arriba` | 1 c/u | 14,2 × 165 × 6,5 |
-| `barra_B_abajo`, `barra_B_arriba` | 1 c/u | 20 × 190 × 6,5 |
+| `barra_B_abajo`, `barra_B_arriba` (v2) | 1 c/u | 20 × 190 × 7,7 |
 | `carro_abajo`, `carro_arriba` | 1 c/u | 11,4 × 86 × 5 |
 | `eslabon_1_abajo`, `eslabon_1_arriba` | 1 c/u | 94 × 14 × 3,5 |
 | `eslabon_2` | 1 | 94 × 14 × 7 |
@@ -81,7 +99,7 @@ Los STL están en `salida/prototipo/`, **ya orientados para imprimir**. Los gene
    2. Cerrar con `barra_A_arriba`.
    3. Poner los 2 tornillos de unión y los de Q1 y Q2. Sin pegamento: A se puede desarmar.
 6. **Ajuste.** Apretar cada pivote (Q1, Q2 y O; P1, P2 y C ya se ajustaron antes de cerrar B) hasta que **no haya juego al torcer y empujar**, pero el mecanismo todavía se mueva con la mano. Si queda duro, aflojar 1/8 de vuelta.
-7. **Traba.** La arandela impresa va apoyada sobre la cara de arriba de B, encima de la ranura larga y M3 × 12 hasta el agujero del carro. Se afloja para regular el ancho y se aprieta para cargar.
+7. **Traba.** La arandela impresa va apoyada sobre la cara de arriba de B, encima del agujero que corresponde al ancho elegido y M3 × 12 hasta el agujero del carro. Se saca para regular el ancho y se vuelve a poner en el agujero que coincide.
 
 ## Qué esperar y qué mirar
 
@@ -96,7 +114,7 @@ Los STL están en `salida/prototipo/`, **ya orientados para imprimir**. Los gene
   La carga estimada del prototipo es una escala gruesa por material, no un cálculo de la pieza impresa. Se va a deformar entre 30 y 100 veces más.
 - **El orden de los puntos débiles no es el mismo que en metal.** En metal los eslabones son de acero y las barras de aluminio. En el prototipo todo es del mismo plástico, así que los eslabones y los ojos se debilitan más que las barras. Lo que el prototipo sí muestra bien es la **geometría**: dónde se concentra la flexión, qué se abre y qué se tuerce.
 - **Lo que el análisis anticipa, para mirar:**
-  1. **La traba a anchos chicos.** A W = 35 el carro recibe 7,5 veces la carga entre ejes. La traba por fricción va a resbalar primero: es el punto crítico real que falta resolver.
+  1. **La traba a anchos chicos.** A W = 35 el carro recibe 7,5 veces la carga entre ejes. Mirá cómo trabaja el tornillo de la traba y el ala alrededor del agujero: es el punto crítico real que falta resolver en el diseño definitivo.
   2. **La barra A** flexionando en la punta del voladizo (lado de y = 165).
   3. **Los ojos del eslabón corto**, en O y en C.
   4. **Las mejillas del carro** en P2.

@@ -23,8 +23,10 @@ Cómo se adapta:
       cara de abajo del carro; un M3 × 12 entero asomaría por arriba contra el ala de B).
       C: M3 × 8 desde arriba, cabeza al ras, ACORTADO a 7 mm (el eslabón 1 tiene 7 mm).
     Las mitades del carro se unen además con 2 × M3 × 8 desde abajo en el lomo.
-  * Traba provisoria: un tornillo M3 pasa por una ranura del ala de arriba de B y rosca en el
-    carro; al apretarlo, el carro queda pinzado contra el ala (por fricción).
+  * Traba provisoria: un tornillo M3 × 12 (con la arandela impresa) pasa por uno de los agujeros del
+    ala de arriba de B y rosca en el carro: hace de perno (traba positiva). Agujeros cada 5 mm y
+    dos agujeros en el carro a 2,5 mm: posiciones cada 2,5 mm de recorrido del carro.
+  * B v2: alas 1,2 mm más gruesas hacia afuera (B queda de 15,4 de espesor) y labios más grandes.
   * Sin cable, sin resortes de disco y sin remaches: no hacen falta para sentir el mecanismo.
 
 Uso:
@@ -158,6 +160,19 @@ UNION_CARRO = [(8.0, 12.0), (8.0, 28.0)]
 UNION_B = [(6.5, 9.0), (13.5, 24.0), (13.6, 50.0), (13.6, 80.0), (13.6, 110.0), (13.6, 140.0), (13.6, 170.0)]
 
 Y_TRABA_CARRO = E.DP / 2                             # tornillo de la traba, en el marco del carro
+Y_TRABA_CARRO_2 = Y_TRABA_CARRO - 2.5                # segundo agujero del carro: posiciones cada 2,5 mm
+PASO_TRABA = 5.0                                     # agujeros de la traba en el ala de B
+
+# v2 de B (después de imprimir la v1): la ranura de la traba cortaba el ala de arriba a lo largo y la
+# dejaba suelta. Ahora: alas más gruesas hacia afuera (+1,2 por cara: B pasa de 13 a 15,4), labios
+# más grandes, y una fila de agujeros en lugar de la ranura (traba positiva: el tornillo hace de perno).
+ALA_EXTRA = 1.2
+LABIO_V2 = dict(ancho=1.65, alto=1.3)                # el carro v1 sin la pestaña fina deja lugar
+
+
+def _huella(sol, z):
+    """Caras de la sección horizontal de una pieza a la altura z."""
+    return sol.intersect(E.caja(-100, 100, -100, 400, z - 0.01, z + 0.01)).faces("<Z").vals()
 
 
 def x_traba():
@@ -180,17 +195,30 @@ def piezas_prototipo():
     b = E.barra_b().union(E.tapa())
     b = horquilla(b, E.E_B, E.Y0, E.Z_CORTO, E.Z_PLACA_CORTE[0], CONO_CORTO, "arriba")
     b = unir_mitades(b, UNION_B)
-    # ranura de la traba en el ala de arriba de B
+    # labios más grandes (el carro va sin la pestaña fina de 0,55 sobre la muesca)
+    y0c = E.canal_carro()[0]
+    b = b.union(E.caja(0, LABIO_V2["ancho"], y0c, E.LARGO, E.Z_CANAL[0], E.Z_CANAL[0] + LABIO_V2["alto"]))
+    b = b.union(E.caja(0, LABIO_V2["ancho"], y0c, E.LARGO, E.Z_CANAL[1] - LABIO_V2["alto"], E.Z_CANAL[1]))
+    # alas más gruesas: se prolonga la huella de cada cara 1,2 mm hacia afuera
+    for z, sg in ((0.05, -1), (E.ESP - 0.05, 1)):
+        for cara in _huella(b, z):
+            b = b.union(cq.Workplane().add(cq.Solid.extrudeLinear(cara, cq.Vector(0, 0, sg * (ALA_EXTRA + 0.05)))))
+    # traba: fila de agujeros en el ala de arriba (el tornillo pasa por uno y rosca en el carro)
     ps = [E.cinematica(w)["p"] for w in (E.W_MIN, E.W_MAX)]
-    y0, y1 = E.Y0 + min(ps) + Y_TRABA_CARRO, E.Y0 + max(ps) + Y_TRABA_CARRO
-    ranura = (cq.Workplane("XY").workplane(offset=E.Z_CANAL[1] - 0.5).center(xt, (y0 + y1) / 2)
-              .slot2D(y1 - y0 + M3["paso"], M3["paso"], 90).extrude(E.ESP))
-    b = b.cut(ranura)
+    y0 = E.Y0 + min(ps) + Y_TRABA_CARRO_2
+    y1 = E.Y0 + max(ps) + Y_TRABA_CARRO
+    ys_traba = list(np.arange(math.floor(y0), y1 + PASO_TRABA / 2, PASO_TRABA))
+    for y in ys_traba:
+        b = b.cut(cil(xt, y, M3["paso"], E.Z_CANAL[1] - 0.5, E.ESP + ALA_EXTRA + 1))
     # carro: conos en P1 y P2, sin tornillos; agujero piloto de la traba
     k = E.carro()
     for y in (0.0, E.DP):
         k = horquilla(k, E.E_B, y, E.Z_MED, E.Z_MED_CORTE, CONO_LARGO, "abajo")
-    k = k.cut(cil(xt, Y_TRABA_CARRO, M3["piloto"], E.Z_CARRO[0] + 1.0, E.ESP))
+    for yt in (Y_TRABA_CARRO, Y_TRABA_CARRO_2):
+        k = k.cut(cil(xt, yt, M3["piloto"], E.Z_CARRO[0] + 1.0, E.ESP))
+    # sin la pestaña fina (0,55) sobre la muesca de los labios: no hace falta y deja lugar al labio v2
+    for z0, z1 in ((E.Z_CARRO[0] - 1, E.Z_MED_CORTE[0]), (E.Z_MED_CORTE[1], E.Z_CARRO[1] + 1)):
+        k = k.cut(E.caja(-1, E.LABIO_X + E.HOLG_PLANO, E.CARRO_Y[0] - 1, E.CARRO_Y[1] + 1, z0, z1))
     for x, y in UNION_CARRO:                            # M3 × 8 desde abajo, cabeza rebajada 0,2
         zc = E.Z_CARRO[0] + 0.2
         k = k.cut(cil(x, y, M3["piloto"], ZM, zc + 8.4)).cut(cil(x, y, M3["paso"], zc, ZM))
@@ -209,7 +237,7 @@ def piezas_prototipo():
     for x in (0.0, E.L1):
         lc = ojo(lc, x, 0, E.Z_CORTO, CONO_CORTO)
     return dict(barra_A=a, barra_B=b, carro=k, eslabon_1=l1, eslabon_2=l2, eslabon_corto=lc), \
-        dict(union_a=UNION_A, union_b=UNION_B, x_traba=xt, ranura=(y0, y1))
+        dict(union_a=UNION_A, union_b=UNION_B, x_traba=xt, ranura=(y0, y1), agujeros_traba=ys_traba)
 
 
 def arandela_traba():
@@ -289,7 +317,7 @@ if __name__ == "__main__":
     for n, p in piezas.items():
         assert p.val().isValid(), n
     print("uniones A:", info["union_a"], " uniones B:", info["union_b"], " traba x:", round(info["x_traba"], 1),
-          " ranura y:", [round(v, 1) for v in info["ranura"]])
+          " agujeros traba y:", [round(float(v), 1) for v in info["agujeros_traba"]])
     for w in (35, 45, 60, 80, 105):
         print(f"W={w}: choques={choques(piezas, w) or 'ninguno'}")
     impresas = exportar(piezas)

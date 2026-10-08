@@ -190,7 +190,7 @@ function pose(w){
     const c = Math.cos(q[2]||0), si = Math.sin(q[2]||0);
     sc.s.position.set(q[0]+c*sc.x-si*sc.y, q[1]+si*sc.x+c*sc.y, sc.ztop + (ex ? (sc.abajo ? -30 : 50) : 0));
   }
-  traba.s.visible = ver; traba.s.position.set(k.xb + I.x_traba, I.Y0 + k.p + I.y_traba, I.ESP + 2 + (ex?50:0));
+  traba.s.visible = ver; traba.s.position.set(k.xb + I.x_traba, I.Y0 + k.p + I.y_traba, I.ESP + 1.2 + 2 + (ex?50:0));
   for (const n in bed) bed[n].grp.visible = modo==="cama";
   bedGrp.visible = modo==="cama";
 }
