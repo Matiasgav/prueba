@@ -19,7 +19,7 @@ Los STL están en `salida/prototipo/`, **ya orientados para imprimir**. Los gene
   - 0,45 mm en el plano entre piezas que se mueven;
   - 0,25 mm entre ojos y mejillas, y entre el carro y las alas de B.
 - **Simplificado:** sin cable, sin resortes de disco y sin remaches.
-- **Traba provisoria con perno.** Un tornillo M3 pasa por uno de los agujeros del ala de arriba de B (cada 5 mm) y rosca en el carro; hace de perno. Hay una posición cada 2,5 mm de recorrido del carro. No es la traba definitiva (todavía está pendiente). Sirve para cargar el mecanismo.
+- **Traba provisoria con perno.** Un tornillo M3 pasa por uno de los 5 agujeros del ala de arriba de B (W = 35, 55, 70, 85 y 105) y rosca en el carro; hace de perno. No es la traba definitiva (todavía está pendiente). Sirve para cargar el mecanismo.
 
 ## Cambios después de la primera impresión (barra B v2)
 
@@ -29,13 +29,12 @@ En la v1, la ranura de la traba cortaba el ala de arriba de B a lo largo y dejab
 
 - **Alas de 2,4 mm** (antes 1,2): B crece 1,2 mm hacia afuera en cada cara y queda de **15,4 mm** de espesor (A sigue de 13). El riel y el carro quedan donde estaban.
 - **Labios de 1,65 × 1,3 mm** (antes 1,5 × 0,9).
-- **Traba positiva:** en lugar de la ranura, una fila de agujeros cada 5 mm en el ala de arriba. El tornillo pasa por uno y rosca en el carro: hace de perno, no depende de la fricción. Con dos agujeros en el carro, a 2,5 mm, hay una posición cada 2,5 mm de recorrido del carro.
+- **Traba positiva:** en lugar de la ranura, **5 agujeros** en el ala de arriba, uno por cada ancho a probar: **W = 35, 55, 70, 85 y 105**. El tornillo pasa por el agujero y rosca en el carro: hace de perno, no depende de la fricción. Contando desde la punta de O (y = 0), los agujeros están en y = 82,3 (W 105), 115,8 (W 85), 128,1 (W 70), 135,8 (W 55) y 141,0 (W 35). A anchos chicos el carro casi no se mueve (de W = 35 a 55 recorre 5 mm), por eso no entran agujeros para anchos intermedios ahí.
 
 **Qué reimprimir:** solo `barra_B_abajo` y `barra_B_arriba`. A, los eslabones y la arandela no cambian.
 
 **El carro que ya imprimiste se arregla a mano** (o se reimprime `carro_abajo` y `carro_arriba`, que ya vienen así):
 1. **Sacar con lima la pestaña fina** del borde del lado de A, en las dos caras del carro y a todo lo largo: es la tira de ~2 mm de ancho y 0,55 mm de espesor que queda sobre la muesca de los labios. No hace falta (el carro se retiene con el escalón de la muesca) y deja lugar al labio más alto. Limar hasta la cara de la mejilla, sin tocar el escalón.
-2. **Agujerear con mecha de 2,5 mm** un segundo agujero de traba, en el lomo, 2,5 mm más cerca de P1 que el que ya tiene (misma distancia al borde), de lado a lado.
 
 Tornillos de B en la v2: los de unión quedan rebajados 1,2 mm y el de O 2,2 mm; son los mismos M3 × 12. La traba sigue siendo M3 × 12 con la arandela impresa sobre el agujero elegido.
 
@@ -99,7 +98,7 @@ Tornillos de B en la v2: los de unión quedan rebajados 1,2 mm y el de O 2,2 mm;
    2. Cerrar con `barra_A_arriba`.
    3. Poner los 2 tornillos de unión y los de Q1 y Q2. Sin pegamento: A se puede desarmar.
 6. **Ajuste.** Apretar cada pivote (Q1, Q2 y O; P1, P2 y C ya se ajustaron antes de cerrar B) hasta que **no haya juego al torcer y empujar**, pero el mecanismo todavía se mueva con la mano. Si queda duro, aflojar 1/8 de vuelta.
-7. **Traba.** La arandela impresa va apoyada sobre la cara de arriba de B, encima del agujero que corresponde al ancho elegido y M3 × 12 hasta el agujero del carro. Se saca para regular el ancho y se vuelve a poner en el agujero que coincide.
+7. **Traba.** La arandela impresa va apoyada sobre la cara de arriba de B, encima del agujero del ancho elegido y M3 × 12 hasta el agujero del carro. Se saca para regular el ancho y se vuelve a poner en el agujero que coincide.
 
 ## Qué esperar y qué mirar
 

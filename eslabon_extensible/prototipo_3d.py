@@ -24,8 +24,8 @@ Cómo se adapta:
       C: M3 × 8 desde arriba, cabeza al ras, ACORTADO a 7 mm (el eslabón 1 tiene 7 mm).
     Las mitades del carro se unen además con 2 × M3 × 8 desde abajo en el lomo.
   * Traba provisoria: un tornillo M3 × 12 (con la arandela impresa) pasa por uno de los agujeros del
-    ala de arriba de B y rosca en el carro: hace de perno (traba positiva). Agujeros cada 5 mm y
-    dos agujeros en el carro a 2,5 mm: posiciones cada 2,5 mm de recorrido del carro.
+    ala de arriba de B y rosca en el carro: hace de perno (traba positiva). Un agujero por ancho a
+    probar: W = 35, 55, 70, 85 y 105.
   * B v2: alas 1,2 mm más gruesas hacia afuera (B queda de 15,4 de espesor) y labios más grandes.
   * Sin cable, sin resortes de disco y sin remaches: no hacen falta para sentir el mecanismo.
 
@@ -157,11 +157,12 @@ def horquilla_union(sol, x, y):
 UNION_A = [(7.5, 57.0), (6.5, 153.0)]
 # carro: lomo macizo solo entre y = 8 y 38 (el resto lo barren los eslabones)
 UNION_CARRO = [(8.0, 12.0), (8.0, 28.0)]
-UNION_B = [(6.5, 9.0), (13.5, 24.0), (13.6, 50.0), (13.6, 80.0), (13.6, 110.0), (13.6, 140.0), (13.6, 170.0)]
+UNION_B = [(6.5, 9.0), (13.5, 24.0), (13.6, 48.0), (13.6, 76.0), (13.6, 104.0), (13.6, 152.0), (13.6, 176.0)]  # lejos de los agujeros de la traba
 
 Y_TRABA_CARRO = E.DP / 2                             # tornillo de la traba, en el marco del carro
-Y_TRABA_CARRO_2 = Y_TRABA_CARRO - 2.5                # segundo agujero del carro: posiciones cada 2,5 mm
-PASO_TRABA = 5.0                                     # agujeros de la traba en el ala de B
+# Un agujero en el ala de B por cada ancho a probar. A anchos chicos el carro casi no se mueve
+# (de W = 35 a 55 recorre 5 mm), así que no entran agujeros para anchos más cercanos.
+ANCHOS_TRABA = (35, 55, 70, 85, 105)
 
 # v2 de B (después de imprimir la v1): la ranura de la traba cortaba el ala de arriba a lo largo y la
 # dejaba suelta. Ahora: alas más gruesas hacia afuera (+1,2 por cara: B pasa de 13 a 15,4), labios
@@ -204,18 +205,15 @@ def piezas_prototipo():
         for cara in _huella(b, z):
             b = b.union(cq.Workplane().add(cq.Solid.extrudeLinear(cara, cq.Vector(0, 0, sg * (ALA_EXTRA + 0.05)))))
     # traba: fila de agujeros en el ala de arriba (el tornillo pasa por uno y rosca en el carro)
-    ps = [E.cinematica(w)["p"] for w in (E.W_MIN, E.W_MAX)]
-    y0 = E.Y0 + min(ps) + Y_TRABA_CARRO_2
-    y1 = E.Y0 + max(ps) + Y_TRABA_CARRO
-    ys_traba = list(np.arange(math.floor(y0), y1 + PASO_TRABA / 2, PASO_TRABA))
+    ys_traba = [E.Y0 + E.cinematica(w)["p"] + Y_TRABA_CARRO for w in ANCHOS_TRABA]
+    y0, y1 = min(ys_traba), max(ys_traba)
     for y in ys_traba:
         b = b.cut(cil(xt, y, M3["paso"], E.Z_CANAL[1] - 0.5, E.ESP + ALA_EXTRA + 1))
     # carro: conos en P1 y P2, sin tornillos; agujero piloto de la traba
     k = E.carro()
     for y in (0.0, E.DP):
         k = horquilla(k, E.E_B, y, E.Z_MED, E.Z_MED_CORTE, CONO_LARGO, "abajo")
-    for yt in (Y_TRABA_CARRO, Y_TRABA_CARRO_2):
-        k = k.cut(cil(xt, yt, M3["piloto"], E.Z_CARRO[0] + 1.0, E.ESP))
+    k = k.cut(cil(xt, Y_TRABA_CARRO, M3["piloto"], E.Z_CARRO[0] + 1.0, E.ESP))
     # sin la pestaña fina (0,55) sobre la muesca de los labios: no hace falta y deja lugar al labio v2
     for z0, z1 in ((E.Z_CARRO[0] - 1, E.Z_MED_CORTE[0]), (E.Z_MED_CORTE[1], E.Z_CARRO[1] + 1)):
         k = k.cut(E.caja(-1, E.LABIO_X + E.HOLG_PLANO, E.CARRO_Y[0] - 1, E.CARRO_Y[1] + 1, z0, z1))
