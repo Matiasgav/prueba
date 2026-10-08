@@ -1,5 +1,65 @@
 # Articulaciones: opciones con traba mecánica
 
+## Ronda 2: sin tornillos
+
+**Criterio nuevo:** no puede haber ningún tornillo, porque cualquier tornillo se puede aflojar y no se traba un tornillo con otro. P1 y P2 no necesitan nada: para que esos pasadores salgan habría que sacar el carro del riel. Quedan **Q1, Q2, O y C**. Las opciones A y B de la ronda 1 (más abajo) quedan descartadas porque usan tornillos.
+
+![Articulaciones sin tornillos](img/articulaciones_sin_tornillos.png)
+
+En las tres opciones de esta ronda el pasador sigue a presión en las mejillas, así que no hay juego en el aluminio. El ojo sigue apareado con el pasador (0 a 3 µm) y el resorte de disco da la precarga axial.
+
+### 1 · Anillo elástico oculto (recomendada)
+
+- **Cómo es:** un anillo de alambre de resorte de Ø0,6 queda **encerrado** entre dos gargantas: una en el pasador, cerca de su punta, y otra en el agujero de la mejilla de abajo, que es ciego. No se ve, no se puede tocar y no tiene rosca.
+- **Armado:**
+  1. Antes de poner el eslabón, el anillo se empuja comprimido por el agujero de la mejilla de arriba hasta la garganta de la de abajo.
+  2. Se pone el eslabón (con su resorte de disco).
+  3. Se prensa el pasador desde arriba: la punta achaflanada abre el anillo y, cuando las gargantas coinciden, el anillo se cierra con un «clic».
+- **Traba:** de forma en los dos sentidos. Para sacar el pasador hay que cortar el anillo, que tiene unos 6 kN de área de corte. El aluminio del borde de la garganta aguanta del orden de 1 a 2 kN. En servicio, la fuerza axial sobre el pasador es prácticamente cero.
+- **Redundancia:** además, la interferencia (400 a 1.100 N) y, si se quiere, Loctite 648.
+- **Resistencia:** el pasador sigue macizo y templado (440C o ISO 8734). La garganta queda en la parte de afuera de la mejilla de abajo, donde el momento es menos de un tercio del máximo. El margen a flexión sigue en 2,3 o más.
+- **Sirve en las cuatro articulaciones.** En C, la garganta se mecaniza en el ala del eslabón 1 antes del envejecido H900, que es como se mecaniza todo el eslabón.
+- **Fabricación:** la garganta interior se hace con una fresa de ranurar (tipo «keyseat») de Ø4,5 que entra por el agujero de arriba e interpola el círculo. Es CNC normal. El anillo es de alambre de resorte inoxidable: un resortero lo hace por pocos pesos, y también hay anillos de alambre estándar (DIN 7993) de medidas cercanas. La garganta del pasador es un torneado antes del rectificado.
+- **Control:** un empuje de 200 N hacia afuera después del armado. Si el anillo no enganchó, el pasador se mueve.
+- **Contra:** es permanente. Para desarmar hay que perforar el pasador.
+
+### 2 · Estampado del aluminio sobre el pasador
+
+- **Cómo es:** el pasador tiene una garganta cerca de la cara de arriba. Después de prensarlo, un punzón anular con tope de profundidad empuja el aluminio del borde del agujero dentro de la garganta.
+- **Por qué es mejor que el remache:** se deforma el **aluminio**, no el pasador. El pasador no se abarrila y sigue templado (margen ≥ 2,3). La deformación la limita el tope de profundidad, no la fuerza, así que alcanza con una prensa de mano (de cremallera o de palanca) y un punzón a medida.
+- **Traba:** de forma en los dos sentidos. Se puede estampar una sola cara o las dos.
+- **Contras:**
+  - El 7075-T6 es poco dúctil (≈ 11 % de alargamiento): hay que probar en muestras que no se fisure.
+  - El anodizado se marca alrededor del pasador y queda un anillo visible en la cara.
+  - **No sirve en C:** las alas son de acero H900 (44 HRC), demasiado duras para estampar.
+
+### 3 · Remachado (con la precarga del resorte de disco)
+
+- **Lo bueno:** el resorte de disco ya precarga el ojo, así que el remache solo tiene que trabar el pasador y no apretar nada.
+- **Lo que sigue en contra:**
+  - El pasador tiene que ser blando (H1150), con margen 1,0 a 1,15.
+  - Hace falta una remachadora con tope de altura y pruebas del proceso.
+  - Hay riesgo de abarrilamiento con punta maciza.
+
+### Comparación (ronda 2)
+
+| | **1 · Anillo oculto** | 2 · Estampado | 3 · Remachado |
+|---|---|---|---|
+| Tornillos | Ninguno | Ninguno | Ninguno |
+| Traba | Forma, encerrada | Forma | Forma |
+| Pasador | Templado, margen ≥ 2,3 | Templado, margen ≥ 2,3 | Blando, margen 1,0 a 1,15 |
+| Sirve en C | Sí | No | Sí |
+| Herramientas | CNC normal (fresa de ranurar) + prensa | Prensa de mano + punzón con tope | Remachadora con tope (cara) |
+| Aspecto | Disco del pasador al ras; abajo liso | Disco + anillo estampado | Remache al ras |
+| Riesgo a probar | Que el anillo enganche siempre (control de 200 N) | Fisuras en el 7075 | Abarrilamiento, fuerza |
+| Se desarma | No | No | No |
+
+**Recomendación: anillo oculto en Q1, Q2, O y C**, y pasador liso en P1 y P2. No tiene tornillos ni piezas a la vista, traba por forma en los dos sentidos, conserva el pasador templado y no necesita máquina especial. Antes de pasarlo al diseño definitivo, haría **muestras de prueba**: un bloque de 7075 con la garganta, un ojo y tres o cuatro pasadores, para ajustar el anillo y probar que hace «clic» y aguanta.
+
+---
+
+## Ronda 1 (descartada: usa tornillos)
+
 Opciones reales para las seis articulaciones del diseño en metal. Los requisitos son:
 
 - **Muy fuertes:** los pivotes ven hasta 5,5 kN a W = 35.
