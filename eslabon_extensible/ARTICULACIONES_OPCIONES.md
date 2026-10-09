@@ -245,6 +245,102 @@ En una tarde de taller se valida el concepto elegido antes de llevarlo al diseñ
 
 ---
 
+## 9. Ronda 4: más opciones (F a K)
+
+![Más opciones](img/articulaciones_mas_opciones.png)
+
+Se aplican las mismas reglas: nada roscado, traba de forma en los dos sentidos, nada sobresale y juego del ojo de 0 a 3 µm. Los márgenes salen de `articulaciones_calc.py` a W = 35, contra la carga que rompe la estructura.
+
+### F · Casquillo + perno macho con anillo interno
+
+- **Geometría:**
+  - Casquillo de 440C Ø5 / Ø3,2 con cabeza abajo (Ø6,5 × 1,0, 0,7 en C), a presión en la mejilla de abajo. El ojo gira sobre el casquillo.
+  - Perno macho Ø3,2 con cabeza arriba, ajustado (g6/H6) dentro del casquillo.
+  - Un anillo de alambre de Ø0,5 queda encerrado entre una garganta del perno y otra del interior del casquillo, justo bajo la mejilla de arriba.
+- **Traba:**
+  - ↓ la cabeza del casquillo; ↑ la cabeza del perno.
+  - Las dos cabezas se unen por el anillo, que queda encerrado y no puede salir.
+  - Además, el casquillo entra con interferencia.
+- **Margen:** el perno y el casquillo flexionan juntos, así que la sección es casi la de un pasador macizo. Peor caso 2,4 (O); Q 2,8 y C 4,6.
+- **Fabricación:** todo de torno. La garganta interior del casquillo se hace con una herramienta de ranurar interior, que es estándar.
+- **Puntos débiles:**
+  - El anillo aguanta ~0,5 kN (acero contra acero, poca garganta). Sobra, porque no hay carga axial en servicio, pero es la traba más chica de la ronda.
+  - No se ve si el anillo entró: hace falta el ensayo con tirador.
+  - Las dos caras muestran una cabeza rebajada, como en B.
+
+### G · Pasador ciego + tapón estampado con contrasalida
+
+- **Geometría:**
+  - Agujero ciego en la mejilla de abajo (cara lisa) y pasante en la de arriba.
+  - Encima del pasador, una cajera Ø6 × 1,2 con contrasalida de 0,3 (cola de milano, hecha desde la cara).
+  - Un tapón de inox. 304 recocido se aplasta contra un tope: llena la contrasalida y queda al ras.
+- **Traba:**
+  - ↓ el fondo ciego; ↑ el tapón, que queda trabado por forma en el aluminio.
+  - Además, el pasador entra con interferencia.
+- **Capacidad:** corte del tapón en la contrasalida ≈ 4,7 kN, la más alta junto con C.
+- **Margen:** igual que B (2,5 en O, 2,9 en Q, 4,8 en C).
+- **Control:**
+  - La deformación la fija el tope del punzón, no la fuerza.
+  - Se ve: el disco tiene que quedar al ras y lleno.
+- **Aspecto:** arriba un disco de inox. al ras (el pasador no se ve), abajo nada. Es la versión de A que **sí** se inspecciona a la vista.
+- **Puntos débiles:**
+  - La pared entre la cajera y la cara interior de A queda en **0,9 mm** en Q. Alcanza, pero no hay que agrandar la cajera.
+  - La contrasalida pide una fresa de cola de milano chica. Es una herramienta de catálogo, pero hay que confirmarla con el taller.
+  - Desarme: perforar el tapón.
+
+### H · Pasador de temple parcial con puntas remachadas
+
+- **Idea:** el centro del pasador está templado (donde trabaja el ojo) y las puntas, blandas y huecas, se rebaten con poca fuerza.
+- **Margen:** 2,1 (O) a 4,0 (C), porque el remache come solo 0,3 de cada mejilla.
+- **Problemas:**
+  - Necesita temple por inducción o revenido local: un proveedor especial, fuera de lo estándar de Rapid Direct.
+  - Sigue siendo un remache: necesita una máquina con tope y existe el riesgo de abarrilarlo, que es lo que se quería evitar.
+- **Queda como reserva.**
+
+### I · Solo en C: soldadura láser
+
+- **Idea:** pasador de 17-4PH H900 nitrurado (para que no gripe con el ojo), con las puntas sin nitrurar. Un cordón láser chico une cada punta al ala de acero.
+- **Capacidad:** ~3,7 kN, al ras después de pulir.
+- **Problemas:**
+  - Solo sirve en C, que es acero contra acero; el 7075 no se suelda.
+  - Hace falta un servicio de soldadura láser.
+  - El calor local puede tocar el ajuste del ojo, así que hay que verificarlo con probeta.
+  - No se desarma.
+
+### K · A + B juntos
+
+- **Traba:** ↓ cabeza; ↑ virola estampada **y** anillo oculto, que actúan independientes. Además, interferencia.
+- **Margen:** el de B (2,5).
+- **Ventaja:** es la más redundante. Para que salga el pasador tienen que fallar dos trabas distintas por mecanismos distintos.
+- **Costo:** una garganta y un paso de armado más.
+
+### J · Llave longitudinal (descartada)
+
+Una llave de 1,6 mm a lo largo de la mejilla de A enganchaba las gargantas de Q1 y Q2 a la vez. Pero la llave también hay que trabarla en la punta de la barra: el problema se mueve, no desaparece.
+
+### Comparación de toda la familia
+
+| Concepto | Traba ↓ / ↑ | Capacidad ↑ | Margen (peor) | Se ve que está bien | Proceso | Taller estándar |
+|---|---|---|---|---|---|---|
+| A anillo oculto | Ciego / anillo | 0,5 a 1 kN | 2,2 | No | Clic | Sí |
+| **B cabeza + virola** | Cabeza / virola | 3,5 kN | 2,5 | Sí | Tope | Sí |
+| F casquillo + perno | Cabeza / cabeza + anillo | ~0,5 kN | 2,4 | No | Clic | Sí (torno) |
+| **G tapón estampado** | Ciego / tapón | 4,7 kN | 2,5 | Sí | Tope | Sí (confirmar la fresa) |
+| H temple parcial | Remache / remache | Alta | 2,1 | Sí | Remachadora | No |
+| I láser (solo C) | Soldadura | ~3,7 kN | — | Sí | Láser | No |
+| **K A + B** | Cabeza / virola + anillo | 3,5 kN + anillo | 2,5 | En parte | Tope + clic | Sí |
+
+### Recomendación después de la ronda 4
+
+1. **B sigue siendo la base:** es simple, tiene traba grande, se controla con un tope y se ve.
+2. **G es la mejor de las nuevas** si querés la cara de abajo lisa: tiene la estética de A con la capacidad y la inspección de B. Antes de elegirla, hay que confirmar la fresa de contrasalida y la pared de 0,9 mm.
+3. **K** si la prioridad es la redundancia por sobre todo, a cambio de un paso más de armado.
+4. F queda como opción "solo torno"; H e I quedan en reserva porque dependen de proveedores especiales. J está descartada.
+
+**Probetas sugeridas:** B, G y K sobre la misma placa de 7075 (ver la sección 8). Se mide el par del ojo antes y después de trabar, el empuje hasta que la traba cede y el aspecto de la cara.
+
+---
+
 ## Historial: rondas anteriores (descartadas)
 
 - **Ronda 1:** pasador con cabeza + tornillo M2 solapado, y casquillo + tornillo avellanado. Descartadas porque usan tornillos ([dibujo](img/articulaciones_opciones.png)).

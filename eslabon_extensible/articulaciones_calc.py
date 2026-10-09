@@ -41,6 +41,14 @@ CONCEPTOS = {
     "C tubo + remache aeronáutico": dict(Z=Z_TUBO, S=1500, rebaje=(1.1, 1.1), rebaje_C=(1.1, 1.1)),
     "D estampado del aluminio": dict(Z=Z_MACIZO, S=1500, rebaje=(0.0, 0.0), rebaje_C=None),
     "E remache del pasador (H1150)": dict(Z=Z_MACIZO, S=725, rebaje=(0.3, 0.3), rebaje_C=(0.3, 0.3)),
+    # F: casquillo Ø5/Ø3,2 + perno macho Ø3,2 ajustado adentro: flexionan juntos (I casi de macizo);
+    # manda la fibra del casquillo con I total. Cabezas de 1,0 (0,7 en C) en las dos caras.
+    "F casquillo + perno con anillo interno": dict(Z=math.pi * D ** 4 / 64 / (D / 2), S=1500,
+                                                   rebaje=(1.0, 1.0), rebaje_C=(0.7, 0.7)),
+    # G: pasador ciego abajo, tapón estampado en cajera con contrasalida arriba (cajera de 1,2)
+    "G tapón estampado sobre el pasador": dict(Z=Z_MACIZO, S=1500, rebaje=(1.2, 0.6), rebaje_C=(0.8, 0.6)),
+    # H: pasador de temple parcial (centro templado, puntas blandas) remachado
+    "H temple parcial + puntas remachadas": dict(Z=Z_MACIZO, S=1500, rebaje=(0.3, 0.3), rebaje_C=(0.3, 0.3)),
 }
 
 
@@ -99,6 +107,10 @@ if __name__ == "__main__":
     print(f"  C cabeza MS20426-4 sobre la mejilla: π/4 (5,72² − 5²) × 755 = "
           f"{math.pi / 4 * (5.72 ** 2 - 25) * 755 / 1000:.1f} kN")
     print(f"  D aluminio en garganta 0,8: π × 5 × 0,8 × 0,58 × 503 = {math.pi * 5 * 0.8 * 0.58 * 503 / 1000:.1f} kN")
+    print(f"  F anillo Ø0,5 entre casquillo y perno Ø3,2 (acero/acero): ~{0.12 * math.pi * 3.2 * 1200 / 1000:.1f} kN techo; real ~0,5 kN")
+    print(f"  G tapón de inox. 304 recocido Ø6 en contrasalida de 0,3: corte π × 6 × 0,8 × 0,6 × 520 = "
+          f"{math.pi * 6 * 0.8 * 0.6 * 520 / 1000:.1f} kN")
+    print(f"  G pared entre la cajera Ø6,6 (con contrasalida) y la cara interior de A: {14.2 - 10 - 3.3:.2f} mm")
     p_hinch, r_i, r_m, t_tubo = 250.0, 1.65, 2.07, 0.85
     print(f"\nC: si el remache hincha el tubo con {p_hinch:.0f} MPa, el diámetro exterior crece "
           f"~{2 * p_hinch * r_i * r_m / (200000 * t_tubo) * 1000:.0f} µm (el ojo tiene 0 a 3 µm de holgura)")
