@@ -341,6 +341,119 @@ Una llave de 1,6 mm a lo largo de la mejilla de A enganchaba las gargantas de Q1
 
 ---
 
+## 10. Ronda 5: el ojo como tapa (opciones L, L2 y W)
+
+![Anillo encerrado y alambre en canal](img/articulaciones_anillo_encerrado.png)
+
+### Lo que salió de medir el CAD
+
+Medí, en el CAD, el radio libre alrededor de cada eje, a la altura de las mejillas:
+
+| Pivote | Radio libre | Hacia dónde | Pared que deja una cajera de Ø6,9 |
+|---|---:|---|---:|
+| Q1, Q2 (barra A) | 4,2 (4,06 en la cara, por el redondeo) | Cara interior de A | 0,75 (0,6 en la cara) |
+| O (barra B) | 6,3 | Cara interior de B | 2,85 |
+| C (alas del eslabón 1) | 4,5 (4,25 en la cara) | Lado recto del eslabón | 1,05 |
+
+**Corrección importante para B y G en Q.** Hice una cuenta plana rápida y conservadora: la pared de 0,75 empieza a fluir con unos **60 MPa de presión interna**, y la de 0,9 de G con unos 80 MPa. Estampar inox. 304 dentro de una cajera puede empujar la pared con varios cientos de MPa. Por eso:
+- **B en Q** solo sirve si la virola tiene juego radial (cajera 0,1 a 0,15 más grande que la virola), si el punzón empuja solo el borde interior y si una mordaza apoya la cara interior de A mientras se estampa. Hay que probarlo con una probeta que copie la pared de 0,75.
+- **G en Q queda descartada.** El tapón tiene que empujar la pared para llenar la contrasalida, y eso es justo lo que no aguanta. En O sí sirve.
+
+Esto llevó a buscar trabas que **no toquen el aluminio**.
+
+### La idea: lo que queda bajo el ojo nunca se puede sacar
+
+El ojo de cada eslabón es un disco de R 4,5 que gira alrededor del mismo eje y apoya en la mejilla. Todo lo que esté entre la cara del ojo y la mejilla, a menos de 4,5 del eje, queda **tapado para siempre**: no hay herramienta que llegue y no tiene por dónde salir.
+
+### L · Anillo encerrado entre el ojo y la mejilla
+
+**Geometría (Q):**
+- **Pasador:** 440C templado y rectificado Ø5 × 13, **liso y al ras en las dos caras**, sin cabezas.
+  - Chaflán de entrada de 30°.
+  - Una **garganta de Ø4,7 × 0,65** de flancos rectos, justo a la altura de la cara de abajo del ojo.
+- **Ojo:** en su cara de abajo, un **alojamiento de Ø6,4 × 0,65** (torneado o fresado en el 17-4; deja 1,3 de pared).
+- **Anillo:** alambre redondo de inox. de resorte Ø0,6, con Ø interior libre de 4,7.
+  - Es el mismo de A: al abrirse a 5,05 trabaja a 1.350 MPa, por debajo del límite del alambre.
+  - Hay que ver si sirve un anillo de catálogo tipo DIN 7993 o si va a medida.
+- **Aluminio:** solo el agujero escariado. Sin cajeras, sin gargantas, sin contrasalidas.
+
+**Traba, los dos sentidos con una sola pieza:**
+- **El pasador baja:** la garganta arrastra el anillo, y el anillo apoya en la mejilla de abajo, que está en contacto porque el resorte de disco empuja el ojo hacia abajo.
+- **El pasador sube:** el anillo apoya en el fondo del alojamiento. Eso empuja el ojo, el resorte de disco y la mejilla de arriba; a los 0,15 el resorte queda plano y hace de tope rígido.
+- **El anillo no puede rodar ni abrirse:** está encerrado con 0,05 de juego. Lo único que lo libera es cortarlo.
+- **Además:** la interferencia del pasador en las dos mejillas.
+
+**Capacidad (estimada, a medir en probeta):** del orden de 2 a 3 kN, por aplastamiento del anillo en el flanco de la garganta. En servicio la carga axial es cero.
+
+**Resistencia del pasador.** La garganta cae donde el momento ya es grande, así que la cuenta usa el factor de entalla (Kt ≈ 1,7) del 440C:
+
+| Pivote | Momento en la garganta / máximo | Margen de flexión | Aplastamiento |
+|---|---:|---:|---:|
+| Q1 / Q2 | 0,56 | **2,1** | Mejor que A y B: la mejilla queda entera (2,9) |
+| C | 0,80 | **2,3** | Ídem |
+| O | 0,89 | **1,1: no sirve** | — |
+
+**Armado y control:**
+1. Anillo en su alojamiento, con una gota de grasa para que no se caiga.
+2. Se mete el eslabón en la horquilla con el resorte de disco.
+3. Se prensa el pasador desde arriba **sin tope de profundidad**:
+   - el chaflán abre el anillo;
+   - cuando llega la garganta, el anillo cae adentro y frena la prensa en seco.
+4. Se controla con un comparador: el pasador tiene que quedar **al ras en las dos caras**. Si quedó al ras, el anillo está enganchado; si no hubiera anillo, el pasador seguiría de largo y asomaría abajo. Es un control del 100 %, que se ve y no depende de la fuerza.
+
+**Modos de falla:**
+
+| Falla | Qué la evita |
+|---|---|
+| Anillo olvidado | El pasador no queda al ras abajo; se ve enseguida |
+| Anillo trabado afuera de la garganta | Ídem: el pasador no frena al ras |
+| Garganta en el lugar equivocado | Tolerancia de ± 0,02 en la distancia de la garganta a la punta |
+| Desgaste del anillo | Casi no tiene carga ni movimiento: queda quieto con el pasador y el ojo gira oscilando sobre él |
+
+**Desarme:** se prensa el pasador con fuerza. El anillo se corta, queda encerrado en pedazos y se cambia.
+
+**Aspecto:** las dos caras de la barra muestran solo el disco de Ø5 del pasador, al ras. Es lo más limpio de todas las opciones.
+
+**En C:** es igual, con el alojamiento en la cara de abajo del eslabón corto (que queda con 1,85 de apoyo en el ojo, suficiente para el acero H900). Las alas del eslabón 1 llevan solo el agujero liso.
+
+### L2 · Dos anillos
+
+Es L con un segundo anillo en la cara de arriba del ojo, debajo del resorte de disco.
+- **Ventaja:** cada anillo traba solo los dos sentidos, así que son **dos trabas independientes** más la interferencia. Es lo más redundante sin tocar el aluminio.
+- **Costo:** la distancia entre las dos gargantas tiene que copiar el espesor del ojo con ± 0,05. Se logra con ojo de 7,00 ± 0,02 y gargantas de 0,65 para alambre de 0,6. Si no, un anillo engancha y el otro no.
+- **Control:** al ras arriba y abajo. Además, un empuje de prueba de 300 N desde cada lado, que no puede mover nada.
+
+### W · Alambre en canal
+
+Es el sistema que retiene las tapas de muchos cilindros hidráulicos.
+- **Cómo es:** media garganta semicircular en el pasador y media en el agujero de la mejilla, cerca de la cara exterior, donde el momento es casi cero.
+- **Armado:** un alambre de inox. 304 recocido de Ø0,8 entra por un agujero inclinado de Ø0,9, tangente al canal y del lado grueso de la mejilla, y da una vuelta entera. La punta delantera se dobla en un agujerito radial del pasador, así que el alambre no se puede desenrollar.
+- **Capacidad:** ~3,9 kN, por corte del alambre en toda la vuelta.
+- **No empuja la pared:** el alambre entra suelto.
+- **Contras:**
+  - Queda **un punto de Ø0,9** en la cara.
+  - El agujero inclinado pide 5 ejes o un dispositivo inclinado.
+  - Hay que confirmarlo con el taller.
+- **Es la mejor opción para O**, donde sobra lugar.
+
+### Recomendación después de la ronda 5
+
+| Articulación | Primera opción | Alternativa |
+|---|---|---|
+| **Q1, Q2** | **L2** (o L): pasador al ras, nada en el aluminio | B, con juego radial, mordaza y probeta |
+| **C** | **L** | B (las alas son de acero: la pared de 1,05 aguanta más) |
+| **O** | **A** (anillo oculto en la mejilla gruesa de 5,15; la garganta cae donde el momento es el 1 %) o **W** | B o G (las paredes de 2,85 dan lugar) |
+| P1, P2 | Pasador liso, como hoy | — |
+
+**Probetas sugeridas:**
+- **L / L2:** un bloque de 7075 con dos mejillas de 2,9 y un ojo de 17-4 de 7 mm con su alojamiento. Se mide:
+  - que el pasador quede al ras;
+  - la fuerza hasta cortar el anillo;
+  - el par de giro del ojo.
+- **O:** una probeta de A con la mejilla de 5,15.
+
+---
+
 ## Historial: rondas anteriores (descartadas)
 
 - **Ronda 1:** pasador con cabeza + tornillo M2 solapado, y casquillo + tornillo avellanado. Descartadas porque usan tornillos ([dibujo](img/articulaciones_opciones.png)).
