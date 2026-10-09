@@ -341,6 +341,8 @@ Una llave de 1,6 mm a lo largo de la mejilla de A enganchaba las gargantas de Q1
 
 ---
 
+**Catálogo completo de 50 opciones:** [ARTICULACIONES_CATALOGO.md](ARTICULACIONES_CATALOGO.md)
+
 ## 10. Ronda 5: el ojo como tapa (opciones L, L2 y W)
 
 ![Anillo encerrado y alambre en canal](img/articulaciones_anillo_encerrado.png)
