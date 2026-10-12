@@ -12,7 +12,9 @@ CLR_SLIDE  = 0.30   # holgura de deslizamiento bobina / chasis-tapa
 CLR_FIX    = 0.15   # holgura lateral entre encastres fijos chasis / tapa
 CABLE_D    = 1.0
 S0         = -11.7  # posición X del tornillo de la bobina en el STEP
-L_FREE     = 27.0   # largo libre de cable entre bobina y punto fijo (ver informe)
+L_FREE     = 27.0
+TAB_BACK   = -0.8   # cara trasera de la pestaña: 7,5 mm desde la cara del cuerpo (y = -8,3)
+FLANGE_H   = 0.5    # altura del hombro de la falange sobre la pestaña   # largo libre de cable entre bobina y punto fijo (ver informe)
 
 chasis0 = loadb("p0.brep"); tapa = loadb("p1.brep"); caja0 = loadb("p2.brep")
 box = lambda x0,x1,y0,y1,z0,z1: cq.Solid.makeBox(x1-x0,y1-y0,z1-z0,cq.Vector(x0,y0,z0))
@@ -80,8 +82,8 @@ def tube(pts, r):
 cj = caja0.fuse(cyl(3.0,-11.7,-4,3.0,9.0))                 # rellena el alojamiento del inserto
 cj = cj.cut(box(-30,10,-8-CLR_SLIDE,1,9.0-CLR_SLIDE,20))   # techo: holgura con el labio de la tapa
 cj = cj.cut(box(-30,10,-8-CLR_SLIDE,1,-1,3.0))             # frente inferior: holgura con el chasis
-cj = cj.cut(box(-30,10,-CLR_SLIDE,1,-1,20))                # atrás: holgura con la pared del chasis
-cj = cj.fuse(cyl(2.75,-11.7,-4,9.0-CLR_SLIDE,9.58))         # falange del inserto en plástico: guía y tope en el bolsillo de la tapa
+cj = cj.cut(box(-30,10,TAB_BACK,1,-1,20))                 # atrás: pestaña de 7,5 mm, queda a 0,8 de la pared
+cj = cj.fuse(cyl(2.75,-11.7,-4,9.0-CLR_SLIDE,9.0-CLR_SLIDE+FLANGE_H))         # falange del inserto en plástico: guía y tope en el bolsillo de la tapa
 cj = cj.cut(cyl(PILOT_M3/2,-11.7,-4,-1,20))                # piloto M3 pasante (rosca directa)
 caja = cj.clean()
 

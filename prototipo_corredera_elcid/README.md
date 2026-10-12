@@ -22,7 +22,7 @@ Hay 0 mm³ de interferencia entre chasis, tapa, bobina y cable con el tornillo d
 
 - Dentro de la bobina: agujero de Ø1,5 y muesca de 1 × 1 contra la pared del chasis.
 - Salida entre chasis y tapa: 1 × 1 mm (x −7,25…−6,25, z 10,5…11,5).
-- La falange del inserto (Ø5,5 × 0,58) queda en plástico sobre la lengüeta. Va dentro del bolsillo ovalado de la tapa, donde guía la bobina y hace de tope.
+- La falange del inserto (Ø5,5, hombro de 0,5 mm) queda en plástico sobre la lengüeta. Va dentro del bolsillo ovalado de la tapa, donde guía la bobina y hace de tope.
 
 ## Cable
 
