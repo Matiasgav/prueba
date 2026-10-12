@@ -11,26 +11,17 @@ CLEAR_M3   = 3.2    # paso libre M3 (ranura del chasis)
 CLR_SLIDE  = 0.30   # holgura de deslizamiento bobina / chasis-tapa
 CLR_FIX    = 0.15   # holgura lateral entre encastres fijos chasis / tapa
 CABLE_D    = 1.0
-CABLE_CUT  = 0.70   # radio del canal para el cable dentro del bastidor (Ø1.4)
 S0         = -11.7  # posición X del tornillo de la bobina en el STEP
-L_FREE     = 28.0   # largo libre de cable entre bobina y punto fijo (ver informe)
+L_FREE     = 27.0   # largo libre de cable entre bobina y punto fijo (ver informe)
 
 chasis0 = loadb("p0.brep"); tapa = loadb("p1.brep"); caja0 = loadb("p2.brep")
 box = lambda x0,x1,y0,y1,z0,z1: cq.Solid.makeBox(x1-x0,y1-y0,z1-z0,cq.Vector(x0,y0,z0))
 cyl = lambda r,x,y,z0,z1: cq.Solid.makeCylinder(r,z1-z0,cq.Vector(x,y,z0))
 
-# ---------------- canal de salida del cable (copia la ranura de la tapa) ----------------
-ZG0, ZG1 = 9.5, 11.6
-groove = (box(-1.25,18.75,-2.5,0.5,ZG0,ZG1)
-          .fuse(cyl(1.5,18.75,-1,ZG0,ZG1))
-          .fuse(cyl(6,-1.25,3.5,ZG0,ZG1).cut(cyl(3,-1.25,3.5,ZG0-1,ZG1+1)).intersect(box(-7.25,-1.25,-2.5,3.5,ZG0,ZG1)))
-          .fuse(box(-7.25,-4.25,3.5,9,ZG0,ZG1)))
-
 # ---------------- chasis ----------------
 ch = chasis0.cut(tapa)                                   # el chasis simplificado invadía la tapa (391 mm³)
-for dx,dy in ((CLR_FIX,0),(-CLR_FIX,0),(0,CLR_FIX),(0,-CLR_FIX)):
-    ch = ch.cut(tapa.translate(cq.Vector(dx,dy,0)))      # holgura lateral en los escalones
-ch = ch.cut(groove)                                      # canal de salida del cable libre
+for dx,dy in ((-CLR_FIX,0),(0,-CLR_FIX)):
+    ch = ch.cut(tapa.translate(cq.Vector(dx,dy,0)))      # holgura de armado; no toca las caras de la salida 1x1
 slot = box(-17.25,12.75,-4-CLEAR_M3/2,-4+CLEAR_M3/2,-1,3.5).fuse(cyl(CLEAR_M3/2,-17.25,-4,-1,3.5)).fuse(cyl(CLEAR_M3/2,12.75,-4,-1,3.5))
 ch = ch.cut(slot)                                        # ranura 2.5 -> 3.2 para que pase el M3
 for (x,y) in ((17.25,4),(-16.25,4)):
@@ -39,10 +30,12 @@ for (x,y) in ((17.25,4),(-16.25,4)):
 chasis = ch.clean()
 
 # ---------------- trayectoria del cable ----------------
-YC, ZL, ZU = -0.8, 3.55, 11.0
+YC, ZL, ZU = -0.5, 3.5, 11.0     # cable apoyado en piso y pared, como en el STEP
 R  = (ZU-ZL)/2
 XF = -1.25            # el cable deja de moverse aquí (empieza la curva hacia la salida)
-RP = 3.5-YC           # radio en planta de la curva de salida
+CP = (-1.25, 3.5)     # centro de la ranura curva de la tapa (R3..R6)
+RP0, RP1 = 3.5-YC, 5.5   # radio de la curva del cable: de la ranura (y=-0.5) a la salida 1x1 (x=-6.75)
+WALL_EFF = 18.4       # la pared del extremo tiene un radio interior R1.5: a la altura del cable está en x≈18.4
 def attached_pts(s):
     """tramo pegado a la bobina: agujero diagonal + vuelta al buje + muesca"""
     dx = s-S0; pts=[]
@@ -66,8 +59,9 @@ def cable_pts(s, L=L_FREE, n=24):
         a=-math.pi/2+math.pi*i/n; pts.append((xb+R*math.cos(a),YC,ZL+R+R*math.sin(a)))
     pts.append((xb,YC,ZU)); pts.append((XF,YC,ZU))
     for i in range(1,n+1):
-        a=-math.pi/2-(math.pi/2)*i/n; pts.append((XF+RP*math.cos(a),3.5+RP*math.sin(a),ZU))
-    pts.append((XF-RP,9.0,ZU))
+        u=i/n; a=-math.pi/2-(math.pi/2)*u; r=RP1-(RP1-RP0)*(1-u)**2
+        pts.append((CP[0]+r*math.cos(a),CP[1]+r*math.sin(a),ZU))
+    pts.append((CP[0]-RP1,9.0,ZU))
     return pts, xb
 def plen(p): return sum(math.dist(a,b) for a,b in zip(p[:-1],p[1:]))
 
@@ -87,8 +81,8 @@ cj = caja0.fuse(cyl(3.0,-11.7,-4,3.0,9.0))                 # rellena el alojamie
 cj = cj.cut(box(-30,10,-8-CLR_SLIDE,1,9.0-CLR_SLIDE,20))   # techo: holgura con el labio de la tapa
 cj = cj.cut(box(-30,10,-8-CLR_SLIDE,1,-1,3.0))             # frente inferior: holgura con el chasis
 cj = cj.cut(box(-30,10,-CLR_SLIDE,1,-1,20))                # atrás: holgura con la pared del chasis
+cj = cj.fuse(cyl(2.75,-11.7,-4,9.0-CLR_SLIDE,9.58))         # falange del inserto en plástico: guía y tope en el bolsillo de la tapa
 cj = cj.cut(cyl(PILOT_M3/2,-11.7,-4,-1,20))                # piloto M3 pasante (rosca directa)
-cj = cj.cut(tube(attached_pts(S0)+[(0.5,YC,ZL)], CABLE_CUT))  # canal Ø1.4 para pegar el cable
 caja = cj.clean()
 
 if __name__ == "__main__":
@@ -98,6 +92,6 @@ if __name__ == "__main__":
         print(n, "vol=%.1f"%s.Volume(), "válido", s.isValid())
     info={}
     p,_=cable_pts(S0); fixed_len = plen(attached_pts(S0))
-    exit_len = math.pi/2*RP + (9.0-3.5) - 1.0
-    info.update(R=R, L_free=L_FREE, attached=fixed_len, exit=exit_len, XF=XF, YC=YC, ZL=ZL, ZU=ZU, RP=RP, S0=S0)
+    exit_len = plen(cable_pts(S0)[0][-(n_exit:=26):-1]) + (8.0-CP[1])
+    info.update(R=R, L_free=L_FREE, attached=fixed_len, exit=exit_len, XF=XF, YC=YC, ZL=ZL, ZU=ZU, S0=S0, WALL_EFF=WALL_EFF)
     json.dump(info, open("cable_info.json","w"), indent=1); print(info)

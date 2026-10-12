@@ -16,10 +16,16 @@ Para regenerar: separar el STEP en `p0..p7.brep` (orden del árbol: chasis, tapa
 
 ## Resultado del chequeo
 
-Hay 0 mm³ de interferencia entre chasis, tapa, bobina y cable con el tornillo de la bobina en X = −17,25 / −11,7 / −5 / 0 / +5 / +7,5.
+Hay 0 mm³ de interferencia entre chasis, tapa, bobina y cable con el tornillo de la bobina en X = −17,35 / −11,7 / −5 / 0 / +5 / +6,4.
+
+## Pasos del cable (como en el diseño original)
+
+- Dentro de la bobina: agujero de Ø1,5 y muesca de 1 × 1 contra la pared del chasis.
+- Salida entre chasis y tapa: 1 × 1 mm (x −7,25…−6,25, z 10,5…11,5).
+- La falange del inserto (Ø5,5 × 0,58) queda en plástico sobre la lengüeta. Va dentro del bolsillo ovalado de la tapa, donde guía la bobina y hace de tope.
 
 ## Cable
 
-- Largo libre recomendado: **28 mm** (de la salida de la muesca de la bobina a X = −1,25 en la tapa).
+- Largo libre recomendado: **27 mm** (de la salida de la muesca de la bobina a X = −1,25 en la tapa).
 - Total desde la cavidad de la bobina hasta el borde del chasis: unos 58 mm.
-- Con ese largo, el recorrido útil va de −17,25 a +7,5 (24,8 mm). Los últimos 5 mm de la ranura no se pueden usar, porque la curva del lazo (R 3,7 mm) choca con la pared del extremo.
+- Con ese largo, el recorrido útil va de −17,3 a +6,4 (unos 24 mm). Más allá, la curva del lazo (R 3,75) toca el radio interior R1,5 de la pared del extremo.
