@@ -73,6 +73,7 @@ El detalle (todas las piezas, hipótesis, torsión y qué cambiar para subirla) 
 | `ANALISIS.md` | Informe de resistencia. |
 | `ARTICULACIONES_OPCIONES.md`, `articulaciones_calc.py` | Estudio de articulaciones sin tornillos: 5 conceptos, cálculos, armado, comparación y presupuesto de juego. |
 | `ARTICULACIONES_CATALOGO.md` | Catálogo de 50 opciones de articulación por familias, con bocetos y estado de cada una. |
+| `ARTICULACIONES_ESFUERZOS.md`, `articulaciones_esfuerzos.py` | Bibliografía de uniones con pasador y mapa de las tensiones más grandes en Q1, Q2, O y C. |
 | `prototipo_3d.py`, `PROTOTIPO.md` | Prototipo para imprimir en 3D (mitades sin soportes, pivotes de doble cono con M3). STL orientados en `salida/prototipo/`; visor en `visor_prototipo.html`. |
 | `visor.html` | Visor 3D con la carga admisible a cada ancho. Lo genera `eslabon.py`. |
 | `salida/capacidad.json` | Capacidad por modo de falla cada 2,5 mm de ancho. |

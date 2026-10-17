@@ -1,0 +1,138 @@
+{
+ "Q1": {
+  "F": 4695.429216811291,
+  "M_max": 7032.067038232833,
+  "M_bruhn": 7747.458207738629,
+  "util": {
+   "pasador: flexi\u00f3n (centro del ojo)": 0.38201624893041985,
+   "pasador: corte (planos ojo-mejilla)": 0.16745356254675667,
+   "ojo: presi\u00f3n en el borde del agujero": 0.1375606223060902,
+   "mejilla: presi\u00f3n en el borde interior": 0.33662663109709007,
+   "ojo: tracci\u00f3n neta con Kt (costados del agujero)": 0.5016484205994969,
+   "ojo: desgarro hacia la corona": 0.19219571776655156
+  },
+  "borde_ojo": 1.4133635288983226,
+  "borde_mej": 1.2320272003322652,
+  "borde_rango": [
+   [
+    1.2156275609921536,
+    1.652875648269204
+   ],
+   [
+    1.1209466409334963,
+    1.3668228341314859
+   ]
+  ],
+  "p_max_ojo": 241.4188921471883,
+  "p_max_mej": 253.98479316275444,
+  "sigma_flexion": 573.0243733956298,
+  "tau_corte": 159.4241642226397,
+  "sigma_neta": [
+   419.2347515010081,
+   586.9286521014113
+  ],
+  "tau_desgarro": 129.74940710702128
+ },
+ "Q2": {
+  "F": 4735.986515319688,
+  "M_max": 7092.807309000791,
+  "M_bruhn": 7814.377750277485,
+  "util": {
+   "pasador: flexi\u00f3n (centro del ojo)": 0.38531595729093987,
+   "pasador: corte (planos ojo-mejilla)": 0.16889996154648765,
+   "ojo: presi\u00f3n en el borde del agujero": 0.13874881766891056,
+   "mejilla: presi\u00f3n en el borde interior": 0.33953428152325277,
+   "ojo: tracci\u00f3n neta con Kt (costados del agujero)": 0.5059814653119324,
+   "ojo: desgarro hacia la corona": 0.1938558299176591
+  },
+  "borde_ojo": 1.4133635288983168,
+  "borde_mej": 1.2320272003322632,
+  "borde_rango": [
+   [
+    1.2156275609921552,
+    1.652875648269209
+   ],
+   [
+    1.1209466409334967,
+    1.3668228341314859
+   ]
+  ],
+  "p_max_ojo": 243.50417500893803,
+  "p_max_mej": 256.1786154092942,
+  "sigma_flexion": 577.9739359364098,
+  "tau_corte": 160.80120839033356,
+  "sigma_neta": [
+   422.85593886782925,
+   591.998314414961
+  ],
+  "tau_desgarro": 130.87013221911246
+ },
+ "O": {
+  "F": 5531.632249893395,
+  "M_max": 8005.897852488942,
+  "M_bruhn": 9127.193212324102,
+  "util": {
+   "pasador: flexi\u00f3n (centro del ojo)": 0.4349194981077008,
+   "pasador: corte (planos ojo-mejilla)": 0.19727515508629756,
+   "ojo: presi\u00f3n en el borde del agujero": 0.3296422698901166,
+   "mejilla: presi\u00f3n en el borde interior": 0.25979755685211164,
+   "ojo: tracci\u00f3n neta con Kt (costados del agujero)": 1.6547617841561437,
+   "ojo: desgarro hacia la corona": 0.6339861061627121
+  },
+  "borde_ojo": 1.0267544912664952,
+  "borde_mej": 1.4333033542411893,
+  "borde_rango": [
+   [
+    1.018040268509611,
+    1.0369265170310582
+   ],
+   [
+    1.2370792687530379,
+    1.650385052503416
+   ]
+  ],
+  "p_max_ojo": 578.5221836571546,
+  "p_max_mej": 196.01725664491823,
+  "sigma_flexion": 652.3792471615512,
+  "tau_corte": 187.8158113999096,
+  "sigma_neta": [
+   1382.9080624733488,
+   1936.0712874626881
+  ],
+  "tau_desgarro": 427.9976804093853
+ },
+ "C": {
+  "F": 5531.632249893395,
+  "M_max": 4935.837355332743,
+  "M_bruhn": 4978.469024904055,
+  "util": {
+   "pasador: flexi\u00f3n (centro del ojo)": 0.26813880777346866,
+   "pasador: corte (planos ojo-mejilla)": 0.19727515508629756,
+   "ojo: presi\u00f3n en el borde del agujero": 0.3272399717205983,
+   "mejilla: presi\u00f3n en el borde interior": 0.1991706816950947,
+   "ojo: tracci\u00f3n neta con Kt (costados del agujero)": 1.6547617841561437,
+   "ojo: desgarro hacia la corona": 0.6339861061627121
+  },
+  "borde_ojo": 1.019271924071043,
+  "borde_mej": 1.067032314414082,
+  "borde_rango": [
+   [
+    1.0137096904078864,
+    1.0265632642957472
+   ],
+   [
+    1.036137854578771,
+    1.1073669310325402
+   ]
+  ],
+  "p_max_ojo": 574.30615036965,
+  "p_max_mej": 349.5445463748912,
+  "sigma_flexion": 402.208211660203,
+  "tau_corte": 187.8158113999096,
+  "sigma_neta": [
+   1382.9080624733488,
+   1936.0712874626881
+  ],
+  "tau_desgarro": 427.9976804093853
+ }
+}
