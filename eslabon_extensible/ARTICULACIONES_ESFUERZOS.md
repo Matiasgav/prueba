@@ -146,6 +146,43 @@ Por encima de 100 % solo hay fluencia local, en el pico, no rotura.
    - escariar las dos mejillas de cada pivote en la misma sujeción, para que queden coaxiales;
    - el juego axial lo saca el resorte de disco (como está), no la tolerancia.
 
+## 4. Diagramas de cuerpo libre
+
+### Mecanismo completo
+
+Las seis piezas del mecanismo, separadas, a W = 35 con **100 N de tracción entre ejes**. En compresión, todas las flechas van al revés. Cada pieza se verificó en equilibrio de fuerzas y de momentos.
+
+![Cuerpo libre del mecanismo](img/cuerpo_libre.png)
+
+- **Eslabón 2 y eslabón corto:** son barras de dos fuerzas, así que solo trabajan a tracción o compresión a lo largo de su eje.
+- **Eslabón 1:** tiene tres fuerzas (Q1, C y P1) que se cortan en un punto.
+- **Barra A:** recibe en Q1 y Q2 dos fuerzas casi opuestas (641 y 646 N). Juntas forman un par de fuerzas que la flexiona; por eso es la pieza que limita.
+- **Carro:** los ganchos de B lo sostienen de costado sin fuerza neta en X (solo un par), y la traba lleva toda la componente a lo largo del riel: **748 N por cada 100 N entre ejes**.
+- **Barra B:** como A es 25 mm más corta, los acoples de B no se reparten 50/50. Para que cierren los momentos quedan en **57/43**.
+  - `analisis.py` suponía 50/50 en B; ya está corregido.
+  - La capacidad de la estructura no cambia, porque manda la barra A.
+  - La flexión de B sí cambia: a W 105 su capacidad baja de 6.180 a 4.450 N, todavía muy lejos de los 1.560 N de A.
+
+Fuerza en cada pivote, en N por cada 100 N entre ejes (para la carga de rotura de la estructura, ×7,33):
+
+| Pivote | W 35 | W 70 | W 105 |
+|---|---:|---:|---:|
+| Q1 | 641 | 133 | 31 |
+| Q2 / P2 (eslabón 2) | 646 | 158 | 90 |
+| O / C (eslabón corto) | 755 | 184 | 105 |
+| P1 | 138 | 88 | 86 |
+| Traba del carro | 748 | 155 | 32 |
+
+### La articulación Q1 desarmada
+
+![Cuerpo libre de Q1](img/cuerpo_libre_Q1.png)
+
+- **El eslabón tira del ojo** con 641 N.
+- **El ojo empuja el pasador**, con la carga cargada hacia los bordes.
+- **Cada mejilla frena el pasador** con 320 N y pasa esa fuerza al resto de la barra.
+- **El pasador queda en flexión y en corte doble.**
+- **El resorte de disco** (≈ 250 N) aprieta el ojo contra la mejilla de abajo. Esa fuerza se cierra entre el ojo y las mejillas sin pasar por el pasador, así que **el pasador no lleva carga axial** y la traba solo tiene que impedir que camine.
+
 ## Fuentes
 
 **Consultadas en línea:**

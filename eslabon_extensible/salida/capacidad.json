@@ -7,7 +7,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 732.7953625298404,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 6.678701598386479,
+  "rigidez_mm_por_kN": 6.245421105673833,
   "fuerzas": {
    "eslabon1_Q1": 6.407558585798347,
    "eslabon2": 6.462904594496301,
@@ -67,7 +67,7 @@
    "barra B horquilla O: desgarro": 8974.1730357756,
    "barra B horquilla O: tracción neta": 8298.31280366666,
    "barra A: flexión + axial": 732.7953625298404,
-   "barra B: flexión + axial": 1256.584724150277,
+   "barra B: flexión + axial": 1353.495432326397,
    "carro: flexión + axial": 1500.9531017955517,
    "labios de las alas": 10266.208720757155,
    "acople: aplastamiento": 75450.0
@@ -127,7 +127,7 @@
    "barra B horquilla O: desgarro": 12077.227631869902,
    "barra B horquilla O: tracción neta": 8298.31280366666,
    "barra A: flexión + axial": 732.7953625298404,
-   "barra B: flexión + axial": 1256.584724150277,
+   "barra B: flexión + axial": 1353.495432326397,
    "carro: flexión + axial": 1500.9531017955517,
    "labios de las alas": 10266.208720757155,
    "acople: aplastamiento": 75450.0
@@ -141,7 +141,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 816.3793741370674,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 5.050721994229313,
+  "rigidez_mm_por_kN": 4.672069887626635,
   "fuerzas": {
    "eslabon1_Q1": 5.224353778080972,
    "eslabon2": 5.292088544768712,
@@ -201,7 +201,7 @@
    "barra B horquilla O: desgarro": 10153.858207795134,
    "barra B horquilla O: tracción neta": 10194.457868413861,
    "barra A: flexión + axial": 816.3793741370674,
-   "barra B: flexión + axial": 1430.836985325798,
+   "barra B: flexión + axial": 1557.8497465818884,
    "carro: flexión + axial": 1867.841496948456,
    "labios de las alas": 11039.425683257436,
    "acople: aplastamiento": 75450.0
@@ -261,7 +261,7 @@
    "barra B horquilla O: desgarro": 14821.179007065863,
    "barra B horquilla O: tracción neta": 10194.457868413861,
    "barra A: flexión + axial": 816.3793741370674,
-   "barra B: flexión + axial": 1430.836985325798,
+   "barra B: flexión + axial": 1557.8497465818884,
    "carro: flexión + axial": 1867.841496948456,
    "labios de las alas": 11039.425683257436,
    "acople: aplastamiento": 75450.0
@@ -275,7 +275,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 886.847966951851,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 4.0719394174520325,
+  "rigidez_mm_por_kN": 3.7324766842630646,
   "fuerzas": {
    "eslabon1_Q1": 4.400206969020838,
    "eslabon2": 4.480418522564921,
@@ -335,7 +335,7 @@
    "barra B horquilla O: desgarro": 11163.771263917495,
    "barra B horquilla O: tracción neta": 12127.856510735217,
    "barra A: flexión + axial": 886.847966951851,
-   "barra B: flexión + axial": 1585.3219225290866,
+   "barra B: flexión + axial": 1742.566513434104,
    "carro: flexión + axial": 2225.611774810792,
    "labios de las alas": 11650.719428934453,
    "acople: aplastamiento": 75450.0
@@ -395,7 +395,7 @@
    "barra B horquilla O: desgarro": 17609.65913922437,
    "barra B horquilla O: tracción neta": 12127.856510735217,
    "barra A: flexión + axial": 886.847966951851,
-   "barra B: flexión + axial": 1585.3219225290866,
+   "barra B: flexión + axial": 1742.566513434104,
    "carro: flexión + axial": 2225.611774810792,
    "labios de las alas": 11650.719428934453,
    "acople: aplastamiento": 75450.0
@@ -409,7 +409,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 947.2147989543455,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 3.4290291599109755,
+  "rigidez_mm_por_kN": 3.119637443270803,
   "fuerzas": {
    "eslabon1_Q1": 3.7918240587559495,
    "eslabon2": 3.884618187117458,
@@ -469,7 +469,7 @@
    "barra B horquilla O: desgarro": 12034.839653838733,
    "barra B horquilla O: tracción neta": 14106.449767365964,
    "barra A: flexión + axial": 947.2147989543455,
-   "barra B: flexión + axial": 1724.8267152475084,
+   "barra B: flexión + axial": 1912.363577929231,
    "carro: flexión + axial": 2544.9124740921566,
    "labios de las alas": 12147.347498843985,
    "acople: aplastamiento": 75450.0
@@ -529,7 +529,7 @@
    "barra B horquilla O: desgarro": 20452.15985484481,
    "barra B horquilla O: tracción neta": 14106.449767365964,
    "barra A: flexión + axial": 947.2147989543455,
-   "barra B: flexión + axial": 1724.8267152475084,
+   "barra B: flexión + axial": 1912.363577929231,
    "carro: flexión + axial": 2544.9124740921566,
    "labios de las alas": 12147.347498843985,
    "acople: aplastamiento": 75450.0
@@ -543,7 +543,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 999.6412829486742,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 2.9780624309769035,
+  "rigidez_mm_por_kN": 2.6929769498985885,
   "fuerzas": {
    "eslabon1_Q1": 3.323175858788341,
    "eslabon2": 3.4286770853431086,
@@ -603,7 +603,7 @@
    "barra B horquilla O: desgarro": 12791.037817428793,
    "barra B horquilla O: tracción neta": 16138.83961372698,
    "barra A: flexión + axial": 999.6412829486742,
-   "barra B: flexión + axial": 1853.1013688095109,
+   "barra B: flexión + axial": 2070.60846454961,
    "carro: flexión + axial": 2861.178671825027,
    "labios de las alas": 12559.843837002576,
    "acople: aplastamiento": 75450.0
@@ -663,7 +663,7 @@
    "barra B horquilla O: desgarro": 23358.96299255464,
    "barra B horquilla O: tracción neta": 16138.83961372698,
    "barra A: flexión + axial": 999.6412829486742,
-   "barra B: flexión + axial": 1853.1013688095109,
+   "barra B: flexión + axial": 2070.60846454961,
    "carro: flexión + axial": 2861.178671825027,
    "labios de las alas": 12559.843837002576,
    "acople: aplastamiento": 75450.0
@@ -677,7 +677,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1045.7187655086798,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 2.645062634160371,
+  "rigidez_mm_por_kN": 2.3804647902556004,
   "fuerzas": {
    "eslabon1_Q1": 2.9501691584708234,
    "eslabon2": 3.0685219293196737,
@@ -737,7 +737,7 @@
    "barra B horquilla O: desgarro": 13451.255653043892,
    "barra B horquilla O: tracción neta": 18234.447425501272,
    "barra A: flexión + axial": 1045.7187655086798,
-   "barra B: flexión + axial": 1972.8992952506878,
+   "barra B: flexión + axial": 2219.920211237262,
    "carro: flexión + axial": 3175.3311859735963,
    "labios de las alas": 12908.820832383304,
    "acople: aplastamiento": 75450.0
@@ -797,7 +797,7 @@
    "barra B horquilla O: desgarro": 26341.329810341962,
    "barra B horquilla O: tracción neta": 18234.447425501272,
    "barra A: flexión + axial": 1045.7187655086798,
-   "barra B: flexión + axial": 1972.8992952506878,
+   "barra B: flexión + axial": 2219.920211237262,
    "carro: flexión + axial": 3175.3311859735963,
    "labios de las alas": 12908.820832383304,
    "acople: aplastamiento": 75450.0
@@ -811,7 +811,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1086.645657106463,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 2.387541560407839,
+  "rigidez_mm_por_kN": 2.141007599867988,
   "fuerzas": {
    "eslabon1_Q1": 2.6454672213939574,
    "eslabon2": 2.7768373352778792,
@@ -871,7 +871,7 @@
    "barra B horquilla O: desgarro": 14030.597760155291,
    "barra B horquilla O: tracción neta": 20403.703414334035,
    "barra A: flexión + axial": 1086.645657106463,
-   "barra B: flexión + axial": 2086.3083913602586,
+   "barra B: flexión + axial": 2362.794176701187,
    "carro: flexión + axial": 3488.2877902851556,
    "labios de las alas": 13208.701831088298,
    "acople: aplastamiento": 75450.0
@@ -931,7 +931,7 @@
    "barra B horquilla O: desgarro": 29411.727415788384,
    "barra B horquilla O: tracción neta": 20403.703414334035,
    "barra A: flexión + axial": 1086.645657106463,
-   "barra B: flexión + axial": 2086.3083913602586,
+   "barra B: flexión + axial": 2362.794176701187,
    "carro: flexión + axial": 3488.2877902851556,
    "labios de las alas": 13208.701831088298,
    "acople: aplastamiento": 75450.0
@@ -945,7 +945,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1123.3424957872696,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 2.1833431290811447,
+  "rigidez_mm_por_kN": 1.9528437700355086,
   "fuerzas": {
    "eslabon1_Q1": 2.391216106767823,
    "eslabon2": 2.5357924277016743,
@@ -1005,7 +1005,7 @@
    "barra B horquilla O: desgarro": 14541.306560602363,
    "barra B horquilla O: tracción neta": 22658.276550492752,
    "barra A: flexión + axial": 1123.3424957872696,
-   "barra B: flexión + axial": 2195.6831329545735,
+   "barra B: flexión + axial": 2501.4651217652154,
    "carro: flexión + axial": 3800.977034182428,
    "labios de las alas": 13469.88725764111,
    "acople: aplastamiento": 75450.0
@@ -1065,7 +1065,7 @@
    "barra B horquilla O: desgarro": 32584.103589882452,
    "barra B horquilla O: tracción neta": 22658.276550492752,
    "barra A: flexión + axial": 1123.3424957872696,
-   "barra B: flexión + axial": 2195.6831329545735,
+   "barra B: flexión + axial": 2501.4651217652154,
    "carro: flexión + axial": 3800.977034182428,
    "labios de las alas": 13469.88725764111,
    "acople: aplastamiento": 75450.0
@@ -1079,7 +1079,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1156.5289428739138,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 2.014790465493216,
+  "rigidez_mm_por_kN": 1.7991997573494254,
   "fuerzas": {
    "eslabon1_Q1": 2.1752565928666185,
    "eslabon2": 2.333253096415598,
@@ -1139,7 +1139,7 @@
    "barra B horquilla O: desgarro": 14993.431137728609,
    "barra B horquilla O: tracción neta": 25011.357604604345,
    "barra A: flexión + axial": 1156.5289428739138,
-   "barra B: flexión + axial": 2302.440089333281,
+   "barra B: flexión + axial": 2637.87276306579,
    "carro: flexión + axial": 4114.353038350425,
    "labios de las alas": 13700.07128315854,
    "acople: aplastamiento": 75450.0
@@ -1199,7 +1199,7 @@
    "barra B horquilla O: desgarro": 35756.48600371475,
    "barra B horquilla O: tracción neta": 25011.357604604345,
    "barra A: flexión + axial": 1156.5289428739138,
-   "barra B: flexión + axial": 2302.440089333281,
+   "barra B: flexión + axial": 2637.87276306579,
    "carro: flexión + axial": 4114.353038350425,
    "labios de las alas": 13700.07128315854,
    "acople: aplastamiento": 75450.0
@@ -1213,7 +1213,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1186.7766661318224,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.872824599409537,
+  "rigidez_mm_por_kN": 1.6712165965939203,
   "fuerzas": {
    "eslabon1_Q1": 1.9890169865910214,
    "eslabon2": 2.160675204668882,
@@ -1273,7 +1273,7 @@
    "barra B horquilla O: desgarro": 15395.320696028612,
    "barra B horquilla O: tracción neta": 27478.0123506492,
    "barra A: flexión + axial": 1186.7766661318224,
-   "barra B: flexión + axial": 2408.625498315627,
+   "barra B: flexión + axial": 2774.31323439857,
    "carro: flexión + axial": 4429.411886317395,
    "labios de las alas": 13905.074013780533,
    "acople: aplastamiento": 75450.0
@@ -1332,7 +1332,7 @@
    "barra B horquilla O: desgarro": 38899.96750512821,
    "barra B horquilla O: tracción neta": 27478.0123506492,
    "barra A: flexión + axial": 1186.7766661318224,
-   "barra B: flexión + axial": 2408.625498315627,
+   "barra B: flexión + axial": 2774.31323439857,
    "carro: flexión + axial": 4429.411886317395,
    "labios de las alas": 13905.074013780533,
    "acople: aplastamiento": 75450.0
@@ -1346,7 +1346,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1214.5465181689717,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.7499125292489117,
+  "rigidez_mm_por_kN": 1.561772089259061,
   "fuerzas": {
    "eslabon1_Q1": 1.826276425053332,
    "eslabon2": 2.0118683723914113,
@@ -1406,7 +1406,7 @@
    "barra B horquilla O: desgarro": 15753.994970049964,
    "barra B horquilla O: tracción neta": 30075.62828431727,
    "barra A: flexión + axial": 1214.5465181689717,
-   "barra B: flexión + axial": 2515.752732390188,
+   "barra B: flexión + axial": 2912.598379285819,
    "carro: flexión + axial": 4747.210378303579,
    "labios de las alas": 14089.385369781448,
    "acople: aplastamiento": 75450.0
@@ -1465,7 +1465,7 @@
    "barra B horquilla O: desgarro": 42626.26112792299,
    "barra B horquilla O: tracción neta": 30075.62828431727,
    "barra A: flexión + axial": 1214.5465181689717,
-   "barra B: flexión + axial": 2515.752732390188,
+   "barra B: flexión + axial": 2912.598379285819,
    "carro: flexión + axial": 4747.210378303579,
    "labios de las alas": 14089.385369781448,
    "acople: aplastamiento": 75450.0
@@ -1479,7 +1479,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1240.2152365952213,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.6425322162048503,
+  "rigidez_mm_por_kN": 1.4672952200465246,
   "fuerzas": {
    "eslabon1_Q1": 1.6824059885968068,
    "eslabon2": 1.8822376782940264,
@@ -1539,7 +1539,7 @@
    "barra B horquilla O: desgarro": 16075.42707644083,
    "barra B horquilla O: tracción neta": 32824.4873765218,
    "barra A: flexión + axial": 1240.2152365952213,
-   "barra B: flexión + axial": 2624.8094243697797,
+   "barra B: flexión + axial": 3054.152053686717,
    "carro: flexión + axial": 5068.888132873512,
    "labios de las alas": 14256.531070734987,
    "acople: aplastamiento": 75450.0
@@ -1598,7 +1598,7 @@
    "barra B horquilla O: desgarro": 46645.70131714507,
    "barra B horquilla O: tracción neta": 32824.4873765218,
    "barra A: flexión + axial": 1240.2152365952213,
-   "barra B: flexión + axial": 2624.8094243697797,
+   "barra B: flexión + axial": 3054.152053686717,
    "carro: flexión + axial": 5068.888132873512,
    "labios de las alas": 14256.531070734987,
    "acople: aplastamiento": 75450.0
@@ -1612,7 +1612,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1264.0950079858853,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.5460734077682476,
+  "rigidez_mm_por_kN": 1.383583927608114,
   "fuerzas": {
    "eslabon1_Q1": 1.5538850845740904,
    "eslabon2": 1.7683007728282865,
@@ -1672,7 +1672,7 @@
    "barra B horquilla O: desgarro": 16364.76342926612,
    "barra B horquilla O: tracción neta": 35748.51091306199,
    "barra A: flexión + axial": 1264.0950079858853,
-   "barra B: flexión + axial": 2738.278598138628,
+   "barra B: flexión + axial": 3201.3963364486244,
    "carro: flexión + axial": 5395.694347048778,
    "labios de las alas": 14409.325396921688,
    "acople: aplastamiento": 75450.0
@@ -1731,7 +1731,7 @@
    "barra B horquilla O: desgarro": 50618.2635704885,
    "barra B horquilla O: tracción neta": 35748.51091306199,
    "barra A: flexión + axial": 1264.0950079858853,
-   "barra B: flexión + axial": 2738.278598138628,
+   "barra B: flexión + axial": 3201.3963364486244,
    "carro: flexión + axial": 5395.694347048778,
    "labios de las alas": 14409.325396921688,
    "acople: aplastamiento": 75450.0
@@ -1745,7 +1745,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1286.4480897689054,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.4586097645113876,
+  "rigidez_mm_por_kN": 1.308720933299838,
   "fuerzas": {
    "eslabon1_Q1": 1.4379830185676692,
    "eslabon2": 1.667370363420279,
@@ -1805,7 +1805,7 @@
    "barra B horquilla O: desgarro": 16626.498216403877,
    "barra B horquilla O: tracción neta": 38876.24282118387,
    "barra A: flexión + axial": 1286.4480897689054,
-   "barra B: flexión + axial": 2857.09211008901,
+   "barra B: flexión + axial": 3356.3061197290826,
    "carro: flexión + axial": 5729.021008451324,
    "labios de las alas": 14550.049952359048,
    "acople: aplastamiento": 75450.0
@@ -1864,7 +1864,7 @@
    "barra B horquilla O: desgarro": 54834.31601081718,
    "barra B horquilla O: tracción neta": 38876.24282118387,
    "barra A: flexión + axial": 1286.4480897689054,
-   "barra B: flexión + axial": 2857.09211008901,
+   "barra B: flexión + axial": 3356.3061197290826,
    "carro: flexión + axial": 5729.021008451324,
    "labios de las alas": 14550.049952359048,
    "acople: aplastamiento": 75450.0
@@ -1878,7 +1878,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1307.4979686459264,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.378270448671792,
+  "rigidez_mm_por_kN": 1.2409444859598169,
   "fuerzas": {
    "eslabon1_Q1": 1.33254318510282,
    "eslabon2": 1.5773395662593568,
@@ -1938,7 +1938,7 @@
    "barra B horquilla O: desgarro": 16864.615248054033,
    "barra B horquilla O: tracción neta": 42242.16912868857,
    "barra A: flexión + axial": 1307.4979686459264,
-   "barra B: flexión + axial": 2983.609032720487,
+   "barra B: flexión + axial": 3521.857736990123,
    "carro: flexión + axial": 6070.445077782111,
    "labios de las alas": 14680.582984518289,
    "acople: aplastamiento": 75450.0
@@ -1997,7 +1997,7 @@
    "barra B horquilla O: desgarro": 59335.079375857655,
    "barra B horquilla O: tracción neta": 42242.16912868857,
    "barra A: flexión + axial": 1307.4979686459264,
-   "barra B: flexión + axial": 2983.609032720487,
+   "barra B: flexión + axial": 3521.857736990123,
    "carro: flexión + axial": 6070.445077782111,
    "labios de las alas": 14680.582984518289,
    "acople: aplastamiento": 75450.0
@@ -2011,7 +2011,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1327.4380809580014,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.303657788464158,
+  "rigidez_mm_por_kN": 1.1789495471729663,
   "fuerzas": {
    "eslabon1_Q1": 1.2358329010797462,
    "eslabon2": 1.4965332360206602,
@@ -2071,7 +2071,7 @@
    "barra B horquilla O: desgarro": 17082.70695059431,
    "barra B horquilla O: tracción neta": 45888.52029780292,
    "barra A: flexión + axial": 1327.4380809580014,
-   "barra B: flexión + axial": 3120.0284717514696,
+   "barra B: flexión + axial": 3701.0903380613863,
    "carro: flexión + axial": 6421.783265301663,
    "labios de las alas": 14802.49509819898,
    "acople: aplastamiento": 75450.0
@@ -2130,7 +2130,7 @@
    "barra B horquilla O: desgarro": 59471.97562329608,
    "barra B horquilla O: tracción neta": 45888.52029780292,
    "barra A: flexión + axial": 1327.4380809580014,
-   "barra B: flexión + axial": 3120.0284717514696,
+   "barra B: flexión + axial": 3701.0903380613863,
    "carro: flexión + axial": 6421.783265301663,
    "labios de las alas": 14802.49509819898,
    "acople: aplastamiento": 75450.0
@@ -2144,7 +2144,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1346.438832409944,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.2334686658018987,
+  "rigidez_mm_por_kN": 1.1215853642475455,
   "fuerzas": {
    "eslabon1_Q1": 1.1464362474472984,
    "eslabon2": 1.4236027664290103,
@@ -2204,7 +2204,7 @@
    "barra B horquilla O: desgarro": 17284.07843609145,
    "barra B horquilla O: tracción neta": 49867.7823512355,
    "barra A: flexión + axial": 1346.438832409944,
-   "barra B: flexión + axial": 3268.9299240471555,
+   "barra B: flexión + axial": 3897.464854693774,
    "carro: flexión + axial": 6785.164746137277,
    "labios de las alas": 14917.121898195026,
    "acople: aplastamiento": 75450.0
@@ -2263,7 +2263,7 @@
    "barra B horquilla O: desgarro": 59191.782677072544,
    "barra B horquilla O: tracción neta": 49867.7823512355,
    "barra A: flexión + axial": 1346.438832409944,
-   "barra B: flexión + axial": 3268.9299240471555,
+   "barra B: flexión + axial": 3897.464854693774,
    "carro: flexión + axial": 6785.164746137277,
    "labios de las alas": 14917.121898195026,
    "acople: aplastamiento": 75450.0
@@ -2277,7 +2277,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1364.6534763748748,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.1672581636917356,
+  "rigidez_mm_por_kN": 1.0683937099252172,
   "fuerzas": {
    "eslabon1_Q1": 1.063175590757724,
    "eslabon2": 1.357450221520599,
@@ -2337,7 +2337,7 @@
    "barra B horquilla O: desgarro": 17471.843709103337,
    "barra B horquilla O: tracción neta": 54246.274176127954,
    "barra A: flexión + axial": 1364.6534763748748,
-   "barra B: flexión + axial": 3433.895498258072,
+   "barra B: flexión + axial": 4116.391374139037,
    "carro: flexión + axial": 7163.129906507676,
    "labios de las alas": 15025.620830366484,
    "acople: aplastamiento": 75450.0
@@ -2396,7 +2396,7 @@
    "barra B horquilla O: desgarro": 58911.58973084899,
    "barra B horquilla O: tracción neta": 54246.274176127954,
    "barra A: flexión + axial": 1364.6534763748748,
-   "barra B: flexión + axial": 3433.895498258072,
+   "barra B: flexión + axial": 4116.391374139037,
    "carro: flexión + axial": 7163.129906507676,
    "labios de las alas": 15025.620830366484,
    "acople: aplastamiento": 75450.0
@@ -2410,7 +2410,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1382.2233120205851,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.1044502477397753,
+  "rigidez_mm_por_kN": 1.018867049295232,
   "fuerzas": {
    "eslabon1_Q1": 0.9850523824513101,
    "eslabon2": 1.297172680600501,
@@ -2470,7 +2470,7 @@
    "barra B horquilla O: desgarro": 17649.021160875574,
    "barra B horquilla O: tracción neta": 59109.374052023726,
    "barra A: flexión + axial": 1382.2233120205851,
-   "barra B: flexión + axial": 3619.443598528986,
+   "barra B: flexión + axial": 4363.954055516064,
    "carro: flexión + axial": 7558.767726797176,
    "labios de las alas": 15129.017506600572,
    "acople: aplastamiento": 75450.0
@@ -2529,7 +2529,7 @@
    "barra B horquilla O: desgarro": 58631.39678462545,
    "barra B horquilla O: tracción neta": 59109.374052023726,
    "barra A: flexión + axial": 1382.2233120205851,
-   "barra B: flexión + axial": 3619.443598528986,
+   "barra B: flexión + axial": 4363.954055516064,
    "carro: flexión + axial": 7558.767726797176,
    "labios de las alas": 15129.017506600572,
    "acople: aplastamiento": 75450.0
@@ -2543,7 +2543,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1399.2826350252205,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 1.0446421130078818,
+  "rigidez_mm_por_kN": 0.9726706715325596,
   "fuerzas": {
    "eslabon1_Q1": 0.9112007754066506,
    "eslabon2": 1.2420207809151056,
@@ -2603,7 +2603,7 @@
    "barra B horquilla O: desgarro": 17818.636772977985,
    "barra B horquilla O: tracción neta": 64569.38076958828,
    "barra A: flexión + axial": 1399.2826350252205,
-   "barra B: flexión + axial": 3832.117934506717,
+   "barra B: flexión + axial": 4649.070416412991,
    "carro: flexión + axial": 7975.912076724017,
    "labios de las alas": 15228.245695044356,
    "acople: aplastamiento": 75450.0
@@ -2662,7 +2662,7 @@
    "barra B horquilla O: desgarro": 58351.20383840191,
    "barra B horquilla O: tracción neta": 64569.38076958828,
    "barra A: flexión + axial": 1399.2826350252205,
-   "barra B: flexión + axial": 3832.117934506717,
+   "barra B: flexión + axial": 4649.070416412991,
    "carro: flexión + axial": 7975.912076724017,
    "labios de las alas": 15228.245695044356,
    "acople: aplastamiento": 75450.0
@@ -2676,7 +2676,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1415.9639229530164,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 0.9874528386834122,
+  "rigidez_mm_por_kN": 0.9295426123566407,
   "fuerzas": {
    "eslabon1_Q1": 0.8408492886571862,
    "eslabon2": 1.191367404858209,
@@ -2736,7 +2736,7 @@
    "barra B horquilla O: desgarro": 17983.846527083842,
    "barra B horquilla O: tracción neta": 70777.74416542976,
    "barra A: flexión + axial": 1415.9639229530164,
-   "barra B: flexión + axial": 4079.8123463307043,
+   "barra B: flexión + axial": 4984.193535422487,
    "carro: flexión + axial": 8403.525826782787,
    "labios de las alas": 15324.184770413596,
    "acople: aplastamiento": 75450.0
@@ -2795,7 +2795,7 @@
    "barra B horquilla O: desgarro": 58071.01089217837,
    "barra B horquilla O: tracción neta": 70777.74416542976,
    "barra A: flexión + axial": 1415.9639229530164,
-   "barra B: flexión + axial": 4079.8123463307043,
+   "barra B: flexión + axial": 4984.193535422487,
    "carro: flexión + axial": 8403.525826782787,
    "labios de las alas": 15324.184770413596,
    "acople: aplastamiento": 75450.0
@@ -2809,7 +2809,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1432.4039009189264,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 0.932853618898724,
+  "rigidez_mm_por_kN": 0.8895145376008213,
   "fuerzas": {
    "eslabon1_Q1": 0.7732865397684531,
    "eslabon2": 1.144683729119251,
@@ -2869,7 +2869,7 @@
    "barra B horquilla O: desgarro": 18148.095786186495,
    "barra B horquilla O: tracción neta": 77944.8696174492,
    "barra A: flexión + axial": 1432.4039009189264,
-   "barra B: flexión + axial": 4374.221172008903,
+   "barra B: flexión + axial": 5387.103685434105,
    "carro: flexión + axial": 8653.562633255915,
    "labios de las alas": 15417.698808894147,
    "acople: aplastamiento": 75450.0
@@ -2928,7 +2928,7 @@
    "barra B horquilla O: desgarro": 57790.81794595485,
    "barra B horquilla O: tracción neta": 77944.8696174492,
    "barra A: flexión + axial": 1432.4039009189264,
-   "barra B: flexión + axial": 4374.221172008903,
+   "barra B: flexión + axial": 5387.103685434105,
    "carro: flexión + axial": 8653.562633255915,
    "labios de las alas": 15417.698808894147,
    "acople: aplastamiento": 75450.0
@@ -2942,7 +2942,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1448.7515035420606,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 0.8810408402952906,
+  "rigidez_mm_por_kN": 0.8528177375225808,
   "fuerzas": {
    "eslabon1_Q1": 0.7078270050305148,
    "eslabon2": 1.101520692576293,
@@ -3002,7 +3002,7 @@
    "barra B horquilla O: desgarro": 18315.345978867295,
    "barra B horquilla O: tracción neta": 86373.76466734937,
    "barra A: flexión + axial": 1448.7515035420606,
-   "barra B: flexión + axial": 4734.781109726796,
+   "barra B: flexión + axial": 5886.77871896583,
    "carro: flexión + axial": 8911.24940982649,
    "labios de las alas": 15509.683061897695,
    "acople: aplastamiento": 75450.0
@@ -3061,7 +3061,7 @@
    "barra B horquilla O: desgarro": 57510.62499973129,
    "barra B horquilla O: tracción neta": 86373.76466734937,
    "barra A: flexión + axial": 1448.7515035420606,
-   "barra B: flexión + axial": 4734.781109726796,
+   "barra B: flexión + axial": 5886.77871896583,
    "carro: flexión + axial": 8911.24940982649,
    "labios de las alas": 15509.683061897695,
    "acople: aplastamiento": 75450.0
@@ -3075,7 +3075,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1465.1795512350361,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 0.8322294994369417,
+  "rigidez_mm_por_kN": 0.8197760017576092,
   "fuerzas": {
    "eslabon1_Q1": 0.643771555921584,
    "eslabon2": 1.0614945046193054,
@@ -3135,7 +3135,7 @@
    "barra B horquilla O: desgarro": 18490.425065932584,
    "barra B horquilla O: tracción neta": 96520.67192638914,
    "barra A: flexión + axial": 1465.1795512350361,
-   "barra B: flexión + axial": 5189.586213013095,
+   "barra B: flexión + axial": 6527.660860450089,
    "carro: flexión + axial": 9179.806897893208,
    "labios de las alas": 15601.127319531655,
    "acople: aplastamiento": 75450.0
@@ -3194,7 +3194,7 @@
    "barra B horquilla O: desgarro": 57230.432053507735,
    "barra B horquilla O: tracción neta": 96520.67192638914,
    "barra A: flexión + axial": 1465.1795512350361,
-   "barra B: flexión + axial": 5189.586213013095,
+   "barra B: flexión + axial": 6527.660860450089,
    "carro: flexión + axial": 9179.806897893208,
    "labios de las alas": 15601.127319531655,
    "acople: aplastamiento": 75450.0
@@ -3208,7 +3208,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1481.9037704333984,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 0.7868210863409252,
+  "rigidez_mm_por_kN": 0.7909616504631635,
   "fuerzas": {
    "eslabon1_Q1": 0.5803541356325523,
    "eslabon2": 1.024275202213299,
@@ -3268,7 +3268,7 @@
    "barra B horquilla O: desgarro": 18679.616538701914,
    "barra B horquilla O: tracción neta": 109112.74556617452,
    "barra A: flexión + axial": 1481.9037704333984,
-   "barra B: flexión + axial": 5789.983209789639,
+   "barra B: flexión + axial": 6657.433598708233,
    "carro: flexión + axial": 9463.658614745433,
    "labios de las alas": 15693.214509188318,
    "acople: aplastamiento": 75450.0
@@ -3327,7 +3327,7 @@
    "barra B horquilla O: desgarro": 56950.2391072842,
    "barra B horquilla O: tracción neta": 109112.74556617452,
    "barra A: flexión + axial": 1481.9037704333984,
-   "barra B: flexión + axial": 5789.983209789639,
+   "barra B: flexión + axial": 6657.433598708233,
    "carro: flexión + axial": 9463.658614745433,
    "labios de las alas": 15693.214509188318,
    "acople: aplastamiento": 75450.0
@@ -3341,7 +3341,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1499.2172527857094,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 0.7456662129679915,
+  "rigidez_mm_por_kN": 0.7674101192317918,
   "fuerzas": {
    "eslabon1_Q1": 0.5166574554028086,
    "eslabon2": 0.989577532761629,
@@ -3401,7 +3401,7 @@
    "barra B horquilla O: desgarro": 18891.744734774325,
    "barra B horquilla O: tracción neta": 125399.60233298458,
    "barra A: flexión + axial": 1499.2172527857094,
-   "barra B: flexión + axial": 6628.985283929142,
+   "barra B: flexión + axial": 6075.184787902745,
    "carro: flexión + axial": 9765.30324356428,
    "labios de las alas": 15787.494887397972,
    "acople: aplastamiento": 75450.0
@@ -3460,7 +3460,7 @@
    "barra B horquilla O: desgarro": 56670.04616106067,
    "barra B horquilla O: tracción neta": 125399.60233298458,
    "barra A: flexión + axial": 1499.2172527857094,
-   "barra B: flexión + axial": 6628.985283929142,
+   "barra B: flexión + axial": 6075.184787902745,
    "carro: flexión + axial": 9765.30324356428,
    "labios de las alas": 15787.494887397972,
    "acople: aplastamiento": 75450.0
@@ -3474,7 +3474,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1517.5609693876138,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 0.7101871933203638,
+  "rigidez_mm_por_kN": 0.7508544849962854,
   "fuerzas": {
    "eslabon1_Q1": 0.4514579748044413,
    "eslabon2": 0.9571536293290724,
@@ -3534,7 +3534,7 @@
    "barra B horquilla O: desgarro": 19140.41496316494,
    "barra B horquilla O: tracción neta": 147766.85384962455,
    "barra A: flexión + axial": 1517.5609693876138,
-   "barra B: flexión + axial": 7910.4055025199195,
+   "barra B: flexión + axial": 5521.105121476211,
    "carro: flexión + axial": 10083.97025641957,
    "labios de las alas": 15886.238094925098,
    "acople: aplastamiento": 75450.0
@@ -3593,7 +3593,7 @@
    "barra B horquilla O: desgarro": 56389.85321483714,
    "barra B horquilla O: tracción neta": 147766.85384962455,
    "barra A: flexión + axial": 1517.5609693876138,
-   "barra B: flexión + axial": 7910.4055025199195,
+   "barra B: flexión + axial": 5521.105121476211,
    "carro: flexión + axial": 10083.97025641957,
    "labios de las alas": 15886.238094925098,
    "acople: aplastamiento": 75450.0
@@ -3607,7 +3607,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1537.6932715028654,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 0.6830533682719967,
+  "rigidez_mm_por_kN": 0.744445433710297,
   "fuerzas": {
    "eslabon1_Q1": 0.3828910091089144,
    "eslabon2": 0.9267870801752313,
@@ -3667,7 +3667,7 @@
    "barra B horquilla O: desgarro": 19449.421360599128,
    "barra B horquilla O: tracción neta": 165658.18214734114,
    "barra A: flexión + axial": 1537.6932715028654,
-   "barra B: flexión + axial": 7493.313236639734,
+   "barra B: flexión + axial": 4985.423228165573,
    "carro: flexión + axial": 10444.89201162812,
    "labios de las alas": 15993.274710556903,
    "acople: aplastamiento": 75450.0
@@ -3726,7 +3726,7 @@
    "barra B horquilla O: desgarro": 56109.66026861359,
    "barra B horquilla O: tracción neta": 165658.18214734114,
    "barra A: flexión + axial": 1537.6932715028654,
-   "barra B: flexión + axial": 7493.313236639734,
+   "barra B: flexión + axial": 4985.423228165573,
    "carro: flexión + axial": 10444.89201162812,
    "labios de las alas": 15993.274710556903,
    "acople: aplastamiento": 75450.0
@@ -3740,7 +3740,7 @@
   "modo_traccion": "barra A: flexión + axial",
   "compresion": 1561.2132168475364,
   "modo_compresion": "barra A: flexión + axial",
-  "rigidez_mm_por_kN": 0.6699213709953342,
+  "rigidez_mm_por_kN": 0.7549349673782231,
   "fuerzas": {
    "eslabon1_Q1": 0.30755931127189456,
    "eslabon2": 0.8982880924699659,
@@ -3800,7 +3800,7 @@
    "barra B horquilla O: desgarro": 19869.48135520854,
    "barra B horquilla O: tracción neta": 188669.0710280744,
    "barra A: flexión + axial": 1561.2132168475364,
-   "barra B: flexión + axial": 6184.282530236579,
+   "barra B: flexión + axial": 4447.052676833279,
    "carro: flexión + axial": 10887.412072600604,
    "labios de las alas": 16116.588377882572,
    "acople: aplastamiento": 75450.0
@@ -3860,7 +3860,7 @@
    "barra B horquilla O: desgarro": 55829.46732239005,
    "barra B horquilla O: tracción neta": 188669.0710280744,
    "barra A: flexión + axial": 1561.2132168475364,
-   "barra B: flexión + axial": 6184.282530236579,
+   "barra B: flexión + axial": 4447.052676833279,
    "carro: flexión + axial": 10887.412072600604,
    "labios de las alas": 16116.588377882572,
    "acople: aplastamiento": 75450.0

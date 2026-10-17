@@ -98,6 +98,13 @@ def estatica(w, F=1.0):
     m_rest = cr(P1 - np.array([xg, ym]), G1) + cr(P2 - np.array([xg, ym]), G2) + cr(np.array([x_tr, y_tr]) - np.array([xg, ym]), np.array([0, Fp]))
     # momento de q respecto de (xg, ym): sum -(y-ym)*q dy  = -b L^3/12
     b = m_rest / (L ** 3 / 12)
+    # acoples de B: A es más corta, así que el reparto 50/50 no cierra momentos; se reparte por equilibrio
+    est = dict(q=(a, b, y_c0, y_c1, ym, xg))
+    otras = [(O, fs * v), (np.array([x_tr, y_tr]), np.array([0.0, -Fp]))] + [(r, -f) for r, f in cargas_ganchos(est)]
+    mo = sum(cr(r, f) for r, f in otras)
+    (ra, _), (rb, _) = acB
+    fb = (mo - ra[1] * F) / (rb[1] - ra[1])
+    acB = [(ra, np.array([F - fb, 0.0])), (rb, np.array([fb, 0.0]))]
     return dict(k=k, u=u, v=v, FQ1=FQ1, f2=f2, fs=fs, FP1=FP1, G1=G1, G2=G2, Fp=Fp,
                 q=(a, b, y_c0, y_c1, ym, xg), tr=(x_tr, y_tr), acA=acA, acB=acB)
 
