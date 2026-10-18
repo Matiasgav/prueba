@@ -1,0 +1,289 @@
+<title>Bisagra con arandelas D</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: visor 3D a la izquierda como mesa de trabajo, panel técnico a la derecha; se apilan en teléfono. */
+:root{
+  --bg:#eef0f1; --panel:#f8f9f9; --fg:#1d2326; --muted:#5d686d; --line:#d3d8da;
+  --a:#d4842a; --a-soft:#f0c58f; --b:#2d6c8c; --b-soft:#9cc6dc; --steel:#9aa3a8;
+  --accent:#2d6c8c; --view:#e3e7e9;
+  --f-disp:"Archivo",system-ui,sans-serif; --f-body:"Archivo",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14191b; --panel:#1b2225; --fg:#e4e9eb; --muted:#94a1a7; --line:#2c3639;
+  --a:#e39a45; --a-soft:#a8723a; --b:#5aa3c8; --b-soft:#3d6f88; --steel:#b7bfc3;
+  --accent:#6fb3d6; --view:#101517; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14191b; --panel:#1b2225; --fg:#e4e9eb; --muted:#94a1a7; --line:#2c3639;
+  --a:#e39a45; --a-soft:#a8723a; --b:#5aa3c8; --b-soft:#3d6f88; --steel:#b7bfc3;
+  --accent:#6fb3d6; --view:#101517; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.45}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;min-height:100%;box-sizing:border-box;
+  padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.stage{position:relative;min-width:0;background:var(--view);border:1px solid var(--line);border-radius:6px;overflow:hidden;min-height:420px}
+#c{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.views{position:absolute;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px}
+.views button,.seg button{font:500 12px var(--f-mono);background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:4px;padding:5px 9px;cursor:pointer}
+.views button:hover,.seg button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hint{position:absolute;right:10px;bottom:8px;font:400 11px var(--f-mono);color:var(--muted)}
+aside{min-width:0;display:flex;flex-direction:column;gap:18px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px;overflow:auto}
+h1{font:800 22px/1.1 var(--f-disp);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:4px 0 0}
+h2{font:600 11px var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px}
+section{display:flex;flex-direction:column}
+.ctl{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;margin-bottom:10px}
+.ctl label{font-weight:600}
+.ctl output{font:500 13px var(--f-mono);font-variant-numeric:tabular-nums}
+.ctl input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--accent)}
+.toggles{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.toggles label{display:flex;align-items:center;gap:8px;cursor:pointer}
+.sw{width:12px;height:12px;border-radius:2px;flex:none}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td{padding:4px 0;border-bottom:1px solid var(--line);vertical-align:top}
+td:last-child{text-align:right;font:500 12.5px var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:10px}
+.stack{display:flex;gap:2px;align-items:stretch;height:46px;margin:4px 0 6px}
+.stack div{display:flex;align-items:center;justify-content:center;font:500 10px var(--f-mono);border-radius:2px;color:#fff}
+.stack .ear{background:var(--a);flex:4}.stack .wa{background:var(--a-soft);flex:.6;color:var(--fg)}
+.stack .wb{background:var(--b-soft);flex:.6;color:var(--fg)}.stack .kn{background:var(--b);flex:5}
+.stack .hd{background:var(--steel);flex:2.4;color:#1d2326}
+.note{color:var(--muted);font-size:12.5px;margin:0}
+.calc{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.calc label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
+.calc input{font:500 13px var(--f-mono);background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:4px;padding:5px 6px;width:100%;box-sizing:border-box;min-width:0}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.res div{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:8px}
+.res b{display:block;font:600 18px var(--f-mono);font-variant-numeric:tabular-nums}
+.res span{font-size:11.5px;color:var(--muted)}
+.res .big{grid-column:1/-1;border-color:var(--accent)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+@media (max-width:900px){.app{grid-template-columns:1fr}.stage{height:62vh;min-height:360px}aside{overflow:visible}}
+</style>
+
+<div class="app">
+  <div class="stage">
+    <canvas id="c" aria-label="Modelo 3D de la bisagra"></canvas>
+    <div class="views">
+      <button id="v-gen" type="button">Vista general</button>
+      <button id="v-pila" type="button">Pila de arandelas</button>
+      <button id="v-plan" type="button">Planta</button>
+    </div>
+    <div class="hint">arrastrar: orbitar · rueda: zoom · botón derecho: desplazar</div>
+  </div>
+
+  <aside>
+    <header>
+      <h1>Bisagra con arandelas D</h1>
+      <p class="sub">Dos eslabones de 50 × 14 mm con palancas, para medir el torque de trabado con 4 arandelas de 0,4 mm entre oreja y nudillo.</p>
+    </header>
+
+    <section>
+      <h2>Mecanismo</h2>
+      <div class="ctl"><label for="ang">Giro del eslabón B</label><output id="ang-o">0°</output>
+        <input id="ang" type="range" min="-97" max="97" step="1" value="0"></div>
+      <div class="ctl"><label for="exp">Despiece</label><output id="exp-o">0 %</output>
+        <input id="exp" type="range" min="0" max="100" step="1" value="0"></div>
+      <div class="toggles">
+        <label><input id="t-A" type="checkbox" checked><span class="sw" style="background:var(--a)"></span>Eslabón A</label>
+        <label><input id="t-B" type="checkbox" checked><span class="sw" style="background:var(--b)"></span>Eslabón B</label>
+        <label><input id="t-W" type="checkbox" checked><span class="sw" style="background:linear-gradient(90deg,var(--a-soft) 50%,var(--b-soft) 50%)"></span>Arandelas</label>
+        <label><input id="t-S" type="checkbox" checked><span class="sw" style="background:var(--steel)"></span>Tornillos</label>
+        <label><input id="t-cut" type="checkbox"><span class="sw" style="border:1px dashed var(--muted)"></span>Corte al medio</label>
+      </div>
+    </section>
+
+    <section>
+      <h2>Pila del lado que se aprieta</h2>
+      <div class="stack" aria-label="Orden axial de la pila">
+        <div class="hd">cabeza</div><div class="ear">oreja A</div>
+        <div class="wb">B</div><div class="wa">A</div><div class="wb">B</div><div class="wa">A</div>
+        <div class="kn">nudillo B</div>
+      </div>
+      <p class="note">Cada arandela apoya su lado plano contra la placa de un eslabón y gira con él. Alternadas B-A-B-A, dan 5 caras deslizantes entre oreja y nudillo en lugar de 1, más la cara bajo la cabeza. Colores claros: la arandela sigue a ese eslabón.</p>
+    </section>
+
+    <section>
+      <h2>Torque estimado</h2>
+      <div class="calc">
+        <label for="tq">Apriete (N·m)<input id="tq" type="number" step="0.05" min="0" value="0.5"></label>
+        <label for="mu">μ PLA/PLA<input id="mu" type="number" step="0.05" min="0" value="0.3"></label>
+        <label for="kk">K tornillo<input id="kk" type="number" step="0.01" min="0.05" value="0.2"></label>
+      </div>
+      <div class="res">
+        <div class="big"><b id="r-tj">–</b><span>torque que traba la articulación, con 4 arandelas</span></div>
+        <div><b id="r-t0">–</b><span>sin arandelas</span></div>
+        <div><b id="r-f">–</b><span>precarga axial F = T / (K·d)</span></div>
+        <div><b id="r-60">–</b><span>peso en el agujero a 60 mm</span></div>
+        <div><b id="r-80">–</b><span>peso en el agujero a 80 mm</span></div>
+      </div>
+      <p class="note" style="margin-top:8px">Radio efectivo de cada cara: 5,1 mm (anillo Ø5,2–Ø14); bajo la cabeza 3,3 mm (Ø5,2–Ø8). Es una estimación de orden de magnitud: el μ real del PLA varía mucho.</p>
+    </section>
+
+    <section>
+      <h2>Medidas</h2>
+      <table id="dims"></table>
+    </section>
+
+    <section>
+      <h2>Para confirmar antes de los STL</h2>
+      <ul class="note">
+        <li>Tornillo tomado como Accu SSHE-M4-5-10-A2: hombro Ø5 × 10, rosca M4 × 5, cabeza Ø8 × 4. Confirmá el largo de rosca del tuyo.</li>
+        <li>La rosca va autorroscada en un piloto de Ø3,4 en el nudillo. Si preferís inserto térmico M4, lo cambio.</li>
+        <li>El hombro nunca toca fondo (alojamiento de 6,5 mm), así el apriete comprime la pila y no el hombro.</li>
+        <li>Juego axial de 0,2 mm sobre la pila de 1,6 mm. El giro libre queda en ±97° antes de que choquen las placas.</li>
+      </ul>
+    </section>
+  </aside>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const D=/*__DATOS__*/null;
+const P=D.p;
+const $=id=>document.getElementById(id);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+function geo(m){
+  const dec=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0)).buffer;
+  let g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(dec(m.v)),3));
+  g.setIndex(new THREE.BufferAttribute(new Uint32Array(dec(m.i)),1));
+  g=g.toNonIndexed(); g.computeVertexNormals(); return g;
+}
+
+const canvas=$('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.localClippingEnabled=true;
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(35,1,1,3000);
+const controls=new THREE.OrbitControls(camera,canvas);
+controls.enableDamping=true;
+
+scene.add(new THREE.HemisphereLight(0xffffff,0x667077,0.6));
+const key=new THREE.DirectionalLight(0xffffff,0.55);key.position.set(120,200,160);scene.add(key);
+const fill=new THREE.DirectionalLight(0xffffff,0.3);fill.position.set(-150,80,-120);scene.add(fill);
+
+const cut=new THREE.Plane(new THREE.Vector3(0,-1,0),0);
+const mats={};
+function mat(name,metal){
+  const m=new THREE.MeshStandardMaterial({roughness:metal?0.3:0.75,metalness:metal?0.35:0.0,side:THREE.DoubleSide});
+  mats[name]=m; return m;
+}
+function paint(){
+  mats.A.color.set(css('--a'));mats.B.color.set(css('--b'));
+  mats.WA.color.set(css('--a-soft'));mats.WB.color.set(css('--b-soft'));
+  mats.S.color.set(css('--steel'));
+  scene.background=new THREE.Color(css('--view'));
+  grid.material.color.set(css('--line'));
+}
+
+// Ensamble en coordenadas del modelo (Z arriba); el grupo raíz lo pasa a Y arriba.
+const root=new THREE.Group();root.rotation.x=-Math.PI/2;scene.add(root);
+const gA=geo(D.A),gB=geo(D.B),gW=geo(D.W),gS=geo(D.S);
+const meshA=new THREE.Mesh(gA,mat('A'));root.add(meshA);
+const pivB=new THREE.Group();root.add(pivB);
+const slideB=new THREE.Group();pivB.add(slideB);
+const meshB=new THREE.Mesh(gB,mat('B'));slideB.add(meshB);
+mat('WA');mat('WB');mat('S',true);
+
+const washers=[],screws=[];
+const basisB=new THREE.Matrix4().makeBasis(new THREE.Vector3(0,1,0),new THREE.Vector3(0,0,1),new THREE.Vector3(1,0,0));
+const basisA=new THREE.Matrix4().makeBasis(new THREE.Vector3(0,-1,0),new THREE.Vector3(0,0,-1),new THREE.Vector3(1,0,0));
+const e=P.eArandela;
+[[P.oreja,1],[P.L-P.oreja,-1]].forEach(([x0,dir])=>{
+  for(let k=0;k<P.nArandelas;k++){
+    const toB=k%2===0;
+    const m=new THREE.Mesh(gW,toB?mats.WB:mats.WA);
+    m.matrixAutoUpdate=false;
+    // la arandela se extruye en +Z local = +X del modelo; del lado derecho se apila hacia -X
+    const x=dir>0?x0+k*e:x0-(k+1)*e;
+    m.userData={base:new THREE.Matrix4().copy(toB?basisB:basisA).setPosition(x,0,0),k};
+    (toB?slideB:root).add(m);washers.push(m);
+  }
+  const s=new THREE.Mesh(gS,mats.S);
+  if(dir<0){s.rotation.z=Math.PI;s.position.x=P.L;}
+  s.userData={x:s.position.x,dir};
+  slideB.add(s);screws.push(s);
+});
+
+const grid=new THREE.GridHelper(400,40);grid.position.y=-7.5;scene.add(grid);
+grid.material.transparent=true;grid.material.opacity=0.6;
+
+function update(){
+  const ang=+$('ang').value, ex=+$('exp').value/100;
+  $('ang-o').textContent=ang+'°';$('exp-o').textContent=Math.round(ex*100)+' %';
+  pivB.rotation.x=THREE.MathUtils.degToRad(ang);
+  screws.forEach(s=>{s.position.x=s.userData.x-s.userData.dir*28*ex;});
+  washers.forEach(m=>{
+    const lift=(14+m.userData.k*7)*ex;
+    // en el marco de A se levanta en +Z; las de B se levantan en el +Z de B
+    m.matrix.copy(m.userData.base).premultiply(new THREE.Matrix4().makeTranslation(0,0,lift));
+  });
+  meshA.visible=$('t-A').checked;meshB.visible=$('t-B').checked;
+  washers.forEach(m=>m.visible=$('t-W').checked);
+  screws.forEach(s=>s.visible=$('t-S').checked);
+  const planes=$('t-cut').checked?[cut]:[];
+  Object.values(mats).forEach(m=>{m.clippingPlanes=planes;m.needsUpdate=true;});
+}
+['ang','exp','t-A','t-B','t-W','t-S','t-cut'].forEach(id=>$(id).addEventListener('input',update));
+
+const views={
+  gen:[[210,170,240],[25,0,0]],
+  pila:[[-55,42,40],[5,0,0]],
+  plan:[[25.01,330,0],[25,0,0]],
+};
+function view(v){camera.position.set(...views[v][0]);controls.target.set(...views[v][1]);controls.update();}
+$('v-gen').onclick=()=>view('gen');
+$('v-pila').onclick=()=>{$('exp').value=0;view('pila');update();};
+$('v-plan').onclick=()=>view('plan');
+
+function resize(){
+  const r=canvas.parentElement.getBoundingClientRect();
+  renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(canvas.parentElement);
+paint();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',paint);
+new MutationObserver(paint).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+view('gen');update();resize();
+(function loop(){controls.update();renderer.render(scene,camera);requestAnimationFrame(loop);})();
+
+// Tabla de medidas
+const f=n=>String(+n.toFixed(2)).replace('.',',');
+const rows=[
+  ['Largo sobre el eje',f(P.L)+' mm'],
+  ['Espesor / Ø nudillo',f(P.T)+' mm'],
+  ['Placa (cara a borde)',f(P.cara)+' → '+f(P.cara+P.ancho)+' mm del eje'],
+  ['Palanca centrada',f(P.palancaAncho)+' × '+f(P.palancaLargo)+' mm'],
+  ['Agujeros de palanca','Ø5 a '+P.agujeros.map(f).join(' y ')+' mm'],
+  ['Orejas del eslabón A','2 × '+f(P.oreja)+' mm'],
+  ['Nudillo del eslabón B',f(P.nudillo[1]-P.nudillo[0])+' mm'],
+  ['Hueco oreja–nudillo',f(P.zona)+' mm'],
+  ['Arandelas D por lado',P.nArandelas+' × '+f(P.eArandela)+' mm'],
+  ['Arandela D','14 alto × '+f(7+P.largoD)+' mm, Ø5,2'],
+  ['Alojamiento del hombro','Ø'+f(P.alojHombro[0])+' × '+f(P.alojHombro[1])+' mm'],
+  ['Piloto para M4','Ø'+f(P.piloto[0])+' × '+f(P.piloto[1])+' mm'],
+  ['Giro libre','±'+P.giro['+']+'°'],
+  ['Volumen A / B',f(P.vol.A/1000)+' / '+f(P.vol.B/1000)+' cm³'],
+];
+$('dims').innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+
+// Estimador de torque
+function calc(){
+  const T=+$('tq').value,mu=+$('mu').value,K=+$('kk').value;
+  const F=K>0?T/(K*0.004):0;
+  const reff=2/3*(7**3-2.6**3)/(7**2-2.6**2)/1000, rh=2/3*(4**3-2.6**3)/(4**2-2.6**2)/1000;
+  const tj=mu*F*(5*reff+rh), t0=mu*F*(reff+rh);
+  const kgf=x=>(x/9.81).toFixed(1).replace('.',',')+' kgf';
+  $('r-tj').textContent=tj.toFixed(2).replace('.',',')+' N·m';
+  $('r-t0').textContent=t0.toFixed(2).replace('.',',')+' N·m';
+  $('r-f').textContent=Math.round(F)+' N';
+  $('r-60').textContent=kgf(tj/0.06);$('r-80').textContent=kgf(tj/0.08);
+}
+['tq','mu','kk'].forEach(id=>$(id).addEventListener('input',calc));calc();
+</script>
