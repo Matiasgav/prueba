@@ -141,13 +141,14 @@ def agujero(tope, tipo):
 
 def eslabon_b(inserto_en="pila"):
     """Nudillo central entre las orejas. Un lado lleva agujero autorroscante y el
-    otro inserto térmico; `inserto_en` elige el lado ("pila" o "libre").
+    otro inserto térmico; `inserto_en` elige el lado ("pila" o "libre"),
+    o "ninguno" para dos agujeros autorroscantes.
     Los agujeros se ubican solo con rotaciones para no invertir la rosca."""
     x0, x1 = X_NUDILLO
     s = placa(1) + palanca(1)
     s += cil_x(R, x0, x1) + caja(x0, x1, 0, CARA + 0.5, -R, R)
     tipo_pila = "inserto" if inserto_en == "pila" else "autorroscante"
-    tipo_libre = "autorroscante" if inserto_en == "pila" else "inserto"
+    tipo_libre = "inserto" if inserto_en == "libre" else "autorroscante"
     s -= agujero(TOPE_PILA, tipo_pila).rotate([0, 90, 0]).translate([x0, 0, 0])
     s -= agujero(TOPE_LIBRE, tipo_libre).rotate([0, -90, 0]).translate([x1, 0, 0])
     return s
@@ -226,9 +227,10 @@ def lote(pieza, n, cols, paso=18.0):
 def main():
     a = eslabon_a()
     b_pila, b_libre = eslabon_b("pila"), eslabon_b("libre")
+    b_sin = eslabon_b("ninguno")
     wd, wr = arandela_d(), arandela_redonda()
 
-    for b in (b_pila, b_libre):
+    for b in (b_pila, b_libre, b_sin):
         assert (a ^ b).volume() < 1e-6, "A y B se interfieren"
     giro = rango_giro(a, b_pila)
 
@@ -242,6 +244,7 @@ def main():
         "eslabon_A_horquilla.stl": a.translate([0, 0, R]),
         "eslabon_B_inserto_en_pila.stl": b_pila.translate([0, 0, R]),
         "eslabon_B_inserto_en_libre.stl": b_libre.translate([0, 0, R]),
+        "eslabon_B_sin_inserto.stl": b_sin.translate([0, 0, R]),
         "arandelas_D_x8.stl": lote(wd, 8, 4),
         "arandelas_redondas_x6.stl": lote(wr, 6, 3, 17.0),
     }
@@ -251,6 +254,7 @@ def main():
     x0, x1 = X_NUDILLO
     datos = {
         "A": malla_json(a), "Bp": malla_json(b_pila), "Bl": malla_json(b_libre),
+        "Bs": malla_json(b_sin),
         "WD": malla_json(wd), "WR": malla_json(wr),
         "S": malla_json(tornillo()), "I": malla_json(inserto()),
         "p": {
