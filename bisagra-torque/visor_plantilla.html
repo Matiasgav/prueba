@@ -96,19 +96,14 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
         <label><input id="t-A" type="checkbox" checked><span class="sw" style="background:var(--a)"></span>Eslabón A</label>
         <label><input id="t-B" type="checkbox" checked><span class="sw" style="background:var(--b)"></span>Eslabón B</label>
         <label><input id="t-W" type="checkbox" checked><span class="sw" style="background:linear-gradient(90deg,var(--a-soft) 33%,var(--b-soft) 33% 66%,var(--free) 66%)"></span>Arandelas</label>
-        <label><input id="t-S" type="checkbox" checked><span class="sw" style="background:var(--steel)"></span>Tornillos y tuercas</label>
+        <label><input id="t-S" type="checkbox" checked><span class="sw" style="background:var(--steel)"></span>Tornillos y tuerca</label>
         <label><input id="t-cut" type="checkbox"><span class="sw" style="border:1px dashed var(--muted)"></span>Corte al medio</label>
       </div>
     </section>
 
     <section>
       <h2>Roscas del eslabón B</h2>
-      <div class="radio" role="radiogroup" aria-label="Tuercas">
-        <label><input type="radio" name="ins" id="ins-ambos" value="ambos" checked>Tuercas en los dos lados</label>
-        <label><input type="radio" name="ins" id="ins-pila" value="pila">Tuerca solo en la pila</label>
-        <label><input type="radio" name="ins" id="ins-sin" value="sin">Sin tuercas</label>
-      </div>
-      <p class="note" id="ins-note" style="margin-top:6px"></p>
+      <p class="note">Lado de la pila: tuerca M4 cautiva, metida de costado por una ranura desde arriba; toma la precarga del ensayo. Oreja libre: el tornillo se enrosca directo en el plástico, en un agujero de Ø3,5, y el hombro hace tope a 5,6 mm de la cara.</p>
     </section>
 
     <section>
@@ -149,7 +144,7 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
       <h2>Notas de impresión y armado</h2>
       <ul class="note">
         <li>Tornillo tomado como Accu SSHE-M4-5-10-A2: hombro Ø5 × 10, rosca M4 × 5, cabeza Ø8 × 4.</li>
-        <li>Lado de la pila: el hombro llega a 1,2 mm de la cara del nudillo y la tuerca empieza a 2,8, así los 5 mm de rosca la atraviesan entera y queda una pared de 2,8 mm que toma la precarga. Lado libre: el hombro hace tope sobre la tuerca, a 5,6 mm de la cara. Sin tuercas, el agujero autorroscante empieza a 1,8 y 5,6 mm.</li>
+        <li>Lado de la pila: el hombro llega a 1,2 mm de la cara del nudillo y la tuerca empieza a 2,8, así los 5 mm de rosca la atraviesan entera y queda una pared de 2,8 mm que toma la precarga. Oreja libre: el agujero autorroscante empieza a 5,6 mm, donde el hombro hace tope.</li>
         <li>Agujero autorroscante: liso, Ø3,5 × 8 mm con chaflán de entrada. El tornillo M4 se hace la rosca solo al entrar; conviene pasarlo una vez antes de armar. Si queda duro o flojo, se ajusta el diámetro y se regenera.</li>
         <li>Tuerca hexagonal M4 común (DIN 934, 7 mm entre caras, 3,2 de alto). Entra de costado por una ranura abierta hacia arriba. Ajustada entre caras (+0,1 mm), con 0,4 mm de holgura a lo largo del eje, y el hexágono baja 0,4 mm más allá del centro por si el fondo sale corto al imprimir. El tornillo la sostiene una vez armado. Metela antes de pasar el tornillo.</li>
         <li>Los eslabones se imprimen acostados, sin soportes. Arandelas: imprimir con capa de 0,2 (la de 0,2 es una sola capa; conviene primera capa bien calibrada). La D tiene esquinas R1,5 y una hendidura central de 7 × 0,5 mm.</li>
@@ -203,12 +198,11 @@ function paint(){
 // Ensamble en coordenadas del modelo (Z arriba); el grupo raíz lo pasa a Y arriba.
 const root=new THREE.Group();root.rotation.x=-Math.PI/2;scene.add(root);
 mat('A');mat('B');mat('WA');mat('WB');mat('WR');mat('S',true);mat('N',true);
-const G={A:geo(D.A),ambos:geo(D.Bambos),pila:geo(D.Bpila),sin:geo(D.Bsin),WD:geo(D.WD),WR:geo(D.WR),S:geo(D.S),N:geo(D.N)};
+const G={A:geo(D.A),B:geo(D.B),WD:geo(D.WD),WR:geo(D.WR),S:geo(D.S),N:geo(D.N)};
 const meshA=new THREE.Mesh(G.A,mats.A);root.add(meshA);
 const pivB=new THREE.Group();root.add(pivB);
-const meshB=new THREE.Mesh(G.pila,mats.B);pivB.add(meshB);
-const nuts={pila:new THREE.Mesh(G.N,mats.N),libre:new THREE.Mesh(G.N,mats.N)};
-Object.values(nuts).forEach(n=>pivB.add(n));
+const meshB=new THREE.Mesh(G.B,mats.B);pivB.add(meshB);
+const nut=new THREE.Mesh(G.N,mats.N);pivB.add(nut);
 
 // Arandelas: se extruyen en +Z local, que pasa a +X del modelo. La parte recta
 // de la D apunta a +Y (trabada con B) o a -Y (trabada con A).
@@ -248,7 +242,6 @@ const screws=[[0,1],[P.L+P.juegoFlojo,-1]].map(([x,dir])=>{
 const grid=new THREE.GridHelper(400,40);grid.position.y=-7.5;scene.add(grid);
 grid.material.transparent=true;grid.material.opacity=0.6;
 
-function lado(){return $('ins-pila').checked?'pila':$('ins-sin').checked?'sin':'ambos';}
 
 // Caras que deslizan: cambios de pieza trabada a lo largo de la pila,
 // desde la oreja (A) hasta el nudillo (B). Las redondas no cuentan.
@@ -281,12 +274,11 @@ $('esp').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b
 $('nd').addEventListener('input',()=>{nD=+$('nd').value;renderStack();});
 
 function update(){
-  const ang=+$('ang').value, ex=+$('exp').value/100, v=lado();
+  const ang=+$('ang').value, ex=+$('exp').value/100;
   $('ang-o').textContent=ang+'°';$('exp-o').textContent=Math.round(ex*100)+' %';
   pivB.rotation.x=THREE.MathUtils.degToRad(ang);
-  meshB.geometry=G[v];
-  // las tuercas salen por la ranura de arriba (+Z) en el despiece
-  for(const k in nuts){nuts[k].position.x=P.xTuerca[k];nuts[k].position.z=22*ex;}
+  // la tuerca sale por la ranura de arriba (+Z) en el despiece
+  nut.position.x=P.xTuerca;nut.position.z=22*ex;
   screws.forEach(s=>{s.position.x=s.userData.x-s.userData.dir*28*ex;});
   washers.forEach(m=>{
     const lift=(14+m.userData.k*Math.min(7,120/washers.length))*ex;
@@ -294,15 +286,11 @@ function update(){
   });
   meshA.visible=$('t-A').checked;meshB.visible=$('t-B').checked;
   washers.forEach(m=>m.visible=$('t-W').checked);
-  screws.forEach(s=>s.visible=$('t-S').checked);nuts.pila.visible=$('t-S').checked&&v!=='sin';nuts.libre.visible=$('t-S').checked&&v==='ambos';
+  screws.forEach(s=>s.visible=$('t-S').checked);nut.visible=$('t-S').checked;
   const planes=$('t-cut').checked?[cut]:[];
   Object.values(mats).forEach(m=>{m.clippingPlanes=planes;m.needsUpdate=true;});
-  $('ins-note').textContent={
-    ambos:'Tuerca M4 cautiva en cada lado, metida por una ranura desde arriba. En la pila la tuerca toma la precarga; en la oreja libre el hombro hace tope sobre la tuerca, así el apriete queda entre acero y acero. Recomendado.',
-    pila:'Tuerca M4 en el lado de la pila; la oreja libre usa el agujero autorroscante.',
-    sin:'Los dos lados con agujero autorroscante Ø3,5. No hace falta ninguna tuerca.'}[v];
 }
-['ang','exp','t-A','t-B','t-W','t-S','t-cut','ins-ambos','ins-pila','ins-sin'].forEach(id=>$(id).addEventListener('input',update));
+['ang','exp','t-A','t-B','t-W','t-S','t-cut'].forEach(id=>$(id).addEventListener('input',update));
 
 const views={
   gen:[[150,115,170],[25,0,0]],

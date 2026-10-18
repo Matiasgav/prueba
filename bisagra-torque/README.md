@@ -10,7 +10,7 @@ pila de arandelas D entre una oreja y el nudillo. Todo sale de
 | Archivo | Cantidad | Notas |
 |---|---|---|
 | `eslabon_A_horquilla.stl` | 1 | Acostado, sin soportes |
-| `eslabon_B_tuercas.stl` | 1 | Recomendado: tuerca M4 cautiva en cada lado. Alternativas: `..._tuerca_en_pila`, `..._sin_tuerca` |
+| `eslabon_B_nudillo.stl` | 1 | Tuerca M4 cautiva del lado de la pila; autorroscante del lado libre |
 | `arandelas_D_0_2mm_x24.stl` | 24 | Una sola capa de 0,2 |
 | `arandelas_D_0_4mm_x12.stl` | 12 | |
 | `arandelas_D_0_8mm_x8.stl` | 8 | |
@@ -32,10 +32,12 @@ pila de arandelas D entre una oreja y el nudillo. Todo sale de
 
 Tornillos: Accu SSHE-M4-5-10-A2 (hombro Ø5 × 10, rosca M4 × 5).
 
-Tuercas: 2 tuercas hexagonales M4 comunes (DIN 934, 7 mm entre caras, 3,2 de
-alto). Se meten de costado por una ranura abierta hacia arriba antes de pasar
-el tornillo. El alojamiento es ajustado entre caras (+0,1 mm), tiene 0,4 mm de
-holgura a lo largo del eje y el hexágono baja 0,4 mm más allá del centro, por si
-el fondo sale corto al imprimir. En la pila la tuerca empieza a 2,8 mm de la cara del nudillo; en
+Tuerca: 1 tuerca hexagonal M4 común (DIN 934, 7 mm entre caras, 3,2 de alto),
+del lado de la pila. Se mete de costado por una ranura abierta hacia arriba
+antes de pasar el tornillo; empieza a 2,8 mm de la cara del nudillo. El
+alojamiento es ajustado entre caras (+0,1 mm), tiene 0,4 mm de holgura a lo
+largo del eje y el hexágono baja 0,4 mm más allá del centro, por si el fondo
+sale corto al imprimir. En la oreja libre el tornillo se enrosca directo en el
+plástico (agujero de Ø3,5) y el hombro hace tope a 5,6 mm de la cara. En la pila la tuerca empieza a 2,8 mm de la cara del nudillo; en
 la oreja libre el hombro hace tope sobre la tuerca. La versión sin tuercas usa
 agujeros autorroscantes de Ø3,5.

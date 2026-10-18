@@ -2,7 +2,8 @@
 
 Genera las piezas con manifold3d, exporta los .stl a stl/ y arma visor.html
 con las mallas embebidas. El eslabón B sale en dos variantes según qué lado
-lleva tuerca M4 cautiva y cuál agujero autorroscante.
+lleva tuerca M4 cautiva y cuál agujero autorroscante (por defecto: tuerca en la
+pila, autorroscante en la oreja libre).
 
 Ejes del modelo (mm):
   X  eje de la bisagra (largo 50)
@@ -277,12 +278,10 @@ def lote(pieza, n, cols, paso=18.0):
 
 def main():
     a = eslabon_a()
-    b_ambos, b_pila = eslabon_b("ambos"), eslabon_b("pila")
-    b_sin = eslabon_b("ninguno")
+    b = eslabon_b("pila")
 
-    for b in (b_ambos, b_pila, b_sin):
-        assert (a ^ b).volume() < 1e-6, "A y B se interfieren"
-    giro = rango_giro(a, b_ambos)
+    assert (a ^ b).volume() < 1e-6, "A y B se interfieren"
+    giro = rango_giro(a, b)
 
     out = AQUI / "stl"
     out.mkdir(exist_ok=True)
@@ -292,9 +291,7 @@ def main():
     # llegan al plano de la cama porque su diámetro es el espesor.
     piezas = {
         "eslabon_A_horquilla.stl": a.translate([0, 0, R]),
-        "eslabon_B_tuercas.stl": b_ambos.translate([0, 0, R]),
-        "eslabon_B_tuerca_en_pila.stl": b_pila.translate([0, 0, R]),
-        "eslabon_B_sin_tuerca.stl": b_sin.translate([0, 0, R]),
+        "eslabon_B_nudillo.stl": b.translate([0, 0, R]),
     }
     # Cantidades: con 0.2 entran hasta 24 D; con 0.4, 12; con 0.8, 6.
     # Las redondas alcanzan para rellenar cualquier combinación.
@@ -312,8 +309,7 @@ def main():
 
     x0, x1 = X_NUDILLO
     datos = {
-        "A": malla_json(a), "Bambos": malla_json(b_ambos), "Bpila": malla_json(b_pila),
-        "Bsin": malla_json(b_sin),
+        "A": malla_json(a), "B": malla_json(b),
         # arandelas de 1 mm: el visor las escala al espesor de cada una
         "WD": malla_json(arandela_d(1.0)), "WR": malla_json(arandela_redonda(1.0)),
         "S": malla_json(tornillo()), "N": malla_json(tuerca()),
@@ -331,10 +327,9 @@ def main():
             "autorroscante": [D_AUTORROSCANTE, L_AUTORROSCANTE],
             "tuerca": [AF_TUERCA, E_TUERCA], "cajera": [AF_CAJERA, E_CAJERA, SOBRE_RECORRIDO],
             "tuercaPila": TUERCA_PILA,
-            "xTuerca": {"pila": x0 + TUERCA_PILA,
-                        "libre": x1 - TOPE_LIBRE - E_TUERCA},
+            "xTuerca": x0 + TUERCA_PILA,
             "giro": giro,
-            "vol": {"A": a.volume(), "B": b_ambos.volume()},
+            "vol": {"A": a.volume(), "B": b.volume()},
         },
     }
     plantilla = (AQUI / "visor_plantilla.html").read_text(encoding="utf-8")
