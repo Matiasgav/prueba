@@ -47,13 +47,11 @@ td{padding:4px 0;border-bottom:1px solid var(--line);vertical-align:top}
 td:last-child{text-align:right;font:500 12.5px var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:10px}
 .stack{display:flex;gap:2px;align-items:stretch;height:46px;margin:4px 0 6px}
 .stack div{display:flex;align-items:center;justify-content:center;font:500 10px var(--f-mono);border-radius:2px;color:#fff}
-.stack .ear{background:var(--a);flex:4}.stack .wa{background:var(--a-soft);flex:.6;color:var(--fg)}
-.stack .wb{background:var(--b-soft);flex:.6;color:var(--fg)}.stack .kn{background:var(--b);flex:5}
+.stack .ear{background:var(--a);flex:4}.stack .wa{background:var(--a-soft);color:var(--fg)}
+.stack .wb{background:var(--b-soft);color:var(--fg)}.stack .kn{background:var(--b);flex:5}
 .stack .hd{background:var(--steel);flex:2.4;color:#1d2326}
-.stack .wr{background:var(--free);flex:.6;color:var(--fg)}
-.slots{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
-.slots button{font:500 11.5px var(--f-mono);border:1px solid var(--line);border-radius:4px;padding:7px 0;cursor:pointer;color:var(--fg)}
-.slots button.A{background:var(--a-soft)}.slots button.B{background:var(--b-soft)}.slots button.R{background:var(--free)}
+.stack .wr{background:var(--free);color:var(--fg)}
+.stack .wa,.stack .wb,.stack .wr{min-width:0;overflow:hidden}
 .seg{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}
 .seg button[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .radio{display:flex;gap:14px;flex-wrap:wrap}.radio label{display:flex;gap:6px;align-items:center;cursor:pointer}
@@ -85,7 +83,7 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
   <aside>
     <header>
       <h1>Bisagra con arandelas D</h1>
-      <p class="sub">Dos eslabones de 50 × 14 mm con palancas, para medir el torque de trabado con una pila de 6 discos de 0,4 mm en una sola oreja; la otra gira libre.</p>
+      <p class="sub">Dos eslabones de 50 × 14 mm con palancas, para medir el torque de trabado con una pila de arandelas D de 0,2, 0,4 u 0,8 mm en una sola oreja; la otra gira libre.</p>
     </header>
 
     <section>
@@ -115,11 +113,13 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
 
     <section>
       <h2>Pila de la oreja que se aprieta</h2>
-      <div class="seg" id="presets" aria-label="Configuraciones"></div>
-      <div class="slots" id="slots" aria-label="Discos, desde la oreja hacia el nudillo"></div>
+      <div class="ctl" style="margin-bottom:4px"><label>Espesor de las arandelas D</label><output id="e-o"></output></div>
+      <div class="seg" id="esp" role="group" aria-label="Espesor de las D" style="margin-top:0"></div>
+      <div class="ctl"><label for="nd">Cantidad de arandelas D</label><output id="nd-o"></output>
+        <input id="nd" type="range" min="0" max="6" step="1" value="6"></div>
       <div class="stack" id="stack" aria-label="Orden axial de la pila"></div>
       <p class="faces" id="faces"></p>
-      <p class="note">Tocá un disco para cambiarlo: D trabada con A, D trabada con B, o redonda (libre). La pila siempre lleva 6 discos para que el hombro no toque fondo; las redondas completan. Una redonda entre dos piezas que giran distinto se comporta como una sola cara. Con un número impar de D, la última queda trabada igual que el nudillo y no suma: 3 D rinden lo mismo que 2.</p>
+      <p class="note">La pila siempre suma 4,8 mm para que el hombro no toque fondo. Las D van alternadas (B, A, B…) desde la oreja y las redondas completan del lado del nudillo, de mayor a menor. Una redonda entre dos piezas que giran distinto se comporta como una sola cara. Con un número impar de D, la última queda trabada igual que el nudillo y no suma.</p>
       <p class="note">La otra oreja no lleva arandelas: su tornillo se aprieta a fondo contra el hombro, que hace tope y le deja 0,2 mm de juego. Solo guía; no aporta torque.</p>
     </section>
 
@@ -132,7 +132,7 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
       </div>
       <div class="res">
         <div class="big"><b id="r-tj">–</b><span id="r-tj-l">torque que traba la articulación</span></div>
-        <div><b id="r-t0">–</b><span>sin arandelas D (6 redondas)</span></div>
+        <div><b id="r-t0">–</b><span>sin arandelas D (solo redondas)</span></div>
         <div><b id="r-f">–</b><span>precarga axial F = T / (K·d)</span></div>
         <div><b id="r-60">–</b><span>peso en el agujero a 60 mm</span></div>
         <div><b id="r-80">–</b><span>peso en el agujero a 80 mm</span></div>
@@ -149,10 +149,10 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
       <h2>Notas de impresión y armado</h2>
       <ul class="note">
         <li>Tornillo tomado como Accu SSHE-M4-5-10-A2: hombro Ø5 × 10, rosca M4 × 5, cabeza Ø8 × 4.</li>
-        <li>La rosca ahora empieza justo donde termina el hombro: en el lado de la pila a 4,2 mm de la cara del nudillo (el hombro llega a 3,6), en el lado libre a 5,6 mm, donde el hombro hace tope. Los 5 mm de rosca del tornillo quedan enteros dentro del agujero autorroscante o del inserto.</li>
+        <li>La rosca empieza justo donde termina el hombro: en el lado de la pila a 1,8 mm de la cara del nudillo (el hombro llega a 1,2), en el lado libre a 5,6 mm, donde el hombro hace tope. Los 5 mm de rosca del tornillo quedan enteros dentro del agujero autorroscante o del inserto.</li>
         <li>Agujero autorroscante: liso, Ø3,5 × 8 mm con chaflán de entrada. El tornillo M4 se hace la rosca solo al entrar; conviene pasarlo una vez antes de armar. Si queda duro o flojo, se ajusta el diámetro y se regenera.</li>
         <li>Inserto térmico M4 × 8,1 (tipo Ruthex): exterior de unos 5,7 a 6,3 mm según la marca, agujero Ø5,6. Va en el nudillo de Ø14, no en la oreja, así que le quedan 4,2 mm de pared. Se empuja con el soldador hasta que asienta en el escalón del fondo, así queda a la profundidad correcta.</li>
-        <li>Los eslabones se imprimen acostados, sin soportes. Las arandelas de 0,4 mm son 2 capas de 0,2.</li>
+        <li>Los eslabones se imprimen acostados, sin soportes. Arandelas: imprimir con capa de 0,2 (la de 0,2 es una sola capa; conviene primera capa bien calibrada). La D tiene esquinas R1,5 y una hendidura central de 7 × 0,5 mm.</li>
       </ul>
     </section>
   </aside>
@@ -213,17 +213,28 @@ const insert=new THREE.Mesh(G.I,mats.I);pivB.add(insert);
 // de la D apunta a +Y (trabada con B) o a -Y (trabada con A).
 const basisB=new THREE.Matrix4().makeBasis(new THREE.Vector3(0,1,0),new THREE.Vector3(0,0,1),new THREE.Vector3(1,0,0));
 const basisA=new THREE.Matrix4().makeBasis(new THREE.Vector3(0,-1,0),new THREE.Vector3(0,0,-1),new THREE.Vector3(1,0,0));
-const N=P.ranuras,e=P.eArandela;
-const PRESETS={6:'BABABA',4:'BABARR',3:'BABRRR',2:'BARRRR',0:'RRRRRR'};
-let stack=PRESETS[6].split('');
+// Pila: lista de discos {t: 'A'|'B'|'R', e: espesor}. Siempre suma P.pila.
+let espD=0.8,nD=6,stack=[];
+function armarPila(){
+  const st=[];
+  for(let k=0;k<nD;k++)st.push({t:k%2===0?'B':'A',e:espD});
+  let resto=Math.round((P.pila-nD*espD)*10)/10;
+  for(const e of [...P.espesores].reverse())
+    while(resto>=e-1e-6){st.push({t:'R',e});resto=Math.round((resto-e)*10)/10;}
+  return st;
+}
 let washers=[];
 function buildWashers(){
   washers.forEach(m=>m.parent.remove(m));
-  washers=stack.map((t,k)=>{
-    const m=new THREE.Mesh(t==='R'?G.WR:G.WD,mats['W'+t]);
+  let x=P.oreja;
+  washers=stack.map((d,k)=>{
+    const m=new THREE.Mesh(d.t==='R'?G.WR:G.WD,mats['W'+d.t]);
     m.matrixAutoUpdate=false;
-    m.userData={base:new THREE.Matrix4().copy(t==='A'?basisA:basisB).setPosition(P.oreja+k*e,0,0),k};
-    (t==='B'?pivB:root).add(m);return m;
+    // las mallas miden 1 mm de espesor (Z local): se escalan al de cada disco
+    const base=new THREE.Matrix4().copy(d.t==='A'?basisA:basisB).setPosition(x,0,0)
+      .multiply(new THREE.Matrix4().makeScale(1,1,d.e));
+    m.userData={base,k};x+=d.e;
+    (d.t==='B'?pivB:root).add(m);return m;
   });
 }
 
@@ -241,26 +252,32 @@ function lado(){return $('ins-libre').checked?'libre':$('ins-sin').checked?'sin'
 // Caras que deslizan: cambios de pieza trabada a lo largo de la pila,
 // desde la oreja (A) hasta el nudillo (B). Las redondas no cuentan.
 function caras(st){
-  const seq=['A',...st.filter(t=>t!=='R'),'B'];
+  const seq=['A',...st.map(d=>d.t).filter(t=>t!=='R'),'B'];
   let n=0;for(let i=1;i<seq.length;i++)if(seq[i]!==seq[i-1])n++;
   return n;
 }
 
+const coma=x=>String(x).replace('.',',');
 function renderStack(){
-  const name={A:'D·A',B:'D·B',R:'○'};
-  $('slots').innerHTML=stack.map((t,k)=>`<button type="button" class="${t}" data-k="${k}" aria-label="Disco ${k+1}: ${name[t]}">${name[t]}</button>`).join('');
+  const max=Math.round(P.pila/espD);
+  $('nd').max=max;if(nD>max)nD=max;$('nd').value=nD;
+  stack=armarPila();
+  $('e-o').textContent=coma(espD)+' mm';$('nd-o').textContent=nD+' de '+max;
+  [...$('esp').children].forEach(b=>b.setAttribute('aria-pressed',+b.dataset.e===espD));
   const cls={A:'wa',B:'wb',R:'wr'},lbl={A:'A',B:'B',R:'○'};
   $('stack').innerHTML='<div class="hd">cabeza</div><div class="ear">oreja A</div>'+
-    stack.map(t=>`<div class="${cls[t]}">${lbl[t]}</div>`).join('')+'<div class="kn">nudillo B</div>';
-  const nD=stack.filter(t=>t!=='R').length,n=caras(stack);
-  $('faces').textContent=`${nD} D + ${N-nD} redondas → ${n} cara${n>1?'s':''} deslizante${n>1?'s':''} en la pila, más la de la cabeza`;
-  [...$('presets').children].forEach(b=>b.setAttribute('aria-pressed',stack.join('')===PRESETS[b.dataset.n]));
+    stack.map(d=>`<div class="${cls[d.t]}" style="flex:${d.e}" title="${d.t==='R'?'redonda':'D·'+d.t} ${coma(d.e)} mm">${d.e>=0.4?lbl[d.t]:''}</div>`).join('')+
+    '<div class="kn">nudillo B</div>';
+  const n=caras(stack),red={};
+  stack.filter(d=>d.t==='R').forEach(d=>red[d.e]=(red[d.e]||0)+1);
+  const txtR=Object.keys(red).sort().reverse().map(e=>`${red[e]} × ${coma(e)}`).join(' + ');
+  $('faces').textContent=`${nD} D de ${coma(espD)}${txtR?' + redondas '+txtR:''} → ${n} cara${n>1?'s':''} deslizante${n>1?'s':''}, más la de la cabeza`;
   buildWashers();update();calc();
 }
-$('presets').innerHTML=[6,4,3,2,0].map(n=>`<button type="button" data-n="${n}">${n} D</button>`).join('');
-$('presets').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;stack=PRESETS[b.dataset.n].split('');renderStack();});
-$('slots').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;
-  const k=+b.dataset.k;stack[k]={A:'B',B:'R',R:'A'}[stack[k]];renderStack();});
+$('esp').innerHTML=P.espesores.map(e=>`<button type="button" data-e="${e}">${coma(e)} mm</button>`).join('');
+$('esp').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;
+  const viejo=espD;espD=+b.dataset.e;nD=Math.round(nD*viejo/espD);renderStack();});
+$('nd').addEventListener('input',()=>{nD=+$('nd').value;renderStack();});
 
 function update(){
   const ang=+$('ang').value, ex=+$('exp').value/100, v=lado();
@@ -271,7 +288,7 @@ function update(){
   insert.position.z=0;
   screws.forEach(s=>{s.position.x=s.userData.x-s.userData.dir*28*ex;});
   washers.forEach(m=>{
-    const lift=(14+m.userData.k*7)*ex;
+    const lift=(14+m.userData.k*Math.min(7,120/washers.length))*ex;
     m.matrix.copy(m.userData.base).premultiply(new THREE.Matrix4().makeTranslation(0,0,lift));
   });
   meshA.visible=$('t-A').checked;meshB.visible=$('t-B').checked;
@@ -288,7 +305,7 @@ function update(){
 
 const views={
   gen:[[210,170,240],[25,0,0]],
-  pila:[[-55,42,40],[5,0,0]],
+  pila:[[-75,58,58],[7,0,0]],
   plan:[[25.01,330,0],[25,0,0]],
 };
 function view(v){camera.position.set(...views[v][0]);controls.target.set(...views[v][1]);controls.update();}
@@ -318,8 +335,9 @@ const rows=[
   ['Orejas del eslabón A','2 × '+f(P.oreja)+' mm'],
   ['Nudillo del eslabón B',f(P.nudillo[1]-P.nudillo[0])+' mm'],
   ['Hueco oreja–nudillo',f(P.zona)+' (pila) / '+f(P.juegoFlojo)+' mm'],
-  ['Pila',P.ranuras+' discos × '+f(P.eArandela)+' mm'],
-  ['Arandela D','14 alto × '+f(7+P.largoD)+' mm, Ø5,2'],
+  ['Pila (siempre)',f(P.pila)+' mm, D de '+P.espesores.map(f).join(' / ')],
+  ['Arandela D','14 × '+f(7+P.largoD)+' mm, Ø5,2, R'+f(P.rEsquinaD)],
+  ['Hendidura de la D',f(P.hendidura[0])+' × '+f(P.hendidura[1])+' mm, centrada'],
   ['Arandela redonda','Ø14, Ø5,2'],
   ['Hombro dentro del nudillo, pila',f(P.entradaPila)+' mm'],
   ['Inicio de rosca, pila / libre',f(P.topePila)+' / '+f(P.topeLibre)+' mm'],

@@ -33,10 +33,12 @@ CARA = R + HOLGURA_R          # cara plana de cada placa, a 8 mm del eje
 ANCHO_PLACA = 30.0            # placa: de 8 a 38 mm del eje
 OREJA = 4.0                   # espesor de cada oreja del eslabón A
 
-RANURAS = 6        # discos en la pila: arandelas D + redondas, siempre 6
-E_ARANDELA = 0.4
+# La pila siempre suma PILA mm: arandelas D de un espesor + redondas de
+# relleno. Así el hombro entra siempre lo mismo y nunca toca fondo.
+PILA = 4.8
+ESPESORES = (0.2, 0.4, 0.8)
 JUEGO_AXIAL = 0.2
-ZONA = RANURAS * E_ARANDELA + JUEGO_AXIAL  # 2.6 mm, solo en la oreja x=0
+ZONA = PILA + JUEGO_AXIAL  # 5.0 mm, solo en la oreja x=0
 JUEGO_FLOJO = 0.2  # oreja x=50, sin arandelas: gira libre
 
 PALANCA_ANCHO = 20.0
@@ -54,13 +56,15 @@ D_AGUJERO_OREJA = 5.2      # el hombro gira en la oreja
 D_ALOJ_HOMBRO = 5.4
 D_AGUJERO_ARANDELA = 5.2
 LARGO_D = CARA - 0.2       # la cara plana de la D queda a 0.2 de la placa
+R_ESQUINA_D = 1.5
+HENDIDURA = (7.0, 0.5)     # ancho y profundidad, centrada en la cara plana
 D_REDONDA = T
 
 # Cuánto entra el hombro en el nudillo, medido desde la cara del nudillo.
 # Lado de la pila: con los 6 discos apretados entra 3.6; la rosca empieza
 # 0.6 más adentro para que el hombro nunca toque fondo y el apriete vaya a
 # la pila.
-ENTRADA_PILA = L_HOMBRO - OREJA - RANURAS * E_ARANDELA
+ENTRADA_PILA = L_HOMBRO - OREJA - PILA
 TOPE_PILA = ENTRADA_PILA + 0.6
 # Lado libre: el hombro hace tope y la oreja queda con 0.2 de juego.
 TOPE_LIBRE = L_HOMBRO - OREJA - 2 * JUEGO_FLOJO
@@ -154,20 +158,38 @@ def eslabon_b(inserto_en="pila"):
     return s
 
 
-def arandela_d():
-    """D de 14 de alto: medio círculo R7 + rectángulo hasta la cara plana.
-    Modelada acostada (espesor en Z) para imprimir."""
-    perfil = m3d.CrossSection.circle(R, SEG) + m3d.CrossSection.square(
-        [LARGO_D, T]).translate([0, -R])
+def arco(cx, cy, r, a0, a1, n=24):
+    return [(cx + r * math.cos(math.radians(a0 + (a1 - a0) * i / n)),
+             cy + r * math.sin(math.radians(a0 + (a1 - a0) * i / n)))
+            for i in range(n + 1)]
+
+
+def perfil_d():
+    """Medio círculo R7, esquinas R1.5 y cara plana con una hendidura central
+    de perfil coseno (entra y sale tangente, sin aristas)."""
+    rc, (ancho, prof) = R_ESQUINA_D, HENDIDURA
+    pts = arco(0, 0, R, 90, 270, SEG // 2)
+    pts += arco(LARGO_D - rc, -R + rc, rc, -90, 0)
+    n = 60
+    for i in range(1, n):
+        z = -ancho / 2 + ancho * i / n
+        pts.append((LARGO_D - prof * (1 + math.cos(2 * math.pi * z / ancho)) / 2, z))
+    pts += arco(LARGO_D - rc, R - rc, rc, 0, 90)
+    return pts
+
+
+def arandela_d(e):
+    """Arandela D de espesor e, acostada (espesor en Z) para imprimir."""
+    perfil = m3d.CrossSection([perfil_d()])
     perfil -= m3d.CrossSection.circle(D_AGUJERO_ARANDELA / 2, SEG)
-    return m3d.Manifold.extrude(perfil, E_ARANDELA)
+    return m3d.Manifold.extrude(perfil, e)
 
 
-def arandela_redonda():
+def arandela_redonda(e):
     """Arandela libre: no se traba con ningún eslabón. Rellena la pila."""
     perfil = m3d.CrossSection.circle(D_REDONDA / 2, SEG)
     perfil -= m3d.CrossSection.circle(D_AGUJERO_ARANDELA / 2, SEG)
-    return m3d.Manifold.extrude(perfil, E_ARANDELA)
+    return m3d.Manifold.extrude(perfil, e)
 
 
 def inserto():
@@ -228,7 +250,6 @@ def main():
     a = eslabon_a()
     b_pila, b_libre = eslabon_b("pila"), eslabon_b("libre")
     b_sin = eslabon_b("ninguno")
-    wd, wr = arandela_d(), arandela_redonda()
 
     for b in (b_pila, b_libre, b_sin):
         assert (a ^ b).volume() < 1e-6, "A y B se interfieren"
@@ -245,9 +266,18 @@ def main():
         "eslabon_B_inserto_en_pila.stl": b_pila.translate([0, 0, R]),
         "eslabon_B_inserto_en_libre.stl": b_libre.translate([0, 0, R]),
         "eslabon_B_sin_inserto.stl": b_sin.translate([0, 0, R]),
-        "arandelas_D_x8.stl": lote(wd, 8, 4),
-        "arandelas_redondas_x6.stl": lote(wr, 6, 3, 17.0),
     }
+    # Cantidades: con 0.2 entran hasta 24 D; con 0.4, 12; con 0.8, 6.
+    # Las redondas alcanzan para rellenar cualquier combinación.
+    cant_d = {0.2: (24, 6), 0.4: (12, 4), 0.8: (8, 4)}
+    cant_r = {0.2: (4, 4), 0.4: (4, 4), 0.8: (6, 3)}
+    for e in ESPESORES:
+        n, cols = cant_d[e]
+        piezas[f"arandelas_D_{e:.1f}mm_x{n}.stl".replace(".", "_", 1)] = \
+            lote(arandela_d(e), n, cols)
+        n, cols = cant_r[e]
+        piezas[f"arandelas_redondas_{e:.1f}mm_x{n}.stl".replace(".", "_", 1)] = \
+            lote(arandela_redonda(e), n, cols, 17.0)
     for nombre, man in piezas.items():
         a_trimesh(man).export(out / nombre)
 
@@ -255,12 +285,14 @@ def main():
     datos = {
         "A": malla_json(a), "Bp": malla_json(b_pila), "Bl": malla_json(b_libre),
         "Bs": malla_json(b_sin),
-        "WD": malla_json(wd), "WR": malla_json(wr),
+        # arandelas de 1 mm: el visor las escala al espesor de cada una
+        "WD": malla_json(arandela_d(1.0)), "WR": malla_json(arandela_redonda(1.0)),
         "S": malla_json(tornillo()), "I": malla_json(inserto()),
         "p": {
             "L": L, "T": T, "cara": CARA, "ancho": ANCHO_PLACA,
-            "oreja": OREJA, "zona": ZONA, "ranuras": RANURAS,
-            "eArandela": E_ARANDELA, "juego": JUEGO_AXIAL,
+            "oreja": OREJA, "zona": ZONA, "pila": PILA,
+            "espesores": ESPESORES, "juego": JUEGO_AXIAL,
+            "hendidura": HENDIDURA, "rEsquinaD": R_ESQUINA_D,
             "palancaAncho": PALANCA_ANCHO, "palancaLargo": PALANCA_LARGO,
             "agujeros": AGUJEROS_PALANCA, "largoD": LARGO_D,
             "nudillo": X_NUDILLO, "hombro": [D_HOMBRO, L_HOMBRO],
