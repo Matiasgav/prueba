@@ -2,7 +2,7 @@
 
 Genera las piezas con manifold3d, exporta los .stl a stl/ y arma visor.html
 con las mallas embebidas. El eslabón B sale en dos variantes según qué lado
-lleva el inserto térmico y cuál la rosca impresa.
+lleva el inserto térmico y cuál el agujero autorroscante.
 
 Ejes del modelo (mm):
   X  eje de la bisagra (largo 50)
@@ -65,11 +65,9 @@ TOPE_PILA = ENTRADA_PILA + 0.6
 # Lado libre: el hombro hace tope y la oreja queda con 0.2 de juego.
 TOPE_LIBRE = L_HOMBRO - OREJA - 2 * JUEGO_FLOJO
 
-# Rosca M4x0.7 impresa: perfil ISO con holgura radial para FDM
-PASO = 0.7
-R_MAYOR, R_MENOR = 2.0, 1.621
-HOLGURA_ROSCA = 0.2
-L_ROSCA_IMPRESA = 8.0
+# Agujero liso para que el M4 se enrosque solo en el plástico
+D_AUTORROSCANTE = 3.5
+L_AUTORROSCANTE = 8.0      # 5 de rosca del tornillo + margen para la punta
 
 # Inserto térmico M4 (tipo Ruthex M4 x 8.1): agujero Ø5.6; se empuja hasta
 # que asienta en el escalón del fondo
@@ -121,38 +119,18 @@ def eslabon_a():
     return s
 
 
-def macho_rosca(largo):
-    """Volumen a quitar para una rosca interna M4 derecha, eje +Z desde z=0.
-    Extrusión con giro de un perfil polar: r(ángulo) sigue el perfil axial."""
-    a, b = R_MENOR + HOLGURA_ROSCA, R_MAYOR + HOLGURA_ROSCA
-
-    def r(u):  # u: fracción de paso
-        u %= 1
-        if u < 1 / 16 or u >= 15 / 16:
-            return b                                   # fondo, P/8
-        if u < 6 / 16:
-            return b + (a - b) * (u - 1 / 16) / (5 / 16)
-        if u < 10 / 16:
-            return a                                   # cresta, P/4
-        return a + (b - a) * (u - 10 / 16) / (5 / 16)
-
-    n = 144
-    pts = [(r(i / n) * math.cos(2 * math.pi * i / n),
-            r(i / n) * math.sin(2 * math.pi * i / n)) for i in range(n)]
-    vueltas = largo / PASO
-    m = m3d.Manifold.extrude(m3d.CrossSection([pts]), largo,
-                             int(vueltas * 24), 360 * vueltas)
-    # chaflán de entrada
-    return m + m3d.Manifold.cylinder(0.5, b + 0.3, b - 0.2, SEG)
-
-
 def agujero(tope, tipo):
     """Agujero del nudillo en coordenadas locales: eje +Z hacia adentro,
     z=0 en la cara del nudillo. `tope`: profundidad donde empieza la rosca."""
-    if tipo == "impresa":
+    if tipo == "autorroscante":
         h = m3d.Manifold.cylinder(tope + 1, D_ALOJ_HOMBRO / 2, D_ALOJ_HOMBRO / 2,
                                   SEG).translate([0, 0, -1])
-        return h + macho_rosca(L_ROSCA_IMPRESA).translate([0, 0, tope - 0.01])
+        r = D_AUTORROSCANTE / 2
+        h += m3d.Manifold.cylinder(L_AUTORROSCANTE, r, r, SEG).translate(
+            [0, 0, tope - 0.01])
+        # chaflán de entrada para que la rosca arranque derecha
+        return h + m3d.Manifold.cylinder(0.5, r + 0.5, r, SEG).translate(
+            [0, 0, tope - 0.01])
     # inserto: entra por la cara y asienta en el escalón de tope + L_INSERTO
     fondo = tope + L_INSERTO
     h = m3d.Manifold.cylinder(fondo + 1, D_INSERTO / 2, D_INSERTO / 2,
@@ -162,14 +140,14 @@ def agujero(tope, tipo):
 
 
 def eslabon_b(inserto_en="pila"):
-    """Nudillo central entre las orejas. Un lado lleva rosca impresa y el
+    """Nudillo central entre las orejas. Un lado lleva agujero autorroscante y el
     otro inserto térmico; `inserto_en` elige el lado ("pila" o "libre").
     Los agujeros se ubican solo con rotaciones para no invertir la rosca."""
     x0, x1 = X_NUDILLO
     s = placa(1) + palanca(1)
     s += cil_x(R, x0, x1) + caja(x0, x1, 0, CARA + 0.5, -R, R)
-    tipo_pila = "inserto" if inserto_en == "pila" else "impresa"
-    tipo_libre = "impresa" if inserto_en == "pila" else "inserto"
+    tipo_pila = "inserto" if inserto_en == "pila" else "autorroscante"
+    tipo_libre = "autorroscante" if inserto_en == "pila" else "inserto"
     s -= agujero(TOPE_PILA, tipo_pila).rotate([0, 90, 0]).translate([x0, 0, 0])
     s -= agujero(TOPE_LIBRE, tipo_libre).rotate([0, -90, 0]).translate([x1, 0, 0])
     return s
@@ -285,7 +263,7 @@ def main():
             "rosca": L_ROSCA, "cabeza": [D_CABEZA, H_CABEZA],
             "entradaPila": ENTRADA_PILA, "topePila": TOPE_PILA,
             "topeLibre": TOPE_LIBRE, "juegoFlojo": JUEGO_FLOJO,
-            "roscaImpresa": [L_ROSCA_IMPRESA, HOLGURA_ROSCA],
+            "autorroscante": [D_AUTORROSCANTE, L_AUTORROSCANTE],
             "inserto": [D_INSERTO, L_INSERTO],
             "xInserto": {"pila": x0 + TOPE_PILA,
                          "libre": x1 - TOPE_LIBRE - L_INSERTO},

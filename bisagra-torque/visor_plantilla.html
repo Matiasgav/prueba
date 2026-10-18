@@ -148,8 +148,8 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
       <h2>Notas de impresión y armado</h2>
       <ul class="note">
         <li>Tornillo tomado como Accu SSHE-M4-5-10-A2: hombro Ø5 × 10, rosca M4 × 5, cabeza Ø8 × 4.</li>
-        <li>La rosca ahora empieza justo donde termina el hombro: en el lado de la pila a 4,2 mm de la cara del nudillo (el hombro llega a 3,6), en el lado libre a 5,6 mm, donde el hombro hace tope. Los 5 mm de rosca del tornillo quedan enteros dentro de la rosca o del inserto.</li>
-        <li>Rosca impresa: M4 × 0,7 derecha con perfil ISO y 0,2 mm de holgura radial, 8 mm de largo. Si queda dura o floja, se ajusta la holgura y se regenera.</li>
+        <li>La rosca ahora empieza justo donde termina el hombro: en el lado de la pila a 4,2 mm de la cara del nudillo (el hombro llega a 3,6), en el lado libre a 5,6 mm, donde el hombro hace tope. Los 5 mm de rosca del tornillo quedan enteros dentro del agujero autorroscante o del inserto.</li>
+        <li>Agujero autorroscante: liso, Ø3,5 × 8 mm con chaflán de entrada. El tornillo M4 se hace la rosca solo al entrar; conviene pasarlo una vez antes de armar. Si queda duro o flojo, se ajusta el diámetro y se regenera.</li>
         <li>Inserto térmico M4 × 8,1 (tipo Ruthex), agujero Ø5,6. Se empuja con el soldador hasta que asienta en el escalón del fondo, así queda a la profundidad correcta.</li>
         <li>Los eslabones se imprimen acostados, sin soportes. Las arandelas de 0,4 mm son 2 capas de 0,2.</li>
       </ul>
@@ -279,8 +279,8 @@ function update(){
   const planes=$('t-cut').checked?[cut]:[];
   Object.values(mats).forEach(m=>{m.clippingPlanes=planes;m.needsUpdate=true;});
   $('ins-note').textContent=v==='pila'
-    ?'Inserto en el lado de la pila, que es el que carga la precarga y se arma y desarma en cada prueba. La oreja libre usa la rosca impresa. Recomendado.'
-    :'Inserto en la oreja libre: el hombro hace tope sobre el bronce. La pila aprieta contra la rosca impresa.';
+    ?'Inserto en el lado de la pila, que es el que carga la precarga y se arma y desarma en cada prueba. La oreja libre usa el agujero autorroscante. Recomendado.'
+    :'Inserto en la oreja libre: el hombro hace tope sobre el bronce. La pila aprieta contra el agujero autorroscante.';
 }
 ['ang','exp','t-A','t-B','t-W','t-S','t-cut','ins-pila','ins-libre'].forEach(id=>$(id).addEventListener('input',update));
 
@@ -321,7 +321,7 @@ const rows=[
   ['Arandela redonda','Ø14, Ø5,2'],
   ['Hombro dentro del nudillo, pila',f(P.entradaPila)+' mm'],
   ['Inicio de rosca, pila / libre',f(P.topePila)+' / '+f(P.topeLibre)+' mm'],
-  ['Rosca impresa','M4×0,7, '+f(P.roscaImpresa[0])+' mm, +'+f(P.roscaImpresa[1])],
+  ['Agujero autorroscante','Ø'+f(P.autorroscante[0])+' × '+f(P.autorroscante[1])+' mm'],
   ['Inserto','Ø'+f(P.inserto[0])+' × '+f(P.inserto[1])+' mm'],
   ['Giro libre','±'+P.giro['+']+'°'],
   ['Volumen A / B',f(P.vol.A/1000)+' / '+f(P.vol.B/1000)+' cm³'],
