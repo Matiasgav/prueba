@@ -1,7 +1,8 @@
 """Bisagra de dos eslabones para ensayar torque de trabado con arandelas en D.
 
 Genera las piezas con manifold3d, exporta los .stl a stl/ y arma visor.html
-con las mallas embebidas.
+con las mallas embebidas. El eslabón B sale en dos variantes según qué lado
+lleva el inserto térmico y cuál la rosca impresa.
 
 Ejes del modelo (mm):
   X  eje de la bisagra (largo 50)
@@ -32,10 +33,10 @@ CARA = R + HOLGURA_R          # cara plana de cada placa, a 8 mm del eje
 ANCHO_PLACA = 30.0            # placa: de 8 a 38 mm del eje
 OREJA = 4.0                   # espesor de cada oreja del eslabón A
 
-N_ARANDELAS = 4
+RANURAS = 6        # discos en la pila: arandelas D + redondas, siempre 6
 E_ARANDELA = 0.4
 JUEGO_AXIAL = 0.2
-ZONA = N_ARANDELAS * E_ARANDELA + JUEGO_AXIAL  # 1.8 mm, solo en la oreja x=0
+ZONA = RANURAS * E_ARANDELA + JUEGO_AXIAL  # 2.6 mm, solo en la oreja x=0
 JUEGO_FLOJO = 0.2  # oreja x=50, sin arandelas: gira libre
 
 PALANCA_ANCHO = 20.0
@@ -51,13 +52,29 @@ D_CABEZA, H_CABEZA = 8.0, 4.0
 
 D_AGUJERO_OREJA = 5.2      # el hombro gira en la oreja
 D_ALOJ_HOMBRO = 5.4
-P_ALOJ_HOMBRO = 6.5        # lado de las arandelas: el hombro no toca fondo
-# lado flojo: el hombro hace tope y deja 0.2 de juego axial a la oreja
-P_ALOJ_FLOJO = L_HOMBRO - OREJA - JUEGO_FLOJO - JUEGO_FLOJO
-D_PILOTO = 3.4             # M4 autorroscante en plástico
-P_PILOTO = 8.0
 D_AGUJERO_ARANDELA = 5.2
 LARGO_D = CARA - 0.2       # la cara plana de la D queda a 0.2 de la placa
+D_REDONDA = T
+
+# Cuánto entra el hombro en el nudillo, medido desde la cara del nudillo.
+# Lado de la pila: con los 6 discos apretados entra 3.6; la rosca empieza
+# 0.6 más adentro para que el hombro nunca toque fondo y el apriete vaya a
+# la pila.
+ENTRADA_PILA = L_HOMBRO - OREJA - RANURAS * E_ARANDELA
+TOPE_PILA = ENTRADA_PILA + 0.6
+# Lado libre: el hombro hace tope y la oreja queda con 0.2 de juego.
+TOPE_LIBRE = L_HOMBRO - OREJA - 2 * JUEGO_FLOJO
+
+# Rosca M4x0.7 impresa: perfil ISO con holgura radial para FDM
+PASO = 0.7
+R_MAYOR, R_MENOR = 2.0, 1.621
+HOLGURA_ROSCA = 0.2
+L_ROSCA_IMPRESA = 8.0
+
+# Inserto térmico M4 (tipo Ruthex M4 x 8.1): agujero Ø5.6; se empuja hasta
+# que asienta en el escalón del fondo
+D_INSERTO, L_INSERTO = 5.6, 8.1
+D_PASO_PUNTA = 4.4         # después del inserto, por si la punta sobresale
 
 X_NUDILLO = (OREJA + ZONA, L - OREJA - JUEGO_FLOJO)
 
@@ -104,19 +121,57 @@ def eslabon_a():
     return s
 
 
-def eslabon_b():
-    """Nudillo central entre las orejas, roscado de ambos lados."""
+def macho_rosca(largo):
+    """Volumen a quitar para una rosca interna M4 derecha, eje +Z desde z=0.
+    Extrusión con giro de un perfil polar: r(ángulo) sigue el perfil axial."""
+    a, b = R_MENOR + HOLGURA_ROSCA, R_MAYOR + HOLGURA_ROSCA
+
+    def r(u):  # u: fracción de paso
+        u %= 1
+        if u < 1 / 16 or u >= 15 / 16:
+            return b                                   # fondo, P/8
+        if u < 6 / 16:
+            return b + (a - b) * (u - 1 / 16) / (5 / 16)
+        if u < 10 / 16:
+            return a                                   # cresta, P/4
+        return a + (b - a) * (u - 10 / 16) / (5 / 16)
+
+    n = 144
+    pts = [(r(i / n) * math.cos(2 * math.pi * i / n),
+            r(i / n) * math.sin(2 * math.pi * i / n)) for i in range(n)]
+    vueltas = largo / PASO
+    m = m3d.Manifold.extrude(m3d.CrossSection([pts]), largo,
+                             int(vueltas * 24), 360 * vueltas)
+    # chaflán de entrada
+    return m + m3d.Manifold.cylinder(0.5, b + 0.3, b - 0.2, SEG)
+
+
+def agujero(tope, tipo):
+    """Agujero del nudillo en coordenadas locales: eje +Z hacia adentro,
+    z=0 en la cara del nudillo. `tope`: profundidad donde empieza la rosca."""
+    if tipo == "impresa":
+        h = m3d.Manifold.cylinder(tope + 1, D_ALOJ_HOMBRO / 2, D_ALOJ_HOMBRO / 2,
+                                  SEG).translate([0, 0, -1])
+        return h + macho_rosca(L_ROSCA_IMPRESA).translate([0, 0, tope - 0.01])
+    # inserto: entra por la cara y asienta en el escalón de tope + L_INSERTO
+    fondo = tope + L_INSERTO
+    h = m3d.Manifold.cylinder(fondo + 1, D_INSERTO / 2, D_INSERTO / 2,
+                              SEG).translate([0, 0, -1])
+    return h + m3d.Manifold.cylinder(3, D_PASO_PUNTA / 2, D_PASO_PUNTA / 2,
+                                     SEG).translate([0, 0, fondo - 0.01])
+
+
+def eslabon_b(inserto_en="pila"):
+    """Nudillo central entre las orejas. Un lado lleva rosca impresa y el
+    otro inserto térmico; `inserto_en` elige el lado ("pila" o "libre").
+    Los agujeros se ubican solo con rotaciones para no invertir la rosca."""
     x0, x1 = X_NUDILLO
     s = placa(1) + palanca(1)
     s += cil_x(R, x0, x1) + caja(x0, x1, 0, CARA + 0.5, -R, R)
-    # lado de las arandelas (x0): el apriete comprime la pila
-    s -= cil_x(D_ALOJ_HOMBRO / 2, x0 - 1, x0 + P_ALOJ_HOMBRO)
-    s -= cil_x(D_PILOTO / 2, x0 + P_ALOJ_HOMBRO - 0.01,
-               x0 + P_ALOJ_HOMBRO + P_PILOTO)
-    # lado flojo (x1): el tornillo se aprieta a fondo contra el hombro
-    s -= cil_x(D_ALOJ_HOMBRO / 2, x1 - P_ALOJ_FLOJO, x1 + 1)
-    s -= cil_x(D_PILOTO / 2, x1 - P_ALOJ_FLOJO - P_PILOTO,
-               x1 - P_ALOJ_FLOJO + 0.01)
+    tipo_pila = "inserto" if inserto_en == "pila" else "impresa"
+    tipo_libre = "impresa" if inserto_en == "pila" else "inserto"
+    s -= agujero(TOPE_PILA, tipo_pila).rotate([0, 90, 0]).translate([x0, 0, 0])
+    s -= agujero(TOPE_LIBRE, tipo_libre).rotate([0, -90, 0]).translate([x1, 0, 0])
     return s
 
 
@@ -127,6 +182,18 @@ def arandela_d():
         [LARGO_D, T]).translate([0, -R])
     perfil -= m3d.CrossSection.circle(D_AGUJERO_ARANDELA / 2, SEG)
     return m3d.Manifold.extrude(perfil, E_ARANDELA)
+
+
+def arandela_redonda():
+    """Arandela libre: no se traba con ningún eslabón. Rellena la pila."""
+    perfil = m3d.CrossSection.circle(D_REDONDA / 2, SEG)
+    perfil -= m3d.CrossSection.circle(D_AGUJERO_ARANDELA / 2, SEG)
+    return m3d.Manifold.extrude(perfil, E_ARANDELA)
+
+
+def inserto():
+    """Solo para el visor. Eje X, desde x=0."""
+    return cil_x(D_INSERTO / 2 - 0.1, 0, L_INSERTO) - cil_x(2.0, -1, L_INSERTO + 1)
 
 
 def tornillo():
@@ -171,44 +238,59 @@ def rango_giro(a, b):
     return res
 
 
-def main():
-    a, b = eslabon_a(), eslabon_b()
-    w, tor = arandela_d(), tornillo()
+def lote(pieza, n, cols, paso=18.0):
+    m = m3d.Manifold()
+    for k in range(n):
+        m += pieza.translate([(k % cols) * paso, (k // cols) * paso, 0])
+    return m
 
-    assert (a ^ b).volume() < 1e-6, "A y B se interfieren"
-    giro = rango_giro(a, b)
+
+def main():
+    a = eslabon_a()
+    b_pila, b_libre = eslabon_b("pila"), eslabon_b("libre")
+    wd, wr = arandela_d(), arandela_redonda()
+
+    for b in (b_pila, b_libre):
+        assert (a ^ b).volume() < 1e-6, "A y B se interfieren"
+    giro = rango_giro(a, b_pila)
 
     out = AQUI / "stl"
     out.mkdir(exist_ok=True)
+    for viejo in out.glob("*.stl"):
+        viejo.unlink()
     # A y B se imprimen acostados (Z hacia arriba); las orejas y el nudillo
     # llegan al plano de la cama porque su diámetro es el espesor.
     piezas = {
         "eslabon_A_horquilla.stl": a.translate([0, 0, R]),
-        "eslabon_B_nudillo.stl": b.translate([0, 0, R]),
-        "arandela_D_x1.stl": w,
+        "eslabon_B_inserto_en_pila.stl": b_pila.translate([0, 0, R]),
+        "eslabon_B_inserto_en_libre.stl": b_libre.translate([0, 0, R]),
+        "arandelas_D_x8.stl": lote(wd, 8, 4),
+        "arandelas_redondas_x6.stl": lote(wr, 6, 3, 17.0),
     }
-    lote = m3d.Manifold()
-    for k in range(8):
-        lote += w.translate([(k % 4) * 18.0, (k // 4) * 18.0, 0])
-    piezas["arandelas_D_x8.stl"] = lote
     for nombre, man in piezas.items():
         a_trimesh(man).export(out / nombre)
 
+    x0, x1 = X_NUDILLO
     datos = {
-        "A": malla_json(a), "B": malla_json(b),
-        "W": malla_json(w), "S": malla_json(tor),
+        "A": malla_json(a), "Bp": malla_json(b_pila), "Bl": malla_json(b_libre),
+        "WD": malla_json(wd), "WR": malla_json(wr),
+        "S": malla_json(tornillo()), "I": malla_json(inserto()),
         "p": {
             "L": L, "T": T, "cara": CARA, "ancho": ANCHO_PLACA,
-            "oreja": OREJA, "zona": ZONA, "nArandelas": N_ARANDELAS,
+            "oreja": OREJA, "zona": ZONA, "ranuras": RANURAS,
             "eArandela": E_ARANDELA, "juego": JUEGO_AXIAL,
             "palancaAncho": PALANCA_ANCHO, "palancaLargo": PALANCA_LARGO,
             "agujeros": AGUJEROS_PALANCA, "largoD": LARGO_D,
             "nudillo": X_NUDILLO, "hombro": [D_HOMBRO, L_HOMBRO],
             "rosca": L_ROSCA, "cabeza": [D_CABEZA, H_CABEZA],
-            "alojHombro": [D_ALOJ_HOMBRO, P_ALOJ_HOMBRO],
-            "alojFlojo": P_ALOJ_FLOJO, "juegoFlojo": JUEGO_FLOJO,
-            "piloto": [D_PILOTO, P_PILOTO], "giro": giro,
-            "vol": {"A": a.volume(), "B": b.volume(), "W": w.volume()},
+            "entradaPila": ENTRADA_PILA, "topePila": TOPE_PILA,
+            "topeLibre": TOPE_LIBRE, "juegoFlojo": JUEGO_FLOJO,
+            "roscaImpresa": [L_ROSCA_IMPRESA, HOLGURA_ROSCA],
+            "inserto": [D_INSERTO, L_INSERTO],
+            "xInserto": {"pila": x0 + TOPE_PILA,
+                         "libre": x1 - TOPE_LIBRE - L_INSERTO},
+            "giro": giro,
+            "vol": {"A": a.volume(), "B": b_pila.volume()},
         },
     }
     plantilla = (AQUI / "visor_plantilla.html").read_text(encoding="utf-8")
@@ -217,7 +299,7 @@ def main():
 
     print("giro libre de B respecto de A:", giro)
     for k, man in piezas.items():
-        print(f"{k:28s} {man.volume() / 1000:7.2f} cm3")
+        print(f"{k:34s} {man.volume() / 1000:7.2f} cm3")
 
 
 if __name__ == "__main__":

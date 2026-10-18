@@ -6,18 +6,18 @@
 /* Layout: visor 3D a la izquierda como mesa de trabajo, panel técnico a la derecha; se apilan en teléfono. */
 :root{
   --bg:#eef0f1; --panel:#f8f9f9; --fg:#1d2326; --muted:#5d686d; --line:#d3d8da;
-  --a:#d4842a; --a-soft:#f0c58f; --b:#2d6c8c; --b-soft:#9cc6dc; --steel:#9aa3a8;
+  --a:#d4842a; --a-soft:#f0c58f; --b:#2d6c8c; --b-soft:#9cc6dc; --steel:#9aa3a8; --free:#e9e4d8; --brass:#c9a227;
   --accent:#2d6c8c; --view:#e3e7e9;
   --f-disp:"Archivo",system-ui,sans-serif; --f-body:"Archivo",system-ui,sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#14191b; --panel:#1b2225; --fg:#e4e9eb; --muted:#94a1a7; --line:#2c3639;
-  --a:#e39a45; --a-soft:#a8723a; --b:#5aa3c8; --b-soft:#3d6f88; --steel:#b7bfc3;
+  --a:#e39a45; --a-soft:#a8723a; --b:#5aa3c8; --b-soft:#3d6f88; --steel:#b7bfc3; --free:#8d8a82; --brass:#d4b03c;
   --accent:#6fb3d6; --view:#101517; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#14191b; --panel:#1b2225; --fg:#e4e9eb; --muted:#94a1a7; --line:#2c3639;
-  --a:#e39a45; --a-soft:#a8723a; --b:#5aa3c8; --b-soft:#3d6f88; --steel:#b7bfc3;
+  --a:#e39a45; --a-soft:#a8723a; --b:#5aa3c8; --b-soft:#3d6f88; --steel:#b7bfc3; --free:#8d8a82; --brass:#d4b03c;
   --accent:#6fb3d6; --view:#101517; color-scheme:dark}
 html,body{height:100%}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.45}
@@ -50,6 +50,14 @@ td:last-child{text-align:right;font:500 12.5px var(--f-mono);font-variant-numeri
 .stack .ear{background:var(--a);flex:4}.stack .wa{background:var(--a-soft);flex:.6;color:var(--fg)}
 .stack .wb{background:var(--b-soft);flex:.6;color:var(--fg)}.stack .kn{background:var(--b);flex:5}
 .stack .hd{background:var(--steel);flex:2.4;color:#1d2326}
+.stack .wr{background:var(--free);flex:.6;color:var(--fg)}
+.slots{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.slots button{font:500 11.5px var(--f-mono);border:1px solid var(--line);border-radius:4px;padding:7px 0;cursor:pointer;color:var(--fg)}
+.slots button.A{background:var(--a-soft)}.slots button.B{background:var(--b-soft)}.slots button.R{background:var(--free)}
+.seg{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}
+.seg button[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.radio{display:flex;gap:14px;flex-wrap:wrap}.radio label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.faces{font:600 13px var(--f-mono);margin:6px 0 4px}
 .note{color:var(--muted);font-size:12.5px;margin:0}
 .calc{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .calc label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
@@ -77,7 +85,7 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
   <aside>
     <header>
       <h1>Bisagra con arandelas D</h1>
-      <p class="sub">Dos eslabones de 50 × 14 mm con palancas, para medir el torque de trabado con 4 arandelas de 0,4 mm en una sola oreja; la otra gira libre.</p>
+      <p class="sub">Dos eslabones de 50 × 14 mm con palancas, para medir el torque de trabado con una pila de 6 discos de 0,4 mm en una sola oreja; la otra gira libre.</p>
     </header>
 
     <section>
@@ -89,21 +97,29 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
       <div class="toggles">
         <label><input id="t-A" type="checkbox" checked><span class="sw" style="background:var(--a)"></span>Eslabón A</label>
         <label><input id="t-B" type="checkbox" checked><span class="sw" style="background:var(--b)"></span>Eslabón B</label>
-        <label><input id="t-W" type="checkbox" checked><span class="sw" style="background:linear-gradient(90deg,var(--a-soft) 50%,var(--b-soft) 50%)"></span>Arandelas</label>
-        <label><input id="t-S" type="checkbox" checked><span class="sw" style="background:var(--steel)"></span>Tornillos</label>
+        <label><input id="t-W" type="checkbox" checked><span class="sw" style="background:linear-gradient(90deg,var(--a-soft) 33%,var(--b-soft) 33% 66%,var(--free) 66%)"></span>Arandelas</label>
+        <label><input id="t-S" type="checkbox" checked><span class="sw" style="background:linear-gradient(90deg,var(--steel) 50%,var(--brass) 50%)"></span>Tornillos e inserto</label>
         <label><input id="t-cut" type="checkbox"><span class="sw" style="border:1px dashed var(--muted)"></span>Corte al medio</label>
       </div>
     </section>
 
     <section>
-      <h2>Pila de la oreja que se aprieta</h2>
-      <div class="stack" aria-label="Orden axial de la pila">
-        <div class="hd">cabeza</div><div class="ear">oreja A</div>
-        <div class="wb">B</div><div class="wa">A</div><div class="wb">B</div><div class="wa">A</div>
-        <div class="kn">nudillo B</div>
+      <h2>Roscas del eslabón B</h2>
+      <div class="radio" role="radiogroup" aria-label="Lado del inserto">
+        <label><input type="radio" name="ins" id="ins-pila" value="pila" checked>Inserto en la pila</label>
+        <label><input type="radio" name="ins" id="ins-libre" value="libre">Inserto en la oreja libre</label>
       </div>
-      <p class="note">Cada arandela apoya su lado plano contra la placa de un eslabón y gira con él. Alternadas B-A-B-A, dan 5 caras deslizantes entre oreja y nudillo en lugar de 1, más la cara bajo la cabeza. Colores claros: la arandela sigue a ese eslabón.</p>
-      <p class="note">La otra oreja no lleva arandelas: su tornillo se aprieta a fondo contra el hombro, que hace tope en el nudillo y le deja 0,2 mm de juego. Solo guía; no aporta torque.</p>
+      <p class="note" id="ins-note" style="margin-top:6px"></p>
+    </section>
+
+    <section>
+      <h2>Pila de la oreja que se aprieta</h2>
+      <div class="seg" id="presets" aria-label="Configuraciones"></div>
+      <div class="slots" id="slots" aria-label="Discos, desde la oreja hacia el nudillo"></div>
+      <div class="stack" id="stack" aria-label="Orden axial de la pila"></div>
+      <p class="faces" id="faces"></p>
+      <p class="note">Tocá un disco para cambiarlo: D trabada con A, D trabada con B, o redonda (libre). La pila siempre lleva 6 discos para que el hombro no toque fondo; las redondas completan. Una redonda entre dos piezas que giran distinto se comporta como una sola cara. Con un número impar de D, la última queda trabada igual que el nudillo y no suma: 3 D rinden lo mismo que 2.</p>
+      <p class="note">La otra oreja no lleva arandelas: su tornillo se aprieta a fondo contra el hombro, que hace tope y le deja 0,2 mm de juego. Solo guía; no aporta torque.</p>
     </section>
 
     <section>
@@ -114,8 +130,8 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
         <label for="kk">K tornillo<input id="kk" type="number" step="0.01" min="0.05" value="0.2"></label>
       </div>
       <div class="res">
-        <div class="big"><b id="r-tj">–</b><span>torque que traba la articulación, con 4 arandelas</span></div>
-        <div><b id="r-t0">–</b><span>sin arandelas</span></div>
+        <div class="big"><b id="r-tj">–</b><span id="r-tj-l">torque que traba la articulación</span></div>
+        <div><b id="r-t0">–</b><span>sin arandelas D (6 redondas)</span></div>
         <div><b id="r-f">–</b><span>precarga axial F = T / (K·d)</span></div>
         <div><b id="r-60">–</b><span>peso en el agujero a 60 mm</span></div>
         <div><b id="r-80">–</b><span>peso en el agujero a 80 mm</span></div>
@@ -129,17 +145,17 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
     </section>
 
     <section>
-      <h2>Para confirmar antes de los STL</h2>
+      <h2>Notas de impresión y armado</h2>
       <ul class="note">
-        <li>Tornillo tomado como Accu SSHE-M4-5-10-A2: hombro Ø5 × 10, rosca M4 × 5, cabeza Ø8 × 4. Confirmá el largo de rosca del tuyo.</li>
-        <li>La rosca va autorroscada en un piloto de Ø3,4 en el nudillo. Si preferís inserto térmico M4, lo cambio.</li>
-        <li>Lado de las arandelas: el hombro nunca toca fondo (alojamiento de 6,5 mm), así el apriete comprime la pila. Lado flojo: alojamiento de 5,6 mm, el hombro hace tope y la oreja queda libre.</li>
-        <li>Juego axial de 0,2 mm sobre la pila de 1,6 mm. El giro libre queda en ±97° antes de que choquen las placas.</li>
+        <li>Tornillo tomado como Accu SSHE-M4-5-10-A2: hombro Ø5 × 10, rosca M4 × 5, cabeza Ø8 × 4.</li>
+        <li>La rosca ahora empieza justo donde termina el hombro: en el lado de la pila a 4,2 mm de la cara del nudillo (el hombro llega a 3,6), en el lado libre a 5,6 mm, donde el hombro hace tope. Los 5 mm de rosca del tornillo quedan enteros dentro de la rosca o del inserto.</li>
+        <li>Rosca impresa: M4 × 0,7 derecha con perfil ISO y 0,2 mm de holgura radial, 8 mm de largo. Si queda dura o floja, se ajusta la holgura y se regenera.</li>
+        <li>Inserto térmico M4 × 8,1 (tipo Ruthex), agujero Ø5,6. Se empuja con el soldador hasta que asienta en el escalón del fondo, así queda a la profundidad correcta.</li>
+        <li>Los eslabones se imprimen acostados, sin soportes. Las arandelas de 0,4 mm son 2 capas de 0,2.</li>
       </ul>
     </section>
   </aside>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
 <script>
@@ -177,61 +193,96 @@ function mat(name,metal){
 }
 function paint(){
   mats.A.color.set(css('--a'));mats.B.color.set(css('--b'));
-  mats.WA.color.set(css('--a-soft'));mats.WB.color.set(css('--b-soft'));
-  mats.S.color.set(css('--steel'));
+  mats.WA.color.set(css('--a-soft'));mats.WB.color.set(css('--b-soft'));mats.WR.color.set(css('--free'));
+  mats.S.color.set(css('--steel'));mats.I.color.set(css('--brass'));
   scene.background=new THREE.Color(css('--view'));
   grid.material.color.set(css('--line'));
 }
 
 // Ensamble en coordenadas del modelo (Z arriba); el grupo raíz lo pasa a Y arriba.
 const root=new THREE.Group();root.rotation.x=-Math.PI/2;scene.add(root);
-const gA=geo(D.A),gB=geo(D.B),gW=geo(D.W),gS=geo(D.S);
-const meshA=new THREE.Mesh(gA,mat('A'));root.add(meshA);
+mat('A');mat('B');mat('WA');mat('WB');mat('WR');mat('S',true);mat('I',true);
+const G={A:geo(D.A),pila:geo(D.Bp),libre:geo(D.Bl),WD:geo(D.WD),WR:geo(D.WR),S:geo(D.S),I:geo(D.I)};
+const meshA=new THREE.Mesh(G.A,mats.A);root.add(meshA);
 const pivB=new THREE.Group();root.add(pivB);
-const slideB=new THREE.Group();pivB.add(slideB);
-const meshB=new THREE.Mesh(gB,mat('B'));slideB.add(meshB);
-mat('WA');mat('WB');mat('S',true);
+const meshB=new THREE.Mesh(G.pila,mats.B);pivB.add(meshB);
+const insert=new THREE.Mesh(G.I,mats.I);pivB.add(insert);
 
-const washers=[],screws=[];
+// Arandelas: se extruyen en +Z local, que pasa a +X del modelo. La parte recta
+// de la D apunta a +Y (trabada con B) o a -Y (trabada con A).
 const basisB=new THREE.Matrix4().makeBasis(new THREE.Vector3(0,1,0),new THREE.Vector3(0,0,1),new THREE.Vector3(1,0,0));
 const basisA=new THREE.Matrix4().makeBasis(new THREE.Vector3(0,-1,0),new THREE.Vector3(0,0,-1),new THREE.Vector3(1,0,0));
-const e=P.eArandela;
-[[P.oreja,1,P.nArandelas],[P.L-P.oreja,-1,0]].forEach(([x0,dir,n])=>{
-  for(let k=0;k<n;k++){
-    const toB=k%2===0;
-    const m=new THREE.Mesh(gW,toB?mats.WB:mats.WA);
+const N=P.ranuras,e=P.eArandela;
+const PRESETS={6:'BABABA',4:'BABARR',3:'BABRRR',2:'BARRRR',0:'RRRRRR'};
+let stack=PRESETS[6].split('');
+let washers=[];
+function buildWashers(){
+  washers.forEach(m=>m.parent.remove(m));
+  washers=stack.map((t,k)=>{
+    const m=new THREE.Mesh(t==='R'?G.WR:G.WD,mats['W'+t]);
     m.matrixAutoUpdate=false;
-    // la arandela se extruye en +Z local = +X del modelo; del lado derecho se apila hacia -X
-    const x=dir>0?x0+k*e:x0-(k+1)*e;
-    m.userData={base:new THREE.Matrix4().copy(toB?basisB:basisA).setPosition(x,0,0),k};
-    (toB?slideB:root).add(m);washers.push(m);
-  }
-  const s=new THREE.Mesh(gS,mats.S);
-  if(dir<0){s.rotation.z=Math.PI;s.position.x=P.L+P.juegoFlojo;}
-  s.userData={x:s.position.x,dir};
-  slideB.add(s);screws.push(s);
+    m.userData={base:new THREE.Matrix4().copy(t==='A'?basisA:basisB).setPosition(P.oreja+k*e,0,0),k};
+    (t==='B'?pivB:root).add(m);return m;
+  });
+}
+
+const screws=[[0,1],[P.L+P.juegoFlojo,-1]].map(([x,dir])=>{
+  const s=new THREE.Mesh(G.S,mats.S);
+  if(dir<0)s.rotation.z=Math.PI;
+  s.position.x=x;s.userData={x,dir};pivB.add(s);return s;
 });
 
 const grid=new THREE.GridHelper(400,40);grid.position.y=-7.5;scene.add(grid);
 grid.material.transparent=true;grid.material.opacity=0.6;
 
+function lado(){return $('ins-libre').checked?'libre':'pila';}
+
+// Caras que deslizan: cambios de pieza trabada a lo largo de la pila,
+// desde la oreja (A) hasta el nudillo (B). Las redondas no cuentan.
+function caras(st){
+  const seq=['A',...st.filter(t=>t!=='R'),'B'];
+  let n=0;for(let i=1;i<seq.length;i++)if(seq[i]!==seq[i-1])n++;
+  return n;
+}
+
+function renderStack(){
+  const name={A:'D·A',B:'D·B',R:'○'};
+  $('slots').innerHTML=stack.map((t,k)=>`<button type="button" class="${t}" data-k="${k}" aria-label="Disco ${k+1}: ${name[t]}">${name[t]}</button>`).join('');
+  const cls={A:'wa',B:'wb',R:'wr'},lbl={A:'A',B:'B',R:'○'};
+  $('stack').innerHTML='<div class="hd">cabeza</div><div class="ear">oreja A</div>'+
+    stack.map(t=>`<div class="${cls[t]}">${lbl[t]}</div>`).join('')+'<div class="kn">nudillo B</div>';
+  const nD=stack.filter(t=>t!=='R').length,n=caras(stack);
+  $('faces').textContent=`${nD} D + ${N-nD} redondas → ${n} cara${n>1?'s':''} deslizante${n>1?'s':''} en la pila, más la de la cabeza`;
+  [...$('presets').children].forEach(b=>b.setAttribute('aria-pressed',stack.join('')===PRESETS[b.dataset.n]));
+  buildWashers();update();calc();
+}
+$('presets').innerHTML=[6,4,3,2,0].map(n=>`<button type="button" data-n="${n}">${n} D</button>`).join('');
+$('presets').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;stack=PRESETS[b.dataset.n].split('');renderStack();});
+$('slots').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;
+  const k=+b.dataset.k;stack[k]={A:'B',B:'R',R:'A'}[stack[k]];renderStack();});
+
 function update(){
-  const ang=+$('ang').value, ex=+$('exp').value/100;
+  const ang=+$('ang').value, ex=+$('exp').value/100, v=lado();
   $('ang-o').textContent=ang+'°';$('exp-o').textContent=Math.round(ex*100)+' %';
   pivB.rotation.x=THREE.MathUtils.degToRad(ang);
+  meshB.geometry=G[v];
+  insert.position.x=P.xInserto[v]+(v==='pila'?1:-1)*20*ex;
+  insert.position.z=0;
   screws.forEach(s=>{s.position.x=s.userData.x-s.userData.dir*28*ex;});
   washers.forEach(m=>{
     const lift=(14+m.userData.k*7)*ex;
-    // en el marco de A se levanta en +Z; las de B se levantan en el +Z de B
     m.matrix.copy(m.userData.base).premultiply(new THREE.Matrix4().makeTranslation(0,0,lift));
   });
   meshA.visible=$('t-A').checked;meshB.visible=$('t-B').checked;
   washers.forEach(m=>m.visible=$('t-W').checked);
-  screws.forEach(s=>s.visible=$('t-S').checked);
+  screws.forEach(s=>s.visible=$('t-S').checked);insert.visible=$('t-S').checked;
   const planes=$('t-cut').checked?[cut]:[];
   Object.values(mats).forEach(m=>{m.clippingPlanes=planes;m.needsUpdate=true;});
+  $('ins-note').textContent=v==='pila'
+    ?'Inserto en el lado de la pila, que es el que carga la precarga y se arma y desarma en cada prueba. La oreja libre usa la rosca impresa. Recomendado.'
+    :'Inserto en la oreja libre: el hombro hace tope sobre el bronce. La pila aprieta contra la rosca impresa.';
 }
-['ang','exp','t-A','t-B','t-W','t-S','t-cut'].forEach(id=>$(id).addEventListener('input',update));
+['ang','exp','t-A','t-B','t-W','t-S','t-cut','ins-pila','ins-libre'].forEach(id=>$(id).addEventListener('input',update));
 
 const views={
   gen:[[210,170,240],[25,0,0]],
@@ -248,7 +299,7 @@ function resize(){
   renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix();
 }
 new ResizeObserver(resize).observe(canvas.parentElement);
-paint();
+buildWashers();paint();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',paint);
 new MutationObserver(paint).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 view('gen');update();resize();
@@ -264,11 +315,14 @@ const rows=[
   ['Agujeros de palanca','Ø5 a '+P.agujeros.map(f).join(' y ')+' mm'],
   ['Orejas del eslabón A','2 × '+f(P.oreja)+' mm'],
   ['Nudillo del eslabón B',f(P.nudillo[1]-P.nudillo[0])+' mm'],
-  ['Hueco oreja–nudillo',f(P.zona)+' mm (arandelas) / '+f(P.juegoFlojo)+' mm (libre)'],
-  ['Arandelas D, una sola oreja',P.nArandelas+' × '+f(P.eArandela)+' mm'],
+  ['Hueco oreja–nudillo',f(P.zona)+' (pila) / '+f(P.juegoFlojo)+' mm'],
+  ['Pila',P.ranuras+' discos × '+f(P.eArandela)+' mm'],
   ['Arandela D','14 alto × '+f(7+P.largoD)+' mm, Ø5,2'],
-  ['Alojamiento del hombro','Ø'+f(P.alojHombro[0])+' × '+f(P.alojHombro[1])+' / '+f(P.alojFlojo)+' mm'],
-  ['Piloto para M4','Ø'+f(P.piloto[0])+' × '+f(P.piloto[1])+' mm'],
+  ['Arandela redonda','Ø14, Ø5,2'],
+  ['Hombro dentro del nudillo, pila',f(P.entradaPila)+' mm'],
+  ['Inicio de rosca, pila / libre',f(P.topePila)+' / '+f(P.topeLibre)+' mm'],
+  ['Rosca impresa','M4×0,7, '+f(P.roscaImpresa[0])+' mm, +'+f(P.roscaImpresa[1])],
+  ['Inserto','Ø'+f(P.inserto[0])+' × '+f(P.inserto[1])+' mm'],
   ['Giro libre','±'+P.giro['+']+'°'],
   ['Volumen A / B',f(P.vol.A/1000)+' / '+f(P.vol.B/1000)+' cm³'],
 ];
@@ -279,12 +333,13 @@ function calc(){
   const T=+$('tq').value,mu=+$('mu').value,K=+$('kk').value;
   const F=K>0?T/(K*0.004):0;
   const reff=2/3*(7**3-2.6**3)/(7**2-2.6**2)/1000, rh=2/3*(4**3-2.6**3)/(4**2-2.6**2)/1000;
-  const tj=mu*F*(5*reff+rh), t0=mu*F*(reff+rh);
+  const n=caras(stack),tj=mu*F*(n*reff+rh), t0=mu*F*(reff+rh);
+  $('r-tj-l').textContent=`torque que traba la articulación, ${n} caras + cabeza`;
   const kgf=x=>(x/9.81).toFixed(1).replace('.',',')+' kgf';
   $('r-tj').textContent=tj.toFixed(2).replace('.',',')+' N·m';
   $('r-t0').textContent=t0.toFixed(2).replace('.',',')+' N·m';
   $('r-f').textContent=Math.round(F)+' N';
   $('r-60').textContent=kgf(tj/0.06);$('r-80').textContent=kgf(tj/0.08);
 }
-['tq','mu','kk'].forEach(id=>$(id).addEventListener('input',calc));calc();
+['tq','mu','kk'].forEach(id=>$(id).addEventListener('input',calc));renderStack();
 </script>
