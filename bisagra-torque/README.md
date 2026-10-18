@@ -34,6 +34,8 @@ Tornillos: Accu SSHE-M4-5-10-A2 (hombro Ø5 × 10, rosca M4 × 5).
 
 Tuercas: 2 tuercas hexagonales M4 comunes (DIN 934, 7 mm entre caras, 3,2 de
 alto). Se meten de costado por una ranura abierta hacia arriba antes de pasar
-el tornillo. En la pila la tuerca empieza a 2,8 mm de la cara del nudillo; en
+el tornillo. El alojamiento es ajustado entre caras (+0,1 mm), tiene 0,4 mm de
+holgura a lo largo del eje y el hexágono baja 0,4 mm más allá del centro, por si
+el fondo sale corto al imprimir. En la pila la tuerca empieza a 2,8 mm de la cara del nudillo; en
 la oreja libre el hombro hace tope sobre la tuerca. La versión sin tuercas usa
 agujeros autorroscantes de Ø3,5.

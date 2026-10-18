@@ -75,8 +75,9 @@ L_AUTORROSCANTE = 8.0      # 5 de rosca del tornillo + margen para la punta
 
 # Tuerca M4 (DIN 934: 7 entre caras, 3,2 de alto) cautiva, metida de costado
 AF_TUERCA, E_TUERCA = 7.0, 3.2
-AF_CAJERA = AF_TUERCA + 0.3
-E_CAJERA = E_TUERCA + 0.3
+AF_CAJERA = AF_TUERCA + 0.1      # entre caras: ajustada, la tuerca no gira
+E_CAJERA = E_TUERCA + 0.4        # a lo largo del eje
+SOBRE_RECORRIDO = 0.4            # el hexágono baja 0.4 más allá del eje
 D_PASO_TORNILLO = 4.4
 # Lado de la pila: la tuerca empieza a 2,8 mm de la cara del nudillo, así
 # la rosca del tornillo (de 1,2 a 6,2 mm) la atraviesa entera y queda 2,8 mm
@@ -154,6 +155,9 @@ def cajera_tuerca(xa):
     r = AF_CAJERA / math.sqrt(3)
     hexa = m3d.Manifold.cylinder(E_CAJERA, r, r, 6).rotate([0, 90, 0]).translate(
         [xa, 0, 0])
+    # sobre-recorrido: si el fondo sale corto al imprimir, la tuerca igual
+    # llega a quedar centrada con el agujero
+    hexa += hexa.translate([0, 0, -SOBRE_RECORRIDO])
     return hexa + caja(xa, xa + E_CAJERA, -AF_CAJERA / 2, AF_CAJERA / 2, 0, R + 1)
 
 
@@ -325,7 +329,7 @@ def main():
             "entradaPila": ENTRADA_PILA, "topePila": TOPE_PILA,
             "topeLibre": TOPE_LIBRE, "juegoFlojo": JUEGO_FLOJO,
             "autorroscante": [D_AUTORROSCANTE, L_AUTORROSCANTE],
-            "tuerca": [AF_TUERCA, E_TUERCA], "cajera": [AF_CAJERA, E_CAJERA],
+            "tuerca": [AF_TUERCA, E_TUERCA], "cajera": [AF_CAJERA, E_CAJERA, SOBRE_RECORRIDO],
             "tuercaPila": TUERCA_PILA,
             "xTuerca": {"pila": x0 + TUERCA_PILA,
                         "libre": x1 - TOPE_LIBRE - E_TUERCA},
