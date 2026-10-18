@@ -35,7 +35,8 @@ OREJA = 4.0                   # espesor de cada oreja del eslabón A
 N_ARANDELAS = 4
 E_ARANDELA = 0.4
 JUEGO_AXIAL = 0.2
-ZONA = N_ARANDELAS * E_ARANDELA + JUEGO_AXIAL  # 1.8 mm entre oreja y nudillo
+ZONA = N_ARANDELAS * E_ARANDELA + JUEGO_AXIAL  # 1.8 mm, solo en la oreja x=0
+JUEGO_FLOJO = 0.2  # oreja x=50, sin arandelas: gira libre
 
 PALANCA_ANCHO = 20.0
 PALANCA_LARGO = 50.0
@@ -49,14 +50,16 @@ L_ROSCA = 5.0
 D_CABEZA, H_CABEZA = 8.0, 4.0
 
 D_AGUJERO_OREJA = 5.2      # el hombro gira en la oreja
-D_ALOJ_HOMBRO = 5.4        # el hombro entra al nudillo sin tocar fondo
-P_ALOJ_HOMBRO = 6.5
+D_ALOJ_HOMBRO = 5.4
+P_ALOJ_HOMBRO = 6.5        # lado de las arandelas: el hombro no toca fondo
+# lado flojo: el hombro hace tope y deja 0.2 de juego axial a la oreja
+P_ALOJ_FLOJO = L_HOMBRO - OREJA - JUEGO_FLOJO - JUEGO_FLOJO
 D_PILOTO = 3.4             # M4 autorroscante en plástico
 P_PILOTO = 8.0
 D_AGUJERO_ARANDELA = 5.2
 LARGO_D = CARA - 0.2       # la cara plana de la D queda a 0.2 de la placa
 
-X_NUDILLO = (OREJA + ZONA, L - OREJA - ZONA)
+X_NUDILLO = (OREJA + ZONA, L - OREJA - JUEGO_FLOJO)
 
 # --- Primitivas ------------------------------------------------------------
 
@@ -106,11 +109,14 @@ def eslabon_b():
     x0, x1 = X_NUDILLO
     s = placa(1) + palanca(1)
     s += cil_x(R, x0, x1) + caja(x0, x1, 0, CARA + 0.5, -R, R)
-    agujero = (cil_x(D_ALOJ_HOMBRO / 2, x0 - 1, x0 + P_ALOJ_HOMBRO)
-               + cil_x(D_PILOTO / 2, x0 + P_ALOJ_HOMBRO - 0.01,
-                       x0 + P_ALOJ_HOMBRO + P_PILOTO))
-    s -= agujero
-    s -= agujero.mirror([1, 0, 0]).translate([L, 0, 0])
+    # lado de las arandelas (x0): el apriete comprime la pila
+    s -= cil_x(D_ALOJ_HOMBRO / 2, x0 - 1, x0 + P_ALOJ_HOMBRO)
+    s -= cil_x(D_PILOTO / 2, x0 + P_ALOJ_HOMBRO - 0.01,
+               x0 + P_ALOJ_HOMBRO + P_PILOTO)
+    # lado flojo (x1): el tornillo se aprieta a fondo contra el hombro
+    s -= cil_x(D_ALOJ_HOMBRO / 2, x1 - P_ALOJ_FLOJO, x1 + 1)
+    s -= cil_x(D_PILOTO / 2, x1 - P_ALOJ_FLOJO - P_PILOTO,
+               x1 - P_ALOJ_FLOJO + 0.01)
     return s
 
 
@@ -200,6 +206,7 @@ def main():
             "nudillo": X_NUDILLO, "hombro": [D_HOMBRO, L_HOMBRO],
             "rosca": L_ROSCA, "cabeza": [D_CABEZA, H_CABEZA],
             "alojHombro": [D_ALOJ_HOMBRO, P_ALOJ_HOMBRO],
+            "alojFlojo": P_ALOJ_FLOJO, "juegoFlojo": JUEGO_FLOJO,
             "piloto": [D_PILOTO, P_PILOTO], "giro": giro,
             "vol": {"A": a.volume(), "B": b.volume(), "W": w.volume()},
         },

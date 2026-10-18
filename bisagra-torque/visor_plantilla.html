@@ -77,7 +77,7 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
   <aside>
     <header>
       <h1>Bisagra con arandelas D</h1>
-      <p class="sub">Dos eslabones de 50 × 14 mm con palancas, para medir el torque de trabado con 4 arandelas de 0,4 mm entre oreja y nudillo.</p>
+      <p class="sub">Dos eslabones de 50 × 14 mm con palancas, para medir el torque de trabado con 4 arandelas de 0,4 mm en una sola oreja; la otra gira libre.</p>
     </header>
 
     <section>
@@ -96,13 +96,14 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
     </section>
 
     <section>
-      <h2>Pila del lado que se aprieta</h2>
+      <h2>Pila de la oreja que se aprieta</h2>
       <div class="stack" aria-label="Orden axial de la pila">
         <div class="hd">cabeza</div><div class="ear">oreja A</div>
         <div class="wb">B</div><div class="wa">A</div><div class="wb">B</div><div class="wa">A</div>
         <div class="kn">nudillo B</div>
       </div>
       <p class="note">Cada arandela apoya su lado plano contra la placa de un eslabón y gira con él. Alternadas B-A-B-A, dan 5 caras deslizantes entre oreja y nudillo en lugar de 1, más la cara bajo la cabeza. Colores claros: la arandela sigue a ese eslabón.</p>
+      <p class="note">La otra oreja no lleva arandelas: su tornillo se aprieta a fondo contra el hombro, que hace tope en el nudillo y le deja 0,2 mm de juego. Solo guía; no aporta torque.</p>
     </section>
 
     <section>
@@ -132,7 +133,7 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
       <ul class="note">
         <li>Tornillo tomado como Accu SSHE-M4-5-10-A2: hombro Ø5 × 10, rosca M4 × 5, cabeza Ø8 × 4. Confirmá el largo de rosca del tuyo.</li>
         <li>La rosca va autorroscada en un piloto de Ø3,4 en el nudillo. Si preferís inserto térmico M4, lo cambio.</li>
-        <li>El hombro nunca toca fondo (alojamiento de 6,5 mm), así el apriete comprime la pila y no el hombro.</li>
+        <li>Lado de las arandelas: el hombro nunca toca fondo (alojamiento de 6,5 mm), así el apriete comprime la pila. Lado flojo: alojamiento de 5,6 mm, el hombro hace tope y la oreja queda libre.</li>
         <li>Juego axial de 0,2 mm sobre la pila de 1,6 mm. El giro libre queda en ±97° antes de que choquen las placas.</li>
       </ul>
     </section>
@@ -195,8 +196,8 @@ const washers=[],screws=[];
 const basisB=new THREE.Matrix4().makeBasis(new THREE.Vector3(0,1,0),new THREE.Vector3(0,0,1),new THREE.Vector3(1,0,0));
 const basisA=new THREE.Matrix4().makeBasis(new THREE.Vector3(0,-1,0),new THREE.Vector3(0,0,-1),new THREE.Vector3(1,0,0));
 const e=P.eArandela;
-[[P.oreja,1],[P.L-P.oreja,-1]].forEach(([x0,dir])=>{
-  for(let k=0;k<P.nArandelas;k++){
+[[P.oreja,1,P.nArandelas],[P.L-P.oreja,-1,0]].forEach(([x0,dir,n])=>{
+  for(let k=0;k<n;k++){
     const toB=k%2===0;
     const m=new THREE.Mesh(gW,toB?mats.WB:mats.WA);
     m.matrixAutoUpdate=false;
@@ -206,7 +207,7 @@ const e=P.eArandela;
     (toB?slideB:root).add(m);washers.push(m);
   }
   const s=new THREE.Mesh(gS,mats.S);
-  if(dir<0){s.rotation.z=Math.PI;s.position.x=P.L;}
+  if(dir<0){s.rotation.z=Math.PI;s.position.x=P.L+P.juegoFlojo;}
   s.userData={x:s.position.x,dir};
   slideB.add(s);screws.push(s);
 });
@@ -263,10 +264,10 @@ const rows=[
   ['Agujeros de palanca','Ø5 a '+P.agujeros.map(f).join(' y ')+' mm'],
   ['Orejas del eslabón A','2 × '+f(P.oreja)+' mm'],
   ['Nudillo del eslabón B',f(P.nudillo[1]-P.nudillo[0])+' mm'],
-  ['Hueco oreja–nudillo',f(P.zona)+' mm'],
-  ['Arandelas D por lado',P.nArandelas+' × '+f(P.eArandela)+' mm'],
+  ['Hueco oreja–nudillo',f(P.zona)+' mm (arandelas) / '+f(P.juegoFlojo)+' mm (libre)'],
+  ['Arandelas D, una sola oreja',P.nArandelas+' × '+f(P.eArandela)+' mm'],
   ['Arandela D','14 alto × '+f(7+P.largoD)+' mm, Ø5,2'],
-  ['Alojamiento del hombro','Ø'+f(P.alojHombro[0])+' × '+f(P.alojHombro[1])+' mm'],
+  ['Alojamiento del hombro','Ø'+f(P.alojHombro[0])+' × '+f(P.alojHombro[1])+' / '+f(P.alojFlojo)+' mm'],
   ['Piloto para M4','Ø'+f(P.piloto[0])+' × '+f(P.piloto[1])+' mm'],
   ['Giro libre','±'+P.giro['+']+'°'],
   ['Volumen A / B',f(P.vol.A/1000)+' / '+f(P.vol.B/1000)+' cm³'],
