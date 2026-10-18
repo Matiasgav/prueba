@@ -10,7 +10,7 @@ pila de arandelas D entre una oreja y el nudillo. Todo sale de
 | Archivo | Cantidad | Notas |
 |---|---|---|
 | `eslabon_A_horquilla.stl` | 1 | Acostado, sin soportes |
-| `eslabon_B_inserto_en_pila.stl` | 1 | Recomendado. Alternativas: `..._inserto_en_libre`, `..._sin_inserto` |
+| `eslabon_B_tuercas.stl` | 1 | Recomendado: tuerca M4 cautiva en cada lado. Alternativas: `..._tuerca_en_pila`, `..._sin_tuerca` |
 | `arandelas_D_0_2mm_x24.stl` | 24 | Una sola capa de 0,2 |
 | `arandelas_D_0_4mm_x12.stl` | 12 | |
 | `arandelas_D_0_8mm_x8.stl` | 8 | |
@@ -30,5 +30,10 @@ pila de arandelas D entre una oreja y el nudillo. Todo sale de
 - La otra oreja no lleva arandelas: su tornillo se aprieta a fondo contra el
   hombro y la deja girar con 0,2 mm de juego.
 
-Tornillos: Accu SSHE-M4-5-10-A2 (hombro Ø5 × 10, rosca M4 × 5). Inserto
-térmico M4 × 8,1 en agujero Ø5,6; agujero autorroscante Ø3,5.
+Tornillos: Accu SSHE-M4-5-10-A2 (hombro Ø5 × 10, rosca M4 × 5).
+
+Tuercas: 2 tuercas hexagonales M4 comunes (DIN 934, 7 mm entre caras, 3,2 de
+alto). Se meten de costado por una ranura abierta hacia arriba antes de pasar
+el tornillo. En la pila la tuerca empieza a 2,8 mm de la cara del nudillo; en
+la oreja libre el hombro hace tope sobre la tuerca. La versión sin tuercas usa
+agujeros autorroscantes de Ø3,5.

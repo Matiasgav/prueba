@@ -2,7 +2,7 @@
 
 Genera las piezas con manifold3d, exporta los .stl a stl/ y arma visor.html
 con las mallas embebidas. El eslabón B sale en dos variantes según qué lado
-lleva el inserto térmico y cuál el agujero autorroscante.
+lleva tuerca M4 cautiva y cuál agujero autorroscante.
 
 Ejes del modelo (mm):
   X  eje de la bisagra (largo 50)
@@ -73,10 +73,15 @@ TOPE_LIBRE = L_HOMBRO - OREJA - 2 * JUEGO_FLOJO
 D_AUTORROSCANTE = 3.5
 L_AUTORROSCANTE = 8.0      # 5 de rosca del tornillo + margen para la punta
 
-# Inserto térmico M4 (tipo Ruthex M4 x 8.1): agujero Ø5.6; se empuja hasta
-# que asienta en el escalón del fondo
-D_INSERTO, L_INSERTO = 5.6, 8.1
-D_PASO_PUNTA = 4.4         # después del inserto, por si la punta sobresale
+# Tuerca M4 (DIN 934: 7 entre caras, 3,2 de alto) cautiva, metida de costado
+AF_TUERCA, E_TUERCA = 7.0, 3.2
+AF_CAJERA = AF_TUERCA + 0.3
+E_CAJERA = E_TUERCA + 0.3
+D_PASO_TORNILLO = 4.4
+# Lado de la pila: la tuerca empieza a 2,8 mm de la cara del nudillo, así
+# la rosca del tornillo (de 1,2 a 6,2 mm) la atraviesa entera y queda 2,8 mm
+# de pared para tomar la precarga.
+TUERCA_PILA = 2.8
 
 X_NUDILLO = (OREJA + ZONA, L - OREJA - JUEGO_FLOJO)
 
@@ -125,36 +130,54 @@ def eslabon_a():
 
 def agujero(tope, tipo):
     """Agujero del nudillo en coordenadas locales: eje +Z hacia adentro,
-    z=0 en la cara del nudillo. `tope`: profundidad donde empieza la rosca."""
+    z=0 en la cara del nudillo. `tope`: profundidad donde empieza la rosca
+    (o la tuerca)."""
+    h = m3d.Manifold.cylinder(tope + 1, D_ALOJ_HOMBRO / 2, D_ALOJ_HOMBRO / 2,
+                              SEG).translate([0, 0, -1])
     if tipo == "autorroscante":
-        h = m3d.Manifold.cylinder(tope + 1, D_ALOJ_HOMBRO / 2, D_ALOJ_HOMBRO / 2,
-                                  SEG).translate([0, 0, -1])
         r = D_AUTORROSCANTE / 2
         h += m3d.Manifold.cylinder(L_AUTORROSCANTE, r, r, SEG).translate(
             [0, 0, tope - 0.01])
         # chaflán de entrada para que la rosca arranque derecha
         return h + m3d.Manifold.cylinder(0.5, r + 0.5, r, SEG).translate(
             [0, 0, tope - 0.01])
-    # inserto: entra por la cara y asienta en el escalón de tope + L_INSERTO
-    fondo = tope + L_INSERTO
-    h = m3d.Manifold.cylinder(fondo + 1, D_INSERTO / 2, D_INSERTO / 2,
-                              SEG).translate([0, 0, -1])
-    return h + m3d.Manifold.cylinder(3, D_PASO_PUNTA / 2, D_PASO_PUNTA / 2,
-                                     SEG).translate([0, 0, fondo - 0.01])
+    # tuerca: paso libre a través de la cajera y para la punta del tornillo
+    r = D_PASO_TORNILLO / 2
+    return h + m3d.Manifold.cylinder(E_CAJERA + 4, r, r, SEG).translate(
+        [0, 0, tope - 0.01])
 
 
-def eslabon_b(inserto_en="pila"):
-    """Nudillo central entre las orejas. Un lado lleva agujero autorroscante y el
-    otro inserto térmico; `inserto_en` elige el lado ("pila" o "libre"),
-    o "ninguno" para dos agujeros autorroscantes.
-    Los agujeros se ubican solo con rotaciones para no invertir la rosca."""
+def cajera_tuerca(xa):
+    """Alojamiento de la tuerca, de xa a xa + E_CAJERA (coordenadas del
+    modelo). Hexágono con las caras planas verticales y una ranura abierta
+    hacia +Z para meter la tuerca de costado."""
+    r = AF_CAJERA / math.sqrt(3)
+    hexa = m3d.Manifold.cylinder(E_CAJERA, r, r, 6).rotate([0, 90, 0]).translate(
+        [xa, 0, 0])
+    return hexa + caja(xa, xa + E_CAJERA, -AF_CAJERA / 2, AF_CAJERA / 2, 0, R + 1)
+
+
+def eslabon_b(tuerca_en="ambos"):
+    """Nudillo central entre las orejas. Cada lado lleva una tuerca M4
+    cautiva o un agujero autorroscante; `tuerca_en`: "ambos", "pila" o
+    "ninguno". Los agujeros se ubican solo con rotaciones."""
     x0, x1 = X_NUDILLO
     s = placa(1) + palanca(1)
     s += cil_x(R, x0, x1) + caja(x0, x1, 0, CARA + 0.5, -R, R)
-    tipo_pila = "inserto" if inserto_en == "pila" else "autorroscante"
-    tipo_libre = "inserto" if inserto_en == "libre" else "autorroscante"
-    s -= agujero(TOPE_PILA, tipo_pila).rotate([0, 90, 0]).translate([x0, 0, 0])
-    s -= agujero(TOPE_LIBRE, tipo_libre).rotate([0, -90, 0]).translate([x1, 0, 0])
+    t_pila = tuerca_en in ("ambos", "pila")
+    t_libre = tuerca_en == "ambos"
+    if t_pila:
+        s -= agujero(TUERCA_PILA, "tuerca").rotate([0, 90, 0]).translate([x0, 0, 0])
+        s -= cajera_tuerca(x0 + TUERCA_PILA)
+    else:
+        s -= agujero(TOPE_PILA, "autorroscante").rotate([0, 90, 0]).translate([x0, 0, 0])
+    if t_libre:
+        # el hombro hace tope sobre la cara de la tuerca: el apriete queda
+        # entre tornillo y tuerca, sin plástico en medio
+        s -= agujero(TOPE_LIBRE, "tuerca").rotate([0, -90, 0]).translate([x1, 0, 0])
+        s -= cajera_tuerca(x1 - TOPE_LIBRE - E_CAJERA)
+    else:
+        s -= agujero(TOPE_LIBRE, "autorroscante").rotate([0, -90, 0]).translate([x1, 0, 0])
     return s
 
 
@@ -192,9 +215,11 @@ def arandela_redonda(e):
     return m3d.Manifold.extrude(perfil, e)
 
 
-def inserto():
+def tuerca():
     """Solo para el visor. Eje X, desde x=0."""
-    return cil_x(D_INSERTO / 2 - 0.1, 0, L_INSERTO) - cil_x(2.0, -1, L_INSERTO + 1)
+    r = AF_TUERCA / math.sqrt(3)
+    t = m3d.Manifold.cylinder(E_TUERCA, r, r, 6).rotate([0, 90, 0])
+    return t - cil_x(1.7, -1, E_TUERCA + 1)
 
 
 def tornillo():
@@ -248,12 +273,12 @@ def lote(pieza, n, cols, paso=18.0):
 
 def main():
     a = eslabon_a()
-    b_pila, b_libre = eslabon_b("pila"), eslabon_b("libre")
+    b_ambos, b_pila = eslabon_b("ambos"), eslabon_b("pila")
     b_sin = eslabon_b("ninguno")
 
-    for b in (b_pila, b_libre, b_sin):
+    for b in (b_ambos, b_pila, b_sin):
         assert (a ^ b).volume() < 1e-6, "A y B se interfieren"
-    giro = rango_giro(a, b_pila)
+    giro = rango_giro(a, b_ambos)
 
     out = AQUI / "stl"
     out.mkdir(exist_ok=True)
@@ -263,9 +288,9 @@ def main():
     # llegan al plano de la cama porque su diámetro es el espesor.
     piezas = {
         "eslabon_A_horquilla.stl": a.translate([0, 0, R]),
-        "eslabon_B_inserto_en_pila.stl": b_pila.translate([0, 0, R]),
-        "eslabon_B_inserto_en_libre.stl": b_libre.translate([0, 0, R]),
-        "eslabon_B_sin_inserto.stl": b_sin.translate([0, 0, R]),
+        "eslabon_B_tuercas.stl": b_ambos.translate([0, 0, R]),
+        "eslabon_B_tuerca_en_pila.stl": b_pila.translate([0, 0, R]),
+        "eslabon_B_sin_tuerca.stl": b_sin.translate([0, 0, R]),
     }
     # Cantidades: con 0.2 entran hasta 24 D; con 0.4, 12; con 0.8, 6.
     # Las redondas alcanzan para rellenar cualquier combinación.
@@ -283,11 +308,11 @@ def main():
 
     x0, x1 = X_NUDILLO
     datos = {
-        "A": malla_json(a), "Bp": malla_json(b_pila), "Bl": malla_json(b_libre),
-        "Bs": malla_json(b_sin),
+        "A": malla_json(a), "Bambos": malla_json(b_ambos), "Bpila": malla_json(b_pila),
+        "Bsin": malla_json(b_sin),
         # arandelas de 1 mm: el visor las escala al espesor de cada una
         "WD": malla_json(arandela_d(1.0)), "WR": malla_json(arandela_redonda(1.0)),
-        "S": malla_json(tornillo()), "I": malla_json(inserto()),
+        "S": malla_json(tornillo()), "N": malla_json(tuerca()),
         "p": {
             "L": L, "T": T, "cara": CARA, "ancho": ANCHO_PLACA,
             "oreja": OREJA, "zona": ZONA, "pila": PILA,
@@ -300,11 +325,12 @@ def main():
             "entradaPila": ENTRADA_PILA, "topePila": TOPE_PILA,
             "topeLibre": TOPE_LIBRE, "juegoFlojo": JUEGO_FLOJO,
             "autorroscante": [D_AUTORROSCANTE, L_AUTORROSCANTE],
-            "inserto": [D_INSERTO, L_INSERTO],
-            "xInserto": {"pila": x0 + TOPE_PILA,
-                         "libre": x1 - TOPE_LIBRE - L_INSERTO},
+            "tuerca": [AF_TUERCA, E_TUERCA], "cajera": [AF_CAJERA, E_CAJERA],
+            "tuercaPila": TUERCA_PILA,
+            "xTuerca": {"pila": x0 + TUERCA_PILA,
+                        "libre": x1 - TOPE_LIBRE - E_TUERCA},
             "giro": giro,
-            "vol": {"A": a.volume(), "B": b_pila.volume()},
+            "vol": {"A": a.volume(), "B": b_ambos.volume()},
         },
     }
     plantilla = (AQUI / "visor_plantilla.html").read_text(encoding="utf-8")
