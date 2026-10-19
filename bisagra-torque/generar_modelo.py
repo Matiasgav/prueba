@@ -269,13 +269,6 @@ def rango_giro(a, b):
     return res
 
 
-def lote(pieza, n, cols, paso=18.0):
-    m = m3d.Manifold()
-    for k in range(n):
-        m += pieza.translate([(k % cols) * paso, (k // cols) * paso, 0])
-    return m
-
-
 def main():
     a = eslabon_a()
     b = eslabon_b("pila")
@@ -293,17 +286,11 @@ def main():
         "eslabon_A_horquilla.stl": a.translate([0, 0, R]),
         "eslabon_B_nudillo.stl": b.translate([0, 0, R]),
     }
-    # Cantidades: con 0.2 entran hasta 24 D; con 0.4, 12; con 0.8, 6.
-    # Las redondas alcanzan para rellenar cualquier combinación.
-    cant_d = {0.2: (24, 6), 0.4: (12, 4), 0.8: (8, 4)}
-    cant_r = {0.2: (4, 4), 0.4: (4, 4), 0.8: (6, 3)}
+    # Una arandela por archivo; las cantidades van en el README.
     for e in ESPESORES:
-        n, cols = cant_d[e]
-        piezas[f"arandelas_D_{e:.1f}mm_x{n}.stl".replace(".", "_", 1)] = \
-            lote(arandela_d(e), n, cols)
-        n, cols = cant_r[e]
-        piezas[f"arandelas_redondas_{e:.1f}mm_x{n}.stl".replace(".", "_", 1)] = \
-            lote(arandela_redonda(e), n, cols, 17.0)
+        mm = f"{e:.1f}".replace(".", "_")
+        piezas[f"arandela_D_{mm}mm.stl"] = arandela_d(e)
+        piezas[f"arandela_redonda_{mm}mm.stl"] = arandela_redonda(e)
     for nombre, man in piezas.items():
         a_trimesh(man).export(out / nombre)
 

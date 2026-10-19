@@ -7,16 +7,18 @@ pila de arandelas D entre una oreja y el nudillo. Todo sale de
 
 ## Qué imprimir (`stl/`)
 
+Cada archivo es una sola pieza; la cantidad sugerida se copia en el laminador.
+
 | Archivo | Cantidad | Notas |
 |---|---|---|
 | `eslabon_A_horquilla.stl` | 1 | Acostado, sin soportes |
 | `eslabon_B_nudillo.stl` | 1 | Tuerca M4 cautiva del lado de la pila; autorroscante del lado libre |
-| `arandelas_D_0_2mm_x24.stl` | 24 | Una sola capa de 0,2 |
-| `arandelas_D_0_4mm_x12.stl` | 12 | |
-| `arandelas_D_0_8mm_x8.stl` | 8 | |
-| `arandelas_redondas_0_2mm_x4.stl` | 4 | Relleno |
-| `arandelas_redondas_0_4mm_x4.stl` | 4 | Relleno |
-| `arandelas_redondas_0_8mm_x6.stl` | 6 | Relleno |
+| `arandela_D_0_2mm.stl` | 24 | Una sola capa de 0,2. Con 24 se arma la pila completa |
+| `arandela_D_0_4mm.stl` | 12 | |
+| `arandela_D_0_8mm.stl` | 8 | 6 para la pila + 2 de repuesto |
+| `arandela_redonda_0_2mm.stl` | 4 | Relleno |
+| `arandela_redonda_0_4mm.stl` | 4 | Relleno |
+| `arandela_redonda_0_8mm.stl` | 6 | Relleno |
 
 ## Armado de la pila
 
