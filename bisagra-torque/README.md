@@ -11,7 +11,7 @@ Cada archivo es una sola pieza; la cantidad sugerida se copia en el laminador.
 
 | Archivo | Cantidad | Notas |
 |---|---|---|
-| `eslabon_A_horquilla.stl` | 1 | Acostado, sin soportes |
+| `eslabon_A_horquilla.stl` | 1 | Acostado, sin soportes. Placa aligerada (8 mm con ventana) |
 | `eslabon_B_nudillo.stl` | 1 | Tuerca M4 cautiva del lado de la pila; autorroscante del lado libre |
 | `arandela_D_0_2mm.stl` | 24 | Una sola capa de 0,2. Con 24 se arma la pila completa |
 | `arandela_D_0_4mm.stl` | 12 | |
@@ -19,16 +19,24 @@ Cada archivo es una sola pieza; la cantidad sugerida se copia en el laminador.
 | `arandela_redonda_0_2mm.stl` | 4 | Relleno |
 | `arandela_redonda_0_4mm.stl` | 4 | Relleno |
 | `arandela_redonda_0_8mm.stl` | 6 | Relleno |
+| `tapa_B_1_6mm.stl` | 1 | Va bajo la cabeza, con la lengüeta hacia B |
 
 ## Armado de la pila
 
-- La pila va en la oreja de x = 0 y **siempre suma 4,8 mm**: arandelas D de un
-  espesor más redondas de relleno. Así el hombro del tornillo entra 1,2 mm en
-  el nudillo y nunca toca fondo, y el apriete comprime la pila.
-- Las D van alternadas desde la oreja: la primera trabada con B (cara plana
-  contra la placa B), la siguiente con A, y así. Las redondas van al final, del
-  lado del nudillo.
-- Caras deslizantes: con n arandelas D, n + 1 si n es par y n si es impar.
+Orden desde el nudillo, en el lado x = 0:
+`nudillo B · oreja A (3 mm) · arandelas · tapa B (1,6 mm) · cabeza`.
+
+- La pila va por fuera de la oreja y **siempre suma 4,8 mm** (más la tapa):
+  arandelas D de un espesor más redondas de relleno. Con todo apretado el hombro
+  entra 0,6 mm en el nudillo y nunca toca fondo.
+- Cada arandela D tiene una lengüeta que entra en la ranura de su eslabón. Las
+  ranuras quedan abiertas en la punta de los eslabones: con el tornillo afuera,
+  las arandelas entran deslizando a lo largo del eje. Después va la tapa (con
+  lengüeta hacia B) y el tornillo.
+- Las D van alternadas desde la oreja: la primera con la lengüeta hacia B, la
+  siguiente hacia A, y así. Las redondas van al final, del lado de la tapa.
+- Caras deslizantes: nudillo/oreja + oreja/1.ª D + … + última/tapa. Con n
+  arandelas D: n + 2 si n es par y n + 1 si es impar.
 - La otra oreja no lleva arandelas: su tornillo se aprieta a fondo contra el
   hombro y la deja girar con 0,2 mm de juego.
 

@@ -83,7 +83,7 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
   <aside>
     <header>
       <h1>Bisagra con arandelas D</h1>
-      <p class="sub">Dos eslabones de 50 × 14 mm con palancas, para medir el torque de trabado con una pila de arandelas D de 0,2, 0,4 u 0,8 mm en una sola oreja; la otra gira libre.</p>
+      <p class="sub">Dos eslabones de 50 × 14 mm con palancas, para medir el torque de trabado con una pila de arandelas D con lengüeta, de 0,2, 0,4 u 0,8 mm, en una sola oreja; la otra gira libre.</p>
     </header>
 
     <section>
@@ -107,14 +107,15 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
     </section>
 
     <section>
-      <h2>Pila de la oreja que se aprieta</h2>
+      <h2>Pila (lado x = 0, por fuera de la oreja)</h2>
       <div class="ctl" style="margin-bottom:4px"><label>Espesor de las arandelas D</label><output id="e-o"></output></div>
       <div class="seg" id="esp" role="group" aria-label="Espesor de las D" style="margin-top:0"></div>
       <div class="ctl"><label for="nd">Cantidad de arandelas D</label><output id="nd-o"></output>
         <input id="nd" type="range" min="0" max="6" step="1" value="6"></div>
       <div class="stack" id="stack" aria-label="Orden axial de la pila"></div>
       <p class="faces" id="faces"></p>
-      <p class="note">La pila siempre suma 4,8 mm para que el hombro no toque fondo. Las D van alternadas (B, A, B…) desde la oreja y las redondas completan del lado del nudillo, de mayor a menor. Una redonda entre dos piezas que giran distinto se comporta como una sola cara. Con un número impar de D, la última queda trabada igual que el nudillo y no suma.</p>
+      <p class="note">Orden desde el nudillo: nudillo B · oreja A · arandelas · tapa B · cabeza. La pila siempre suma 4,8 mm (más la tapa de 1,6) para que el hombro no toque fondo. Las D van alternadas desde la oreja (B, A, B…) y las redondas completan del lado de la tapa. Cada D lleva una lengüeta que entra en la ranura de su eslabón: empuja de costado y no puede pasarse al otro lado.</p>
+      <p class="note">Armado: con el tornillo afuera, las arandelas entran deslizando a lo largo del eje por las ranuras, que quedan abiertas en la punta de los eslabones. Después la tapa y el tornillo.</p>
       <p class="note">La otra oreja no lleva arandelas: su tornillo se aprieta a fondo contra el hombro, que hace tope y le deja 0,2 mm de juego. Solo guía; no aporta torque.</p>
     </section>
 
@@ -132,7 +133,7 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
         <div><b id="r-60">–</b><span>peso en el agujero a 60 mm</span></div>
         <div><b id="r-80">–</b><span>peso en el agujero a 80 mm</span></div>
       </div>
-      <p class="note" style="margin-top:8px">Radio efectivo de cada cara: 5,1 mm (anillo Ø5,2–Ø14); bajo la cabeza 3,3 mm (Ø5,2–Ø8). Es una estimación de orden de magnitud: el μ real del PLA varía mucho.</p>
+      <p class="note" style="margin-top:8px">Radio efectivo de cada cara: 5,1 mm (anillo Ø5,2–Ø14). La cabeza gira con la tapa y no suma. La traba con lengüeta aguanta unos 4–5 N·m antes de aplastarse (ver el análisis): si el torque estimado pasa de eso, apretá menos. Es una estimación de orden de magnitud.</p>
     </section>
 
     <section>
@@ -144,10 +145,10 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
       <h2>Notas de impresión y armado</h2>
       <ul class="note">
         <li>Tornillo tomado como Accu SSHE-M4-5-10-A2: hombro Ø5 × 10, rosca M4 × 5, cabeza Ø8 × 4.</li>
-        <li>Lado de la pila: el hombro llega a 1,2 mm de la cara del nudillo y la tuerca empieza a 2,8, así los 5 mm de rosca la atraviesan entera y queda una pared de 2,8 mm que toma la precarga. Oreja libre: el agujero autorroscante empieza a 5,6 mm, donde el hombro hace tope.</li>
+        <li>Lado de la pila: con todo apretado (tapa 1,6 + pila 4,8 + oreja 3) el hombro entra 0,6 mm en el nudillo. La tuerca empieza a 2,0 mm de la cara, queda entera dentro de los 5 mm de rosca y deja 2 mm de pared. Oreja libre: el agujero autorroscante empieza a 5,6 mm, donde el hombro hace tope.</li>
         <li>Agujero autorroscante: liso, Ø3,5 × 8 mm con chaflán de entrada. El tornillo M4 se hace la rosca solo al entrar; conviene pasarlo una vez antes de armar. Si queda duro o flojo, se ajusta el diámetro y se regenera.</li>
         <li>Tuerca hexagonal M4 común (DIN 934, 7 mm entre caras, 3,2 de alto). Entra de costado por una ranura abierta hacia arriba. Ajustada entre caras (+0,1 mm), con 0,4 mm de holgura a lo largo del eje, y el hexágono baja 0,4 mm más allá del centro por si el fondo sale corto al imprimir. El tornillo la sostiene una vez armado. Metela antes de pasar el tornillo.</li>
-        <li>Los eslabones se imprimen acostados, sin soportes. Arandelas: imprimir con capa de 0,2 (la de 0,2 es una sola capa; conviene primera capa bien calibrada). La D tiene esquinas R1,5 y una hendidura central de 7 × 0,5 mm.</li>
+        <li>Los eslabones se imprimen acostados, sin soportes. Para ahorrar material la placa es de 14 mm solo junto a la bisagra y baja a 8 mm con una ventana; la palanca también es de 8 mm. Arandelas: capa de 0,2 (la de 0,2 es una sola capa).</li>
       </ul>
     </section>
   </aside>
@@ -221,16 +222,24 @@ function armarPila(){
 let washers=[];
 function buildWashers(){
   washers.forEach(m=>m.parent.remove(m));
-  let x=P.oreja;
+  // la pila se arma desde la oreja hacia afuera (x decreciente); la tapa
+  // queda en x 0..1,6 bajo la cabeza
+  let x=P.xOrejaPila;
+  const tapa=new THREE.Mesh(G.WD,mats.WB);tapa.matrixAutoUpdate=false;
+  tapa.userData={base:new THREE.Matrix4().copy(basisB).setPosition(0,0,0)
+    .multiply(new THREE.Matrix4().makeScale(1,1,P.tapa)),k:stack.length};
+  pivB.add(tapa);
   washers=stack.map((d,k)=>{
+    x-=d.e;
     const m=new THREE.Mesh(d.t==='R'?G.WR:G.WD,mats['W'+d.t]);
     m.matrixAutoUpdate=false;
     // las mallas miden 1 mm de espesor (Z local): se escalan al de cada disco
     const base=new THREE.Matrix4().copy(d.t==='A'?basisA:basisB).setPosition(x,0,0)
       .multiply(new THREE.Matrix4().makeScale(1,1,d.e));
-    m.userData={base,k};x+=d.e;
+    m.userData={base,k};
     (d.t==='B'?pivB:root).add(m);return m;
   });
+  washers.push(tapa);
 }
 
 const screws=[[0,1],[P.L+P.juegoFlojo,-1]].map(([x,dir])=>{
@@ -246,7 +255,8 @@ grid.material.transparent=true;grid.material.opacity=0.6;
 // Caras que deslizan: cambios de pieza trabada a lo largo de la pila,
 // desde la oreja (A) hasta el nudillo (B). Las redondas no cuentan.
 function caras(st){
-  const seq=['A',...st.map(d=>d.t).filter(t=>t!=='R'),'B'];
+  // nudillo (B) | oreja (A) | pila | tapa (B); la cabeza gira con la tapa
+  const seq=['B','A',...st.map(d=>d.t).filter(t=>t!=='R'),'B'];
   let n=0;for(let i=1;i<seq.length;i++)if(seq[i]!==seq[i-1])n++;
   return n;
 }
@@ -259,13 +269,13 @@ function renderStack(){
   $('e-o').textContent=coma(espD)+' mm';$('nd-o').textContent=nD+' de '+max;
   [...$('esp').children].forEach(b=>b.setAttribute('aria-pressed',+b.dataset.e===espD));
   const cls={A:'wa',B:'wb',R:'wr'},lbl={A:'A',B:'B',R:'○'};
-  $('stack').innerHTML='<div class="hd">cabeza</div><div class="ear">oreja A</div>'+
+  $('stack').innerHTML='<div class="kn">nudillo B</div><div class="ear" style="flex:3">oreja A</div>'+
     stack.map(d=>`<div class="${cls[d.t]}" style="flex:${d.e}" title="${d.t==='R'?'redonda':'D·'+d.t} ${coma(d.e)} mm">${d.e>=0.4?lbl[d.t]:''}</div>`).join('')+
-    '<div class="kn">nudillo B</div>';
+    `<div class="wb" style="flex:${P.tapa}">tapa</div><div class="hd">cabeza</div>`;
   const n=caras(stack),red={};
   stack.filter(d=>d.t==='R').forEach(d=>red[d.e]=(red[d.e]||0)+1);
   const txtR=Object.keys(red).sort().reverse().map(e=>`${red[e]} × ${coma(e)}`).join(' + ');
-  $('faces').textContent=`${nD} D de ${coma(espD)}${txtR?' + redondas '+txtR:''} → ${n} cara${n>1?'s':''} deslizante${n>1?'s':''}, más la de la cabeza`;
+  $('faces').textContent=`${nD} D de ${coma(espD)}${txtR?' + redondas '+txtR:''} → ${n} cara${n>1?'s':''} deslizante${n>1?'s':''}`;
   buildWashers();update();calc();
 }
 $('esp').innerHTML=P.espesores.map(e=>`<button type="button" data-e="${e}">${coma(e)} mm</button>`).join('');
@@ -321,15 +331,15 @@ const rows=[
   ['Placa (cara a borde)',f(P.cara)+' → '+f(P.cara+P.ancho)+' mm del eje'],
   ['Palanca centrada',f(P.palancaAncho)+' × '+f(P.palancaLargo)+' mm'],
   ['Agujeros de palanca','Ø5 a '+P.agujeros.map(f).join(' y ')+' mm'],
-  ['Orejas del eslabón A','2 × '+f(P.oreja)+' mm'],
+  ['Orejas del eslabón A',f(P.orejaPila)+' (pila) / '+f(P.oreja)+' (libre) mm'],
   ['Nudillo del eslabón B',f(P.nudillo[1]-P.nudillo[0])+' mm'],
-  ['Hueco oreja–nudillo',f(P.zona)+' (pila) / '+f(P.juegoFlojo)+' mm'],
+  ['Hueco para tapa + pila',f(P.tapa)+' + '+f(P.pila)+' + '+f(P.holguraPila)+' mm'],
   ['Pila (siempre)',f(P.pila)+' mm, D de '+P.espesores.map(f).join(' / ')],
-  ['Arandela D','14 × '+f(7+P.largoD)+' mm, Ø5,2, R'+f(P.rEsquinaD)],
-  ['Hendidura de la D',f(P.hendidura[0])+' × '+f(P.hendidura[1])+' mm, centrada'],
+  ['Arandela D','14 alto, cara plana a '+f(P.largoD)+' mm, esquinas vivas, Ø5,2'],
+  ['Lengüeta / ranura',f(P.lengueta[0])+' ancho, hasta '+f(P.lengueta[1])+' / '+f(P.ranura[0])+', fondo '+f(P.ranura[1])+' mm'],
   ['Arandela redonda','Ø14, Ø5,2'],
   ['Hombro dentro del nudillo, pila',f(P.entradaPila)+' mm'],
-  ['Inicio de rosca, pila / libre',f(P.topePila)+' / '+f(P.topeLibre)+' mm'],
+  ['Tuerca / rosca libre desde',f(P.tuercaPila)+' / '+f(P.topeLibre)+' mm'],
   ['Agujero autorroscante','Ø'+f(P.autorroscante[0])+' × '+f(P.autorroscante[1])+' mm'],
   ['Tuerca M4 / alojamiento',f(P.tuerca[0])+' × '+f(P.tuerca[1])+' / '+f(P.cajera[0])+' × '+f(P.cajera[1])+' (+'+f(P.cajera[2])+' abajo) mm'],
   ['Giro libre','±'+P.giro['+']+'°'],
@@ -342,8 +352,8 @@ function calc(){
   const T=+$('tq').value,mu=+$('mu').value,K=+$('kk').value;
   const F=K>0?T/(K*0.004):0;
   const reff=2/3*(7**3-2.6**3)/(7**2-2.6**2)/1000, rh=2/3*(4**3-2.6**3)/(4**2-2.6**2)/1000;
-  const n=caras(stack),tj=mu*F*(n*reff+rh), t0=mu*F*(reff+rh);
-  $('r-tj-l').textContent=`torque que traba la articulación, ${n} caras + cabeza`;
+  const n=caras(stack),tj=mu*F*n*reff, t0=mu*F*caras(stack.filter(d=>d.t==='R'))*reff;
+  $('r-tj-l').textContent=`torque que traba la articulación, ${n} caras`;
   const kgf=x=>(x/9.81).toFixed(1).replace('.',',')+' kgf';
   $('r-tj').textContent=tj.toFixed(2).replace('.',',')+' N·m';
   $('r-t0').textContent=t0.toFixed(2).replace('.',',')+' N·m';

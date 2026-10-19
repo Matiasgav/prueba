@@ -1,9 +1,8 @@
-"""Bisagra de dos eslabones para ensayar torque de trabado con arandelas en D.
+"""Bisagra de dos eslabones para ensayar torque de trabado con arandelas D con
+lengüeta.
 
 Genera las piezas con manifold3d, exporta los .stl a stl/ y arma visor.html
-con las mallas embebidas. El eslabón B sale en dos variantes según qué lado
-lleva tuerca M4 cautiva y cuál agujero autorroscante (por defecto: tuerca en la
-pila, autorroscante en la oreja libre).
+con las mallas embebidas.
 
 Ejes del modelo (mm):
   X  eje de la bisagra (largo 50)
@@ -32,15 +31,29 @@ R = T / 2
 HOLGURA_R = 1.0    # luz radial entre nudillo y la cara del otro eslabón
 CARA = R + HOLGURA_R          # cara plana de cada placa, a 8 mm del eje
 ANCHO_PLACA = 30.0            # placa: de 8 a 38 mm del eje
-OREJA = 4.0                   # espesor de cada oreja del eslabón A
 
-# La pila siempre suma PILA mm: arandelas D de un espesor + redondas de
-# relleno. Así el hombro entra siempre lo mismo y nunca toca fondo.
-PILA = 4.8
+# Aligerado: la placa tiene el espesor completo solo cerca de la bisagra y
+# después baja a 8 mm (apoyada en la cama), con una ventana pasante.
+Y_GRUESO = 15.5               # hasta acá 14 mm de espesor
+Y_RAMPA = 21.5                # rampa a 45° hasta el espesor delgado
+Z_DELGADO = 1.0               # cara superior de la parte delgada (8 mm)
+VENTANA = (9.0, 41.0, 24.5, 34.0)   # x0, x1, y0, y1 de la ventana de la placa
+
+# Lado de la pila (x = 0). La pila va por fuera de la oreja, entre la oreja y
+# la cabeza del tornillo, así las arandelas entran deslizando a lo largo del
+# eje por las ranuras de las placas, que quedan abiertas en x = 0.
+#   cabeza | tapa B | pila | oreja A | nudillo B
+TAPA = 1.6                    # arandela gruesa trabada con B, bajo la cabeza
+PILA = 4.8                    # siempre: arandelas D de un espesor + redondas
 ESPESORES = (0.2, 0.4, 0.8)
-JUEGO_AXIAL = 0.2
-ZONA = PILA + JUEGO_AXIAL  # 5.0 mm, solo en la oreja x=0
-JUEGO_FLOJO = 0.2  # oreja x=50, sin arandelas: gira libre
+HOLGURA_PILA = 0.2            # juego axial al armar
+OREJA_PILA = 3.0
+JUEGO_NUDILLO = 0.2           # entre la oreja de la pila y el nudillo
+X_OREJA_PILA = TAPA + PILA + HOLGURA_PILA          # 6.6: cara exterior
+
+# Lado libre (x = 50): oreja de 4 mm, gira libre con 0.2 de juego.
+OREJA = 4.0
+JUEGO_FLOJO = 0.2
 
 PALANCA_ANCHO = 20.0
 PALANCA_LARGO = 50.0
@@ -56,17 +69,22 @@ D_CABEZA, H_CABEZA = 8.0, 4.0
 D_AGUJERO_OREJA = 5.2      # el hombro gira en la oreja
 D_ALOJ_HOMBRO = 5.4
 D_AGUJERO_ARANDELA = 5.2
-LARGO_D = CARA - 0.2       # la cara plana de la D queda a 0.2 de la placa
-R_ESQUINA_D = 1.5
-HENDIDURA = (7.0, 0.5)     # ancho y profundidad, centrada en la cara plana
 D_REDONDA = T
 
-# Cuánto entra el hombro en el nudillo, medido desde la cara del nudillo.
-# Lado de la pila: con los 6 discos apretados entra 3.6; la rosca empieza
-# 0.6 más adentro para que el hombro nunca toque fondo y el apriete vaya a
-# la pila.
-ENTRADA_PILA = L_HOMBRO - OREJA - PILA
-TOPE_PILA = ENTRADA_PILA + 0.6
+# Arandela D con lengüeta. La cara plana queda a 0.2 de la placa (esquinas
+# vivas) y la lengüeta entra en una ranura de la placa: empuja de costado,
+# con brazo de 8 a 12.5 mm del eje.
+LARGO_D = CARA - 0.2
+LENGUETA_ANCHO = 8.0       # 1,7 veces el largo dentro de la ranura: no se dobla
+LENGUETA_HASTA = 12.3      # distancia al eje de la punta
+R_RAIZ_LENGUETA = 0.4
+RANURA_ANCHO = LENGUETA_ANCHO + 0.3
+RANURA_FONDO = 12.5
+CHAFLAN_RANURA = 0.6       # boca de la ranura, deja lugar al radio de la raíz
+
+# Cuánto entra el hombro en el nudillo con todo apretado:
+#   10 - (tapa 1.6 + pila 4.8 + oreja 3.0) = 0.6
+ENTRADA_PILA = L_HOMBRO - (TAPA + PILA + OREJA_PILA)
 # Lado libre: el hombro hace tope y la oreja queda con 0.2 de juego.
 TOPE_LIBRE = L_HOMBRO - OREJA - 2 * JUEGO_FLOJO
 
@@ -80,12 +98,11 @@ AF_CAJERA = AF_TUERCA + 0.1      # entre caras: ajustada, la tuerca no gira
 E_CAJERA = E_TUERCA + 0.4        # a lo largo del eje
 SOBRE_RECORRIDO = 0.4            # el hexágono baja 0.4 más allá del eje
 D_PASO_TORNILLO = 4.4
-# Lado de la pila: la tuerca empieza a 2,8 mm de la cara del nudillo, así
-# la rosca del tornillo (de 1,2 a 6,2 mm) la atraviesa entera y queda 2,8 mm
-# de pared para tomar la precarga.
-TUERCA_PILA = 2.8
+# La rosca del tornillo va de 0.6 a 5.6 mm dentro del nudillo; la tuerca
+# empieza a 2.0 y queda entera dentro de la rosca, con 2 mm de pared.
+TUERCA_PILA = 2.0
 
-X_NUDILLO = (OREJA + ZONA, L - OREJA - JUEGO_FLOJO)
+X_NUDILLO = (X_OREJA_PILA + OREJA_PILA + JUEGO_NUDILLO, L - OREJA - JUEGO_FLOJO)
 
 # --- Primitivas ------------------------------------------------------------
 
@@ -104,30 +121,53 @@ def cil_z(r, x, y, z0, z1):
     return m3d.Manifold.cylinder(z1 - z0, r, r, SEG).translate([x, y, z0])
 
 
+def extruir_x(perfil_yz, x0, x1):
+    """Extruye un perfil del plano (y, z) a lo largo de X."""
+    m = m3d.Manifold.extrude(m3d.CrossSection([perfil_yz]), x1 - x0)
+    # local (x, y, z) -> modelo (Y, Z, X)
+    return m.transform([[0, 0, 1, x0], [1, 0, 0, 0], [0, 1, 0, 0]])
+
+
 def palanca(signo):
     x0 = (L - PALANCA_ANCHO) / 2
     y0, y1 = CARA + ANCHO_PLACA, CARA + ANCHO_PLACA + PALANCA_LARGO
-    p = caja(x0, x0 + PALANCA_ANCHO, y0 - 1, y1, -R, R)
+    p = caja(x0, x0 + PALANCA_ANCHO, y0 - 1, y1, -R, Z_DELGADO)
     for d in AGUJEROS_PALANCA:
         p -= cil_z(D_AGUJERO_PALANCA / 2, L / 2, d, -R - 1, R + 1)
     return p.mirror([0, 1, 0]) if signo < 0 else p
 
 
 def placa(signo):
-    p = caja(0, L, CARA, CARA + ANCHO_PLACA, -R, R)
+    """Gruesa junto a la bisagra, delgada (8 mm) hacia afuera, con ventana."""
+    y_fin = CARA + ANCHO_PLACA
+    perfil = [(CARA, -R), (y_fin, -R), (y_fin, Z_DELGADO), (Y_RAMPA, Z_DELGADO),
+              (Y_GRUESO, R), (CARA, R)]
+    p = extruir_x(perfil, 0, L)
+    vx0, vx1, vy0, vy1 = VENTANA
+    p -= caja(vx0, vx1, vy0, vy1, -R - 1, R + 1)
     return p.mirror([0, 1, 0]) if signo < 0 else p
+
+
+def ranura(signo):
+    """Ranura de la cara de la placa para las lengüetas, abierta en x = 0."""
+    a, c = RANURA_ANCHO / 2, CHAFLAN_RANURA
+    perfil = [(CARA - 0.3, -a - c - 0.3), (CARA + c, -a), (RANURA_FONDO, -a),
+              (RANURA_FONDO, a), (CARA + c, a), (CARA - 0.3, a + c + 0.3)]
+    r = extruir_x(perfil, -1, X_OREJA_PILA)
+    return r.mirror([0, 1, 0]) if signo < 0 else r
 
 
 # --- Piezas ----------------------------------------------------------------
 
 
 def eslabon_a():
-    """Horquilla: placa en -Y y dos orejas de 4 mm en los extremos."""
+    """Horquilla: placa en -Y, oreja de 3 mm junto a la pila y oreja de 4 mm
+    en el lado libre."""
     s = placa(-1) + palanca(-1)
-    for x0, x1 in [(0, OREJA), (L - OREJA, L)]:
+    for x0, x1 in [(X_OREJA_PILA, X_OREJA_PILA + OREJA_PILA), (L - OREJA, L)]:
         s += cil_x(R, x0, x1) + caja(x0, x1, -CARA - 0.5, 0, -R, R)
         s -= cil_x(D_AGUJERO_OREJA / 2, x0 - 1, x1 + 1)
-    return s
+    return s - ranura(-1)
 
 
 def agujero(tope, tipo):
@@ -162,27 +202,17 @@ def cajera_tuerca(xa):
     return hexa + caja(xa, xa + E_CAJERA, -AF_CAJERA / 2, AF_CAJERA / 2, 0, R + 1)
 
 
-def eslabon_b(tuerca_en="ambos"):
-    """Nudillo central entre las orejas. Cada lado lleva una tuerca M4
-    cautiva o un agujero autorroscante; `tuerca_en`: "ambos", "pila" o
-    "ninguno". Los agujeros se ubican solo con rotaciones."""
+def eslabon_b():
+    """Nudillo entre las orejas: tuerca M4 cautiva del lado de la pila y
+    agujero autorroscante del lado libre. Los agujeros se ubican solo con
+    rotaciones."""
     x0, x1 = X_NUDILLO
     s = placa(1) + palanca(1)
     s += cil_x(R, x0, x1) + caja(x0, x1, 0, CARA + 0.5, -R, R)
-    t_pila = tuerca_en in ("ambos", "pila")
-    t_libre = tuerca_en == "ambos"
-    if t_pila:
-        s -= agujero(TUERCA_PILA, "tuerca").rotate([0, 90, 0]).translate([x0, 0, 0])
-        s -= cajera_tuerca(x0 + TUERCA_PILA)
-    else:
-        s -= agujero(TOPE_PILA, "autorroscante").rotate([0, 90, 0]).translate([x0, 0, 0])
-    if t_libre:
-        # el hombro hace tope sobre la cara de la tuerca: el apriete queda
-        # entre tornillo y tuerca, sin plástico en medio
-        s -= agujero(TOPE_LIBRE, "tuerca").rotate([0, -90, 0]).translate([x1, 0, 0])
-        s -= cajera_tuerca(x1 - TOPE_LIBRE - E_CAJERA)
-    else:
-        s -= agujero(TOPE_LIBRE, "autorroscante").rotate([0, -90, 0]).translate([x1, 0, 0])
+    s -= ranura(1)
+    s -= agujero(TUERCA_PILA, "tuerca").rotate([0, 90, 0]).translate([x0, 0, 0])
+    s -= cajera_tuerca(x0 + TUERCA_PILA)
+    s -= agujero(TOPE_LIBRE, "autorroscante").rotate([0, -90, 0]).translate([x1, 0, 0])
     return s
 
 
@@ -193,23 +223,22 @@ def arco(cx, cy, r, a0, a1, n=24):
 
 
 def perfil_d():
-    """Medio círculo R7, esquinas R1.5 y cara plana con una hendidura central
-    de perfil coseno (entra y sale tangente, sin aristas)."""
-    rc, (ancho, prof) = R_ESQUINA_D, HENDIDURA
-    pts = arco(0, 0, R, 90, 270, SEG // 2)
-    pts += arco(LARGO_D - rc, -R + rc, rc, -90, 0)
-    n = 60
-    for i in range(1, n):
-        z = -ancho / 2 + ancho * i / n
-        pts.append((LARGO_D - prof * (1 + math.cos(2 * math.pi * z / ancho)) / 2, z))
-    pts += arco(LARGO_D - rc, R - rc, rc, 0, 90)
-    return pts
+    """D de esquinas vivas con lengüeta hacia la placa. La raíz de la
+    lengüeta lleva un radio para que no se fisure; la punta, redondeada para
+    entrar fácil en la ranura."""
+    d = m3d.CrossSection([arco(0, 0, R, 90, 270, SEG // 2) +
+                          [(LARGO_D, -R), (LARGO_D, R)]])
+    a = LENGUETA_ANCHO / 2
+    leng = m3d.CrossSection.square([LENGUETA_HASTA - 5.0, LENGUETA_ANCHO]).translate(
+        [5.0, -a])
+    leng = leng.offset(-0.5, m3d.JoinType.Round).offset(0.5, m3d.JoinType.Round)
+    r = R_RAIZ_LENGUETA
+    return (d + leng).offset(r, m3d.JoinType.Round).offset(-r, m3d.JoinType.Round)
 
 
 def arandela_d(e):
-    """Arandela D de espesor e, acostada (espesor en Z) para imprimir."""
-    perfil = m3d.CrossSection([perfil_d()])
-    perfil -= m3d.CrossSection.circle(D_AGUJERO_ARANDELA / 2, SEG)
+    """Arandela D con lengüeta, de espesor e, acostada para imprimir."""
+    perfil = perfil_d() - m3d.CrossSection.circle(D_AGUJERO_ARANDELA / 2, SEG)
     return m3d.Manifold.extrude(perfil, e)
 
 
@@ -271,7 +300,7 @@ def rango_giro(a, b):
 
 def main():
     a = eslabon_a()
-    b = eslabon_b("pila")
+    b = eslabon_b()
 
     assert (a ^ b).volume() < 1e-6, "A y B se interfieren"
     giro = rango_giro(a, b)
@@ -291,6 +320,7 @@ def main():
         mm = f"{e:.1f}".replace(".", "_")
         piezas[f"arandela_D_{mm}mm.stl"] = arandela_d(e)
         piezas[f"arandela_redonda_{mm}mm.stl"] = arandela_redonda(e)
+    piezas["tapa_B_1_6mm.stl"] = arandela_d(TAPA)
     for nombre, man in piezas.items():
         a_trimesh(man).export(out / nombre)
 
@@ -302,14 +332,16 @@ def main():
         "S": malla_json(tornillo()), "N": malla_json(tuerca()),
         "p": {
             "L": L, "T": T, "cara": CARA, "ancho": ANCHO_PLACA,
-            "oreja": OREJA, "zona": ZONA, "pila": PILA,
-            "espesores": ESPESORES, "juego": JUEGO_AXIAL,
-            "hendidura": HENDIDURA, "rEsquinaD": R_ESQUINA_D,
+            "oreja": OREJA, "orejaPila": OREJA_PILA, "xOrejaPila": X_OREJA_PILA,
+            "tapa": TAPA, "pila": PILA, "espesores": ESPESORES,
+            "holguraPila": HOLGURA_PILA,
+            "lengueta": [LENGUETA_ANCHO, LENGUETA_HASTA],
+            "ranura": [RANURA_ANCHO, RANURA_FONDO],
             "palancaAncho": PALANCA_ANCHO, "palancaLargo": PALANCA_LARGO,
             "agujeros": AGUJEROS_PALANCA, "largoD": LARGO_D,
             "nudillo": X_NUDILLO, "hombro": [D_HOMBRO, L_HOMBRO],
             "rosca": L_ROSCA, "cabeza": [D_CABEZA, H_CABEZA],
-            "entradaPila": ENTRADA_PILA, "topePila": TOPE_PILA,
+            "entradaPila": ENTRADA_PILA,
             "topeLibre": TOPE_LIBRE, "juegoFlojo": JUEGO_FLOJO,
             "autorroscante": [D_AUTORROSCANTE, L_AUTORROSCANTE],
             "tuerca": [AF_TUERCA, E_TUERCA], "cajera": [AF_CAJERA, E_CAJERA, SOBRE_RECORRIDO],
