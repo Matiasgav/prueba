@@ -75,11 +75,15 @@ D_REDONDA = T
 # vivas) y la lengüeta entra en una ranura de la placa: empuja de costado,
 # con brazo de 8 a 12.5 mm del eje.
 LARGO_D = CARA - 0.2
-LENGUETA_ANCHO = 8.0       # 1,7 veces el largo dentro de la ranura: no se dobla
-LENGUETA_HASTA = 12.3      # distancia al eje de la punta
+LENGUETA_ANCHO = 7.0
+# Largo óptimo para 7 mm de ancho: con la punta a 12 mm del eje la lengüeta
+# llega al límite de aplastamiento y al de flexión a la vez (largo dentro de
+# la ranura = ancho / raíz de 3). Más larga se doblaría antes; más angosta
+# aguanta menos.
+LENGUETA_HASTA = 12.0      # distancia al eje de la punta
 R_RAIZ_LENGUETA = 0.4
 RANURA_ANCHO = LENGUETA_ANCHO + 0.3
-RANURA_FONDO = 12.5
+RANURA_FONDO = 12.2
 CHAFLAN_RANURA = 0.6       # boca de la ranura, deja lugar al radio de la raíz
 
 # Cuánto entra el hombro en el nudillo con todo apretado:
