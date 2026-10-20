@@ -33,11 +33,14 @@ CARA = R + HOLGURA_R          # cara plana de cada placa, a 8 mm del eje
 ANCHO_PLACA = 30.0            # placa: de 8 a 38 mm del eje
 
 # Aligerado: la placa tiene el espesor completo solo cerca de la bisagra y
-# después baja a 8 mm (apoyada en la cama), con una ventana pasante.
+# después baja a 8 mm (apoyada en la cama).
 Y_GRUESO = 15.5               # hasta acá 14 mm de espesor
 Y_RAMPA = 21.5                # rampa a 45° hasta el espesor delgado
 Z_DELGADO = 1.0               # cara superior de la parte delgada (8 mm)
-VENTANA = (9.0, 41.0, 24.5, 34.0)   # x0, x1, y0, y1 de la ventana de la placa
+# Forma de T vista desde arriba: la barra de la T es la franja de la bisagra
+# (todo el largo, hasta Y_BARRA) y el palo es la palanca de 20 mm de ancho.
+Y_BARRA = 24.0
+R_ENCUENTRO = 4.0             # radio en los rincones donde la palanca sale de la barra
 
 # Lado de la pila (x = 0): cabeza | oreja A | pila | nudillo B.
 # La pila siempre suma PILA mm: arandelas D de un espesor + redondas de
@@ -125,23 +128,22 @@ def extruir_x(perfil_yz, x0, x1):
     return m.transform([[0, 0, 1, x0], [1, 0, 0, 0], [0, 1, 0, 0]])
 
 
-def palanca(signo):
-    x0 = (L - PALANCA_ANCHO) / 2
-    y0, y1 = CARA + ANCHO_PLACA, CARA + ANCHO_PLACA + PALANCA_LARGO
-    p = caja(x0, x0 + PALANCA_ANCHO, y0 - 1, y1, -R, Z_DELGADO)
-    for d in AGUJEROS_PALANCA:
-        p -= cil_z(D_AGUJERO_PALANCA / 2, L / 2, d, -R - 1, R + 1)
-    return p.mirror([0, 1, 0]) if signo < 0 else p
-
-
 def placa(signo):
-    """Gruesa junto a la bisagra, delgada (8 mm) hacia afuera, con ventana."""
-    y_fin = CARA + ANCHO_PLACA
+    """Eslabón visto desde arriba con forma de T: barra a lo largo de la
+    bisagra y palanca centrada hacia afuera. Gruesa (14 mm) junto a la
+    bisagra y delgada (8 mm) en el resto."""
+    y_fin = CARA + ANCHO_PLACA + PALANCA_LARGO
     perfil = [(CARA, -R), (y_fin, -R), (y_fin, Z_DELGADO), (Y_RAMPA, Z_DELGADO),
               (Y_GRUESO, R), (CARA, R)]
-    p = extruir_x(perfil, 0, L)
-    vx0, vx1, vy0, vy1 = VENTANA
-    p -= caja(vx0, vx1, vy0, vy1, -R - 1, R + 1)
+    x0 = (L - PALANCA_ANCHO) / 2
+    planta = (m3d.CrossSection.square([L, Y_BARRA - CARA]).translate([0, CARA]) +
+              m3d.CrossSection.square([PALANCA_ANCHO, y_fin - CARA]).translate([x0, CARA]))
+    # radio en los rincones interiores de la T (cerrar: agrandar y achicar)
+    rr = R_ENCUENTRO
+    planta = planta.offset(rr, m3d.JoinType.Round).offset(-rr, m3d.JoinType.Round)
+    p = extruir_x(perfil, 0, L) ^ m3d.Manifold.extrude(planta, T).translate([0, 0, -R])
+    for d in AGUJEROS_PALANCA:
+        p -= cil_z(D_AGUJERO_PALANCA / 2, L / 2, d, -R - 1, R + 1)
     return p.mirror([0, 1, 0]) if signo < 0 else p
 
 
@@ -160,7 +162,7 @@ def ranura(signo):
 
 def eslabon_a():
     """Horquilla: placa en -Y y dos orejas de 4 mm en los extremos."""
-    s = placa(-1) + palanca(-1)
+    s = placa(-1)
     for x0, x1 in [(0, OREJA), (L - OREJA, L)]:
         s += cil_x(R, x0, x1) + caja(x0, x1, -CARA - 0.5, 0, -R, R)
         s -= cil_x(D_AGUJERO_OREJA / 2, x0 - 1, x1 + 1)
@@ -204,7 +206,7 @@ def eslabon_b():
     agujero autorroscante del lado libre. Los agujeros se ubican solo con
     rotaciones."""
     x0, x1 = X_NUDILLO
-    s = placa(1) + palanca(1)
+    s = placa(1)
     s += cil_x(R, x0, x1) + caja(x0, x1, 0, CARA + 0.5, -R, R)
     s -= ranura(1)
     s -= agujero(TUERCA_PILA, "tuerca").rotate([0, 90, 0]).translate([x0, 0, 0])

@@ -11,7 +11,7 @@ Cada archivo es una sola pieza; la cantidad sugerida se copia en el laminador.
 
 | Archivo | Cantidad | Notas |
 |---|---|---|
-| `eslabon_A_horquilla.stl` | 1 | Acostado, sin soportes. Placa aligerada (8 mm con ventana) |
+| `eslabon_A_horquilla.stl` | 1 | Acostado, sin soportes. Forma de T, 8 mm de espesor fuera de la bisagra |
 | `eslabon_B_nudillo.stl` | 1 | Tuerca M4 cautiva del lado de la pila; autorroscante del lado libre |
 | `arandela_D_0_2mm.stl` | 24 | Una sola capa de 0,2. Con 24 se arma la pila completa |
 | `arandela_D_0_4mm.stl` | 12 | |
