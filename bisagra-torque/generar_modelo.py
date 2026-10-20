@@ -39,21 +39,15 @@ Y_RAMPA = 21.5                # rampa a 45° hasta el espesor delgado
 Z_DELGADO = 1.0               # cara superior de la parte delgada (8 mm)
 VENTANA = (9.0, 41.0, 24.5, 34.0)   # x0, x1, y0, y1 de la ventana de la placa
 
-# Lado de la pila (x = 0). La pila va por fuera de la oreja, entre la oreja y
-# la cabeza del tornillo, así las arandelas entran deslizando a lo largo del
-# eje por las ranuras de las placas, que quedan abiertas en x = 0.
-#   cabeza | tapa B | pila | oreja A | nudillo B
-TAPA = 1.6                    # arandela gruesa trabada con B, bajo la cabeza
-PILA = 4.8                    # siempre: arandelas D de un espesor + redondas
+# Lado de la pila (x = 0): cabeza | oreja A | pila | nudillo B.
+# La pila siempre suma PILA mm: arandelas D de un espesor + redondas de
+# relleno. Así el hombro entra siempre lo mismo y nunca toca fondo.
+OREJA = 4.0                   # espesor de cada oreja del eslabón A
+PILA = 4.8
 ESPESORES = (0.2, 0.4, 0.8)
 HOLGURA_PILA = 0.2            # juego axial al armar
-OREJA_PILA = 3.0
-JUEGO_NUDILLO = 0.2           # entre la oreja de la pila y el nudillo
-X_OREJA_PILA = TAPA + PILA + HOLGURA_PILA          # 6.6: cara exterior
-
-# Lado libre (x = 50): oreja de 4 mm, gira libre con 0.2 de juego.
-OREJA = 4.0
-JUEGO_FLOJO = 0.2
+ZONA = PILA + HOLGURA_PILA    # 5.0 mm entre la oreja y el nudillo
+JUEGO_FLOJO = 0.2             # oreja x = 50, sin arandelas: gira libre
 
 PALANCA_ANCHO = 20.0
 PALANCA_LARGO = 50.0
@@ -86,9 +80,8 @@ RANURA_ANCHO = LENGUETA_ANCHO + 0.3
 RANURA_FONDO = 12.2
 CHAFLAN_RANURA = 0.6       # boca de la ranura, deja lugar al radio de la raíz
 
-# Cuánto entra el hombro en el nudillo con todo apretado:
-#   10 - (tapa 1.6 + pila 4.8 + oreja 3.0) = 0.6
-ENTRADA_PILA = L_HOMBRO - (TAPA + PILA + OREJA_PILA)
+# Cuánto entra el hombro en el nudillo con todo apretado: 10 - 4 - 4.8 = 1.2
+ENTRADA_PILA = L_HOMBRO - OREJA - PILA
 # Lado libre: el hombro hace tope y la oreja queda con 0.2 de juego.
 TOPE_LIBRE = L_HOMBRO - OREJA - 2 * JUEGO_FLOJO
 
@@ -102,11 +95,11 @@ AF_CAJERA = AF_TUERCA + 0.1      # entre caras: ajustada, la tuerca no gira
 E_CAJERA = E_TUERCA + 0.4        # a lo largo del eje
 SOBRE_RECORRIDO = 0.4            # el hexágono baja 0.4 más allá del eje
 D_PASO_TORNILLO = 4.4
-# La rosca del tornillo va de 0.6 a 5.6 mm dentro del nudillo; la tuerca
-# empieza a 2.0 y queda entera dentro de la rosca, con 2 mm de pared.
-TUERCA_PILA = 2.0
+# La rosca del tornillo va de 1.2 a 6.2 mm dentro del nudillo; la tuerca
+# empieza a 2.8 y queda entera dentro de la rosca, con 2.8 mm de pared.
+TUERCA_PILA = 2.8
 
-X_NUDILLO = (X_OREJA_PILA + OREJA_PILA + JUEGO_NUDILLO, L - OREJA - JUEGO_FLOJO)
+X_NUDILLO = (OREJA + ZONA, L - OREJA - JUEGO_FLOJO)
 
 # --- Primitivas ------------------------------------------------------------
 
@@ -153,11 +146,12 @@ def placa(signo):
 
 
 def ranura(signo):
-    """Ranura de la cara de la placa para las lengüetas, abierta en x = 0."""
+    """Ranura de la cara de la placa para las lengüetas, en la zona de la
+    pila (entre la oreja y el nudillo)."""
     a, c = RANURA_ANCHO / 2, CHAFLAN_RANURA
     perfil = [(CARA - 0.3, -a - c - 0.3), (CARA + c, -a), (RANURA_FONDO, -a),
               (RANURA_FONDO, a), (CARA + c, a), (CARA - 0.3, a + c + 0.3)]
-    r = extruir_x(perfil, -1, X_OREJA_PILA)
+    r = extruir_x(perfil, OREJA, OREJA + ZONA)
     return r.mirror([0, 1, 0]) if signo < 0 else r
 
 
@@ -165,10 +159,9 @@ def ranura(signo):
 
 
 def eslabon_a():
-    """Horquilla: placa en -Y, oreja de 3 mm junto a la pila y oreja de 4 mm
-    en el lado libre."""
+    """Horquilla: placa en -Y y dos orejas de 4 mm en los extremos."""
     s = placa(-1) + palanca(-1)
-    for x0, x1 in [(X_OREJA_PILA, X_OREJA_PILA + OREJA_PILA), (L - OREJA, L)]:
+    for x0, x1 in [(0, OREJA), (L - OREJA, L)]:
         s += cil_x(R, x0, x1) + caja(x0, x1, -CARA - 0.5, 0, -R, R)
         s -= cil_x(D_AGUJERO_OREJA / 2, x0 - 1, x1 + 1)
     return s - ranura(-1)
@@ -324,7 +317,6 @@ def main():
         mm = f"{e:.1f}".replace(".", "_")
         piezas[f"arandela_D_{mm}mm.stl"] = arandela_d(e)
         piezas[f"arandela_redonda_{mm}mm.stl"] = arandela_redonda(e)
-    piezas["tapa_B_1_6mm.stl"] = arandela_d(TAPA)
     for nombre, man in piezas.items():
         a_trimesh(man).export(out / nombre)
 
@@ -336,8 +328,7 @@ def main():
         "S": malla_json(tornillo()), "N": malla_json(tuerca()),
         "p": {
             "L": L, "T": T, "cara": CARA, "ancho": ANCHO_PLACA,
-            "oreja": OREJA, "orejaPila": OREJA_PILA, "xOrejaPila": X_OREJA_PILA,
-            "tapa": TAPA, "pila": PILA, "espesores": ESPESORES,
+            "oreja": OREJA, "zona": ZONA, "pila": PILA, "espesores": ESPESORES,
             "holguraPila": HOLGURA_PILA,
             "lengueta": [LENGUETA_ANCHO, LENGUETA_HASTA],
             "ranura": [RANURA_ANCHO, RANURA_FONDO],

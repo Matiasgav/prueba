@@ -19,24 +19,22 @@ Cada archivo es una sola pieza; la cantidad sugerida se copia en el laminador.
 | `arandela_redonda_0_2mm.stl` | 4 | Relleno |
 | `arandela_redonda_0_4mm.stl` | 4 | Relleno |
 | `arandela_redonda_0_8mm.stl` | 6 | Relleno |
-| `tapa_B_1_6mm.stl` | 1 | Va bajo la cabeza, con la lengüeta hacia B |
 
 ## Armado de la pila
 
-Orden desde el nudillo, en el lado x = 0:
-`nudillo B · oreja A (3 mm) · arandelas · tapa B (1,6 mm) · cabeza`.
-
-- La pila va por fuera de la oreja y **siempre suma 4,8 mm** (más la tapa):
-  arandelas D de un espesor más redondas de relleno. Con todo apretado el hombro
-  entra 0,6 mm en el nudillo y nunca toca fondo.
-- Cada arandela D tiene una lengüeta que entra en la ranura de su eslabón. Las
-  ranuras quedan abiertas en la punta de los eslabones: con el tornillo afuera,
-  las arandelas entran deslizando a lo largo del eje. Después va la tapa (con
-  lengüeta hacia B) y el tornillo.
+- La pila va en la oreja de x = 0, entre la oreja y el nudillo, y **siempre
+  suma 4,8 mm**: arandelas D de un espesor más redondas de relleno. Con todo
+  apretado el hombro entra 1,2 mm en el nudillo y nunca toca fondo.
+- Cada arandela D tiene una lengüeta que entra en la ranura de su eslabón.
+- Para meterlas, sin el tornillo puesto, girá el eslabón B unos 90° (placa B
+  hacia arriba). Las D de A entran de costado desde el lado de B, deslizando
+  la lengüeta en la ranura de A; las D de B entran subiendo desde abajo hasta
+  la ranura de B. Cada una va en su capa, así que no se cruzan. Después volvé
+  B a 0°, agregá las redondas y pasá el tornillo.
 - Las D van alternadas desde la oreja: la primera con la lengüeta hacia B, la
-  siguiente hacia A, y así. Las redondas van al final, del lado de la tapa.
-- Caras deslizantes: nudillo/oreja + oreja/1.ª D + … + última/tapa. Con n
-  arandelas D: n + 2 si n es par y n + 1 si es impar.
+  siguiente hacia A, y así. Las redondas van al final, del lado del nudillo.
+- Caras deslizantes: con n arandelas D, n + 1 si n es par y n si es impar, más
+  la cara bajo la cabeza.
 - La otra oreja no lleva arandelas: su tornillo se aprieta a fondo contra el
   hombro y la deja girar con 0,2 mm de juego.
 
