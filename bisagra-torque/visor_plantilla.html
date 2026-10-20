@@ -130,8 +130,8 @@ ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
         <div class="big"><b id="r-tj">–</b><span id="r-tj-l">torque que traba la articulación</span></div>
         <div><b id="r-t0">–</b><span>sin arandelas D (solo redondas)</span></div>
         <div><b id="r-f">–</b><span>precarga axial F = T / (K·d)</span></div>
-        <div><b id="r-60">–</b><span>peso en el agujero a 60 mm</span></div>
-        <div><b id="r-80">–</b><span>peso en el agujero a 80 mm</span></div>
+        <div><b id="r-60">–</b><span>peso a 50 mm del eje</span></div>
+        <div><b id="r-80">–</b><span id="r-punta-l">peso en la punta de la palanca</span></div>
       </div>
       <p class="note" style="margin-top:8px">Radio efectivo de cada cara: 5,1 mm (anillo Ø5,2–Ø14); bajo la cabeza 3,3 mm (Ø5,2–Ø8). La traba con lengüeta aguanta unos 4 N·m antes de aplastarse (ver el análisis): si el torque estimado pasa de eso, apretá menos. Es una estimación de orden de magnitud.</p>
     </section>
@@ -321,9 +321,9 @@ const f=n=>String(+n.toFixed(2)).replace('.',',');
 const rows=[
   ['Largo sobre el eje',f(P.L)+' mm'],
   ['Espesor / Ø nudillo',f(P.T)+' mm'],
-  ['Placa (cara a borde)',f(P.cara)+' → '+f(P.cara+P.ancho)+' mm del eje'],
+  ['Barra de la T (cara a palanca)',f(P.cara)+' → '+f(P.cara+P.ancho)+' mm del eje'],
   ['Palanca centrada',f(P.palancaAncho)+' × '+f(P.palancaLargo)+' mm'],
-  ['Agujeros de palanca','Ø5 a '+P.agujeros.map(f).join(' y ')+' mm'],
+  ['Punta de la palanca',f(P.cara+P.ancho+P.palancaLargo)+' mm del eje'],
   ['Orejas del eslabón A','2 × '+f(P.oreja)+' mm'],
   ['Nudillo del eslabón B',f(P.nudillo[1]-P.nudillo[0])+' mm'],
   ['Hueco oreja–nudillo',f(P.zona)+' mm (pila '+f(P.pila)+' + '+f(P.holguraPila)+')'],
@@ -351,7 +351,9 @@ function calc(){
   $('r-tj').textContent=tj.toFixed(2).replace('.',',')+' N·m';
   $('r-t0').textContent=t0.toFixed(2).replace('.',',')+' N·m';
   $('r-f').textContent=Math.round(F)+' N';
-  $('r-60').textContent=kgf(tj/0.06);$('r-80').textContent=kgf(tj/0.08);
+  const punta=(P.cara+P.ancho+P.palancaLargo)/1000;
+  $('r-60').textContent=kgf(tj/0.05);$('r-80').textContent=kgf(tj/punta);
+  $('r-punta-l').textContent=`peso en la punta, a ${Math.round(punta*1000)} mm del eje`;
 }
 ['tq','mu','kk'].forEach(id=>$(id).addEventListener('input',calc));renderStack();
 </script>

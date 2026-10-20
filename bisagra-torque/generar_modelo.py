@@ -30,7 +30,7 @@ T = 14.0           # espesor de los eslabones = diámetro del nudillo
 R = T / 2
 HOLGURA_R = 1.0    # luz radial entre nudillo y la cara del otro eslabón
 CARA = R + HOLGURA_R          # cara plana de cada placa, a 8 mm del eje
-ANCHO_PLACA = 30.0            # placa: de 8 a 38 mm del eje
+ANCHO_PLACA = 20.0            # placa: de 8 a 28 mm del eje; después la palanca
 
 # Aligerado: la placa tiene el espesor completo solo cerca de la bisagra y
 # después baja a 8 mm (apoyada en la cama).
@@ -54,8 +54,6 @@ JUEGO_FLOJO = 0.2             # oreja x = 50, sin arandelas: gira libre
 
 PALANCA_ANCHO = 20.0
 PALANCA_LARGO = 50.0
-AGUJEROS_PALANCA = [60.0, 80.0]  # distancia al eje, para colgar peso
-D_AGUJERO_PALANCA = 5.0
 
 # Tornillo Accu SSHE-M4-5-10-A2 (ISO 7379): hombro Ø5 x 10, rosca M4 x 5,
 # cabeza Ø8 x 4
@@ -142,8 +140,6 @@ def placa(signo):
     rr = R_ENCUENTRO
     planta = planta.offset(rr, m3d.JoinType.Round).offset(-rr, m3d.JoinType.Round)
     p = extruir_x(perfil, 0, L) ^ m3d.Manifold.extrude(planta, T).translate([0, 0, -R])
-    for d in AGUJEROS_PALANCA:
-        p -= cil_z(D_AGUJERO_PALANCA / 2, L / 2, d, -R - 1, R + 1)
     return p.mirror([0, 1, 0]) if signo < 0 else p
 
 
@@ -335,7 +331,7 @@ def main():
             "lengueta": [LENGUETA_ANCHO, LENGUETA_HASTA],
             "ranura": [RANURA_ANCHO, RANURA_FONDO],
             "palancaAncho": PALANCA_ANCHO, "palancaLargo": PALANCA_LARGO,
-            "agujeros": AGUJEROS_PALANCA, "largoD": LARGO_D,
+            "largoD": LARGO_D,
             "nudillo": X_NUDILLO, "hombro": [D_HOMBRO, L_HOMBRO],
             "rosca": L_ROSCA, "cabeza": [D_CABEZA, H_CABEZA],
             "entradaPila": ENTRADA_PILA,
