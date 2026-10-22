@@ -134,7 +134,32 @@ class Palpador:
         """Invariante: el contacto se pierde cuando la cadena acelera F0 / m_total."""
         return self.F0 / sum(self.masas) / G
 
-    def simular(self, t_w: np.ndarray, w: np.ndarray, vw: np.ndarray, t_fin: float | None = None):
+    def frf(self, f: np.ndarray) -> np.ndarray:
+        """Transmisibilidad lineal exacta a_carro / a_cuña (contacto linealizado en F0).
+
+        Linealizando alrededor de la precarga: rigidez de contacto k_c,
+        amortiguamiento de contacto c_c = chi * F0 (Hunt-Crossley), y la
+        cadena de resortes. Se resuelve (K + i w C - w^2 M) X = F(w) W.
+        """
+        n = len(self.masas)
+        kc, cc = self.k_contacto(), self.chi * self.F0
+        K = np.zeros((n, n)); C = np.zeros((n, n))
+        K[0, 0] += kc; C[0, 0] += cc
+        for i, (k, c) in enumerate(zip(self.k, self.c())):
+            for (a, b, sg) in ((i, i, 1), (i + 1, i + 1, 1), (i, i + 1, -1), (i + 1, i, -1)):
+                K[a, b] += sg * k
+                C[a, b] += sg * c
+        M = np.diag(self.masas)
+        out = []
+        for fi in np.atleast_1d(f):
+            w = 2 * math.pi * fi
+            F = np.zeros(n, complex); F[0] = kc + 1j * w * cc
+            X = np.linalg.solve(K + 1j * w * C - w * w * M, F)
+            out.append(abs(X[-1]))
+        return np.array(out)
+
+    def simular(self, t_w: np.ndarray, w: np.ndarray, vw: np.ndarray, t_fin: float | None = None,
+                dt: float | None = None):
         """Integra la cadena excitada por w(t). Devuelve t, a_acel (m/s^2), F_c."""
         n = len(self.masas)
         m = self.masas
@@ -144,7 +169,7 @@ class Palpador:
         d0 = (F0 / Kc) ** (2 / 3)
         s0 = [F0 / ki for ki in k]
         f_max = max(self.modos().max(), 1.0)
-        dt = min(0.04 / f_max, 0.1e-6)
+        dt = min(0.04 / f_max, 0.1e-6) if dt is None else dt
         t_fin = t_w[-1] if t_fin is None else t_fin
         N = int(t_fin / dt)
         tt = np.arange(N) * dt

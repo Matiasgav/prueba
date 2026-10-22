@@ -87,7 +87,7 @@ select:focus-visible{outline:2px solid var(--probe);outline-offset:2px}
 
 <section>
   <div class="verdict">
-    <div class="vcard"><span>Diseño recomendado</span><b>Flexura liviana a 15 mm</b><span>punta de 10 mg con radio de 2 mm, flexura metálica de 1,25 kHz, carro de 0,40 g con el ADXL1004, 1,0 a 2,5 N</span></div>
+    <div class="vcard"><span>Diseño recomendado</span><b>Flexura liviana a 15 mm</b><span>punta de 10 mg con radio de 2 mm, flexura metálica de 1,25 kHz y ζ 0,01–0,02, carro de 0,40 g con el ADXL1004, 2 a 2,5 N</span></div>
     <div class="vcard"><span>5 niveles</span><b>4 seguros + 1 con calibración</b><span>C1 (energía 150 Hz–5 kHz) separa 4 niveles; C2 (frecuencia de asiento) separa muy ajustada de ajustada si se calibra una vez por generador</span></div>
     <div class="vcard"><span>Lectura de muy ajustada a muy floja</span><b>× 5000</b><span>energía de la señal en 150 Hz–5 kHz: 10,6 → 12,1 → 39 → 602 → 58 000 g²·ms</span></div>
     <div class="vcard"><span>Precarga de 0,7 a 1,3 N</span><b>cambia menos del 5 %</b><span>la lectura no depende de qué tan exacta sea la precarga</span></div>
@@ -259,6 +259,71 @@ select:focus-visible{outline:2px solid var(--probe);outline-offset:2px}
   </div>
 </section>
 
+<section id="resonancia">
+  <div class="prose">
+    <span class="eyebrow">5c · La resonancia del filtro</span>
+    <h2>El filtro amplifica en su frecuencia de corte: cuánto, y qué hace con eso</h2>
+    <p>Un pasa-bajos mecánico de segundo orden tiene un pico en su frecuencia de corte, de altura \(Q = 1/(2\zeta)\). Con la flexura metálica de \(\zeta = 0{,}02\), el movimiento de la cuña a 1,25 kHz llega al carro amplificado 25 veces. Esto podría hacer despegar el palpador y meterse en la medición, así que se verificaron las dos cosas.</p>
+    <h3>El modelo del filtro es correcto</h3>
+    <p>Se excitó el palpador con un seno en el tiempo, con contacto de Hertz unilateral y todo, y se comparó la amplitud en régimen con la solución lineal exacta de los dos grados de libertad, punta y carro:</p>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Frecuencia (ζ = 0,05)</th><th>Solución lineal exacta</th><th>Simulación en el tiempo</th><th>Diferencia</th></tr></thead>
+    <tbody>
+      <tr><td class="n">300 Hz</td><td class="n">1,0611</td><td class="n">1,0612</td><td class="n">+0,01 %</td></tr>
+      <tr><td class="n">900 Hz</td><td class="n">2,0602</td><td class="n">2,0605</td><td class="n">+0,02 %</td></tr>
+      <tr><td class="n">1250 Hz (resonancia)</td><td class="n">10,345</td><td class="n">10,336</td><td class="n">−0,08 %</td></tr>
+      <tr><td class="n">1600 Hz</td><td class="n">1,5516</td><td class="n">1,5518</td><td class="n">+0,01 %</td></tr>
+      <tr><td class="n">4000 Hz</td><td class="n">0,1140</td><td class="n">0,1140</td><td class="n">0,00 %</td></tr>
+      <tr><td class="n">18 000 Hz</td><td class="n">0,0093</td><td class="n">0,0093</td><td class="n">−0,03 %</td></tr>
+      <tr class="rec"><td class="n">Pico con ζ = 0,02</td><td class="n">25,75</td><td class="n">25,74</td><td class="n">teoría 1/(2ζ) = 25</td></tr>
+    </tbody></table></div>
+  <div class="prose">
+    <p>También se verificó que la respuesta a un golpe real no cambia al reducir el paso de tiempo a la mitad (menos del 1 %). Las pruebas están en <code>tests/test_sensor.py</code>.</p>
+    <h3>Despegue con la resonancia incluida</h3>
+    <p>Se barrió lo que en el palpador real no se controla bien:</p>
+    <ul>
+      <li>ζ de 0,005 a 0,04;</li>
+      <li>f₀ de 1,10 a 1,40 kHz (±12 % de tolerancia de fabricación);</li>
+      <li>precarga de 1 y 2,5 N.</li>
+    </ul>
+    <p>Cada combinación se probó contra los 5 niveles con sus variantes y contra los 6 estados de holgura parcial, golpeados sobre su zona floja. El extremo libre con juego vibra a 1,15 kHz, justo sobre la resonancia.</p>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Precarga</th><th>¿Despega?</th><th>Fuerza mínima (diseño nominal)</th></tr></thead>
+    <tbody>
+      <tr><td>1,0 N</td><td>Diseño nominal: no. Pero despega si f₀ sale en 1,40 kHz (la cuña muy floja) o si ζ = 0,005 (el extremo libre).</td><td class="n">0,12 N</td></tr>
+      <tr class="rec"><td>2,5 N</td><td><b>No despega en ninguna combinación.</b></td><td class="n">1,60 N</td></tr>
+    </tbody></table></div>
+  <div class="prose">
+    <h3>Qué le hace la resonancia a la medición</h3>
+    <p>Entre el 10 y el 30 % de la energía de C1 cae en la banda de la resonancia. No es un error: es un efecto fijo de cada palpador, igual para todas las cuñas, y no rompe el orden de los niveles. Lo que sí hace es que los umbrales de C1 dependan del f₀ y del ζ reales:</p>
+    <ul>
+      <li><b>Con los umbrales fijos de 15 mm</b> (0,35 / 1,40 / 2,95), el diseño nominal acierta todo. Pero un palpador con f₀ = 1,40 kHz y ζ bajo confunde la muy ajustada con moderada.</li>
+      <li><b>Con los umbrales recalculados para cada palpador</b>, los 5 niveles siguen separados con todas las incertidumbres siempre que ζ ≤ 0,02, para cualquier f₀ entre 1,1 y 1,4 kHz.</li>
+      <li><b>Con ζ = 0,04</b>, ajustada y moderada se tocan. El amortiguamiento alto ensancha el pico, deja pasar más vibración de asiento y achica el contraste.</li>
+      <li><b>C2 no se entera de la resonancia:</b> está en 12–24 kHz, lejos de f₀, y separa muy ajustada de ajustada por unos 445 Hz en todas las combinaciones.</li>
+    </ul>
+    <h3>Excitación sostenida y tiempo entre golpes</h3>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>ζ de la flexura</th><th>Q</th><th>Vibración sostenida de la cuña a f₀ que lo despega (1 N)</th><th>Ídem con 2,5 N</th><th>Apagado al 1 %</th></tr></thead>
+    <tbody>
+      <tr><td class="n">0,005</td><td class="n">100</td><td class="n">2,4 g · 0,39 µm</td><td class="n">6,1 g · 0,97 µm</td><td class="n">117 ms</td></tr>
+      <tr><td class="n">0,01</td><td class="n">50</td><td class="n">4,9 g · 0,77 µm</td><td class="n">12 g · 1,9 µm</td><td class="n">59 ms</td></tr>
+      <tr class="rec"><td class="n">0,02</td><td class="n">25</td><td class="n">9,7 g · 1,5 µm</td><td class="n">24 g · 3,9 µm</td><td class="n">29 ms</td></tr>
+      <tr><td class="n">0,04</td><td class="n">12,5</td><td class="n">19 g · 3,1 µm</td><td class="n">48 g · 7,7 µm</td><td class="n">15 ms</td></tr>
+    </tbody></table></div>
+  <div class="prose">
+    <p>El golpe es un transitorio de unos pocos ciclos y no llega a cargar la resonancia, que necesita unos Q ciclos para crecer. El riesgo real es una vibración que dure: los motores del robot, o la cola del golpe anterior. Hay que medir con el robot quieto y <b>esperar 30 ms o más entre golpes</b> con ζ = 0,02. Si no, la cola del golpe anterior se suma a C1 del siguiente.</p>
+  </div>
+  <ol class="steps">
+    <li><b>Flexura metálica con ζ entre 0,01 y 0,02.</b> Debajo de 0,01 la resonancia es demasiado aguda: despega con poca excitación sostenida y tarda en apagarse. Arriba de 0,03 se pierde el contraste entre ajustada y moderada.</li>
+    <li><b>Precarga entre 2 y 2,5 N.</b> Es lo que hace que no despegue con ninguna tolerancia. La lectura no cambia y, con la punta de radio 2 mm, la presión de contacto queda por debajo de 390 MPa.</li>
+    <li><b>Calibrar cada palpador con un ensayo de impacto (ping test) al armarlo:</b> medir f₀ y ζ reales y recalcular con el modelo los umbrales de C1. O fijarlos midiendo cuñas de referencia.</li>
+  </ol>
+</section>
+
 <section>
   <div class="prose">
     <span class="eyebrow">6 · Señales</span>
@@ -292,11 +357,11 @@ select:focus-visible{outline:2px solid var(--probe);outline-offset:2px}
     <h2>Cómo construirlo</h2>
   </div>
   <ol class="steps">
-    <li><b>Flexura metálica, f₀ = 1,25 kHz.</b> Un elastómero no sirve: con ζ = 0,15 la lectura deja de crecer en orden (la muy ajustada lee 69 y la ajustada 15). Un corte más alto (3 kHz) despega desde "floja". Uno más bajo (600 Hz) achica la señal unas 80 veces, la lectura deja de crecer en orden (la muy ajustada lee 0,31 y la ajustada 0,15) y la cuña muy floja igual lo despega.</li>
+    <li><b>Flexura metálica, f₀ = 1,25 kHz, con ζ entre 0,01 y 0,02</b> (sección 5c). Un elastómero no sirve: con ζ = 0,15 la lectura deja de crecer en orden (la muy ajustada lee 69 y la ajustada 15). Un corte más alto (3 kHz) despega desde "floja". Uno más bajo (600 Hz) achica la señal unas 80 veces, la lectura deja de crecer en orden (la muy ajustada lee 0,31 y la ajustada 0,15) y la cuña muy floja igual lo despega.</li>
     <li><b>Carro lo más liviano posible.</b> 0,40 g con el ADXL1004 sobre una placa mínima: despega a 249 g. La lectura no depende de la masa, así que esto es sólo margen.</li>
     <li><b>Punta de 10 mg con radio de 2 mm</b>: un casquete esférico de acero pulido sobre un vástago liviano, no una bolita entera. Con radio de 1 mm la presión de Hertz sobre el G11 ya es de 413 MPa estática con 1 N y llega a 611 MPa en el golpe con 2,5 N, en el orden de la resistencia a compresión del G11 en el espesor: dejaría marca. Con radio de 2 mm queda entre 260 y 390 MPa. Con la punta apoyada, su modo queda por encima de la resonancia del sensor (45 kHz).</li>
     <li><b>Distancia de 15 mm al golpe</b>, en la línea central de la cuña y fija por construcción en el cabezal. Es el centro de la meseta de 12,5 a 17,5 mm (sección 5b).</li>
-    <li><b>Precarga de 1 a 2,5 N</b> con un resorte blando aparte (unos 0,3 N/mm). La lectura no cambia en ese rango: C1 se mueve menos de 0,06 y C2 menos de 3 Hz. Más precarga sólo agrega margen al despegue: la fuerza de contacto mínima sube de 0,26 N con 1 N a 1,75 N con 2,5 N.</li>
+    <li><b>Precarga de 2 a 2,5 N</b> con un resorte blando aparte (unos 0,3 N/mm). La lectura no cambia entre 1 y 2,5 N (C1 menos de 0,06, C2 menos de 3 Hz), pero con 2,5 N no despega con ninguna tolerancia de la flexura. Con 1 N, el margen depende de que la flexura salga justa (sección 5c).</li>
     <li><b>Placa del sensor de canto:</b> el eje del ADXL1004 está en el plano del encapsulado.</li>
     <li><b>Leer y registrar:</b>
       <ul>

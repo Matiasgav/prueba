@@ -37,16 +37,17 @@ VARIANTES = {"base": (5e-3, 1.0), "E-10": (4.5e-3, 1.0), "E+10": (5.5e-3, 1.0),
 def correr(arg):
     nivel, var = arg
     E, fk = VARIANTES[var]
-    est = next(e for e, _, _ in ESTADOS if e.nombre == nivel)
-    mod = ModeloCuna(cont=Contactos(kn_flanco_1MPa=2.0e12 * fk))
+    # punto de golpe de cada estado (en las holguras parciales, sobre la zona floja)
+    est, x_g, ripple = next((e, x, rp) for e, x, rp in ESTADOS if e.nombre == nivel)
+    mod = ModeloCuna(cont=Contactos(kn_flanco_1MPa=2.0e12 * fk, ripple=ripple))
     mod.cargar_estado(est)
     mod.equilibrio()
-    r = mod.golpe(X_GOLPE, energia=E, t_fin=3e-3, chi_punta=chi_punta(),
-                  x_palps=list(X_GOLPE + D_MM * 1e-3))
+    r = mod.golpe(x_g, energia=E, t_fin=3e-3, chi_punta=chi_punta(),
+                  x_palps=list(x_g + D_MM * 1e-3))
     H = r["hist"]
     DIST.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(DIST / f"{nivel}__{var}.npz", t=H["t"], uy=H["uy_palps"], vy=H["vy_palps"],
-                        d_mm=(r["x_palps"] - X_GOLPE) * 1e3, E=E, fk=fk,
+                        d_mm=(r["x_palps"] - x_g) * 1e3, E=E, fk=fk, x_golpe=x_g,
                         restitucion=r["restitucion"], E_transmitida_mJ=r["E_transmitida_mJ"],
                         error_balance=r["error_balance_energia"])
     print(f"{nivel:18s} {var:5s} e={r['restitucion']:.3f}  balance={r['error_balance_energia']*100:.2f} %", flush=True)
