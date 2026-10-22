@@ -1,7 +1,7 @@
 """Palpador de una tira: C plegada + punta liviana con rampas, protegida por la carcasa.
 
 Dos piezas y dos tornillos: la chapa y el flex con el ADXL1004. Sin amortiguador
-(C1 se mide en 1,5–5 kHz, por encima de f0) ni rigidizador.
+(C1 se mide en 1–3 kHz: por encima de f0 y por debajo del primer modo de la chapa) ni rigidizador.
 
 La chapa es una sola pieza de 17-7PH de 0,15 mm, fotograbada, acuñada, plegada
 y envejecida a CH900:
@@ -61,11 +61,9 @@ L_BRAZO = 13.0
 Y_CODO, ANG_RAMPA = 1.2, 35.0      # el centro baja vertical hasta Y_CODO (dentro de la carcasa) y sigue en rampa
 L_RAMPA = (Y_CODO - Y_T) / math.sin(math.radians(ANG_RAMPA))
 X_LENG = L_BRAZO + (Y_CODO - Y_T) / math.tan(math.radians(ANG_RAMPA))   # raíz de la lengüeta horizontal
-L_LENG = 2.0                       # de la raíz al vértice del hoyuelo: el filtro
+L_LENG = 2.3                       # de la raíz al vértice del hoyuelo: el filtro
 PLANO = 0.6                        # extremo redondeado más allá del hoyuelo, como largo equivalente
 NARIZ, ANG_NARIZ = 0.4, 30.0
-X_HOY = X_LENG + L_LENG
-X_NARIZ = X_HOY + PLANO
 B_SUP, B_TIRA, B_ALMA, RANURA = 3.0, 1.5, 6.0, 0.3
 B_CENTRO = B_ALMA - 2 * B_TIRA - 2 * RANURA      # centro: rampa, lengüeta y nariz (2,4)
 B_LENG = B_CENTRO
@@ -75,7 +73,8 @@ Y_PCB = Y_INF - 0.1            # borde inferior del sensor sobre el alma
 M_SENSOR = 0.200e-3 + 1850 * PCB[0] * PCB[1] * PCB[2] * 1e-9 + 10e-6 + 5e-6   # ADXL + refuerzo + flex + 0402 y adhesivo
 E_SENSOR = 1.2                 # centro de masa del sensor, desde la línea media del alma hacia afuera
 OREJA = 2.5
-BANDA_C1 = (1500, 5000)        # por encima de f0: la resonancia sin amortiguar no entra en C1
+BANDA_C1 = (1000, 3000)        # entre f0 (~0,7 kHz) y el primer modo de la chapa (~3,5 kHz): ahí el palpador es una masa sobre un resorte
+TOL_LENG = 0.15                # tolerancia del largo de la lengüeta (fotograbado + pliegue)
 ZETA = 0.002                   # acero + adhesivo, sin amortiguador
 MU = (0.3, 0.15)               # rozamiento punta-cuña: nominal y superficie lubricada o barnizada
 # carcasa (supuesto: piso a 1,0 ± 0,3 mm de la cuña); techo a 1,0 mm del brazo superior: la punta llega al ras del piso
@@ -85,7 +84,13 @@ CARCASA["y1"] = CARCASA["y_techo"] + CARCASA["techo"]
 SIGMA_C, SIGMA_CH900 = 1300.0, 1600.0   # fluencia típica de 17-7PH en condición C y envejecido CH900 [MPa]
 
 
-def lamina(zeta=ZETA) -> Lamina:
+X_HOY = X_LENG + L_LENG
+X_NARIZ = X_HOY + PLANO
+
+
+def lamina(zeta=ZETA, d_leng=0.0) -> Lamina:
+    X_HOY = X_LENG + L_LENG + d_leng
+    X_NARIZ = X_HOY + PLANO
     xn = X_NARIZ + NARIZ * math.cos(math.radians(ANG_NARIZ))
     yn = Y_T + NARIZ * math.sin(math.radians(ANG_NARIZ))
     P = [(0, Y_SUP), (L_BRAZO, Y_SUP), (L_BRAZO, Y_INF), (0, Y_INF), (L_BRAZO, Y_CODO), (X_LENG, Y_T),
@@ -130,11 +135,11 @@ def robustez(F0=2.0, mu=0.3):
 
 
 def _eval(arg):
-    z, F0, tg, mu = arg
-    lam = replace(lamina(z), tangencial=tg, mu=mu)
+    z, F0, tg, mu, dl = arg
+    lam = replace(lamina(z, dl), tangencial=tg, mu=mu)
     e = evaluar(lam, F0, BANDA_C1)
     c1 = {n: [r["C1"] for r in e["filas"] if r["estado"] == n] for n in NIVELES}
-    return {"zeta": z, "F0": F0, "tg": tg, "mu": mu, **{k: v for k, v in e.items() if k != "filas"},
+    return {"zeta": z, "F0": F0, "tg": tg, "mu": mu, "d_leng": dl, **{k: v for k, v in e.items() if k != "filas"},
             "satura_en": sorted({r["estado"] for r in e["filas"] if r["satura"]}),
             "Fc_min_sin_muy_floja": min(r["Fc_min"] for r in e["filas"] if r["estado"] != "muy_floja_juego"),
             "C1_rango": {n: [min(v), max(v)] for n, v in c1.items()}}
@@ -142,7 +147,7 @@ def _eval(arg):
 
 def umbrales(ev, F0=2.0):
     """Umbrales de C1 que valen para los rozamientos reales (Coulomb, μ 0,3 y 0,15): punto medio de los huecos."""
-    sel = [e for e in ev if e["F0"] == F0 and e["tg"] == "coulomb"]
+    sel = [e for e in ev if e["F0"] == F0 and e["tg"] == "coulomb" and e["d_leng"] == 0.0]
     out = []
     for a, b in zip(NIVELES[1:], NIVELES[2:]):
         hi = max(e["C1_rango"][a][1] for e in sel)
@@ -162,12 +167,13 @@ def verificar():
            "T_43k": float(lam.frf(2.0, np.array([43e3]))[0]), "masa_carro_g": M_SENSOR * 1e3, "banda_C1_Hz": BANDA_C1}
     print("estática:", st)
     print("modos:", np.round(f), " f0:", res["f0_Hz"], " pico:", round(res["pico"], 1))
-    casos = ([(ZETA, F0, "coulomb", mu) for mu in MU for F0 in (1.6, 2.0, 2.4)]
-             + [(ZETA, 2.0, tg, 0.0) for tg in ("libre", "adherido")])
+    casos = ([(ZETA, F0, "coulomb", mu, 0.0) for mu in MU for F0 in (1.6, 2.0, 2.4)]
+             + [(ZETA, 2.0, "coulomb", MU[0], dl) for dl in (-TOL_LENG, TOL_LENG)]
+             + [(ZETA, 2.0, tg, 0.0, 0.0) for tg in ("libre", "adherido")])
     with Pool(4) as pool:
         ev = pool.map(_eval, casos)
     for e in ev:
-        print(f"F0={e['F0']:.1f} [{e['tg']:8s} μ={e['mu']:.2f}] despega={sorted(set(x.split('·')[0] for x in e['despega']))}  "
+        print(f"F0={e['F0']:.1f} [{e['tg']:8s} μ={e['mu']:.2f} dL={e['d_leng']:+.2f}] despega={sorted(set(x.split('·')[0] for x in e['despega']))}  "
               f"satura={e['satura_en']}  Fc_min (sin la muy floja)={e['Fc_min_sin_muy_floja']:.2f} N  "
               f"gaps C1={np.round(e['gaps_C1'], 2)}  gap C2={e['gap_C2_Hz']:.0f} Hz", flush=True)
     res["verificacion"] = ev

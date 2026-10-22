@@ -411,7 +411,8 @@ def generar():
       <li><b>Tope lateral y trasero (ranura del piso).</b> El tramo vertical y la punta pasan por una ranura con {f(C["juego_lateral"],1)} mm de juego por lado. Un tirón de costado lo toma la carcasa (la punta recién fluye con ~{f(rb["F_lateral_fluencia_N"],0)} N), y un empujón hacia atrás apoya el tramo vertical en el borde de la ranura.</li>
       <li><b>Lo que no cubre.</b> Un escalón más alto que la nariz (~0,5 mm) y más bajo que el piso (1 mm) que venga de frente pega en el canto de la nariz. Ahí la fuerza pasa a la ranura, pero un enganche muy fuerte puede doblar la punta. La chapa es barata y se cambia con dos tornillos.</li>
     </ul>
-    <p><b>Sin amortiguador.</b> La resonancia del filtro (~{f(res["f0_Hz"],0)} Hz) queda sin amortiguar y no hace falta: C1 se mide en {f(BANDA_C1[0]/1000,1)}–{f(BANDA_C1[1]/1000,0)} kHz, por encima de ella, y C2 mira 12–24 kHz.</p>
+    <p><b>Banda de C1: 1–3 kHz.</b> Tiene que caer entre la frecuencia del filtro (~{f(res["f0_Hz"],0)} Hz) y el primer modo propio de la chapa ({f(res["modos_Hz"][1]/1000,1)} kHz). Ahí el palpador se comporta como una masa sobre un resorte y su transmisión es suave y predecible. Con la banda anterior (1,5–5 kHz) entraban modos de la chapa, y la clasificación cambiaba sin orden con décimas de milímetro de lengüeta: con 2,0 mm se superponían niveles y con 1,8 o 2,15 mm no.</p>
+    <p><b>Sin amortiguador.</b> La resonancia del filtro queda sin amortiguar y no hace falta: el filtro de C1 la atenúa 43 dB, y C2 mira 12–24 kHz.</p>
   </div>
   <div class="fig plano" role="img" aria-label="Vista isométrica del palpador"><svg viewBox="0 0 1240 400">{svg_iso()}</svg></div>
   <div class="fig plano" role="img" aria-label="Alzado acotado con la carcasa y los topes"><svg viewBox="0 0 960 360">
