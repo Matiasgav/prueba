@@ -287,7 +287,7 @@ class Lamina:
 
 # ---------------------------------------------------------------------------
 
-def evaluar(lam: Lamina, F0: float):
+def evaluar(lam: Lamina, F0: float, banda=(150, 5000)):
     i_d = int(np.argmin(np.abs(D_MM - 15.0)))
     casos = [(n, v) for n in NIVELES for v in VARIANTES] + [(n, "base") for n in PARCIALES]
     filas = []
@@ -296,7 +296,7 @@ def evaluar(lam: Lamina, F0: float):
         tt, a, Fc = lam.simular(d["t"], d["uy"][:, i_d], d["vy"][:, i_d], F0)
         rng = np.random.default_rng(zlib.crc32(f"{n}{v}{F0}{lam.tangencial}".encode()))
         ts, y, sat = ADXL1004.leer(tt, a, rng=rng)
-        c = caracteristicas(ts, y, float(d["E"]) * 1e3)
+        c = caracteristicas(ts, y, float(d["E"]) * 1e3, banda)
         filas.append({"estado": n, "var": v, "despega": bool(np.any(Fc <= 0)), "Fc_min": float(Fc.min()),
                       "satura": sat, "a_pico_g": float(np.abs(a).max() / G), "C1": c["C1"], "C2": c["C2"]})
     iv = {n: [r["C1"] for r in filas if r["estado"] == n] for n in NIVELES}

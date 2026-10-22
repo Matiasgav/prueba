@@ -15,7 +15,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from cuna3d.palpador_tira import (ALETA, B_ALMA, B_CENTRO, B_LENG, B_SUP, B_TIRA, H_HOY, L_BRAZO,  # noqa: E402
+from cuna3d.palpador_tira import (BANDA_C1, B_ALMA, B_CENTRO, B_LENG, B_SUP, B_TIRA, H_HOY, L_BRAZO,  # noqa: E402
                                   L_LENG, OREJA, R_HOY, RANURA, T, Y_INF, Y_SUP, Y_T)
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
@@ -47,13 +47,10 @@ def cajas():
     c.append((X_A - t / 2, X_A + t / 2, Y_T, Y_INF, -B_CENTRO / 2, B_CENTRO / 2, "chapa"))
     # lengüeta
     c.append((X_A, X_A + L_LENG + L_PUNTA, Y_T - t / 2, Y_T + t / 2, -B_LENG / 2, B_LENG / 2, "leng"))
-    # rigidizador, flex y sensor por fuera del alma
-    c.append((X_A + t / 2, X_A + t / 2 + 0.5, 1.4, 6.4, -2.5, 2.5, "fr4"))
-    c.append((X_A + t / 2 + 0.5, X_A + t / 2 + 0.6, 1.4, 6.4, -2.6, 2.6, "flex"))
-    c.append((X_A + t / 2 + 0.6, X_A + t / 2 + 2.4, 1.45, 6.35, -2.5, 2.5, "chip"))
-    # aleta de cobre por dentro
-    ax, ay, az = ALETA
-    c.append((X_A - t / 2 - ax, X_A - t / 2, 2.3, 2.3 + ay, -az / 2, az / 2, "cu"))
+    # extremo rígido del flex (refuerzo de FR4 + flex) y sensor, pegados por fuera del alma
+    c.append((X_A + t / 2, X_A + t / 2 + 0.4, 1.4, 6.4, -3.0, 3.0, "fr4"))
+    c.append((X_A + t / 2 + 0.4, X_A + t / 2 + 0.5, 1.4, 6.4, -3.0, 3.0, "flex"))
+    c.append((X_A + t / 2 + 0.5, X_A + t / 2 + 2.3, 1.45, 6.35, -2.5, 2.5, "chip"))
     return c
 
 
@@ -116,8 +113,7 @@ def svg_iso():
             rot((5, Y_INF, 2.3), 270, 330, "brazo inferior · 2 tiras de 1,5 mm"),
             rot((-3, 0, 4), 270, 395, "cuña", "lbl-w"),
             rot((X_A, 5.5, -2.8), 830, 40, "alma 6 mm"),
-            rot((X_A + 2.4, 5.0, 1.0), 830, 100, "ADXL1004 en flex (cara exterior)"),
-            rot((X_A - 1.5, 4.5, 0.2), 830, 160, "aleta de Cu (amortiguador, interior)"),
+            rot((X_A + 2.3, 5.0, 1.0), 830, 120, "flex con ADXL1004, pegado al alma"),
             rot((X_A + L_LENG + 0.5, Y_T, 0), 830, 330, "lengüeta 2,4 mm con hoyuelo R 2"),
             rot((19.0, 1.0, -5.0), 830, 395, "carcasa 10 × 10 mm (contorno)")]
     return "\n".join(out)
@@ -163,18 +159,15 @@ def svg_alzado():
     xh = X_A + L_LENG
     a = math.sqrt(2 * R_HOY * H_HOY - H_HOY ** 2)
     o.append(f'<path class="hoy" d="M{X(xh-a)} {Y(Y_T)} Q{X(xh)} {Y(Y_T-2*H_HOY)} {X(xh+a)} {Y(Y_T)}"/>')
-    # sensor, fr4, aleta
-    rect(X_A + 0.075, 1.4, X_A + 0.575, 6.4, "fr4"); rect(X_A + 0.575, 1.4, X_A + 0.675, 6.4, "flex")
-    rect(X_A + 0.675, 1.45, X_A + 2.475, 6.35, "chip")
-    o.append(f'<path class="eje" d="M{X(X_A+1.575)} {Y(2.3)} L{X(X_A+1.575)} {Y(5.5)}" marker-end="url(#fl)"/>')
-    rect(X_A - 0.075 - ALETA[0], 2.3, X_A - 0.075, 2.3 + ALETA[1], "cu")
-    rect(X_A - 0.075 - ALETA[0] + 0.3, 2.6, X_A - 0.375, 2.0 + ALETA[1], "iman")
+    # extremo rígido del flex y sensor
+    rect(X_A + 0.075, 1.4, X_A + 0.475, 6.4, "fr4"); rect(X_A + 0.475, 1.4, X_A + 0.575, 6.4, "flex")
+    rect(X_A + 0.575, 1.45, X_A + 2.375, 6.35, "chip")
+    o.append(f'<path class="eje" d="M{X(X_A+1.475)} {Y(2.3)} L{X(X_A+1.475)} {Y(5.5)}" marker-end="url(#fl)"/>')
     o.append(f'<path class="flexl" d="M{X(X_A+1.6)} {Y(6.4)} C{X(X_A+1.6)} {Y(8.4)} {X(8)} {Y(8.9)} {X(5)} {Y(8.55)} S{X(2)} {Y(8.8)} {X(1)} {Y(9.0)}"/>')
     # rótulos
     text(0.6, Y_SUP + 0.35, "brazo superior 0,15 × 3 × 13", "lbl-a", "start")
     text(0.3, Y_INF + 0.3, "brazo inferior 2 × (0,15 × 1,5 × 13)", "lbl-a", "start")
     text(X_A + 2.8, 4.0, "ADXL1004", "lbl"); text(X_A + 2.8, 3.4, "eje sensible ↑", "ct")
-    text(X_A - 3.4, 4.3, "aleta Cu + imanes", "lbl-cu", "end")
     text(X_A + 2.2, 7.5, "flex", "lbl-f", "start")
     text(X_A + L_LENG + 1.3, 0.3, "lengüeta 0,15 × 2,4", "lbl-l")
     text(X_A + L_LENG + 0.3, -0.6, "hoyuelo R 2 · h 0,25", "ct")
@@ -209,8 +202,8 @@ def svg_planta():
     rect(-OREJA, -B_SUP / 2, X_A, B_SUP / 2, "pl-chapa")
     rect(X_A - 0.075, -B_ALMA / 2, X_A + 0.075, B_ALMA / 2, "pl-chapa")
     rect(X_A, -B_LENG / 2, X_A + L_LENG + L_PUNTA, B_LENG / 2, "pl-leng")
-    rect(X_A + 0.675, -2.5, X_A + 2.475, 2.5, "chip-pl")
-    text(X_A + 1.575, 3.75, "ADXL1004 (encima)", "ct", "middle")
+    rect(X_A + 0.575, -2.5, X_A + 2.375, 2.5, "chip-pl")
+    text(X_A + 1.475, 3.75, "ADXL1004 (encima)", "ct", "middle")
     xh = X_A + L_LENG
     o.append(f'<circle class="hoy-pl" cx="{X(xh):.1f}" cy="{Z(0):.1f}" r="{s*0.97:.1f}"/>')
     for (x, z) in ((-1.25, 0),):
@@ -266,7 +259,7 @@ def svg_desarrollo():
     o.append(f'<line class="pliegue" x1="{U(u4):.1f}" y1="{V(-hc-0.15):.1f}" x2="{U(u4):.1f}" y2="{V(hc+0.15):.1f}"/>')
     o.append(f'<text class="ct-r" x="{U(u4):.1f}" y="{V(-ha-0.7):.1f}" text-anchor="start">P3 · 90° (lengüeta, adelante)</text>')
     # agujeros y hoyuelo
-    for (u, v) in ((u0 + OREJA / 2, 0), (u6 + OREJA / 2, -1.9), (u6 + OREJA / 2, 1.9)):
+    for (u, v) in ((u0 + OREJA / 2, 0), (u6 + OREJA / 2, 0)):
         o.append(f'<circle class="agujero" cx="{U(u):.1f}" cy="{V(v):.1f}" r="{s*0.55:.1f}"/>')
     o.append(f'<circle class="hoy-pl" cx="{U(u4 + L_LENG):.1f}" cy="{V(0):.1f}" r="{s*0.97:.1f}"/>')
     # rótulos de tramos
@@ -351,24 +344,29 @@ def generar():
     st = res["estatica"]
     ver = {(r["zeta"], r["F0"], r["tg"]): r for r in res["verificacion"]}
     filas = ""
-    for z in (0.002, 0.016):
+    for z in (0.002, 0.005):
         for F0 in (1.6, 2.0, 2.4):
             for tg in ("libre", "adherido"):
                 r = ver[(z, F0, tg)]
                 d = sorted({x.split("·")[0] for x in r["despega"]})
-                filas += (f'<tr class="{"rec" if (z, F0) == (0.016, 2.0) else ""}"><td class="n">{f(z,3)}</td><td class="n">{f(F0,1)} N</td><td>{tg}</td>'
+                filas += (f'<tr class="{"rec" if (z, F0) == (0.002, 2.0) else ""}"><td class="n">{f(z,3)}</td><td class="n">{f(F0,1)} N</td><td>{tg}</td>'
                           f'<td>{"no" if not d else "sólo muy floja con juego"}</td><td class="n">{f(r["Fc_min_sin_muy_floja"],2)} N</td>'
                           f'<td class="n">{" · ".join(f(g,2) for g in r["gaps_C1"])}</td><td class="n">{r["gap_C2_Hz"]:.0f} Hz</td></tr>')
+    NOM = {"ajustada/moderada": "ajustada | moderada", "moderada/floja": "moderada | floja", "floja/muy_floja_juego": "floja | muy floja"}
+    umb = "".join(f'<tr><td>{NOM[u["entre"]]}</td><td class="n">{f(u["umbral"],2)}</td><td class="n">± {f(u["hueco"]/2,2)}</td></tr>'
+                  for u in res["umbrales_C1"]["0.002_2.0"])
     html = f"""<section id="tira">
   <style>{ESTILO}</style>
   <div class="prose">
     <span class="eyebrow">10 · Diseño recomendado: una tira plegada</span>
     <h2>C plegada + lengüeta, en una sola pieza de chapa</h2>
-    <p>Reemplaza al diseño de dos piezas de la sección 9. En el modelo de elementos finitos, con las láminas con su masa y sus modos propios, ese diseño saturaba el sensor y perdía la separación de C1. Esta tira no: separa los 5 niveles con o sin rozamiento en la punta y no satura. Es una sola pieza de 17-7PH de 0,15 mm, fotograbada y plegada tres veces.</p>
+    <p>Reemplaza al diseño de dos piezas de la sección 9: en el modelo de elementos finitos, con las láminas con su masa y sus modos propios, ese diseño saturaba el sensor y perdía la separación de C1. Esta tira separa los 5 niveles con o sin rozamiento en la punta y no satura.</p>
+    <p><b>Piezas: dos, más dos tornillos.</b> La chapa (17-7PH de 0,15 mm, fotograbada y plegada tres veces) y el flex con el ADXL1004 soldado en su extremo rígido. No lleva amortiguador (ni aleta de cobre ni imanes) ni rigidizador aparte.</p>
     <ul>
       <li><b>Brazos.</b> El brazo superior (3 mm) y el inferior (dos tiras de 1,5 mm a los costados) forman un paralelogramo: el carro baja derecho (giro de 9 mrad) y la flecha de 1,5 mm da la precarga.</li>
-      <li><b>Alma.</b> Por fuera lleva el ADXL1004 en su flex, con el eje sensible vertical. Por dentro, la aleta de cobre del amortiguador.</li>
+      <li><b>Alma.</b> Por fuera va pegado el extremo rígido del flex con el ADXL1004, con el eje sensible vertical.</li>
       <li><b>Lengüeta.</b> El centro del alma baja 1,3 mm más y se pliega hacia adelante: es el filtro. El hoyuelo esférico acuñado en la punta es el contacto con la cuña.</li>
+      <li><b>Sin amortiguador.</b> La resonancia del filtro (~{f(res["f0_Hz"],0)} Hz) queda con el amortiguamiento propio del acero (ζ ≈ 0,002). No hace falta domarla: C1 se mide en la banda {f(BANDA_C1[0]/1000,1)}–{f(BANDA_C1[1]/1000,0)} kHz, por encima de ella. El costo es esperar ~0,5 s entre golpes a que se apague.</li>
     </ul>
   </div>
   <div class="fig plano" role="img" aria-label="Vista isométrica del palpador de una tira"><svg viewBox="0 0 1140 430">{svg_iso()}</svg></div>
@@ -389,19 +387,21 @@ def generar():
     <tr><td>Giro del sensor al precargar · deslizamiento del hoyuelo</td><td class="n">{f(abs(st["giro_sensor_mrad"]),1)} mrad · {f(st["desliz_vertice_mm"],2)} mm</td></tr>
     <tr><td>Frecuencia del filtro (punta apoyada) · pico sin amortiguador</td><td class="n">{f(res["f0_Hz"],0)} Hz · {f(res["pico"],0)}</td></tr>
     <tr><td>Modos siguientes</td><td class="n">{" · ".join(f(x/1000,1) for x in res["modos_Hz"][1:6])} kHz</td></tr>
-    <tr><td>Carro (sensor + FR4 + flex + aleta)</td><td class="n">{f(res["masa_carro_g"],3)} g</td></tr>
+    <tr><td>Carro (ADXL1004 + extremo rígido del flex)</td><td class="n">{f(res["masa_carro_g"],3)} g</td></tr>
   </tbody></table></div>
   <div class="prose"><h3>Verificación contra la cuña 3D a 15 mm</h3>
-    <p>Son los 11 estados de la cuña, con energía del golpe ±10 % y rigidez de los flancos ±30 %. "Libre" es la punta que desliza; "adherido", la punta trabada por rozamiento. Los huecos de C1 son ajustada / moderada, moderada / floja y floja / muy floja; el de C2 es muy ajustada / ajustada.</p></div>
+    <p>Son los 11 estados de la cuña, con energía del golpe ±10 % y rigidez de los flancos ±30 %. "Libre" es la punta que desliza; "adherido", la punta trabada por rozamiento. C1 se mide en {f(BANDA_C1[0]/1000,1)}–{f(BANDA_C1[1]/1000,0)} kHz. ζ 0,002 es el acero solo y ζ 0,005, por si el adhesivo y el flex suman algo. Los huecos de C1 son ajustada / moderada, moderada / floja y floja / muy floja; el de C2 es muy ajustada / ajustada. En "muy floja con juego" la cuña traquetea y la punta despega en algunos golpes: no cambia la clasificación (el hueco floja / muy floja sigue abierto).</p></div>
   <div class="tbl"><table><thead><tr><th>ζ</th><th>F₀</th><th>Punta</th><th>¿Despega?</th><th>F mín (resto)</th><th>Huecos de C1</th><th>Hueco de C2</th></tr></thead><tbody>{filas}</tbody></table></div>
+  <div class="prose"><h3>Umbrales de C1 (ζ 0,002, F₀ 2 N, punta libre o trabada)</h3></div>
+  <div class="tbl"><table><thead><tr><th>Entre</th><th>Umbral de C1</th><th>Margen</th></tr></thead><tbody>{umb}</tbody></table></div>
   <div class="prose"><h3>Fabricación</h3></div>
   <ol class="steps">
     <li>Fotograbado del desarrollo en 17-7PH condición C de 0,15 mm, con las ranuras de 0,3 mm alrededor de la lengüeta y la ventana entre las tiras.</li>
     <li>Acuñado del hoyuelo (punzón esférico de R 2 mm, 0,25 mm de alto) en la chapa plana.</li>
     <li>Plegado en un útil, en este orden: P3 (la lengüeta hacia adelante), P2 (las tiras hacia atrás) y P1 (el brazo superior). Radio interior ≥ 0,15 mm.</li>
     <li>Envejecido a CH900 (unos 480 °C, 1 h): sube la fluencia a unos 1300 MPa y fija la forma.</li>
-    <li>Pegado del rigidizador de FR4 y del flex con el ADXL1004 en la cara exterior del alma. Pegado de la aleta de cobre en la cara interior.</li>
-    <li>Montaje: dos tornillos M1 en la oreja inferior y uno en la superior, sobre los amarres de la carcasa, e imanes con yugo a los costados de la aleta.</li>
+    <li>Pegado del extremo rígido del flex, con el ADXL1004 ya soldado, en la cara exterior del alma (epoxi rígido, capa fina).</li>
+    <li>Montaje: un tornillo M1 en cada oreja, sobre los amarres de la carcasa.</li>
     <li>Ensayo de impacto del palpador montado: f₀ y ζ reales, para fijar los umbrales.</li>
   </ol>
 </section>

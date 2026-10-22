@@ -49,10 +49,10 @@ def palpador(F0: float, tipo: str = "flexura_liviana") -> Palpador:
     return Palpador(tipo, [M_PUNTA, M_CARRO], [_flexura(1250, M_CARRO, M_PUNTA, F0)], [0.02], F0=F0)
 
 
-def caracteristicas(ts, y, E_mJ):
+def caracteristicas(ts, y, E_mJ, banda=(150, 5000)):
     fs = 1 / (ts[1] - ts[0])
     w3 = ts <= 3e-3
-    sos = butter(4, [150, 5000], btype="band", fs=fs, output="sos")
+    sos = butter(4, list(banda), btype="band", fs=fs, output="sos")
     Eb = float(np.sum(sosfiltfilt(sos, y[w3]) ** 2) / fs * 1e3)
     w2 = (ts > 0.05e-3) & (ts <= 2.05e-3)
     seg = y[w2] * np.hanning(w2.sum())
