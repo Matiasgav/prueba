@@ -679,7 +679,8 @@ class ModeloCuna:
               E_punta: float = 210e9, nu_punta: float = 0.29,
               E_cuna_hertz: float = 20e9, nu_cuna_hertz: float = 0.20,
               v_cuna0: np.ndarray | None = None, p_diseno: float = 50e6,
-              chi_punta: float = 0.0, cfl: float = 0.7, verbose: bool = False) -> dict:
+              chi_punta: float = 0.0, x_palps: list | None = None,
+              cfl: float = 0.7, verbose: bool = False) -> dict:
         """Golpe del impactador, o choque libre de la cuña: dinámica no lineal completa.
 
         Ecuación de movimiento (u medido desde el equilibrio con precarga u0):
@@ -722,6 +723,10 @@ class ModeloCuna:
         pdof = 3 * pn + 1
         x_palp = x_golpe + 10e-3 if x_palp is None else x_palp
         n_palp = int(m.nodo(int(round(x_palp / self.g.L * (m.nx - 1))), m.ny - 1, izg))
+        # puntos extra de la cara superior (barrido de distancia del palpador)
+        x_palps = [] if x_palps is None else list(x_palps)
+        n_palps = np.array([int(m.nodo(int(round(xp / self.g.L * (m.nx - 1))), m.ny - 1, izg)) for xp in x_palps], int)
+        x_palps_real = (n_palps // (m.ny * m.nz)) * self.g.L / (m.nx - 1) if n_palps.size else np.array([])
         # Rayleigh
         z0, f1, f2 = zeta
         w1, w2 = 2 * math.pi * f1, 2 * math.pi * f2
@@ -755,6 +760,7 @@ class ModeloCuna:
         claves = ("t", "F_H", "s", "uy_golpe", "uy_palp", "vy_palp", "ay_palp", "F_flancos", "F_fondo",
                   "F_lateral", "frac_fl_abierto", "frac_fo_abierto", "E_cin_cuna", "E_balance")
         hist = {k: [] for k in claves}
+        hist["uy_palps"], hist["vy_palps"] = [], []
         D_ray = D_hc = D_roz = D_tip = 0.0
         p_max = 0.0
         E_in = 0.5 * m_imp * v0 ** 2 + 0.5 * float(np.sum(self.M * v * v))
@@ -834,6 +840,9 @@ class ModeloCuna:
                 hist["uy_palp"].append(u[3 * n_palp + 1])
                 hist["vy_palp"].append(v[3 * n_palp + 1])
                 hist["ay_palp"].append(a[3 * n_palp + 1])
+                if n_palps.size:
+                    hist["uy_palps"].append(u[3 * n_palps + 1].copy())
+                    hist["vy_palps"].append(v[3 * n_palps + 1].copy())
                 hist["F_flancos"].append(float(np.sum(p_l * self.fl_A)))
                 hist["F_fondo"].append(float(np.sum(p_f * self.fo_A)))
                 hist["F_lateral"].append(float(np.sum(q_a)))
@@ -901,6 +910,7 @@ class ModeloCuna:
             "frames": {"t": np.asarray(fr_t), "u": np.asarray(fr_u),
                        "p_flanco": np.asarray(fr_pf), "p_fondo": np.asarray(fr_pb)},
             "nodo_palp": n_palp, "parche_nodos": pn, "parche_pesos": pw,
+            "x_palps": x_palps_real,
             "rayleigh": {"alfa": alfa, "beta": beta},
             "v_final": v.copy(), "u_final": u.copy(),
         }

@@ -87,8 +87,8 @@ select:focus-visible{outline:2px solid var(--probe);outline-offset:2px}
 
 <section>
   <div class="verdict">
-    <div class="vcard"><span>Diseño recomendado</span><b>Flexura liviana</b><span>punta de 10 mg, flexura metálica de 1,25 kHz, carro de 0,40 g con el ADXL1004</span></div>
-    <div class="vcard"><span>Despegue</span><b>10 de 11 sin despegue</b><span>sólo despega con un extremo libre y con juego (9 % del tiempo), que es una cuña muy floja igual</span></div>
+    <div class="vcard"><span>Diseño recomendado</span><b>Flexura liviana a 15 mm</b><span>punta de 10 mg, flexura metálica de 1,25 kHz, carro de 0,40 g con el ADXL1004, 1,0 a 1,3 N</span></div>
+    <div class="vcard"><span>5 niveles</span><b>4 seguros + 1 con calibración</b><span>C1 (energía 150 Hz–5 kHz) separa 4 niveles; C2 (frecuencia de asiento) separa muy ajustada de ajustada si se calibra una vez por generador</span></div>
     <div class="vcard"><span>Lectura de muy ajustada a muy floja</span><b>× 5000</b><span>energía de la señal en 150 Hz–5 kHz: 10,6 → 12,1 → 39 → 602 → 58 000 g²·ms</span></div>
     <div class="vcard"><span>Precarga de 0,7 a 1,3 N</span><b>cambia menos del 5 %</b><span>la lectura no depende de qué tan exacta sea la precarga</span></div>
   </div>
@@ -203,6 +203,62 @@ select:focus-visible{outline:2px solid var(--probe);outline-offset:2px}
   </div>
 </section>
 
+<section id="niveles">
+  <div class="prose">
+    <span class="eyebrow">5b · Distancia y 5 niveles</span>
+    <h2>A 15 mm, con dos características, los 5 niveles se separan</h2>
+    <p>Se corrió la cuña 3D para los 5 niveles con las incertidumbres que más pesan, y se registró la cara superior entre 5 y 20 mm del golpe:</p>
+    <ul>
+      <li>energía del golpe 4,5 / 5 / 5,5 mJ;</li>
+      <li>rigidez de contacto de los flancos × 0,7 / 1 / 1,3;</li>
+      <li>precarga de 1,0 y 1,3 N;</li>
+      <li>8 realizaciones del ruido del ADXL1004.</li>
+    </ul>
+    <p>En total son 350 simulaciones del palpador de flexura liviana. El margen entre dos niveles vecinos es el hueco entre sus intervalos dividido por el ancho típico de un intervalo. Si es positivo, los niveles no se tocan nunca, con ninguna combinación de incertidumbres.</p>
+  </div>
+  <div class="eq">\[ C_1 = \log_{10}\frac{E_b}{E_{golpe}} = \log_{10}\frac{\int_0^{3\,ms} a_{150\,Hz-5\,kHz}^2\,dt\ \ [g^2ms]}{E_{golpe}\ [mJ]}, \qquad C_2 = \frac{\int_{12}^{24\,kHz} f\,|A(f)|^2 df}{\int_{12}^{24\,kHz} |A(f)|^2 df}\ \ \text{(primeros 2 ms)} \]</div>
+  <div class="prose">
+    <p><b>C1</b> mide el movimiento lento de la cuña y crece con la soltura. <b>C2</b> es la frecuencia de la vibración de la cuña sobre sus asientos. Llega atenuada unas 200 veces por la flexura, pero con unos 10 g, muy por encima del ruido. Sube con la presión de asiento porque el contacto de Hertz se rigidiza.</p>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Distancia</th><th>F contacto mín (1 N)</th><th>C1: ajustada / moderada</th><th>C1: moderada / floja</th><th>C1: floja / muy floja</th><th>C2: muy ajustada / ajustada (rigidez calibrada)</th></tr></thead>
+    <tbody>
+<tr class=""><td class="n">5,0 mm</td><td class="n">0,20 N</td><td class="n">2,2</td><td class="n">7,8</td><td class="n">15,3</td><td class="n">10,6</td></tr>
+<tr class=""><td class="n">7,5 mm</td><td class="n">0,21 N</td><td class="n">2,6</td><td class="n">7,8</td><td class="n">14,5</td><td class="n">11,4</td></tr>
+<tr class=""><td class="n">10,0 mm</td><td class="n">0,23 N</td><td class="n">2,4</td><td class="n">5,9</td><td class="n">11,1</td><td class="n">13,5</td></tr>
+<tr class=""><td class="n">12,5 mm</td><td class="n">0,24 N</td><td class="n">2,7</td><td class="n">6,0</td><td class="n">11,5</td><td class="n">16,3</td></tr>
+<tr class="rec"><td class="n">15,0 mm</td><td class="n">0,26 N</td><td class="n">2,8</td><td class="n">6,3</td><td class="n">11,9</td><td class="n">17,9</td></tr>
+<tr class=""><td class="n">17,5 mm</td><td class="n">0,28 N</td><td class="n">3,2</td><td class="n">6,8</td><td class="n">12,4</td><td class="n">20,4</td></tr>
+<tr class=""><td class="n">20,0 mm</td><td class="n">0,30 N</td><td class="n">1,9</td><td class="n">4,8</td><td class="n">8,1</td><td class="n">22,1</td></tr>
+    </tbody></table></div>
+  <div class="prose">
+    <p>Los números son márgenes: más alto es más seguro. No despega a ninguna distancia, ni con 1,0 ni con 1,3 N, ni con ninguna variante. Los márgenes de C1 tienen una meseta entre 12,5 y 17,5 mm y caen a 20 mm, donde la señal ya es débil. El margen de C2 crece con la distancia. <b>15 mm queda en el medio de la meseta</b>, así que tolera ±2,5 mm de error de posición sin perder separación.</p>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Nivel (a 15 mm)</th><th>C1, con todas las incertidumbres</th><th>C2 con rigidez calibrada</th><th>C2 con rigidez ±30 %</th></tr></thead>
+    <tbody>
+<tr><td>Muy ajustada</td><td class="n">-0,11 a 0,21</td><td class="n">18658 a 18669 Hz</td><td class="n">17755 a 19286 Hz</td></tr>
+<tr><td>Ajustada</td><td class="n">-0,05 a 0,05</td><td class="n">18209 a 18217 Hz</td><td class="n">17271 a 18865 Hz</td></tr>
+<tr><td>Moderada</td><td class="n">0,49 a 0,90</td><td class="n">17258 a 17283 Hz</td><td class="n">16264 a 17982 Hz</td></tr>
+<tr><td>Floja</td><td class="n">1,88 a 2,02</td><td class="n">15847 a 16001 Hz</td><td class="n">14735 a 16786 Hz</td></tr>
+<tr><td>Muy floja</td><td class="n">3,88 a 4,03</td><td class="n">16110 a 16284 Hz</td><td class="n">15826 a 16284 Hz</td></tr>
+    </tbody></table></div>
+  <div class="prose">
+    <h3>Regla de decisión (a 15 mm)</h3>
+  </div>
+  <ol class="steps">
+    <li><b>Si el palpador despega o el ADXL1004 marca sobrerrango:</b> muy floja.</li>
+    <li><b>C1 &gt; 2,95:</b> muy floja. <b>1,40 &lt; C1 ≤ 2,95:</b> floja. <b>0,35 &lt; C1 ≤ 1,40:</b> moderada.</li>
+    <li><b>C1 ≤ 0,35:</b> ajustada o muy ajustada. Decide C2 contra la frecuencia de referencia de ese generador, \(f_{ref}\): si \(C_2 \ge f_{ref} - 225\) Hz, muy ajustada; si no, ajustada.</li>
+  </ol>
+  <div class="prose">
+    <h3>La condición para el quinto nivel: calibrar una vez por generador</h3>
+    <p>C1 separa cuatro niveles aunque la rigidez de los flancos sea incierta en ±30 %: ajustada, moderada, floja y muy floja. La frontera entre muy ajustada y ajustada son 450 Hz de C2, y C2 se corre 25 Hz por cada 1 % de error en esa rigidez. <b>Hace falta conocerla mejor que ±9 %</b>, y el modelo no la conoce: es estimada.</p>
+    <p>Esa rigidez depende del G11 y del borde de las chapas del núcleo, no de cada cuña, así que es una propiedad del generador. Se calibra una vez por máquina: se mide \(f_{ref}\) en tres a cinco cuñas que se sepa que están muy ajustadas (recién reacuñadas, o confirmadas con una prueba estática de empuje). Sin esa calibración, el sensor da cuatro niveles seguros y el quinto como indicación.</p>
+    <p>Como segunda medición conviene registrar la restitución del impactador. Baja de 0,82 a 0,59 entre muy ajustada y muy floja y no depende del palpador.</p>
+  </div>
+</section>
+
 <section>
   <div class="prose">
     <span class="eyebrow">6 · Señales</span>
@@ -239,18 +295,20 @@ select:focus-visible{outline:2px solid var(--probe);outline-offset:2px}
     <li><b>Flexura metálica, f₀ = 1,25 kHz.</b> Un elastómero no sirve: con ζ = 0,15 la lectura deja de crecer en orden (la muy ajustada lee 69 y la ajustada 15). Un corte más alto (3 kHz) despega desde "floja". Uno más bajo (600 Hz) achica la señal unas 80 veces, la lectura deja de crecer en orden (la muy ajustada lee 0,31 y la ajustada 0,15) y la cuña muy floja igual lo despega.</li>
     <li><b>Carro lo más liviano posible.</b> 0,40 g con el ADXL1004 sobre una placa mínima: despega a 249 g. La lectura no depende de la masa, así que esto es sólo margen.</li>
     <li><b>Punta de 10 mg</b>, bolita de acero de 1,3 mm. Con la punta apoyada, su modo queda en 58 kHz, por encima de la resonancia del sensor (45 kHz).</li>
+    <li><b>Distancia de 15 mm al golpe</b>, en la línea central de la cuña y fija por construcción en el cabezal. Es el centro de la meseta de 12,5 a 17,5 mm (sección 5b).</li>
     <li><b>Precarga de 1 a 1,3 N</b> con un resorte blando aparte (unos 0,3 N/mm), para que no cambie con la posición del robot.</li>
     <li><b>Placa del sensor de canto:</b> el eje del ADXL1004 está en el plano del encapsulado.</li>
     <li><b>Leer y registrar:</b>
       <ul>
-        <li>\(E_b\) en 150 Hz–5 kHz durante 3 ms, normalizada por la energía del golpe que mide el impactador;</li>
+        <li>C1: \(E_b\) en 150 Hz–5 kHz durante 3 ms, normalizada por la energía del golpe que mide el impactador;</li>
+        <li>C2: el centroide espectral entre 12 y 24 kHz en los primeros 2 ms;</li>
         <li>la salida de sobrerrango del ADXL1004 y el recorte en F₀/m, como detector de despegue: si despega, la cuña está muy floja y no hace falta más;</li>
         <li>la restitución del impactador, como segunda medición.</li>
       </ul></li>
   </ol>
   <div class="prose"><h3>Qué falta verificar</h3></div>
   <ol class="steps">
-    <li><b>Posición del palpador.</b> Todo es a 10 mm del golpe y centrado en el ancho. Falta barrer 8–15 mm y el corrimiento lateral.</li>
+    <li><b>Posición del palpador.</b> La distancia ya está barrida entre 5 y 20 mm (sección 5b). Falta el corrimiento lateral respecto de la línea central.</li>
     <li><b>La rigidez de los flancos sigue siendo estimada</b> y fija la vibración de la cuña ajustada. El salto ajustada/moderada (× 3,2) depende de ella.</li>
     <li><b>La resonancia del ADXL1004</b> se modeló con Q = 30, sin el dato de la hoja. Conviene un ensayo de barrido del sensor montado.</li>
     <li><b>Lo que no está en el modelo:</b> la vibración del cuerpo del robot por la reacción del solenoide y la interferencia eléctrica del pulso en la señal analógica.</li>

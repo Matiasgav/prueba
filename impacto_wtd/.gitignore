@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 .pytest_cache/
 results/*.log
+
+# señales del barrido de distancia (15 MB, se regeneran con python -m cuna3d.distancia)
+results/cuna3d/distancia/
