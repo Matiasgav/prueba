@@ -679,13 +679,17 @@ class ModeloCuna:
               E_punta: float = 210e9, nu_punta: float = 0.29,
               E_cuna_hertz: float = 20e9, nu_cuna_hertz: float = 0.20,
               v_cuna0: np.ndarray | None = None, p_diseno: float = 50e6,
-              cfl: float = 0.7, verbose: bool = False) -> dict:
+              chi_punta: float = 0.0, cfl: float = 0.7, verbose: bool = False) -> dict:
         """Golpe del impactador, o choque libre de la cuña: dinámica no lineal completa.
 
         Ecuación de movimiento (u medido desde el equilibrio con precarga u0):
 
             M a + C v + K (u0 + u) = f_c(u0+u, v, historia) + f_golpe - r0
-            m_imp s'' = -F_H,   F_H = K_H <s + u_y,parche>^(3/2)
+            m_imp s'' = -F_H,   F_H = K_H <s + u_y,parche>^(3/2) (1 + chi_punta * d(pen)/dt)_+
+
+        chi_punta es la pérdida local bajo la punta (viscoelasticidad y daño
+        de la matriz del G11). Se calibra con la dureza Leeb medida (ver
+        cuna3d/leeb.py); con 0 el contacto de la punta es elástico.
 
         f_c reúne flancos (Hertz + Hunt-Crossley + Coulomb), fondo (ripple
         con tope de aplastado, o Hertz), y pared lateral. r0 es el residuo
@@ -751,7 +755,7 @@ class ModeloCuna:
         claves = ("t", "F_H", "s", "uy_golpe", "uy_palp", "vy_palp", "ay_palp", "F_flancos", "F_fondo",
                   "F_lateral", "frac_fl_abierto", "frac_fo_abierto", "E_cin_cuna", "E_balance")
         hist = {k: [] for k in claves}
-        D_ray = D_hc = D_roz = 0.0
+        D_ray = D_hc = D_roz = D_tip = 0.0
         p_max = 0.0
         E_in = 0.5 * m_imp * v0 ** 2 + 0.5 * float(np.sum(self.M * v * v))
         for n in range(n_pasos + 1):
@@ -803,7 +807,13 @@ class ModeloCuna:
             # golpe (Hertz de la punta)
             uy_p = float(np.dot(pw, u[pdof]))
             pen = s + uy_p
-            F_H = K_H * pen ** 1.5 if (con_imp and pen > 0) else 0.0
+            if con_imp and pen > 0:
+                F_He = K_H * pen ** 1.5
+                pen_d = sd + float(np.dot(pw, v[pdof]))
+                F_H = max(0.0, F_He * (1 + chi_punta * pen_d))
+                D_tip += dt * (F_H - F_He) * pen_d
+            else:
+                F_H = 0.0
             f[pdof] -= F_H * pw
             a = f / self.M
             p_max = max(p_max, float(p_l.max()))
@@ -815,7 +825,7 @@ class ModeloCuna:
                     U_ref = U_el + U_c
                 T = 0.5 * float(np.sum(self.M * v * v))
                 E_tot = (T + (U_el + U_c - U_ref) + U_t + 0.5 * m_imp * sd ** 2
-                         + (0.4 * K_H * pen ** 2.5 if F_H > 0 else 0.0) + D_ray + D_hc + D_roz)
+                         + (0.4 * K_H * pen ** 2.5 if pen > 0 and con_imp else 0.0) + D_ray + D_hc + D_roz + D_tip)
             if n % rec_every == 0:
                 hist["t"].append(t)
                 hist["F_H"].append(F_H)
@@ -881,6 +891,7 @@ class ModeloCuna:
             "E_rebote_mJ": 0.5 * m_imp * v_reb ** 2 * 1e3,
             "E_transmitida_mJ": 0.5 * m_imp * (v0 ** 2 - v_reb ** 2) * 1e3,
             "E_rozamiento_mJ": D_roz * 1e3, "E_choques_mJ": D_hc * 1e3, "E_rayleigh_mJ": D_ray * 1e3,
+            "E_punta_mJ": D_tip * 1e3, "restitucion": v_reb / v0 if con_imp else 0.0,
             "E_cuna_final_mJ": E_cuna * 1e3,
             "error_balance_energia": err_E,
             "p_flanco_max_MPa": p_max / 1e6, "p_diseno_MPa": p_diseno / 1e6,
