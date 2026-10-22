@@ -366,7 +366,7 @@ def generar():
       <li><b>Brazos.</b> El brazo superior (3 mm) y el inferior (dos tiras de 1,5 mm a los costados) forman un paralelogramo: el carro baja derecho (giro de 9 mrad) y la flecha de 1,5 mm da la precarga.</li>
       <li><b>Alma.</b> Por fuera va pegado el extremo rígido del flex con el ADXL1004, con el eje sensible vertical.</li>
       <li><b>Lengüeta.</b> El centro del alma baja 1,3 mm más y se pliega hacia adelante: es el filtro. El hoyuelo esférico acuñado en la punta es el contacto con la cuña.</li>
-      <li><b>Sin amortiguador.</b> La resonancia del filtro (~{f(res["f0_Hz"],0)} Hz) queda con el amortiguamiento propio del acero (ζ ≈ 0,002). No hace falta domarla: C1 se mide en la banda {f(BANDA_C1[0]/1000,1)}–{f(BANDA_C1[1]/1000,0)} kHz, por encima de ella. El costo es esperar ~0,5 s entre golpes a que se apague.</li>
+      <li><b>Sin amortiguador.</b> La resonancia del filtro (~{f(res["f0_Hz"],0)} Hz) queda con el amortiguamiento propio del acero (ζ ≈ 0,002). No hace falta domarla: C1 se mide en la banda {f(BANDA_C1[0]/1000,1)}–{f(BANDA_C1[1]/1000,0)} kHz, por encima de ella. El contacto no la amortigua (en el modelo suma ζ ≈ 0,00001: es 100 veces más rígido que la lengüeta y casi no se deforma), pero tampoco hace falta esperar a que se apague: el filtro de C1 la atenúa 45 dB y C2 mira 12–24 kHz.</li>
     </ul>
   </div>
   <div class="fig plano" role="img" aria-label="Vista isométrica del palpador de una tira"><svg viewBox="0 0 1140 430">{svg_iso()}</svg></div>
