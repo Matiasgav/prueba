@@ -105,6 +105,8 @@ class Palpador:
     R_punta: float = 1e-3
     chi: float = 0.236     # pérdida local en el G11, la calibrada con Leeb [s/m]
     nota: str = ""
+    k_suelo: float = 0.0   # resorte de precarga real entre el carro y la carcasa [N/m] (0 = fuerza constante)
+    c_suelo: float = 0.0   # amortiguador entre el carro y la carcasa (Foucault) [N s/m]
 
     def Kc(self) -> float:
         Est = 1 / ((1 - 0.29 ** 2) / 210e9 + (1 - 0.2 ** 2) / 20e9)
@@ -126,6 +128,7 @@ class Palpador:
             K[i + 1, i + 1] += k
             K[i, i + 1] -= k
             K[i + 1, i] -= k
+        K[n - 1, n - 1] += self.k_suelo
         M = np.diag(self.masas)
         w2 = np.linalg.eigvals(np.linalg.solve(M, K)).real
         return np.sort(np.sqrt(np.maximum(w2, 0))) / (2 * math.pi)
@@ -145,6 +148,7 @@ class Palpador:
         kc, cc = self.k_contacto(), self.chi * self.F0
         K = np.zeros((n, n)); C = np.zeros((n, n))
         K[0, 0] += kc; C[0, 0] += cc
+        K[n - 1, n - 1] += self.k_suelo; C[n - 1, n - 1] += self.c_suelo
         for i, (k, c) in enumerate(zip(self.k, self.c())):
             for (a, b, sg) in ((i, i, 1), (i + 1, i + 1, 1), (i, i + 1, -1), (i + 1, i, -1)):
                 K[a, b] += sg * k
@@ -166,6 +170,7 @@ class Palpador:
         k = self.k
         c = self.c()
         Kc, chi, F0 = self.Kc(), self.chi, self.F0
+        kg, cg = self.k_suelo, self.c_suelo
         d0 = (F0 / Kc) ** (2 / 3)
         s0 = [F0 / ki for ki in k]
         f_max = max(self.modos().max(), 1.0)
@@ -189,13 +194,14 @@ class Palpador:
                 Fc = 0.0
             F = [k[i] * (s0[i] + x[i] - x[i + 1]) + c[i] * (v[i] - v[i + 1]) for i in range(n - 1)]
             a = [0.0] * n
+            Fs = F0 + kg * x[n - 1] + cg * v[n - 1]      # precarga: resorte real + Foucault a la carcasa
             if n == 1:
-                a[0] = (Fc - F0) / m[0]
+                a[0] = (Fc - Fs) / m[0]
             else:
                 a[0] = (Fc - F[0]) / m[0]
                 for i in range(1, n - 1):
                     a[i] = (F[i - 1] - F[i]) / m[i]
-                a[n - 1] = (F[n - 2] - F0) / m[n - 1]
+                a[n - 1] = (F[n - 2] - Fs) / m[n - 1]
             return a, Fc
 
         for j in range(N):

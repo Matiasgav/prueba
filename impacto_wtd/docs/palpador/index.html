@@ -379,6 +379,126 @@ select:focus-visible{outline:2px solid var(--probe);outline-offset:2px}
     <li><b>Lo que no está en el modelo:</b> la vibración del cuerpo del robot por la reacción del solenoide y la interferencia eléctrica del pulso en la señal analógica.</li>
   </ol>
 </section>
+<section id="mecanico">
+  <div class="prose">
+    <span class="eyebrow">9 · Diseño mecánico</span>
+    <h2>Chapa plegada en un módulo de 10 × 10 mm</h2>
+    <p>El palpador es un módulo de 10 × 10 mm de sección, igual que el de impacto, y va al lado de él con su eje a 15 mm del golpe. Todo el mecanismo sale de dos piezas fotograbadas en la misma chapa de acero 17-7PH de 0,10 mm, plegadas y soldadas con láser.</p>
+    <ul>
+      <li>La <b>pieza A</b> es una "C": dos láminas largas de precarga, que además guían el carro en línea recta, y el alma vertical del carro.</li>
+      <li>La <b>pieza B</b> es una "C" chica: las dos láminas cortas del filtro, que llevan el tubo de la punta.</li>
+    </ul>
+    <p>El alma queda vertical, y ahí va pegado el flex del ADXL1004 con el eje sensible en el eje del palpador. Esto resuelve el problema de que el sensor mide en el plano de su encapsulado.</p>
+  </div>
+  <div class="fig" role="img" aria-label="Corte lateral del palpador de chapa plegada">
+    <svg viewBox="0 0 980 420">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10z" style="fill:var(--probe)"/></marker>
+        <marker id="arf" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" style="fill:var(--ok)"/></marker>
+      </defs>
+      <style>
+        .sh{stroke:var(--ink);stroke-width:1} .dm{stroke:var(--ink-2);stroke-width:.8}
+        .wedge{fill:var(--warnbg);stroke:var(--wedge);stroke-width:1.2} .house{fill:var(--paper);stroke:var(--ink-2);stroke-width:1.2}
+        .boss{fill:var(--rule);stroke:var(--ink-2)} .screw{fill:var(--sheet);stroke:var(--ink-2)}
+        .sheet{fill:none;stroke:var(--probe);stroke-width:2.6;stroke-linecap:round} .sheet2{fill:none;stroke:var(--ok);stroke-width:2.6;stroke-linecap:round}
+        .fr4{fill:#7a9a4a;opacity:.8} .chip{fill:var(--ink)} .flex{fill:none;stroke:#c98a1a;stroke-width:2.4}
+        .axis{stroke:var(--probe);stroke-width:2} .cu{fill:#b8733340;stroke:#b87333;stroke-width:1.4} .mag{fill:none;stroke:var(--ink-2);stroke-dasharray:4 3}
+        .tube{fill:var(--ink-2)} .cap{fill:var(--sheet);stroke:var(--ink);stroke-width:1.2} .force{stroke:var(--ok);stroke-width:2}
+        .tx{font:12px var(--f-mono);fill:var(--ink)} .ts{font:11px var(--f-mono);fill:var(--ink-2)} .tw{font:12px var(--f-mono);fill:var(--wedge)}
+        .tc{font:11px var(--f-mono);fill:var(--ink)} .tf{font:11px var(--f-mono);fill:#c98a1a} .tcu{font:12px var(--f-mono);fill:#b87333}
+        .t1{font:12px var(--f-mono);fill:var(--probe)} .t2{font:12px var(--f-mono);fill:var(--ok)} .dt{font:11px var(--f-mono);fill:var(--ink-2)}
+      </style>
+      <rect x="20.0" y="320.0" width="560.0" height="40.0" class="wedge"/>
+      <text x="46.0" y="346.0" class="tw" text-anchor="start">cuña de G11 (cara superior)</text>
+      <path class="house" d="M40 300 L392.0 300 L392.0 280 L60 280 L60 120 L540 120 L540 280 L416.0 280 L416.0 300 L560 300 L560 100 L40 100 Z"/>
+      <text x="66.0" y="92.0" class="tx" text-anchor="start">carcasa Al 7075, 10 × 10 mm</text>
+      <rect x="60.0" y="160.0" width="40.0" height="120.0" class="boss"/>
+      <text x="80.0" y="293.0" class="ts" text-anchor="middle">amarre</text>
+      <circle cx="80" cy="263.0" r="3" class="screw"/>
+      <circle cx="80" cy="163.0" r="3" class="screw"/>
+      <path class="sheet" d="M64.0 170.0 L336.0 170.0 Q340 170.0 340 174.0 L340 266.0 Q340 270.0 336.0 270.0 L64.0 270.0"/>
+      <rect x="327.0" y="176.0" width="11.0" height="88.0" class="fr4"/>
+      <rect x="291.0" y="175.0" width="36.0" height="90.0" class="chip"/>
+      <path class="axis" d="M309.0 252.0 L309.0 188.0" marker-end="url(#ar)"/>
+      <text x="309.0" y="276.0" class="tc" text-anchor="middle">ADXL1004</text>
+      <path class="flex" d="M308.0 175.0 C308.0 136.0 220 132.0 180 148.0 S130.0 130.0 120 120"/>
+      <text x="230.0" y="140.0" class="tf" text-anchor="middle">flex (lazo de servicio)</text>
+      <rect x="352.0" y="134.0" width="64.0" height="66.0" class="mag"/>
+      <rect x="342.0" y="128.0" width="80.0" height="80.0" class="cu"/>
+      <text x="584.0" y="132.0" class="tcu" text-anchor="start">aleta de Cu 4 × 4 × 0,4</text><line x1="422.0" y1="136.0" x2="580.0" y2="129.0" class="dm"/>
+      <text x="584.0" y="144.0" class="ts" text-anchor="start">entre 2 imanes N52 con yugo</text>
+      <text x="584.0" y="155.0" class="ts" text-anchor="start">a ambos lados, fijos a la carcasa</text>
+      <path class="sheet2" d="M410.0 226.0 L345.0 226.0 Q342.0 226.0 342.0 229.0 L342.0 253.0 Q342.0 256.0 345.0 256.0 L410.0 256.0"/>
+      <rect x="398.0" y="222.0" width="12.0" height="92.0" class="tube"/>
+      <path class="cap" d="M383.0 314.0 Q404.0 325.0 425.0 314.0 Z"/>
+      <text x="584.0" y="282.0" class="ts" text-anchor="start">tubo inox 304 Ø0,6/0,4</text><line x1="410.0" y1="280.0" x2="580.0" y2="279.0" class="dm"/>
+      <text x="584.0" y="319.0" class="ts" text-anchor="start">casquete de circonia R 2 mm</text><line x1="425.0" y1="316.0" x2="580.0" y2="317.0" class="dm"/>
+      <text x="584.0" y="232.0" class="t2" text-anchor="start">láminas de medición</text><line x1="410.0" y1="226.0" x2="580.0" y2="229.0" class="dm"/>
+      <text x="584.0" y="243.0" class="ts" text-anchor="start">0,10 × 2 × 3,19 mm</text>
+      <text x="192.0" y="183.0" class="t1" text-anchor="middle">láminas de precarga</text><text x="192.0" y="195.0" class="ts" text-anchor="middle">0,10 × 8 × 12</text>
+      <line x1="100.0" y1="154.0" x2="340.0" y2="154.0" class="dm"/><line x1="100.0" y1="159.0" x2="100.0" y2="149.0" class="dm"/><line x1="340.0" y1="159.0" x2="340.0" y2="149.0" class="dm"/><text x="270.0" y="151.0" class="dt" text-anchor="middle">12</text>
+      <line x1="49.0" y1="270.0" x2="49.0" y2="170.0" class="dm"/><line x1="44.0" y1="270.0" x2="54.0" y2="270.0" class="dm"/><line x1="44.0" y1="170.0" x2="54.0" y2="170.0" class="dm"/><text x="56.0" y="223.0" class="dt" text-anchor="start">5</text>
+      <line x1="342.0" y1="215.0" x2="404.0" y2="215.0" class="dm"/><line x1="342.0" y1="220.0" x2="342.0" y2="210.0" class="dm"/><line x1="404.0" y1="220.0" x2="404.0" y2="210.0" class="dm"/><text x="373.0" y="209.0" class="dt" text-anchor="middle">3,19</text>
+      <line x1="220.0" y1="320.0" x2="220.0" y2="300.0" class="dm"/><line x1="215.0" y1="320.0" x2="225.0" y2="320.0" class="dm"/><line x1="215.0" y1="300.0" x2="225.0" y2="300.0" class="dm"/><text x="213.0" y="313.0" class="dt" text-anchor="end">1,0 sobre la cuña</text>
+      <line x1="572.0" y1="300.0" x2="572.0" y2="100.0" class="dm"/><line x1="567.0" y1="300.0" x2="577.0" y2="300.0" class="dm"/><line x1="567.0" y1="100.0" x2="577.0" y2="100.0" class="dm"/><text x="579.0" y="203.0" class="dt" text-anchor="start">10</text>
+      <path class="force" d="M368.0 332.0 L392.0 321.0" marker-end="url(#arf)"/>
+    </svg>
+  </div>
+  <p class="note" style="font-size:.85rem;color:var(--ink-2)">Corte por el plano medio. x a lo largo de la ranura, y radial. Punta apoyada: el carro subió 1,26 mm respecto de la posición libre, y esa flecha de las láminas de precarga es la precarga. Medidas en mm.</p>
+  <div class="fig" role="img" aria-label="Desarrollo de las dos piezas de chapa">
+    <svg viewBox="0 0 560 290">
+      <style>.flat{fill:var(--band);stroke:var(--probe);stroke-width:1.4} .fold{stroke:var(--alarm);stroke-dasharray:5 3;stroke-width:1} .hole{fill:var(--sheet);stroke:var(--ink-2)}
+      .ts{font:10px var(--f-mono);fill:var(--ink-2)} .tb{font:12px var(--f-mono);fill:var(--ink)} .tf2{font:10px var(--f-mono);fill:var(--alarm)}</style>
+      <text x="30.0" y="27.6" class="tb" text-anchor="start">Pieza A · 17-7PH cond. C · 0,10 mm · 33 × 8 mm</text><rect x="30.0" y="50.0" width="462.0" height="112.0" class="flat"/><line x1="58.0" y1="44.4" x2="58.0" y2="167.6" class="fold"/><text x="58.0" y="181.6" class="tf2" text-anchor="middle">90°</text><line x1="226.0" y1="44.4" x2="226.0" y2="167.6" class="fold"/><text x="226.0" y="181.6" class="tf2" text-anchor="middle">90°</text><line x1="296.0" y1="44.4" x2="296.0" y2="167.6" class="fold"/><text x="296.0" y="181.6" class="tf2" text-anchor="middle">90°</text><line x1="464.0" y1="44.4" x2="464.0" y2="167.6" class="fold"/><text x="464.0" y="181.6" class="tf2" text-anchor="middle">90°</text><circle cx="44" cy="85.0" r="7.0" class="hole"/><circle cx="44" cy="127.0" r="7.0" class="hole"/><circle cx="478" cy="85.0" r="7.0" class="hole"/><circle cx="478" cy="127.0" r="7.0" class="hole"/><text x="142.0" y="110.2" class="ts" text-anchor="middle">precarga sup. · 12</text><text x="261.0" y="110.2" class="ts" text-anchor="middle">alma · 5</text><text x="380.0" y="110.2" class="ts" text-anchor="middle">precarga inf. · 12</text><text x="44.0" y="43.0" class="ts" text-anchor="middle">oreja</text><text x="478.0" y="43.0" class="ts" text-anchor="middle">oreja</text><text x="30.0" y="202.6" class="tb" text-anchor="start">Pieza B · misma chapa · 8,5 × 2 mm</text><rect x="30.0" y="225.0" width="119.0" height="28.0" class="flat"/><line x1="79.0" y1="219.4" x2="79.0" y2="258.6" class="fold"/><line x1="100.0" y1="219.4" x2="100.0" y2="258.6" class="fold"/><circle cx="34.9" cy="239.0" r="4.2" class="hole"/><circle cx="144.10000000000002" cy="239.0" r="4.2" class="hole"/><text x="170.0" y="243.2" class="ts" text-anchor="start">lámina 3,19 · base 1,5 · lámina 3,19</text><text x="170" y="258.6" class="ts" text-anchor="start">agujeros Ø0,6 para el tubo · pliegues a 90° en rojo</text>
+    </svg>
+  </div>
+  <div class="prose"><h3>Números del diseño</h3></div>
+  <div class="tbl"><table><tbody>
+    <tr><td>Rigidez de precarga (2 láminas 0,10 × 8 × 12)</td><td class="n">1,82 N/mm</td></tr>
+    <tr><td>Precarga con ±0,3 mm de altura de la carcasa</td><td class="n">1,75 – 2,30 – 2,85 N</td></tr>
+    <tr><td>Rigidez del filtro (2 láminas 0,10 × 2 × 3,19)</td><td class="n">24,3 N/mm</td></tr>
+    <tr><td>Frecuencia de corte con la punta apoyada · modo de la punta</td><td class="n">1250 Hz · 63,1 kHz</td></tr>
+    <tr><td>Amortiguador de Foucault · ζ efectivo · pico del filtro</td><td class="n">0,095 N·s/m · 0,016 · 28,5</td></tr>
+    <tr><td>Masa del lado punta · masa del carro</td><td class="n">13,9 mg · 0,420 g</td></tr>
+    <tr><td>El carro despega a</td><td class="n">540 g</td></tr>
+    <tr><td>Tensión máxima: láminas de precarga · de medición (fluencia 1300 MPa)</td><td class="n">640 · 680 MPa</td></tr>
+    <tr><td>Presión de Hertz sobre el G11 (estática máxima)</td><td class="n">369 MPa</td></tr>
+  </tbody></table></div>
+  <div class="cols" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+    <div class="tbl"><table><thead><tr><th>Lado punta</th><th></th></tr></thead><tbody><tr><td>casquete</td><td class="n">3,3 mg</td></tr><tr><td>tubo</td><td class="n">5,5 mg</td></tr><tr><td>collar</td><td class="n">1,5 mg</td></tr><tr><td>láminas de medición (37 %)</td><td class="n">3,7 mg</td></tr></tbody></table></div>
+    <div class="tbl"><table><thead><tr><th>Carro</th><th></th></tr></thead><tbody><tr><td>ADXL1004</td><td class="n">200,0 mg</td></tr><tr><td>placa FR4</td><td class="n">22,2 mg</td></tr><tr><td>cable plano</td><td class="n">10,0 mg</td></tr><tr><td>componentes y adhesivo</td><td class="n">5,0 mg</td></tr><tr><td>alma de chapa</td><td class="n">31,2 mg</td></tr><tr><td>rigidizador FR4</td><td class="n">32,4 mg</td></tr><tr><td>aleta de Cu</td><td class="n">57,3 mg</td></tr><tr><td>láminas de precarga (37 %)</td><td class="n">55,4 mg</td></tr><tr><td>láminas de medición (63 %)</td><td class="n">6,3 mg</td></tr></tbody></table></div>
+    <div class="tbl"><table><thead><tr><th>Modos parásitos (estimación)</th><th></th></tr></thead><tbody><tr><td>punta lateral sobre láminas de medición (sin rozamiento en el contacto)</td><td class="n">133,3 kHz</td></tr><tr><td>carro lateral sobre láminas de precarga</td><td class="n">26,5 kHz</td></tr><tr><td>lámina de precarga, modo propio</td><td class="n">3,6 kHz</td></tr><tr><td>lámina de medición, modo propio</td><td class="n">50,9 kHz</td></tr><tr><td>punta axial sobre el contacto de Hertz</td><td class="n">63,1 kHz</td></tr></tbody></table></div>
+  </div>
+  <div class="prose"><h3>Verificación del diseño real contra la cuña 3D, con tolerancias de fabricación</h3>
+    <p>Son los 11 estados de la cuña a 15 mm, con energía ±10 % y rigidez de flancos ±30 %. Los márgenes de C1 son los huecos entre ajustada y moderada, moderada y floja, y floja y muy floja, con los umbrales recalculados para cada palpador. El hueco de C2 es el que separa muy ajustada de ajustada.</p></div>
+  <div class="tbl"><table><thead><tr><th>Caso</th><th>¿Despega?</th><th>F contacto mín</th><th>F contacto máx</th><th>Huecos de C1</th><th>Hueco de C2</th></tr></thead><tbody><tr class=""><td>Nominal (F₀ 2,30 N)</td><td>no</td><td class="n">0,97 N</td><td class="n">3,57 N</td><td class="n">0,40 · 1,16 · 1,83</td><td class="n">444 Hz</td></tr><tr class=""><td>Carcasa 0,3 mm más alta (F₀ 1,75 N)</td><td>no</td><td class="n">0,43 N</td><td class="n">3,28 N</td><td class="n">0,43 · 1,16 · 1,84</td><td class="n">447 Hz</td></tr><tr class=""><td>Carcasa 0,3 mm más baja (F₀ 2,85 N)</td><td>no</td><td class="n">1,53 N</td><td class="n">3,90 N</td><td class="n">0,41 · 1,17 · 1,83</td><td class="n">446 Hz</td></tr><tr class=""><td>Amortiguador −40 %</td><td>no</td><td class="n">0,97 N</td><td class="n">3,57 N</td><td class="n">0,44 · 1,18 · 1,79</td><td class="n">447 Hz</td></tr><tr class=""><td>Amortiguador +40 %</td><td>no</td><td class="n">0,97 N</td><td class="n">3,57 N</td><td class="n">0,40 · 1,14 · 1,88</td><td class="n">448 Hz</td></tr><tr class=""><td>Láminas +5 % de espesor (k +16 %, f₀ +8 %)</td><td>no</td><td class="n">1,00 N</td><td class="n">3,56 N</td><td class="n">0,41 · 1,08 · 1,90</td><td class="n">443 Hz</td></tr><tr class=""><td>Láminas −5 % de espesor (k −14 %)</td><td>no</td><td class="n">0,94 N</td><td class="n">3,58 N</td><td class="n">0,40 · 1,03 · 2,08</td><td class="n">446 Hz</td></tr><tr class="rec"><td>Peor caso: alta + amortiguador −40 % + láminas +5 %</td><td>no</td><td class="n">0,46 N</td><td class="n">3,27 N</td><td class="n">0,41 · 1,09 · 1,88</td><td class="n">447 Hz</td></tr></tbody></table></div>
+  <div class="prose"><h3>Por qué así, y qué cambió al bajarlo a una pieza</h3></div>
+  <ol class="steps">
+    <li><b>La masa de la punta es lo que manda.</b> No despega el carro: despega la punta, porque sigue la vibración rápida de la cuña y esa fuerza sale de la precarga. Con 23 mg (collar de soldadura y tubo de Ø0,8) despegaba en el extremo con poca presión. Con 13,9 mg (casquete de circonia, tubo de Ø0,6/0,4, láminas soldadas sin collar) el peor caso queda en 0,43 N. Cada mg de más cuesta entre 0,05 y 0,1 N de margen.</li>
+    <li><b>Láminas paralelas, no alambre.</b> Guían la punta en línea recta y son rígidas de costado (modo lateral de la punta: 133 kHz). Un alambre en voladizo mueve la punta en arco y tiene modos laterales bajos.</li>
+    <li><b>El amortiguamiento va del carro a la carcasa, no en la flexura.</b> El acero solo tiene ζ ≈ 0,002 (un pico de 250). La aleta de cobre en el campo de dos imanes da ζ = 0,016, y como no está en el camino entre punta y carro no deja pasar alta frecuencia. Con ±40 % de amortiguamiento el resultado casi no cambia.</li>
+    <li><b>Una chapa sola de 0,10 mm.</b> Las láminas de medición se acortaron a 3,19 mm para dar 1,25 kHz con ese espesor. Su modo propio (51 kHz) queda arriba de la resonancia del ADXL1004 (41–45 kHz). Las láminas de precarga son de 8 mm de ancho para subir el modo lateral del carro a 26,5 kHz, arriba de la banda de C2.</li>
+    <li><b>Tubo de inoxidable 304, no titanio.</b> Soldar con láser acero contra titanio forma compuestos frágiles.</li>
+  </ol>
+  <div class="prose"><h3>Fabricación y montaje</h3></div>
+  <ol class="steps">
+    <li>Fotograbado de las piezas A y B en 17-7PH condición C de 0,10 mm, con los pliegues perpendiculares a la dirección de laminado.</li>
+    <li>Plegado a 90° con radio interior ≥ 0,1 mm, en un útil que fije la separación de 5 mm entre láminas.</li>
+    <li>Envejecido a CH900 (unos 480 °C, 1 h) después de plegar: sube la fluencia a unos 1300 MPa y alivia el plegado.</li>
+    <li>Soldadura láser del tubo en los agujeros de la pieza B y de la base de B sobre el alma de A. Pegado del casquete de circonia con epoxi estructural.</li>
+    <li>Pegado del rigidizador de FR4 y del flex con el ADXL1004 en la cara interior del alma, con el eje sensible vertical. El flex sale con un lazo de servicio: su rigidez (~0,5 N/m) es despreciable frente a 1820 N/m.</li>
+    <li>Pegado de la aleta de cobre. Montaje en la carcasa: tornillos M1 en las orejas de A, e imanes con yugo a ambos lados de la aleta.</li>
+    <li>Ensayo de impacto del palpador montado: medir f₀ y ζ y fijar los umbrales de C1.</li>
+  </ol>
+  <div class="prose"><h3>Qué falta para el plano de fabricación</h3></div>
+  <ol class="steps">
+    <li><b>Elementos finitos de las dos piezas plegadas.</b> Los modos parásitos de arriba son estimaciones analíticas. En particular, la lámina de precarga tiene un modo propio a 3,6 kHz, dentro de la banda de C1. Sólo lo excita la vibración de la carcasa, pero hay que ver cuánto le llega al carro.</li>
+    <li><b>Vibración de la carcasa por el retroceso del solenoide.</b> Le llega al carro a través de las láminas de precarga (k_p / k ≈ 7 %). Hay que modelar el cabezal entero.</li>
+    <li><b>Medir el campo en el entrehierro de los imanes</b> (supuesto 0,8 T) y el factor de borde de la aleta: fijan el amortiguamiento.</li>
+    <li><b>Altura real de la carcasa sobre la cara de la cuña</b> en el robot (supuesto 1,0 ± 0,3 mm). De ella sale el rango de precarga.</li>
+  </ol>
+</section>
+
 </div>
 
 <script>
