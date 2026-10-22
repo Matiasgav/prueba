@@ -1,0 +1,596 @@
+<meta charset="utf-8">
+<title>Modelo 3D de la cuña</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+                   svg: { fontCache: 'global' }, startup: { typeset: true } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+/* Layout: visor 3D a todo el ancho arriba (con panel lateral de números), señales debajo, después el modelo escrito como una memoria de cálculo de una columna. */
+:root{
+  --paper:#f2f4f6; --sheet:#ffffff; --ink:#17212c; --ink-2:#4b5966; --rule:#d4dbe2;
+  --wedge:#b4690e; --probe:#1f5fa8; --force:#2e7d55; --alarm:#c0392b; --core:#7a8794;
+  --band:#1f5fa81a;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#10151b; --sheet:#171f28; --ink:#e2e8ee; --ink-2:#9ba9b7; --rule:#2b3642;
+  --wedge:#e0a050; --probe:#6aa8ef; --force:#5cc28d; --alarm:#ff6b5b; --core:#8796a5;
+  --band:#6aa8ef22; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#10151b; --sheet:#171f28; --ink:#e2e8ee; --ink-2:#9ba9b7; --rule:#2b3642;
+  --wedge:#e0a050; --probe:#6aa8ef; --force:#5cc28d; --alarm:#ff6b5b; --core:#8796a5;
+  --band:#6aa8ef22; color-scheme:dark}
+
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding-block:36px 80px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  display:flex;flex-direction:column;gap:52px}
+.prose{max-width:70ch;display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(2rem,4.6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.6rem;font-weight:700}
+h3{font-size:1.12rem;font-weight:600}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.lede{font-size:1.15rem;color:var(--ink-2)}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+section{display:flex;flex-direction:column;gap:18px}
+.eq{background:var(--sheet);border:1px solid var(--rule);border-radius:8px;padding:6px 18px;overflow-x:auto}
+.eqn{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px}
+.eqn .tag{font-family:var(--f-mono);font-size:.8rem;color:var(--ink-2)}
+.flag{font-family:var(--f-mono);font-size:.72rem;padding:1px 6px;border-radius:4px;border:1px solid currentColor}
+.flag.e{color:var(--wedge)}.flag.v{color:var(--force)}
+table{border-collapse:collapse;font-variant-numeric:tabular-nums;width:100%}
+.tbl{overflow-x:auto;background:var(--sheet);border:1px solid var(--rule);border-radius:10px}
+th,td{padding:7px 12px;border-bottom:1px solid var(--rule);text-align:left;font-size:.92rem;vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-family:var(--f-mono);font-weight:600;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+td.n{text-align:right;font-family:var(--f-mono);font-size:.85rem;white-space:nowrap}
+tr.sel td{background:var(--band)}
+tbody tr{cursor:pointer}
+
+/* visor */
+.viewer{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:0;background:var(--sheet);
+  border:1px solid var(--rule);border-radius:12px;overflow:hidden}
+@media (max-width:900px){.viewer{grid-template-columns:minmax(0,1fr)}}
+.stage{position:relative;min-width:0;background:var(--paper)}
+#gl{width:100%;height:520px;display:block;touch-action:none;cursor:grab}
+#gl:active{cursor:grabbing}
+.hud{position:absolute;left:12px;top:10px;font-family:var(--f-mono);font-size:.8rem;color:var(--ink);
+  background:color-mix(in srgb, var(--sheet) 82%, transparent);padding:6px 10px;border-radius:6px;pointer-events:none;
+  display:flex;flex-direction:column;gap:2px}
+.colorbar{position:absolute;right:12px;top:10px;width:150px;font-family:var(--f-mono);font-size:.72rem;color:var(--ink-2);
+  background:color-mix(in srgb, var(--sheet) 82%, transparent);padding:6px 8px;border-radius:6px;pointer-events:none}
+.colorbar i{display:block;height:8px;border-radius:2px;margin:4px 0}
+.colorbar div{display:flex;justify-content:space-between}
+.hint{position:absolute;left:12px;bottom:10px;font-size:.78rem;color:var(--ink-2);pointer-events:none}
+.side{border-left:1px solid var(--rule);padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+@media (max-width:900px){.side{border-left:0;border-top:1px solid var(--rule)}}
+.group{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+button.chip{font:inherit;font-size:.8rem;border:1px solid var(--rule);background:var(--paper);color:var(--ink);
+  border-radius:999px;padding:3px 10px;cursor:pointer}
+button.chip:hover{border-color:var(--probe)}
+button.chip[aria-pressed="true"]{background:var(--probe);border-color:var(--probe);color:var(--sheet)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--probe);outline-offset:2px}
+select{font:inherit;font-size:.9rem;padding:5px 8px;border-radius:6px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);width:100%}
+.ctrl{display:flex;flex-direction:column;gap:4px}
+.ctrl label{display:flex;justify-content:space-between;gap:8px;font-size:.88rem}
+.ctrl output{font-family:var(--f-mono);font-size:.8rem}
+input[type=range]{width:100%;accent-color:var(--probe)}
+.player{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--rule)}
+.player button{font:inherit;font-size:.85rem;border:1px solid var(--probe);background:var(--probe);color:var(--sheet);border-radius:6px;padding:4px 12px;cursor:pointer;min-width:74px}
+.player input{flex:1}
+.player output{font-family:var(--f-mono);font-size:.8rem;min-width:84px;text-align:right}
+.kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;font-size:.86rem}
+.kv span{color:var(--ink-2)}
+.kv b{font-family:var(--f-mono);font-weight:600;font-size:.82rem;text-align:right;font-variant-numeric:tabular-nums}
+.note{font-size:.84rem;color:var(--ink-2)}
+.modes{display:flex;flex-wrap:wrap;gap:5px}
+.modes button{font-family:var(--f-mono);font-size:.76rem}
+.plots{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.plot{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.plot h3{font-size:.95rem}
+.plot canvas{width:100%;height:190px;display:block}
+.maps{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.8rem;color:var(--ink-2)}
+.legend i{display:inline-block;width:16px;height:3px;vertical-align:middle;margin-right:5px;border-radius:2px}
+ol.steps{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px;max-width:74ch}
+.loading{font-family:var(--f-mono);font-size:.85rem;color:var(--ink-2)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header class="prose">
+  <span class="eyebrow">Ensayo de ajuste de cuñas · etapa 1: el modelo de la cuña</span>
+  <h1>Modelo 3D de la cuña en la cola de milano</h1>
+  <p class="lede">Sólido elástico 3D de G11 ortótropo, apoyado en el núcleo por los flancos con contacto de Hertz y rozamiento, empujado desde abajo por la barra a través del ripple spring, y golpeado por el impactador. Lo que se ve abajo es la solución de esas ecuaciones, no una animación dibujada.</p>
+</header>
+
+<!-- VISOR -->
+<section>
+  <div class="viewer">
+    <div class="stage">
+      <canvas id="gl" aria-label="Cuña en 3D animada"></canvas>
+      <div class="hud" id="hud"><span class="loading">Cargando datos del modelo…</span></div>
+      <div class="colorbar" id="cbar"></div>
+      <div class="hint">Arrastrá para girar · rueda o pellizco para acercar</div>
+    </div>
+    <div class="side">
+      <div class="group">Estado de la cuña</div>
+      <select id="estado" aria-label="Estado de la cuña"></select>
+      <p class="note" id="nota"></p>
+      <div class="group">Qué mostrar</div>
+      <div class="chips" id="vista">
+        <button class="chip" data-v="golpe" aria-pressed="true">Golpe de 5 mJ</button>
+        <button class="chip" data-v="modos">Modos</button>
+      </div>
+      <div class="modes" id="modos" hidden></div>
+      <div class="chips" id="color">
+        <button class="chip" data-c="uy" aria-pressed="true">Desplazamiento radial</button>
+        <button class="chip" data-c="p">Presión en flancos</button>
+      </div>
+      <div class="ctrl"><label for="amp">Amplificación <output id="amp-o"></output></label><input id="amp" type="range" min="0" max="100" value="60"></div>
+      <div class="group">Números del estado</div>
+      <div class="kv" id="kv"></div>
+    </div>
+  </div>
+  <div class="player" id="player">
+    <button id="play">Pausa</button>
+    <input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Tiempo">
+    <output id="tout">0 µs</output>
+  </div>
+  <div class="plots">
+    <div class="plot"><h3>Fuerza de Hertz en la punta</h3><canvas id="pF"></canvas>
+      <div class="legend"><span><i style="background:var(--wedge)"></i>F_H(t), primeros 150 µs</span></div></div>
+    <div class="plot"><h3>Aceleración radial a 10 mm del golpe</h3><canvas id="pA"></canvas>
+      <div class="legend"><span><i style="background:var(--probe)"></i>ä_y en el punto del palpador [g], filtrada a 50 kHz</span></div></div>
+    <div class="plot"><h3>Contacto en los flancos</h3><canvas id="pC"></canvas>
+      <div class="legend"><span><i style="background:var(--force)"></i>fuerza normal total [kN]</span><span><i style="background:var(--alarm)"></i>fracción del flanco abierta (escala relativa)</span></div></div>
+  </div>
+</section>
+
+<!-- COMPARACIÓN -->
+<section>
+  <div class="prose">
+    <span class="eyebrow">Resultados</span>
+    <h2>Los nueve estados, lado a lado</h2>
+    <p>Golpe de 5 mJ con el Takaha CA0422 (3 g, punta esférica de 3 mm de radio), centrado en el ancho. Hacé clic en una fila para verla en el visor.</p>
+  </div>
+  <div class="tbl"><table id="tabla">
+    <thead><tr><th>Estado</th><th>Presión de asiento</th><th>Flancos: p máx</th><th>1.er modo</th><th>F Hertz máx</th><th>Contacto</th><th>Energía a la cuña</th><th>a pico a 10 mm (≤ 50 kHz)</th><th>Flanco abierto (máx)</th></tr></thead>
+    <tbody><tr><td colspan="9" class="loading">Cargando…</td></tr></tbody>
+  </table></div>
+  <div class="maps">
+    <div class="plot"><h3>Presión estática en el flanco derecho</h3><canvas id="mF" style="height:150px"></canvas>
+      <div class="legend" id="mFleg"></div></div>
+    <div class="plot"><h3>Presión estática en el fondo (ripple)</h3><canvas id="mB" style="height:150px"></canvas>
+      <div class="legend" id="mBleg"></div></div>
+  </div>
+</section>
+
+<!-- MODELO -->
+<section>
+  <div class="prose">
+    <span class="eyebrow">El modelo, para supervisar</span>
+    <h2>1 · Geometría y ejes</h2>
+    <p>\(x\) axial (a lo largo de la ranura, \(0\ldots L\)), \(y\) radial con sentido positivo hacia el entrehierro, \(z\) circunferencial. La sección es un trapecio con la base mayor \(B\) apoyada sobre la barra (\(y=0\)) y la menor \(b\) hacia el entrehierro (\(y=e\)):</p>
+  </div>
+  <div class="eq">\[ z \in \left[-\tfrac{w(y)}{2},\ \tfrac{w(y)}{2}\right], \qquad w(y) = B - (B-b)\,\frac{y}{e}, \qquad \alpha = \arctan\frac{B-b}{2e} = 26{,}6^\circ \]</div>
+  <div class="prose">
+    <p>\(L = 200\) mm, \(B = 35\) mm, \(b = 25\) mm, \(e = 10\) mm; masa 114 g. Los flancos tienen normal saliente \(\mathbf n_\pm = (0,\ \sin\alpha,\ \pm\cos\alpha)\): miran hacia arriba y afuera, contra los hombros de la cola de milano del núcleo, que se toma rígido.</p>
+  </div>
+
+  <div class="prose"><h2>2 · Material: G11 ortótropo</h2>
+    <p>Laminado tejido con las capas paralelas a las caras anchas. Ley de Hooke en notación de Voigt \([\varepsilon_{xx},\varepsilon_{yy},\varepsilon_{zz},\gamma_{yz},\gamma_{xz},\gamma_{xy}]\):</p></div>
+  <div class="eq">\[ \boldsymbol\sigma = \mathbf D\,\boldsymbol\varepsilon, \qquad
+  \mathbf D^{-1} = \begin{bmatrix}
+  \frac1{E_1} & -\frac{\nu_{12}}{E_1} & -\frac{\nu_{13}}{E_1} & & & \\
+  -\frac{\nu_{12}}{E_1} & \frac1{E_2} & -\frac{\nu_{32}}{E_3} & & & \\
+  -\frac{\nu_{13}}{E_1} & -\frac{\nu_{32}}{E_3} & \frac1{E_3} & & & \\
+  & & & \frac1{G_{23}} & & \\ & & & & \frac1{G_{13}} & \\ & & & & & \frac1{G_{12}}
+  \end{bmatrix} \]</div>
+
+  <div class="prose"><h2>3 · Ecuación de movimiento y discretización</h2>
+    <p>Elastodinámica lineal en el sólido (las deformaciones son de micrones); toda la no linealidad está en los contactos. Forma débil, para todo desplazamiento virtual \(\delta\mathbf u\):</p></div>
+  <div class="eq">\[ \int_V \rho\,\delta\mathbf u\cdot\ddot{\mathbf u}\,dV + \int_V \delta\boldsymbol\varepsilon^{\mathsf T}\mathbf D\,\boldsymbol\varepsilon\,dV
+  = \int_{\Gamma_{fl}} \delta\mathbf u\cdot\mathbf t_{fl}\,dA + \int_{\Gamma_{fo}} \delta\mathbf u\cdot\mathbf t_{fo}\,dA + \int_{\Gamma_{g}} \delta\mathbf u\cdot\mathbf t_{g}\,dA \]</div>
+  <div class="prose">
+    <p>Hexaedros cuadráticos de 27 nodos (40 × 3 × 6 elementos, 7371 nodos, 22 113 grados de libertad) con los nodos en los puntos de Gauss-Lobatto \(\{-1,0,1\}\). La rigidez se integra con 3 × 3 × 3 puntos de Gauss. La masa se integra en los propios nodos con pesos \(\{\tfrac13,\tfrac43,\tfrac13\}\), lo que la deja diagonal y positiva y permite integrar en el tiempo de forma explícita:</p>
+  </div>
+  <div class="eq">\[ \mathbf M\ddot{\mathbf u} + \mathbf C\dot{\mathbf u} + \mathbf K\mathbf u = \mathbf f_{fl}(\mathbf u,\ \text{historia}) + \mathbf f_{fo}(\mathbf u) + \mathbf f_{g}(\mathbf u, s), \qquad \mathbf C = a\,\mathbf M + \beta\,\mathbf K \]</div>
+  <div class="prose"><p>El amortiguamiento de Rayleigh representa la pérdida interna del G11, \(\zeta = 1\,\%\) a 2 kHz y a 30 kHz. El rozamiento en los flancos y en el fondo disipa por su cuenta, a través de la ley de contacto.</p></div>
+
+  <div class="prose"><h2>4 · Contacto en los flancos: Hertz y rozamiento</h2>
+    <p>El flanco de G11 apoya sobre el borde de la chapa laminada. El contacto es plano sobre plano, pero la carga la llevan las asperezas, y cada una es un contacto de Hertz. Con asperezas de altura pareja, eso da la misma ley potencial que Hertz. Con \(\delta\) la interpenetración normal en cada nodo:</p></div>
+  <div class="eq">
+    <div class="eqn"><div>\[ \delta = \delta_0 + \mathbf u\cdot\mathbf n, \qquad p = C\,\langle\delta\rangle^{3/2}, \qquad k_n = \frac{dp}{d\delta} = \tfrac32\,C^{2/3}p^{1/3} \]</div><span class="tag">(4.1)</span></div>
+    <div class="eqn"><div>\[ \mathbf f_{fl,i} = -A_i\,p_i\,\mathbf n_i \;-\; \mathbf q_i \]</div><span class="tag">(4.2)</span></div>
+  </div>
+  <div class="prose">
+    <p>\(\langle\cdot\rangle\) es la parte positiva: si \(\delta \le 0\) el flanco está abierto y no transmite nada. La rigidez del apoyo crece con la presión, así que la cuña más apretada es más rígida en sus asientos. Ese es el efecto de Hertz que querías ver. \(C\) sale de fijar \(k_n = 2\times10^{12}\) N/m³ a 1 MPa <span class="flag e">E</span>, que da una interpenetración de 0,75 µm a esa presión. \(\delta_0 = -\)juego del flanco. \(A_i\) es el área tributaria del nodo, con los mismos pesos de Gauss-Lobatto.</p>
+    <p>La fuerza tangencial \(\mathbf q_i\) sigue la ley de Coulomb con un tramo adherido elástico (Mindlin). Se actualiza en cada paso con un predictor elástico y una proyección sobre el cono de rozamiento:</p>
+  </div>
+  <div class="eq">\[ \mathbf q^{\text{tr}} = \mathbf q^{n} + \kappa_t\,k_n A\;\Delta\mathbf u_t, \qquad
+  \mathbf q^{n+1} = \begin{cases} \mathbf q^{\text{tr}} & |\mathbf q^{\text{tr}}| \le \mu\,p\,A \ \ \text{(adherido)}\\[2pt] \mu\,p\,A\ \dfrac{\mathbf q^{\text{tr}}}{|\mathbf q^{\text{tr}}|} & \text{si no (desliza y disipa)}\end{cases} \]</div>
+  <div class="prose"><p>\(\kappa_t = 0{,}8 \approx 2(1-\nu)/(2-\nu)\) <span class="flag e">E</span>, \(\mu = 0{,}3\) <span class="flag e">E</span>.</p></div>
+
+  <div class="prose"><h2>5 · Contacto en el fondo: el ripple spring y la presión de asiento</h2>
+    <p>La barra empuja la cuña hacia arriba a través del ripple. Lo modelo como un resorte distribuido, unilateral y precomprimido. La precompresión \(d_0(x)\) es la variable de ajuste del ensayo:</p></div>
+  <div class="eq">\[ p_{fo}(x) = k_r\,\langle d_0(x) - u_y\rangle, \qquad \mathbf f_{fo,i} = +A_i\,p_{fo,i}\,\hat{\mathbf y} \;-\; \mathbf q_{fo,i} \]</div>
+  <div class="prose">
+    <p>\(k_r = 7\times10^8\) N/m³: 1 MPa con 1,4 mm de compresión, un ripple de 1,8 mm al 80 % <span class="flag e">E</span>. El código corrige \(d_0(x)\) iterando hasta que la presión de asiento en el equilibrio sea exactamente el perfil pedido \(p_0(x)\). Con \(p_0 = 0\) y juego \(g\), \(d_0 = -g\): el ripple ni toca la cuña. Sin ripple (caso <i>ajustada sin ripple</i>), el fondo usa la misma ley de Hertz que los flancos, contra una barra rígida.</p>
+    <p>Las holguras parciales salen de elegir \(p_0(x)\) a tramos. Con un extremo sin presión, la cuña queda en voladizo sobre la zona apoyada. Con el centro sin presión, queda como una viga empotrada en los dos extremos sobre el hueco.</p>
+  </div>
+
+  <div class="prose"><h2>6 · El golpe: Hertz esfera-plano</h2>
+    <p>Punta esférica de acero de radio \(R\) sobre G11. \(s\) es el avance de la punta hacia la cuña. El desplazamiento de la cuña en el golpe es el promedio ponderado \(\bar u_y\) sobre las caras de los cuatro elementos que rodean el punto golpeado:</p></div>
+  <div class="eq">\[ F_H = K_H\,\langle s + \bar u_y\rangle^{3/2}, \quad K_H = \tfrac43 E^*\sqrt R, \quad \frac1{E^*} = \frac{1-\nu_a^2}{E_a} + \frac{1-\nu_c^2}{E_c}, \qquad m_i\,\ddot s = -F_H \]</div>
+  <div class="prose"><p>\(m_i = 3\) g, \(R = 3\) mm, \(v_0 = \sqrt{2E/m_i} = 1{,}83\) m/s para 5 mJ. Para el G11 transversal, \(E_c = 20\) GPa y \(\nu_c = 0{,}2\) (los mismos que usa el repositorio), lo que da \(E^* = 19{,}1\) GPa.</p></div>
+
+  <div class="prose"><h2>7 · Cómo se resuelve</h2></div>
+  <ol class="steps">
+    <li><b>Equilibrio con precarga.</b> Newton-Raphson sobre \(\mathbf K\mathbf u = \mathbf f_{fl}(\mathbf u) + \mathbf f_{fo}(\mathbf u)\), con la rigidez tangente \(\mathbf K + \sum A_i k_{n,i}\,\mathbf n_i\mathbf n_i^{\mathsf T}\) y búsqueda lineal. En el asiento no hay rozamiento: la cuña se acomoda radialmente al apretarla.</li>
+    <li><b>Modos.</b> Problema de autovalores linealizado alrededor de ese equilibrio:
+      \( \left(\mathbf K + \mathbf K_c(\mathbf u_0)\right)\boldsymbol\phi = \omega^2\mathbf M\boldsymbol\phi \).
+      \(\mathbf K_c\) incluye \(k_n\) de Hertz en cada nodo de flanco cargado y la rigidez de adherencia \(\kappa_t k_n\), así que cada estado de ajuste tiene sus propios modos.</li>
+    <li><b>Golpe.</b> Diferencia central explícita (leapfrog) con la ecuación completa: contactos que se abren y se cierran, rozamiento con historia, Hertz en la punta. El paso sale de \( \Delta t = 0{,}7\cdot\frac{2}{\omega_{max}}\left(\sqrt{1+\xi^2}-\xi\right) \), con \(\omega_{max}\) obtenido por iteración de potencia y \(\xi = \beta\omega_{max}/2\). Da unos 0,18 µs: unos 16 000 pasos en 3 ms.</li>
+    <li><b>Energía transmitida.</b> Lo que pierde el impactador: \(E_{tr} = \tfrac12 m_i (v_0^2 - v_r^2)\). En la cuña queda como vibración y movimiento; una parte se disipa por rozamiento y por amortiguamiento.</li>
+  </ol>
+
+  <div class="prose"><h2>8 · Parámetros</h2></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Parámetro</th><th>Valor</th><th>Origen</th></tr></thead>
+    <tbody style="cursor:default">
+      <tr><td>E₁ = E₃ (en el plano de las capas)</td><td class="n">24 GPa</td><td><span class="flag v">V</span> el del repositorio, ajustado a f₁ del brief</td></tr>
+      <tr><td>E₂ (a través del espesor)</td><td class="n">12 GPa</td><td><span class="flag e">E</span> típico de tejido vidrio-epoxi</td></tr>
+      <tr><td>G₁₃ / G₁₂ = G₂₃</td><td class="n">5,5 / 4,5 GPa</td><td><span class="flag e">E</span></td></tr>
+      <tr><td>ν₁₂ = ν₃₂ / ν₁₃</td><td class="n">0,30 / 0,12</td><td><span class="flag e">E</span></td></tr>
+      <tr><td>ρ</td><td class="n">1900 kg/m³</td><td><span class="flag v">V</span></td></tr>
+      <tr><td>k_n del flanco a 1 MPa</td><td class="n">2·10¹² N/m³</td><td><span class="flag e">E</span> la incógnita que más pesa; hay que medirla</td></tr>
+      <tr><td>κ_t, μ en flancos</td><td class="n">0,8 · 0,30</td><td><span class="flag e">E</span></td></tr>
+      <tr><td>k_r del ripple</td><td class="n">7·10⁸ N/m³</td><td><span class="flag e">E</span> 1 MPa con 1,4 mm</td></tr>
+      <tr><td>Rayleigh</td><td class="n">ζ = 1 % a 2 y 30 kHz</td><td><span class="flag e">E</span></td></tr>
+      <tr><td>Impactador</td><td class="n">3 g · R 3 mm · 5 mJ</td><td>nota 02489-00-MC005 (Takaha CA0422)</td></tr>
+    </tbody></table></div>
+
+  <div class="prose"><h2>9 · Verificación</h2>
+    <p>Pruebas automáticas en <code>impacto_wtd/tests/test_cuna3d.py</code>:</p></div>
+  <div class="tbl"><table id="verif">
+    <thead><tr><th>Qué se compara</th><th>Modelo 3D</th><th>Referencia</th><th>Resultado</th></tr></thead>
+    <tbody style="cursor:default">
+      <tr><td>Barra 30 × 10 × 200 libre: 1.er modo de flexión en el espesor</td><td class="n">905,9 Hz</td><td class="n">913,3 Hz (Euler-Bernoulli)</td><td>−0,8 %: es el corte de Timoshenko</td></tr>
+      <tr><td>Ídem, 2.º modo de flexión</td><td class="n">2461,8 Hz</td><td class="n">2517,6 Hz (Euler-Bernoulli)</td><td>−2,2 %, ídem</td></tr>
+      <tr><td>Ídem, modo axial</td><td class="n">8876,9 Hz</td><td class="n">8885,2 Hz (c/2L)</td><td>−0,1 %</td></tr>
+      <tr><td>Ídem, torsión de Saint-Venant</td><td class="n">3107,6 Hz</td><td class="n">3098,0 Hz (Roark)</td><td>+0,3 %</td></tr>
+      <tr><td>Modos de cuerpo rígido de la barra libre</td><td class="n">6</td><td class="n">6</td><td>exacto</td></tr>
+      <tr><td>Equilibrio a 1 MPa: fondo contra componente radial de los flancos</td><td class="n">6999,7 N</td><td class="n">7000 N</td><td>cierra a 10⁻⁶</td></tr>
+      <tr><td>Golpe sobre la cuña ajustada contra Hertz con masa infinita</td><td class="n">289 N · 66 µs</td><td class="n">328 N · 61 µs</td><td>menos fuerza y más tiempo: la cuña cede</td></tr>
+      <tr><td>Cuña libre sin pérdidas: energía que queda en la cuña</td><td class="n" colspan="2">igual a la que pierde el impactador</td><td>dentro del 1 %</td></tr>
+    </tbody></table></div>
+
+  <div class="prose"><h2>10 · Qué revisar y qué falta</h2></div>
+  <ol class="steps">
+    <li><b>k_n del flanco</b> fija las frecuencias de la cuña ajustada (unos 18 kHz). Es estimada. La primera medición de banco debería ser una curva carga-desplazamiento del flanco contra chapa laminada, o el modo de una cuña ajustada medido con un martillo de impacto.</li>
+    <li><b>La sección del flanco es plana y continua.</b> En la máquina real el borde de las chapas es escalonado (chapas de 0,35 a 0,5 mm con rebabas) y hay canales de ventilación cada tanto. Ambas cosas bajan la rigidez real y la hacen menos uniforme.</li>
+    <li><b>La barra se toma rígida</b> detrás del ripple. Si su dinámica importa, entra como segunda viga en la etapa siguiente.</li>
+    <li><b>El ripple es un resorte continuo.</b> En la realidad apoya en crestas cada pocos milímetros.</li>
+    <li><b>El golpe reparte la fuerza</b> sobre unos 10 × 8 mm de cara para promediar el desplazamiento. La parte local de la deformación ya la incluye Hertz; el doble conteo es de unos 2 µm sobre 40 µm de aproximación.</li>
+    <li>Sin gravedad. Una cuña totalmente floja queda libre hasta que el golpe la apoya contra el ripple.</li>
+  </ol>
+</section>
+</div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmt = (x, d = 0) => Number(x).toFixed(d).replace('.', ',');
+const ESTADOS = ['muy_ajustada','ajustada','moderada','floja','muy_floja_juego','extremo_flojo','extremo_poca_presion','medio_flojo','ajustada_sin_ripple'];
+const NOMBRE = { muy_ajustada:'Muy ajustada', ajustada:'Ajustada', moderada:'Moderada', floja:'Floja', muy_floja_juego:'Muy floja, con juego',
+  extremo_flojo:'Un extremo sin presión', extremo_poca_presion:'Un extremo con poca presión', medio_flojo:'Centro sin presión', ajustada_sin_ripple:'Ajustada, sin ripple' };
+
+let malla = null, cache = {}, cur = null, vista = 'golpe', colorMode = 'uy', modo = 0;
+let playing = true, tAnim = 0, lastTs = 0;
+
+// ---------- three.js ----------
+const canvas = $('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(32, 2, 1, 5000);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 0.75));
+const dl = new THREE.DirectionalLight(0xffffff, 0.55); dl.position.set(150, 260, 220); scene.add(dl);
+const root = new THREE.Group(); scene.add(root);
+let geo, mesh, pos0, posAttr, colAttr, coreMat, barMat, markG, markP, imp;
+let orbit = { th: -0.85, ph: 0.42, r: 420 };
+
+function placeCamera(){
+  const { th, ph, r } = orbit;
+  camera.position.set(100 + r*Math.cos(ph)*Math.sin(th), 5 + r*Math.sin(ph), r*Math.cos(ph)*Math.cos(th));
+  camera.lookAt(100, 4, 0);
+}
+function resize(){
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+// órbita con puntero
+let drag = null, pinch = null;
+canvas.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; canvas.setPointerCapture(e.pointerId); });
+canvas.addEventListener('pointermove', e => { if (!drag || pinch) return;
+  orbit.th -= (e.clientX - drag.x) * 0.006; orbit.ph = Math.max(-1.3, Math.min(1.4, orbit.ph + (e.clientY - drag.y) * 0.006));
+  drag = { x: e.clientX, y: e.clientY }; placeCamera(); });
+canvas.addEventListener('pointerup', () => drag = null);
+canvas.addEventListener('wheel', e => { e.preventDefault(); orbit.r = Math.max(120, Math.min(1200, orbit.r * (1 + Math.sign(e.deltaY) * 0.08))); placeCamera(); }, { passive: false });
+canvas.addEventListener('touchstart', e => { if (e.touches.length === 2) pinch = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); }, { passive: true });
+canvas.addEventListener('touchmove', e => { if (e.touches.length === 2 && pinch){ const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+  orbit.r = Math.max(120, Math.min(1200, orbit.r * pinch / d)); pinch = d; placeCamera(); } }, { passive: true });
+canvas.addEventListener('touchend', () => pinch = null);
+
+function themeColors(){
+  const c = new THREE.Color(css('--core')); if (coreMat) coreMat.color = c; if (barMat) barMat.color = new THREE.Color(css('--wedge'));
+}
+
+function buildScene(){
+  const X = malla.X, n = X.length / 3;
+  geo = new THREE.BufferGeometry();
+  pos0 = new Float32Array(X);
+  posAttr = new THREE.BufferAttribute(new Float32Array(X), 3);
+  colAttr = new THREE.BufferAttribute(new Float32Array(n * 3).fill(0.8), 3);
+  geo.setAttribute('position', posAttr); geo.setAttribute('color', colAttr);
+  geo.setIndex(malla.tri); geo.computeVertexNormals();
+  mesh = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide }));
+  root.add(mesh);
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 30), new THREE.LineBasicMaterial({ color: 0x334455, transparent: true, opacity: 0.25 }));
+  root.add(edges); mesh.userData.edges = edges;
+  // núcleo: los dos dientes con la cola de milano (fantasma)
+  const { L, B, b, e } = malla.geom; const Lm = L * 1e3, Bm = B * 1e3, bm = b * 1e3, em = e * 1e3;
+  coreMat = new THREE.MeshLambertMaterial({ color: css('--core'), transparent: true, opacity: 0.22, depthWrite: false, side: THREE.DoubleSide });
+  for (const s of [1, -1]){
+    const sh = new THREE.Shape();
+    // en el plano (z, y): diente con el flanco inclinado
+    sh.moveTo(s*Bm/2, 0); sh.lineTo(s*bm/2, em); sh.lineTo(s*bm/2, em + 6); sh.lineTo(s*(Bm/2 + 16), em + 6); sh.lineTo(s*(Bm/2 + 16), -14); sh.lineTo(s*(Bm/2 + 2), -14); sh.lineTo(s*(Bm/2 + 2), 0); sh.closePath();
+    const g = new THREE.ExtrudeGeometry(sh, { depth: Lm, bevelEnabled: false });
+    // la extrusión va en +z local; girada -90° en y queda a lo largo de -x, desde x = L
+    const m = new THREE.Mesh(g, coreMat); m.rotation.y = -Math.PI / 2; m.position.x = Lm;
+    root.add(m);
+  }
+  // barra (debajo del ripple)
+  barMat = new THREE.MeshLambertMaterial({ color: css('--wedge'), transparent: true, opacity: 0.18, depthWrite: false });
+  const bar = new THREE.Mesh(new THREE.BoxGeometry(Lm + 30, 12, Bm + 2), barMat); bar.position.set(Lm/2, -8, 0); root.add(bar);
+  // marcas de golpe y palpador
+  markG = new THREE.Mesh(new THREE.ConeGeometry(2.2, 9, 16), new THREE.MeshLambertMaterial({ color: 0xc0392b })); markG.rotation.x = Math.PI; root.add(markG);
+  markP = new THREE.Mesh(new THREE.SphereGeometry(1.4, 14, 10), new THREE.MeshLambertMaterial({ color: 0x1f5fa8 })); root.add(markP);
+  resize(); placeCamera();
+}
+
+// ---------- colores ----------
+function diverging(v){       // v en [-1, 1]: azul - claro - naranja
+  const t = Math.max(-1, Math.min(1, v));
+  const a = [0.17, 0.39, 0.70], m = [0.93, 0.93, 0.90], c = [0.82, 0.45, 0.10];
+  const k = Math.abs(t), to = t < 0 ? a : c;
+  return [m[0] + (to[0]-m[0])*k, m[1] + (to[1]-m[1])*k, m[2] + (to[2]-m[2])*k];
+}
+function pressureColor(q){   // q en [0, 1]; 0 = abierto (rojo)
+  if (q <= 0.002) return [0.80, 0.22, 0.18];
+  const lo = [0.85, 0.90, 0.86], hi = [0.10, 0.38, 0.25];
+  return [lo[0] + (hi[0]-lo[0])*q, lo[1] + (hi[1]-lo[1])*q, lo[2] + (hi[2]-lo[2])*q];
+}
+
+// ---------- datos ----------
+async function loadState(name){
+  if (cache[name]) return cache[name];
+  const [j, b64] = await Promise.all([fetch('datos/' + name + '.json').then(r => r.json()), fetch('datos/' + name + '.b64.txt').then(r => r.text())]);
+  const bin = atob(b64.trim()), buf = new ArrayBuffer(bin.length), u8 = new Uint8Array(buf);
+  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  const nf = j.frames_t.length, nv = j.n_vis;
+  j.U = new Int8Array(buf, 0, nf * nv * 3);
+  j.P = new Uint8Array(buf, nf * nv * 3, nf * 2 * malla.nx_vis * malla.ny);
+  cache[name] = j; return j;
+}
+
+// ---------- dibujo de un cuadro ----------
+function ampScale(){ return Math.pow(10, 1 + 3 * (+$('amp').value / 100)); }   // 10 .. 10 000
+function updateAmpLabel(){ $('amp-o').textContent = '×' + fmt(ampScale(), 0); }
+
+function drawFrame(){
+  if (!cur || !mesh) return;
+  const nv = cur.n_vis, P = posAttr.array, C = colAttr.array, amp = ampScale();
+  let scale, getU, hudT, pq = null;
+  if (vista === 'golpe'){
+    // por índice de cuadro: los cuadros son densos durante el golpe (cada 4 µs) y ralos
+    // después (cada 50 µs), así el golpe se ve en cámara lenta
+    const fi = Math.min(cur.frames_t.length - 1, Math.floor(tAnim * cur.frames_t.length)); const off = fi * nv * 3;
+    scale = cur.frames_escala[fi] / 127;                                       // m por unidad
+    getU = k => cur.U[off + k] * scale;
+    hudT = cur.frames_t[fi];
+    pq = { off: fi * 2 * malla.nx_vis * malla.ny };
+    $('tout').textContent = fmt(hudT * 1e6, 0) + ' µs';
+    $('scrub').value = Math.round(tAnim * 1000);
+    window.__cursorT = hudT;
+  } else {
+    const md = cur.modos[modo]; if (!md) return;
+    const s = Math.sin(2 * Math.PI * tAnim * 2);
+    scale = 1e-6 / 127;                                                         // forma normalizada a 1 µm
+    getU = k => md.forma[k] * scale * s;
+    hudT = null;
+  }
+  let umax = 0;
+  for (let k = 0; k < nv; k++){
+    const ux = getU(3*k), uy = getU(3*k + 1), uz = getU(3*k + 2);
+    P[3*k] = pos0[3*k] + ux * 1e3 * amp; P[3*k + 1] = pos0[3*k + 1] + uy * 1e3 * amp; P[3*k + 2] = pos0[3*k + 2] + uz * 1e3 * amp;
+    umax = Math.max(umax, Math.abs(uy));
+  }
+  // color
+  if (colorMode === 'uy' || vista === 'modos'){
+    for (let k = 0; k < nv; k++){ const c = diverging(umax > 0 ? getU(3*k + 1) / umax : 0); C[3*k] = c[0]; C[3*k+1] = c[1]; C[3*k+2] = c[2]; }
+    $('cbar').innerHTML = `Desplazamiento radial<i style="background:linear-gradient(90deg,#2c63b3,#eeeee6,#d1731a)"></i><div><span>−${fmt(umax*1e6, 2)}</span><span>+${fmt(umax*1e6, 2)} µm</span></div>`;
+  } else {
+    for (let k = 0; k < nv; k++){ C[3*k] = 0.78; C[3*k+1] = 0.80; C[3*k+2] = 0.82; }
+    const fl = malla.flanco_vis, base = pq.off;
+    for (let i = 0; i < fl.length; i++){ const c = pressureColor(cur.P[base + i] / 255); const k = fl[i]; C[3*k] = c[0]; C[3*k+1] = c[1]; C[3*k+2] = c[2]; }
+    $('cbar').innerHTML = `Presión en flancos<i style="background:linear-gradient(90deg,#cc3a2e 0 6%,#d9e6dc 6%,#1a6140)"></i><div><span>abierto</span><span>${fmt(cur.p_flanco_ref/1e6, 1)} MPa</span></div>`;
+  }
+  posAttr.needsUpdate = true; colAttr.needsUpdate = true; geo.computeVertexNormals();
+  mesh.userData.edges.geometry.dispose(); mesh.userData.edges.geometry = new THREE.EdgesGeometry(geo, 30);
+  const hud = vista === 'golpe'
+    ? `<b>${NOMBRE[cur.nombre]}</b><span>t = ${fmt(hudT*1e6, 0)} µs</span><span>amplificación ×${fmt(amp, 0)}</span>`
+    : `<b>${NOMBRE[cur.nombre]}</b><span>modo ${modo + 1}: ${fmt(cur.modos[modo].f_Hz, 0)} Hz</span><span>forma (amplitud arbitraria)</span>`;
+  $('hud').innerHTML = hud;
+}
+
+function loop(ts){
+  const dt = Math.min(0.05, (ts - lastTs) / 1000); lastTs = ts;
+  if (playing && cur){
+    if (vista === 'golpe'){
+      tAnim += dt / 12; if (tAnim >= 1) tAnim = 0;
+    } else tAnim += dt / 2;
+    drawFrame(); if (vista === 'golpe') drawPlots();
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+
+// ---------- panel ----------
+function kv(rows){ return rows.map(([a, b]) => `<span>${a}</span><b>${b}</b>`).join(''); }
+function fillSide(){
+  const e = cur.equilibrio, g = cur.golpe;
+  $('nota').textContent = cur.nota + '.';
+  $('kv').innerHTML = kv([
+    ['Fuerza de la barra', fmt(e.F_fondo_N, 0) + ' N'],
+    ['Presión máx en flancos', fmt(e.p_flanco_max_MPa, 2) + ' MPa'],
+    ['Flanco en contacto (reposo)', fmt(e.frac_flanco_en_contacto * 100, 0) + ' %'],
+    ['1.er modo elástico', cur.modos_Hz.length ? fmt(cur.modos_Hz[0], 0) + ' Hz' : '—'],
+    ['Modos de cuerpo rígido', cur.modos_rigidos],
+    ['F Hertz máx', fmt(g.F_H_max_N, 0) + ' N'],
+    ['Tiempo de contacto', fmt(g.t_contacto_us, 0) + ' µs'],
+    ['Energía a la cuña', fmt(g.E_transmitida_mJ, 2) + ' de ' + fmt(g.E_entrada_mJ, 0) + ' mJ'],
+    ['a pico a 10 mm, ≤ 50 kHz', fmt(g.a_palp_max_g_50k, 0) + ' g'],
+    ['a pico a 10 mm, ≤ 20 kHz', fmt(g.a_palp_max_g_20k, 0) + ' g'],
+    ['Flanco abierto (máx)', fmt(g.frac_flanco_abierto_max * 100, 0) + ' %'],
+  ]);
+  const mb = $('modos'); mb.innerHTML = cur.modos.map((m, i) => `<button class="chip" data-m="${i}" aria-pressed="${i === modo}">${fmt(m.f_Hz/1000, 2)} kHz</button>`).join('');
+  mb.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { modo = +b.dataset.m; mb.querySelectorAll('button').forEach(o => o.setAttribute('aria-pressed', o === b)); drawFrame(); }));
+  // marcas
+  const xg = cur.x_golpe_mm, xp = cur.x_palp_mm, em = malla.geom.e * 1e3;
+  markG.position.set(xg, em + 6, 0); markP.position.set(xp, em + 0.6, 0);
+  document.querySelectorAll('#tabla tbody tr').forEach(tr => tr.classList.toggle('sel', tr.dataset.n === cur.nombre));
+  drawMaps(); drawPlots();
+}
+
+async function select(name){
+  $('hud').innerHTML = '<span class="loading">Cargando ' + NOMBRE[name] + '…</span>';
+  cur = await loadState(name); modo = 0; tAnim = 0;
+  $('estado').value = name; fillSide(); drawFrame();
+}
+
+// ---------- gráficos 2D ----------
+function prep(cv){
+  const dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+  cv.width = w * dpr; cv.height = h * dpr; const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  c.font = '11px "JetBrains Mono", ui-monospace, monospace'; return { c, w, h };
+}
+function linePlot(cv, t, ys, opts){
+  const { c, w, h } = prep(cv); const L = 46, R = 8, T = 8, Bt = 22, pw = w - L - R, ph = h - T - Bt;
+  c.fillStyle = css('--sheet'); c.fillRect(0, 0, w, h);
+  const t0 = opts.t0 ?? t[0], t1 = opts.t1 ?? t[t.length - 1];
+  let lo = Infinity, hi = -Infinity;
+  ys.forEach(s => s.y.forEach((v, i) => { if (t[i] >= t0 && t[i] <= t1){ lo = Math.min(lo, v); hi = Math.max(hi, v); } }));
+  if (opts.zero){ lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+  if (!(hi > lo)){ hi = lo + 1; }
+  const pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+  const X = v => L + pw * (v - t0) / (t1 - t0), Y = v => T + ph * (hi - v) / (hi - lo);
+  c.strokeStyle = css('--rule'); c.lineWidth = 1; c.strokeRect(L, T, pw, ph);
+  if (lo < 0 && hi > 0){ c.beginPath(); c.moveTo(L, Y(0)); c.lineTo(L + pw, Y(0)); c.stroke(); }
+  c.fillStyle = css('--ink-2'); c.textAlign = 'right';
+  const f = v => Math.abs(hi - lo) >= 20 ? fmt(v, 0) : Math.abs(hi - lo) >= 2 ? fmt(v, 1) : fmt(v, 2);
+  c.fillText(f(hi - pad), L - 5, T + 10); c.fillText(f(lo + pad), L - 5, T + ph - 2);
+  c.textAlign = 'center';
+  for (let k = 0; k <= 4; k++){ const tv = t0 + (t1 - t0) * k / 4; c.fillText(opts.tl(tv), Math.min(Math.max(X(tv), L + 16), w - R - 16), h - 6); }
+  ys.forEach(s => { c.strokeStyle = s.col; c.lineWidth = 1.5; c.beginPath(); let st = false;
+    s.y.forEach((v, i) => { if (t[i] < t0 || t[i] > t1) return; st ? c.lineTo(X(t[i]), Y(v)) : (c.moveTo(X(t[i]), Y(v)), st = true); }); c.stroke(); });
+  if (opts.cursor != null && opts.cursor >= t0 && opts.cursor <= t1){ c.strokeStyle = css('--ink'); c.globalAlpha = 0.5; c.beginPath(); c.moveTo(X(opts.cursor), T); c.lineTo(X(opts.cursor), T + ph); c.stroke(); c.globalAlpha = 1; }
+}
+function drawPlots(){
+  if (!cur) return; const s = cur.senales, t = s.t, cursor = vista === 'golpe' ? window.__cursorT : null;
+  const us = v => fmt(v * 1e6, 0) + ' µs', ms = v => fmt(v * 1e3, 1) + ' ms';
+  linePlot($('pF'), t, [{ y: s.F_H, col: css('--wedge') }], { t0: 0, t1: 150e-6, tl: us, zero: true, cursor });
+  linePlot($('pA'), t, [{ y: s.ay_palp.map(v => v / 9.81), col: css('--probe') }], { tl: ms, zero: true, cursor });
+  const Fk = s.F_flancos.map(v => v / 1000), fo = s.frac_fl_abierto.map(v => v * 100);
+  const mx = Math.max(...Fk, 1e-9), mo = Math.max(...fo, 1e-9);
+  // dos series normalizadas al mismo eje (se rotulan en la leyenda)
+  linePlot($('pC'), t, [{ y: Fk, col: css('--force') }, { y: fo.map(v => v / Math.max(mo, 1) * mx), col: css('--alarm') }], { tl: ms, zero: true, cursor });
+}
+function heat(cv, grid, nx, ny, flipY, label, legEl){
+  const { c, w, h } = prep(cv); const L = 36, R = 8, T = 6, Bt = 22, pw = w - L - R, ph = h - T - Bt;
+  c.fillStyle = css('--sheet'); c.fillRect(0, 0, w, h);
+  let mx = 0; for (const row of grid) for (const v of row) mx = Math.max(mx, v);
+  const cw = pw / nx, ch = ph / ny;
+  for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++){
+    const v = grid[i][j], q = mx > 0 ? v / mx : 0; const col = pressureColor(q);
+    c.fillStyle = `rgb(${col.map(x => Math.round(x*255)).join(',')})`;
+    c.fillRect(L + i*cw, T + (flipY ? (ny - 1 - j) : j) * ch, cw + 0.6, ch + 0.6);
+  }
+  c.fillStyle = css('--ink-2'); c.textAlign = 'center';
+  for (const xm of [0, 50, 100, 150, 200]) c.fillText(xm + ' mm', Math.min(Math.max(L + pw * xm / 200, L + 18), w - R - 22), h - 6);
+  c.save(); c.translate(12, T + ph/2); c.rotate(-Math.PI/2); c.fillText(label, 0, 0); c.restore();
+  legEl.innerHTML = `<span><i style="background:#cc3a2e;height:8px"></i>abierto</span><span><i style="background:#1a6140;height:8px"></i>${fmt(mx, 2)} MPa (máx)</span>`;
+}
+function drawMaps(){
+  if (!cur) return;
+  heat($('mF'), cur.p_flanco_static[0], cur.p_flanco_static[0].length, cur.p_flanco_static[0][0].length, true, 'altura', $('mFleg'));
+  heat($('mB'), cur.p_fondo_static, cur.p_fondo_static.length, cur.p_fondo_static[0].length, false, 'ancho', $('mBleg'));
+}
+
+// ---------- tabla ----------
+async function fillTable(){
+  const rows = [];
+  for (const n of ESTADOS){
+    try { const j = await loadState(n); rows.push(j); } catch(e) { /* estado sin datos */ }
+  }
+  const pa = j => { const s = j.p_fondo_static.map(r => r.reduce((a, b) => a + b, 0) / r.length); const mx = Math.max(...s), mn = Math.min(...s);
+    return Math.abs(mx - mn) < 1e-3 ? fmt(mx, 2) + ' MPa' : fmt(mn, 2) + '–' + fmt(mx, 2) + ' MPa'; };
+  $('tabla').querySelector('tbody').innerHTML = rows.map(j => `<tr data-n="${j.nombre}">
+    <td>${NOMBRE[j.nombre]}</td><td class="n">${pa(j)}</td><td class="n">${fmt(j.equilibrio.p_flanco_max_MPa, 2)} MPa</td>
+    <td class="n">${j.modos_Hz.length ? fmt(j.modos_Hz[0], 0) + ' Hz' : '—'}${j.modos_rigidos ? ' · ' + j.modos_rigidos + ' rígidos' : ''}</td>
+    <td class="n">${fmt(j.golpe.F_H_max_N, 0)} N</td><td class="n">${fmt(j.golpe.t_contacto_us, 0)} µs</td>
+    <td class="n">${fmt(j.golpe.E_transmitida_mJ, 2)} mJ</td><td class="n">${fmt(j.golpe.a_palp_max_g_50k, 0)} g</td>
+    <td class="n">${fmt(j.golpe.frac_flanco_abierto_max * 100, 0)} %</td></tr>`).join('');
+  $('tabla').querySelectorAll('tbody tr').forEach(tr => tr.addEventListener('click', () => { select(tr.dataset.n); $('gl').scrollIntoView({ behavior: 'smooth', block: 'center' }); }));
+  if (cur) document.querySelectorAll('#tabla tbody tr').forEach(tr => tr.classList.toggle('sel', tr.dataset.n === cur.nombre));
+}
+
+// ---------- controles ----------
+$('estado').innerHTML = ESTADOS.map(n => `<option value="${n}">${NOMBRE[n]}</option>`).join('');
+$('estado').addEventListener('change', e => select(e.target.value));
+document.querySelectorAll('#vista button').forEach(b => b.addEventListener('click', () => {
+  vista = b.dataset.v; document.querySelectorAll('#vista button').forEach(o => o.setAttribute('aria-pressed', o === b));
+  $('modos').hidden = vista !== 'modos'; $('player').style.visibility = vista === 'golpe' ? 'visible' : 'hidden'; tAnim = 0; drawFrame(); drawPlots(); }));
+document.querySelectorAll('#color button').forEach(b => b.addEventListener('click', () => {
+  colorMode = b.dataset.c; document.querySelectorAll('#color button').forEach(o => o.setAttribute('aria-pressed', o === b)); drawFrame(); }));
+$('amp').addEventListener('input', () => { updateAmpLabel(); drawFrame(); });
+$('play').addEventListener('click', () => { playing = !playing; $('play').textContent = playing ? 'Pausa' : 'Reproducir'; });
+$('scrub').addEventListener('input', e => { tAnim = +e.target.value / 1000; playing = false; $('play').textContent = 'Reproducir'; drawFrame(); drawPlots(); });
+window.addEventListener('resize', () => { resize(); drawPlots(); drawMaps(); });
+const rethemes = () => { themeColors(); drawPlots(); drawMaps(); };
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rethemes);
+new MutationObserver(rethemes).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+updateAmpLabel();
+
+fetch('datos/malla.json').then(r => r.json()).then(async m => {
+  malla = m; buildScene();
+  await select('extremo_flojo');
+  requestAnimationFrame(ts => { lastTs = ts; loop(ts); });
+  fillTable();
+}).catch(err => { $('hud').innerHTML = '<span class="loading">No se pudieron cargar los datos del modelo: ' + err.message + '</span>'; });
+})();
+</script>
