@@ -1,0 +1,260 @@
+{
+ "estatica": {
+  "flecha_vertice_mm": 1.4784925599368757,
+  "k_vertice_N_mm": 1.3527291608997953,
+  "desliz_vertice_mm": 0.07130582468923376,
+  "giro_sensor_mrad": -8.722928993363817,
+  "sigma_max_MPa": 629.8048600230777,
+  "donde_mm": [
+   0.0,
+   6.5
+  ]
+ },
+ "modos_Hz": [
+  875.438580672575,
+  3288.405077638295,
+  4497.374191211755,
+  4771.660191482806,
+  5321.4110634591525,
+  12194.231646217047,
+  12308.296138661577,
+  23588.9828160268
+ ],
+ "participacion": [
+  1.0,
+  0.11870884848292566,
+  0.10929335094057616,
+  0.012764559891480814,
+  0.12484951952523592,
+  0.016171036285965053,
+  0.2121047443806583,
+  0.7996163619366259
+ ],
+ "f0_Hz": 875.0,
+ "pico": 199.63698566407783,
+ "T_18k": 0.003546464811067033,
+ "T_43k": 0.0025100189904743732,
+ "masa_carro_g": 0.312008,
+ "verificacion": [
+  {
+   "zeta": 0.002,
+   "F0": 1.6,
+   "tg": "libre",
+   "despega": [
+    "muy_floja_juego\u00b7base",
+    "muy_floja_juego\u00b7E-10",
+    "muy_floja_juego\u00b7E+10",
+    "muy_floja_juego\u00b7k-30",
+    "muy_floja_juego\u00b7k+30"
+   ],
+   "Fc_min": 0.0,
+   "satura": false,
+   "gaps_C1": [
+    0.08631941048799943,
+    0.9140382744652462,
+    2.5797638997744583
+   ],
+   "gap_C2_Hz": 647.1601787710679,
+   "Fc_min_sin_muy_floja": 0.9857778591028474
+  },
+  {
+   "zeta": 0.002,
+   "F0": 1.6,
+   "tg": "adherido",
+   "despega": [
+    "muy_floja_juego\u00b7base",
+    "muy_floja_juego\u00b7E-10",
+    "muy_floja_juego\u00b7E+10",
+    "muy_floja_juego\u00b7k-30",
+    "muy_floja_juego\u00b7k+30"
+   ],
+   "Fc_min": 0.0,
+   "satura": false,
+   "gaps_C1": [
+    0.5060317307233086,
+    0.9059241216027547,
+    1.8938650644802668
+   ],
+   "gap_C2_Hz": 445.47674058519624,
+   "Fc_min_sin_muy_floja": 0.7568907807224989
+  },
+  {
+   "zeta": 0.002,
+   "F0": 2.0,
+   "tg": "libre",
+   "despega": [],
+   "Fc_min": 0.09265553471498443,
+   "satura": false,
+   "gaps_C1": [
+    0.03170971929599892,
+    0.8977164015345735,
+    2.5940267690851417
+   ],
+   "gap_C2_Hz": 621.7618391335054,
+   "Fc_min_sin_muy_floja": 1.3105699919242333
+  },
+  {
+   "zeta": 0.002,
+   "F0": 2.0,
+   "tg": "adherido",
+   "despega": [
+    "muy_floja_juego\u00b7base",
+    "muy_floja_juego\u00b7E-10",
+    "muy_floja_juego\u00b7E+10",
+    "muy_floja_juego\u00b7k-30",
+    "muy_floja_juego\u00b7k+30"
+   ],
+   "Fc_min": 0.0,
+   "satura": false,
+   "gaps_C1": [
+    0.4898354607649239,
+    0.9064982129385938,
+    1.9612483919791135
+   ],
+   "gap_C2_Hz": 445.68667299428125,
+   "Fc_min_sin_muy_floja": 1.1461983592428682
+  },
+  {
+   "zeta": 0.002,
+   "F0": 2.4,
+   "tg": "libre",
+   "despega": [],
+   "Fc_min": 0.2742906108424749,
+   "satura": false,
+   "gaps_C1": [
+    0.018713565567866075,
+    0.9174591462762707,
+    2.6034714241911434
+   ],
+   "gap_C2_Hz": 624.9057911714117,
+   "Fc_min_sin_muy_floja": 1.6399714543894963
+  },
+  {
+   "zeta": 0.002,
+   "F0": 2.4,
+   "tg": "adherido",
+   "despega": [
+    "muy_floja_juego\u00b7base",
+    "muy_floja_juego\u00b7E+10",
+    "muy_floja_juego\u00b7k+30"
+   ],
+   "Fc_min": 0.0,
+   "satura": false,
+   "gaps_C1": [
+    0.44811222688152624,
+    0.9200336144780998,
+    1.9721877129699432
+   ],
+   "gap_C2_Hz": 444.7909389123415,
+   "Fc_min_sin_muy_floja": 1.5362999904766717
+  },
+  {
+   "zeta": 0.016,
+   "F0": 1.6,
+   "tg": "libre",
+   "despega": [
+    "muy_floja_juego\u00b7E+10"
+   ],
+   "Fc_min": 0.0,
+   "satura": false,
+   "gaps_C1": [
+    0.18824002434875364,
+    0.9162121397434029,
+    2.779097304087707
+   ],
+   "gap_C2_Hz": 448.136043420207,
+   "Fc_min_sin_muy_floja": 0.9920365601617626
+  },
+  {
+   "zeta": 0.016,
+   "F0": 1.6,
+   "tg": "adherido",
+   "despega": [
+    "muy_floja_juego\u00b7base",
+    "muy_floja_juego\u00b7E-10",
+    "muy_floja_juego\u00b7E+10",
+    "muy_floja_juego\u00b7k-30",
+    "muy_floja_juego\u00b7k+30"
+   ],
+   "Fc_min": 0.0,
+   "satura": false,
+   "gaps_C1": [
+    0.5092890515227124,
+    0.8349356723095955,
+    1.9740713778456969
+   ],
+   "gap_C2_Hz": 445.9935438245957,
+   "Fc_min_sin_muy_floja": 0.8695291144033782
+  },
+  {
+   "zeta": 0.016,
+   "F0": 2.0,
+   "tg": "libre",
+   "despega": [],
+   "Fc_min": 0.11669473833010029,
+   "satura": false,
+   "gaps_C1": [
+    0.16332640672856735,
+    0.8998565826525307,
+    2.7733971691933994
+   ],
+   "gap_C2_Hz": 435.54719916914837,
+   "Fc_min_sin_muy_floja": 1.317727368237225
+  },
+  {
+   "zeta": 0.016,
+   "F0": 2.0,
+   "tg": "adherido",
+   "despega": [
+    "muy_floja_juego\u00b7base",
+    "muy_floja_juego\u00b7E-10",
+    "muy_floja_juego\u00b7E+10",
+    "muy_floja_juego\u00b7k-30",
+    "muy_floja_juego\u00b7k+30"
+   ],
+   "Fc_min": 0.0,
+   "satura": false,
+   "gaps_C1": [
+    0.5108717442582171,
+    0.8420324424173848,
+    2.0332760705661803
+   ],
+   "gap_C2_Hz": 445.95805514639505,
+   "Fc_min_sin_muy_floja": 1.2185636551599095
+  },
+  {
+   "zeta": 0.016,
+   "F0": 2.4,
+   "tg": "libre",
+   "despega": [],
+   "Fc_min": 0.2739968835274454,
+   "satura": false,
+   "gaps_C1": [
+    0.16430715477265984,
+    0.910039996826794,
+    2.7743309918183607
+   ],
+   "gap_C2_Hz": 444.0096510370495,
+   "Fc_min_sin_muy_floja": 1.6470454386516982
+  },
+  {
+   "zeta": 0.016,
+   "F0": 2.4,
+   "tg": "adherido",
+   "despega": [
+    "muy_floja_juego\u00b7base",
+    "muy_floja_juego\u00b7E+10",
+    "muy_floja_juego\u00b7k+30"
+   ],
+   "Fc_min": 0.0,
+   "satura": false,
+   "gaps_C1": [
+    0.4759066793639475,
+    0.8549447677554198,
+    2.043443049270408
+   ],
+   "gap_C2_Hz": 445.33246442495147,
+   "Fc_min_sin_muy_floja": 1.5482398031103017
+  }
+ ]
+}
