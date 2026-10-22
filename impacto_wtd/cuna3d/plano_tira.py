@@ -378,8 +378,8 @@ def generar():
     filas = ""
     for r in res["verificacion"]:
         d = sorted({x.split("·")[0] for x in r["despega"]})
-        rz = NOMR[r["tg"]].format(mu=f(r["mu"], 2))
-        filas += (f'<tr class="{"rec" if (r["tg"], r["F0"], r["mu"]) == ("coulomb", 2.0, MU[0]) else ""}"><td>{rz}</td><td class="n">{f(r["F0"],1)} N</td>'
+        rz = NOMR[r["tg"]].format(mu=f(r["mu"], 2)) + (f', lengüeta {"+" if r["d_leng"] > 0 else "−"}{f(abs(r["d_leng"]), 2)} mm' if r["d_leng"] else "")
+        filas += (f'<tr class="{"rec" if (r["tg"], r["F0"], r["mu"], r["d_leng"]) == ("coulomb", 2.0, MU[0], 0.0) else ""}"><td>{rz}</td><td class="n">{f(r["F0"],1)} N</td>'
                   f'<td>{"no" if not d else ", ".join(x.replace("_", " ") for x in d)}</td>'
                   f'<td>{"no" if not r["satura_en"] else ", ".join(x.replace("_", " ") for x in r["satura_en"])}</td>'
                   f'<td class="n">{f(r["Fc_min_sin_muy_floja"],2)} N</td>'
