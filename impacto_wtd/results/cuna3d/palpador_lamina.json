@@ -1,0 +1,133 @@
+{
+ "boceto (V)|libre": {
+  "despega": [
+   "ajustada\u00b7k-30",
+   "moderada\u00b7base",
+   "moderada\u00b7E+10"
+  ],
+  "Fc_min": 0.0,
+  "satura": true,
+  "gaps_C1": [
+   -1.4459794763419427,
+   -0.39248146825226904,
+   0.10479791744321165
+  ],
+  "gap_C2_Hz": 43.16822059449623
+ },
+ "boceto (V)|adherido": {
+  "despega": [
+   "floja\u00b7base",
+   "floja\u00b7E-10",
+   "floja\u00b7E+10",
+   "floja\u00b7k-30",
+   "floja\u00b7k+30",
+   "muy_floja_juego\u00b7base",
+   "muy_floja_juego\u00b7E+10",
+   "muy_floja_juego\u00b7k-30",
+   "muy_floja_juego\u00b7k+30",
+   "extremo_poca_presion\u00b7base",
+   "extremo_flojo\u00b7base",
+   "medio_flojo\u00b7base",
+   "medio_libre_juego\u00b7base",
+   "extremo_libre_juego\u00b7base"
+  ],
+  "Fc_min": 0.0,
+  "satura": true,
+  "gaps_C1": [
+   -0.29174191855769216,
+   0.35354293736129927,
+   -0.12158305628221378
+  ],
+  "gap_C2_Hz": -174.28803084733954
+ },
+ "brazo + leng\u00fceta|libre": {
+  "despega": [
+   "muy_floja_juego\u00b7base",
+   "muy_floja_juego\u00b7E-10",
+   "muy_floja_juego\u00b7E+10",
+   "muy_floja_juego\u00b7k-30",
+   "muy_floja_juego\u00b7k+30"
+  ],
+  "Fc_min": 0.0,
+  "satura": false,
+  "gaps_C1": [
+   -0.016258252730305567,
+   -0.4836014664190684,
+   1.3342380333825035
+  ],
+  "gap_C2_Hz": 57.80481969192624
+ },
+ "brazo + leng\u00fceta|adherido": {
+  "despega": [
+   "muy_floja_juego\u00b7base",
+   "muy_floja_juego\u00b7E-10",
+   "muy_floja_juego\u00b7E+10",
+   "muy_floja_juego\u00b7k-30",
+   "muy_floja_juego\u00b7k+30"
+  ],
+  "Fc_min": 0.0,
+  "satura": false,
+  "gaps_C1": [
+   0.29458059121767255,
+   0.9048996845982357,
+   1.4365854036300558
+  ],
+  "gap_C2_Hz": 446.5177059475973
+ },
+ "C plegada + leng\u00fceta|libre": {
+  "despega": [
+   "muy_floja_juego\u00b7base",
+   "muy_floja_juego\u00b7E-10",
+   "muy_floja_juego\u00b7E+10",
+   "muy_floja_juego\u00b7k-30",
+   "muy_floja_juego\u00b7k+30"
+  ],
+  "Fc_min": 0.0,
+  "satura": false,
+  "gaps_C1": [
+   0.05494870287396825,
+   0.8558790866512962,
+   1.6076902623647435
+  ],
+  "gap_C2_Hz": 267.5917375801873
+ },
+ "C plegada + leng\u00fceta|adherido": {
+  "despega": [
+   "muy_floja_juego\u00b7base",
+   "muy_floja_juego\u00b7E-10",
+   "muy_floja_juego\u00b7E+10",
+   "muy_floja_juego\u00b7k-30",
+   "muy_floja_juego\u00b7k+30"
+  ],
+  "Fc_min": 0.0,
+  "satura": false,
+  "gaps_C1": [
+   0.10173151974352912,
+   0.8592753199563414,
+   1.6020879179978322
+  ],
+  "gap_C2_Hz": 263.78595435599345
+ },
+ "piezas A+B (tubo)|libre": {
+  "despega": [],
+  "Fc_min": 0.8210551356284027,
+  "satura": true,
+  "gaps_C1": [
+   0.004695199951804341,
+   -0.7959633042607273,
+   0.9605119690202661
+  ],
+  "gap_C2_Hz": 256.1089018982384
+ },
+ "piezas A+B (tubo)|adherido": {
+  "despega": [],
+  "Fc_min": 0.8269200808712289,
+  "satura": true,
+  "gaps_C1": [
+   -0.003492542861468495,
+   -0.9356743081898147,
+   1.072716802525861
+  ],
+  "gap_C2_Hz": 558.9827999421323
+ }
+}
