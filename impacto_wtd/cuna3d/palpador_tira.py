@@ -7,8 +7,8 @@ Una sola pieza de 17-7PH de 0,15 mm, fotograbada y plegada:
     da la precarga;
   * alma vertical (6 mm de ancho): por fuera el flex con el ADXL1004, por
     dentro la aleta de cobre del amortiguador;
-  * el centro del alma sigue 1,2 mm más abajo que las tiras laterales y se
-    pliega hacia adelante: es la lengüeta (2 mm de ancho), el filtro, con un
+  * el centro del alma sigue 1,3 mm más abajo que las tiras laterales y se
+    pliega hacia adelante: es la lengüeta (2,4 mm de ancho), el filtro, con un
     hoyuelo esférico acuñado en la punta que apoya en la cuña.
 
 Coordenadas en estado cargado: x a lo largo de la ranura, y radial (y = 0 en
