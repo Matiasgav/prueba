@@ -15,9 +15,9 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from cuna3d.palpador_tira import (ANG_NARIZ, ANG_PIERNA, BANDA_C1, B_ALMA, B_CENTRO, B_SUP, B_TIRA,  # noqa: E402
-                                  CARCASA, CHIP, H_HOY, L_BRAZO, L_PIERNA, NARIZ, OREJA, PCB, PLANO, R_HOY,
-                                  RANURA, T, X_HOY, X_NARIZ, X_PLANO, Y_INF, Y_PCB, Y_SUP, Y_T)
+from cuna3d.palpador_tira import (ANG_NARIZ, ANG_RAMPA, BANDA_C1, B_ALMA, B_CENTRO, B_SUP, B_TIRA,  # noqa: E402
+                                  CARCASA, CHIP, H_HOY, L_BRAZO, L_LENG, L_RAMPA, MU, NARIZ, OREJA, PCB, PLANO,
+                                  R_HOY, RANURA, T, X_HOY, X_LENG, X_NARIZ, Y_CODO, Y_INF, Y_PCB, Y_SUP, Y_T)
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
 X_A = L_BRAZO          # plano del alma
@@ -26,9 +26,9 @@ YN = Y_T + NARIZ * math.sin(math.radians(ANG_NARIZ))
 C = CARCASA
 CX0, CX1 = -OREJA - 2.0, XN + 2.6                             # carcasa: paredes trasera y delantera (exterior)
 PISO0, PISO1 = C["y0"], C["y0"] + C["piso"]                   # piso: caras inferior y superior
-TECHO = C["y1"] - C["techo"]                                  # cara interior del techo
+TECHO = C["y_techo"]                                          # cara interior del techo
 J = C["juego_lateral"]
-RAN_X0, RAN_X1 = X_A + 0.25, XN + 0.3                         # ranura del piso (x)
+RAN_X0, RAN_X1 = X_A - T / 2 - 0.15, XN + 0.3                 # ranura del piso (x): el borde trasero es tope
 RAN_Z = B_CENTRO / 2 + J                                      # ranura del piso (z, mitad)
 X_PCB = X_A + T / 2                                           # cara exterior del alma
 
@@ -63,8 +63,9 @@ def piezas():
     p.append(placa((-OREJA, Y_INF), (0, Y_INF), -B_ALMA / 2, B_ALMA / 2, "chapa"))
     p.append(placa((X_A, Y_SUP), (X_A, Y_INF), -B_ALMA / 2, B_ALMA / 2, "chapa"))
     hc = B_CENTRO / 2
-    p.append(placa((X_A, Y_INF), (X_PLANO, Y_T), -hc, hc, "leng"))
-    p.append(placa((X_PLANO, Y_T), (X_NARIZ, Y_T), -hc, hc, "leng"))
+    p.append(placa((X_A, Y_INF), (X_A, Y_CODO), -hc, hc, "leng"))
+    p.append(placa((X_A, Y_CODO), (X_LENG, Y_T), -hc, hc, "leng"))
+    p.append(placa((X_LENG, Y_T), (X_NARIZ, Y_T), -hc, hc, "leng"))
     p.append(placa((X_NARIZ, Y_T), (XN, YN), -hc, hc, "leng"))
     # extremo rígido del flex (refuerzo de FR4 + flex) y sensor, pegados por fuera del alma
     y0, y1 = Y_PCB, Y_PCB + PCB[0]
@@ -129,12 +130,12 @@ def svg_iso():
         return (f'<line class="guia" x1="{a:.1f}" y1="{b:.1f}" x2="{tx:.1f}" y2="{ty:.1f}"/>'
                 f'<text class="{cls}" x="{tx + (4 if tx > a else -4):.1f}" y="{ty + 4:.1f}" text-anchor="{"start" if tx > a else "end"}">{txt}</text>')
     out += [rot((-1.2, Y_SUP + 0.1, 0), 275, 40, "oreja superior (tornillo M1)"),
-            rot((7, Y_SUP + 0.1, 0), 275, 95, "brazo superior · 3 × 18 mm"),
+            rot((7, Y_SUP + 0.1, 0), 275, 95, "brazo superior · 3 × 13 mm"),
             rot((7, Y_INF, 2.3), 275, 300, "brazo inferior · 2 tiras de 1,5 mm"),
             rot((-3, 0, 4), 275, 370, "cuña", "lbl-w"),
             rot((X_A, Y_SUP - 1, -2.8), 875, 40, "alma 6 mm"),
             rot((X_PCB + 2.3, 6.5, 1.0), 875, 100, "flex con ADXL1004, pegado al alma"),
-            rot((XN - 0.2, YN, 0), 875, 270, "punta: pierna 35° · hoyuelo R 2 · nariz 30°"),
+            rot((XN - 0.2, YN, 0), 875, 270, "punta: rampa 35° · hoyuelo R 2 · nariz 30°"),
             rot((RAN_X1, PISO0, RAN_Z), 875, 320, "ranura del piso (tope lateral)"),
             rot((CX1, C["y0"], -5.0), 875, 370, "carcasa 10 × 10 mm (contorno)")]
     return "\n".join(out)
@@ -145,7 +146,7 @@ def svg_iso():
 # ---------------------------------------------------------------------------
 
 def svg_alzado():
-    s, ox, oy = 24.0, 170.0, 345.0
+    s, ox, oy = 24.0, 170.0, 300.0
     X = lambda x: ox + s * x
     Y = lambda y: oy - s * y
     o = []
@@ -180,7 +181,7 @@ def svg_alzado():
     text(-OREJA / 2, Y_INF + 1.15, "amarres", "ct", "middle")
     # chapa (línea media gruesa)
     o.append(f'<path class="chapa" d="M{X(-OREJA)} {Y(Y_SUP)} L{X(X_A-0.2)} {Y(Y_SUP)} Q{X(X_A)} {Y(Y_SUP)} {X(X_A)} {Y(Y_SUP-0.2)} '
-             f'L{X(X_A)} {Y(Y_INF)} L{X(X_PLANO)} {Y(Y_T)} L{X(X_NARIZ)} {Y(Y_T)} L{X(XN)} {Y(YN)}"/>')
+             f'L{X(X_A)} {Y(Y_CODO)} L{X(X_LENG)} {Y(Y_T)} L{X(X_NARIZ)} {Y(Y_T)} L{X(XN)} {Y(YN)}"/>')
     o.append(f'<path class="chapa2" d="M{X(-OREJA)} {Y(Y_INF)} L{X(X_A-0.2)} {Y(Y_INF)} Q{X(X_A)} {Y(Y_INF)} {X(X_A)} {Y(Y_INF+0.2)}"/>')
     a = math.sqrt(2 * R_HOY * H_HOY - H_HOY ** 2)
     o.append(f'<path class="hoy" d="M{X(X_HOY-a)} {Y(Y_T)} Q{X(X_HOY)} {Y(Y_T-2*H_HOY)} {X(X_HOY+a)} {Y(Y_T)}"/>')
@@ -192,13 +193,13 @@ def svg_alzado():
     o.append(f'<path class="eje" d="M{X(xc0+CHIP/2)} {Y(y0+0.8)} L{X(xc0+CHIP/2)} {Y(y1-1.2)}" marker-end="url(#fl)"/>')
     o.append(f'<path class="flexl" d="M{X(X_PCB+1.2)} {Y(y1)} C{X(X_PCB+1.2)} {Y(y1+1.4)} {X(CX1-2.5)} {Y(y1+0.6)} {X(CX1-pw)} {Y(y1+1.2)}"/>')
     # rótulos
-    text(1.0, Y_SUP - 0.45, "brazo superior 0,20 × 3 × 18", "lbl-a")
-    text(1.0, Y_INF + 0.35, "brazo inferior 2 × (0,20 × 1,5 × 18)", "lbl-a")
+    text(1.0, Y_SUP - 0.45, "brazo superior 0,15 × 3 × 13", "lbl-a")
+    text(1.0, Y_INF + 0.35, "brazo inferior 2 × (0,15 × 1,5 × 13)", "lbl-a")
     text(xc0 + CHIP + 0.35, y0 + 2.9, "ADXL1004", "lbl"); text(xc0 + CHIP + 0.35, y0 + 2.3, "eje sensible ↑", "ct")
     text(CX1 - 2.4, y1 + 1.6, "flex", "lbl-f", "end")
     text(XN + 0.5, 0.35, "nariz 30°", "lbl-l")
     text(X_HOY + 0.35, -0.6, "hoyuelo R 2 · h 0,25", "ct")
-    text(X_PLANO + 0.2, 1.75, "pierna 35°", "lbl-l")
+    text(X_A - 0.35, 0.4, "rampa 35°", "lbl-l", "end")
     # cotas
     cota_h(0, X_A, Y_SUP - 1.3, f(L_BRAZO, 0), dy=-0.55)
     cota_v(-5.6, Y_INF, Y_SUP, f(Y_SUP - Y_INF, 1), -1)
@@ -261,9 +262,10 @@ def svg_desarrollo():
     u0 = 0.0
     u1 = u0 + OREJA                 # fin oreja superior
     u2 = u1 + L_BRAZO               # P1 (brazo -> alma)
-    u3 = u2 + (Y_SUP - Y_INF)       # P2 (tiras, atrás) y P3 (pierna, adelante)
-    u4 = u3 + L_PIERNA              # P4 (pierna -> plano)
-    uh = u4 + PLANO                 # hoyuelo
+    u3 = u2 + (Y_SUP - Y_INF)       # P2 (tiras, atrás)
+    uc = u3 + (Y_INF - Y_CODO)      # P3 (comienzo de la rampa)
+    u4 = uc + L_RAMPA               # P4 (rampa -> lengüeta)
+    uh = u4 + L_LENG                # hoyuelo
     u5 = uh + PLANO                 # P5 (nariz)
     u6 = u5 + NARIZ                 # fin de la nariz
     u7 = u3 + L_BRAZO               # fin de las tiras
@@ -285,8 +287,8 @@ def svg_desarrollo():
         o.append(f'<text class="ct-r" x="{U(u):.1f}" y="{V(v):.1f}" text-anchor="{a}">{t}</text>')
     pl(u2, -hs - 0.3, hs + 0.3); rot(u2 - 0.2, -hs - 0.6, "P1 · 90°", "end")
     pl(u3, -ha - 0.2, -ht); pl(u3, ht, ha + 0.2); rot(u3, ha + 1.1, "P2 · 90° (tiras, atrás)")
-    pl(u3, -hc - 0.15, hc + 0.15); pl(u4, -hc - 0.15, hc + 0.15); pl(u5, -hc - 0.15, hc + 0.15)
-    rot(u3 - 0.3, -ha - 0.7, f"P3 · {90+ANG_PIERNA:.0f}° · P4 · {ANG_PIERNA:.0f}° · P5 · {ANG_NARIZ:.0f}° (punta)", "start")
+    pl(uc, -hc - 0.15, hc + 0.15); pl(u4, -hc - 0.15, hc + 0.15); pl(u5, -hc - 0.15, hc + 0.15)
+    rot(u3 - 0.3, -ha - 0.7, f"P3 · {90-ANG_RAMPA:.0f}° · P4 · {ANG_RAMPA:.0f}° · P5 · {ANG_NARIZ:.0f}° (punta)", "start")
     for u in (u0 + OREJA / 2, u7 + OREJA / 2):
         o.append(f'<circle class="agujero" cx="{U(u):.1f}" cy="{V(0):.1f}" r="{s*0.55:.1f}"/>')
     o.append(f'<circle class="hoy-pl" cx="{U(uh):.1f}" cy="{V(0):.1f}" r="{s*0.97:.1f}"/>')
@@ -305,32 +307,32 @@ def svg_desarrollo():
             o.append(f'<line class="cota" x1="{U(u):.1f}" y1="{V(v)-4:.1f}" x2="{U(u):.1f}" y2="{V(v)+4:.1f}"/>')
         o.append(f'<text class="ct" x="{(U(ua)+U(ub))/2:.1f}" y="{V(v)-4:.1f}" text-anchor="middle">{t}</text>')
     vb = ha + 2.4
-    filas = {(u4, u5): 1.3, (u5, u6): 2.6, (u3, u7): 3.9}
-    for ua, ub in ((u0, u1), (u1, u2), (u2, u3), (u3, u4), (u4, u5), (u5, u6), (u3, u7), (u7, u8)):
+    filas = {(uc, u4): 1.3, (u4, uh): 2.6, (uh, u6): 1.3, (u3, u7): 3.9}
+    for ua, ub in ((u0, u1), (u1, u2), (u2, u3), (u3, uc), (uc, u4), (u4, uh), (uh, u6), (u3, u7), (u7, u8)):
         cota(ua, ub, vb + filas.get((ua, ub), 0.0), f(ub - ua, 2 if abs((ub - ua) - round(ub - ua)) > 1e-6 else 0))
     cota(u0, u8, vb + 5.2, f"total {f(u8 - u0, 1)}")
-    o.append(f'<text class="tb" x="{U(0):.1f}" y="{V(-ha-2.2):.1f}">Desarrollo · 17-7PH cond. C · 0,20 mm · fotograbado · cotas en la línea media</text>')
+    o.append(f'<text class="tb" x="{U(0):.1f}" y="{V(-ha-2.2):.1f}">Desarrollo · 17-7PH cond. C · 0,15 mm · fotograbado · cotas en la línea media</text>')
     return "\n".join(o), (u8 - u0)
 
 
 def svg_detalle():
     """Punta a 8:1: pierna, plano con el hoyuelo y nariz, sobre la cuña y dentro de la ranura del piso."""
     s, ox, oy = 52.0, 30.0, 172.0
-    X = lambda x: ox + s * (x - (X_A - 0.4))
+    X = lambda x: ox + s * (x - (X_A - 1.6))
     Y = lambda y: oy - s * y
     o = []
-    o.append(f'<rect class="cuna" x="{X(X_A-0.4):.1f}" y="{Y(0):.1f}" width="{s*(XN-X_A+1.2):.1f}" height="{s*0.4:.1f}"/>')
+    o.append(f'<rect class="cuna" x="{X(X_A-1.6):.1f}" y="{Y(0):.1f}" width="{s*(XN-X_A+2.4):.1f}" height="{s*0.4:.1f}"/>')
     # piso de la carcasa con la ranura
-    o.append(f'<rect class="carcasa" x="{X(X_A-0.4):.1f}" y="{Y(PISO1):.1f}" width="{s*(RAN_X0-X_A+0.4):.1f}" height="{s*C["piso"]:.1f}"/>')
+    o.append(f'<rect class="carcasa" x="{X(X_A-1.6):.1f}" y="{Y(PISO1):.1f}" width="{s*(RAN_X0-X_A+1.6):.1f}" height="{s*C["piso"]:.1f}"/>')
     o.append(f'<rect class="carcasa" x="{X(RAN_X1):.1f}" y="{Y(PISO1):.1f}" width="{s*0.5:.1f}" height="{s*C["piso"]:.1f}"/>')
-    o.append(f'<path class="chapa-l" d="M{X(X_A)} {Y(Y_INF+0.4)} L{X(X_A)} {Y(Y_INF)} L{X(X_PLANO)} {Y(Y_T)} L{X(X_NARIZ)} {Y(Y_T)} L{X(XN)} {Y(YN)}"/>')
+    o.append(f'<path class="chapa-l" d="M{X(X_A)} {Y(Y_INF+0.4)} L{X(X_A)} {Y(Y_CODO)} L{X(X_LENG)} {Y(Y_T)} L{X(X_NARIZ)} {Y(Y_T)} L{X(XN)} {Y(YN)}"/>')
     a = math.sqrt(2 * R_HOY * H_HOY - H_HOY ** 2)
     o.append(f'<path class="hoy" d="M{X(X_HOY-a)} {Y(Y_T)} Q{X(X_HOY)} {Y(Y_T-2*H_HOY)} {X(X_HOY+a)} {Y(Y_T)}"/>')
-    o.append(f'<text class="ct" x="{X(X_A-0.3):.1f}" y="{Y(2.75):.1f}">esc. 8:1 · las rampas suben la punta ante un escalón en los dos sentidos</text>')
-    o.append(f'<text class="ct-l" x="{X(X_A+0.6):.1f}" y="{Y(1.75):.1f}">pierna 35°</text>')
+    o.append(f'<text class="ct" x="{X(X_A-1.5):.1f}" y="{Y(2.75):.1f}">esc. 8:1 · las rampas suben la punta ante un escalón en los dos sentidos</text>')
+    o.append(f'<text class="ct-l" x="{X(X_A-0.1):.1f}" y="{Y(0.55):.1f}" text-anchor="end">rampa 35°</text>')
     o.append(f'<text class="ct-l" x="{X(X_NARIZ-0.1):.1f}" y="{Y(YN+0.45):.1f}" text-anchor="end">nariz 30°</text>')
     o.append(f'<text class="ct" x="{X(X_HOY):.1f}" y="{Y(-0.3):.1f}" text-anchor="middle">hoyuelo R 2 · h 0,25</text>')
-    o.append(f'<text class="ct" x="{X(RAN_X0)-4:.1f}" y="{Y(PISO1)-5:.1f}" text-anchor="end">piso 0,5</text>')
+    o.append(f'<text class="ct" x="{X(X_A-1.5):.1f}" y="{Y(PISO1)-5:.1f}">piso 0,5</text>')
     return "\n".join(o)
 
 
@@ -354,7 +356,7 @@ ESTILO = """
 .amarre{fill:var(--paper);stroke:var(--ink-2);stroke-width:.8}
 .chapa{fill:none;stroke:var(--probe);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 .chapa2{fill:none;stroke:var(--probe);stroke-width:3;stroke-linecap:round;stroke-dasharray:9 3}
-.chapa-l{fill:none;stroke:var(--ok);stroke-width:10.4;stroke-linejoin:round;stroke-opacity:.7}
+.chapa-l{fill:none;stroke:var(--ok);stroke-width:7.8;stroke-linejoin:round;stroke-opacity:.7}
 .hoy{fill:none;stroke:var(--ok);stroke-width:3}
 .fr4{fill:#7a9a4a}.flex{fill:#c98a1a}.chip{fill:#232b33}.chip-pl{fill:#232b3326;stroke:#232b33;stroke-width:1.2;stroke-dasharray:5 3}
 .flexl{fill:none;stroke:#c98a1a;stroke-width:2.4}.eje{stroke:#6aa8ef;stroke-width:2}
@@ -372,45 +374,47 @@ def generar():
     res = json.loads((RAIZ / "results/cuna3d/palpador_tira.json").read_text())
     dev, Ltot = svg_desarrollo()
     st, rb = res["estatica"], res["robustez"]
-    ver = {(r["zeta"], r["F0"], r["tg"]): r for r in res["verificacion"]}
+    NOMR = {"coulomb": "real, μ {mu}", "libre": "sin rozamiento (cota)", "adherido": "trabada (cota)"}
     filas = ""
-    for z in (0.002, 0.005):
-        for F0 in (1.6, 2.0, 2.4):
-            for tg in ("libre", "adherido"):
-                r = ver[(z, F0, tg)]
-                d = sorted({x.split("·")[0] for x in r["despega"]})
-                filas += (f'<tr class="{"rec" if (z, F0) == (0.002, 2.0) else ""}"><td class="n">{f(z,3)}</td><td class="n">{f(F0,1)} N</td><td>{tg}</td>'
-                          f'<td>{"no" if not d else ("sólo muy floja con juego" if d == ["muy_floja_juego"] else ", ".join(d))}</td>'
-                          f'<td class="n">{f(r["Fc_min_sin_muy_floja"],2)} N</td><td>{"sí" if r["satura"] else "no"}</td>'
-                          f'<td class="n">{" · ".join(f(g,2) for g in r["gaps_C1"])}</td><td class="n">{r["gap_C2_Hz"]:.0f} Hz</td></tr>')
+    for r in res["verificacion"]:
+        d = sorted({x.split("·")[0] for x in r["despega"]})
+        rz = NOMR[r["tg"]].format(mu=f(r["mu"], 2))
+        filas += (f'<tr class="{"rec" if (r["tg"], r["F0"], r["mu"]) == ("coulomb", 2.0, MU[0]) else ""}"><td>{rz}</td><td class="n">{f(r["F0"],1)} N</td>'
+                  f'<td>{"no" if not d else ", ".join(x.replace("_", " ") for x in d)}</td>'
+                  f'<td>{"no" if not r["satura_en"] else ", ".join(x.replace("_", " ") for x in r["satura_en"])}</td>'
+                  f'<td class="n">{f(r["Fc_min_sin_muy_floja"],2)} N</td>'
+                  f'<td class="n">{" · ".join(f(g,2) for g in r["gaps_C1"])}</td><td class="n">{r["gap_C2_Hz"]:.0f} Hz</td></tr>')
     NOM = {"ajustada/moderada": "ajustada | moderada", "moderada/floja": "moderada | floja", "floja/muy_floja_juego": "floja | muy floja"}
     umb = "".join(f'<tr><td>{NOM[u["entre"]]}</td><td class="n">{f(u["umbral"],2)}</td><td class="n">± {f(u["hueco"]/2,2)}</td></tr>'
-                  for u in res["umbrales_C1"]["0.002_2.0"])
+                  for u in res["umbrales_C1"])
     fp, fs_ = rb["F_horizontal_pandeo_N"], rb["F_horizontal_para_subir_N"]
-    sy = rb["fluencia_MPa"]
     html = f"""<section id="tira">
   <style>{ESTILO}</style>
   <div class="prose">
     <span class="eyebrow">10 · Diseño recomendado: una tira plegada, protegida por la carcasa</span>
-    <h2>C plegada con punta de rampas, en chapa de 0,20 mm</h2>
-    <p><b>Piezas: dos, más dos tornillos.</b> La chapa (17-7PH de 0,20 mm, fotograbada, con el hoyuelo acuñado y cinco pliegues en un útil) y el flex con el ADXL1004 soldado en su extremo rígido. Sin amortiguador ni rigidizador. La carcasa, que ya existe, es la que protege la chapa: no se agregan piezas.</p>
-    <p><b>Por qué no se puede simplificar más.</b> Los dos brazos y la punta separada hacen falta, y el modelo lo muestra:</p>
+    <h2>C plegada con punta liviana y rampas</h2>
+    <p><b>Piezas: dos, más dos tornillos.</b> La chapa (17-7PH de 0,15 mm, fotograbada, con el hoyuelo acuñado, cinco pliegues en un útil y envejecida) y el flex con el ADXL1004 soldado en su extremo rígido. Sin amortiguador ni rigidizador. La carcasa, que ya existe, protege la chapa con topes: no se agregan piezas.</p>
+    <p><b>Corrección.</b> La versión anterior de esta sección modelaba la lengüeta terminando justo en el centro del hoyuelo. La chapa real tiene que seguir ~1 mm para que entre la base del hoyuelo, y con esa masa en la punta se perdía la separación entre ajustada y moderada. Además, el modelo ahora tiene rozamiento de Coulomb en la punta (traba hasta μ·F y desliza), que es el caso real. Con μ 0,15–0,3 la punta prácticamente no desliza.</p>
+    <p><b>Por qué no se puede simplificar más.</b></p>
     <ul>
       <li><b>Con un solo brazo</b>, el carro gira 330 mrad al precargar y aparece un modo de cabeceo a 1,5 kHz, dentro de la banda de C1.</li>
       <li><b>Sin punta separada</b> (sensor rígido contra la cuña), todo lo que se mueve con la punta tendría que pesar menos de 25 mg para no despegar. El ADXL1004 solo ya pesa hasta 200 mg.</li>
-      <li><b>Sostener el carro con espuma</b> en vez de brazos lo deja inclinarse ~0,6 rad con el rozamiento de la punta mientras el robot avanza.</li>
+      <li><b>Sostener el carro con espuma</b> lo deja inclinarse ~0,6 rad con el rozamiento de la punta mientras el robot avanza.</li>
+      <li><b>Chapa más gruesa con brazos más largos</b> (0,20 × 18 mm): el primer modo de los brazos baja a 2,8 kHz, dentro de la banda, y la clasificación pasa a depender de ±0,1 mm de lengüeta.</li>
+      <li><b>Lengüeta inclinada</b> como rampa: con la punta trabada se estira a lo largo en vez de flexionar, el filtro deja de filtrar y el sensor satura.</li>
     </ul>
-    <p><b>Robustez: la carcasa limita todo y la punta no tiene cantos de frente.</b></p>
+    <p><b>Robustez: la carcasa limita todo y la punta tiene rampas.</b></p>
     <ul>
-      <li><b>Rampas en los dos sentidos.</b> Atrás, la pierna inclinada 35°; adelante, la nariz levantada 30°. Ante un escalón, la punta sube en vez de engancharse. Para subir hacen falta {f(fs_["rampa 35°"],1)} N (pierna) o {f(fs_["rampa 30°"],1)} N (nariz) de fuerza horizontal, con la punta ya retraída al máximo. Los brazos recién pandean (elásticamente) con {f(fp["empuje hacia atrás"],1)} N hacia atrás o {f(fp["empuje hacia adelante"],0)} N hacia adelante.</li>
-      <li><b>Tope de retracción (techo).</b> La punta sobresale {f(rb["asoma_mm"],1)} mm del piso y puede subir {f(rb["retraccion_mm"],1)} mm, hasta quedar entera dentro de la carcasa. En el tope, la tensión máxima de los brazos es {f(rb["sigma_tope_techo_MPa"],0)} MPa y la de la pierna {f(rb["sigma_pierna_tope_MPa"],0)} MPa, contra una fluencia de ~{f(sy,0)} MPa (condición C, sin tratamiento térmico).</li>
-      <li><b>Tope de caída (piso).</b> Sin cuña debajo (al pasar un hueco o salir del extremo), el brazo inferior se apoya en el piso: la punta baja como mucho {f(rb["caida_max_mm"],1)} mm y no puede meterse en un hueco y engancharse al volver.</li>
-      <li><b>Tope lateral (ranura del piso).</b> La pierna pasa por una ranura {f(2*C["juego_lateral"],1)} mm más ancha que ella: un tirón de costado lo toma la carcasa. La pierna recién fluye con ~{f(rb["F_lateral_fluencia_pierna_N"],0)} N.</li>
+      <li><b>Rampas.</b> Atrás, una rampa a 35° (sólo el tramo que asoma bajo el piso; la lengüeta, que es el filtro, sigue horizontal); adelante, la nariz a 30°. Ante un escalón la punta sube: hacen falta {f(fs_["rampa trasera 35°"],1)} N y {f(fs_["nariz 30°"],1)} N de fuerza horizontal con la punta retraída al tope, y los brazos recién pandean (elásticamente) con {f(fp["empuje hacia atrás"],1)} N hacia atrás y {f(fp["empuje hacia adelante"],0)} N hacia adelante.</li>
+      <li><b>Tope de retracción (techo).</b> La punta sobresale {f(rb["asoma_mm"],1)} mm y puede subir {f(rb["retraccion_mm"],1)} mm, hasta quedar al ras del piso. En el tope: brazos a {f(rb["sigma_tope_techo_MPa"],0)} MPa y lengüeta a {f(rb["sigma_lengueta_tope_MPa"],0)} MPa. Por eso el envejecido CH900 es obligatorio: fluencia típica ~{f(rb["fluencia_CH900_MPa"],0)} MPa, contra ~{f(rb["fluencia_C_MPa"],0)} MPa sin tratar (confirmar con el certificado del material).</li>
+      <li><b>Tope de caída (piso).</b> Sin cuña debajo, el brazo inferior y el sensor se apoyan en el piso: la punta baja como mucho {f(rb["caida_max_mm"],1)} mm.</li>
+      <li><b>Tope lateral y trasero (ranura del piso).</b> El tramo vertical y la punta pasan por una ranura con {f(C["juego_lateral"],1)} mm de juego por lado. Un tirón de costado lo toma la carcasa (la punta recién fluye con ~{f(rb["F_lateral_fluencia_N"],0)} N), y un empujón hacia atrás apoya el tramo vertical en el borde de la ranura.</li>
+      <li><b>Lo que no cubre.</b> Un escalón más alto que la nariz (~0,5 mm) y más bajo que el piso (1 mm) que venga de frente pega en el canto de la nariz. Ahí la fuerza pasa a la ranura, pero un enganche muy fuerte puede doblar la punta. La chapa es barata y se cambia con dos tornillos.</li>
     </ul>
-    <p><b>Sin amortiguador.</b> La resonancia del filtro (~{f(res["f0_Hz"],0)} Hz) queda sin amortiguar y no hace falta: C1 se mide en {f(BANDA_C1[0]/1000,1)}–{f(BANDA_C1[1]/1000,0)} kHz, que la atenúa 45 dB, y C2 mira 12–24 kHz.</p>
+    <p><b>Sin amortiguador.</b> La resonancia del filtro (~{f(res["f0_Hz"],0)} Hz) queda sin amortiguar y no hace falta: C1 se mide en {f(BANDA_C1[0]/1000,1)}–{f(BANDA_C1[1]/1000,0)} kHz, por encima de ella, y C2 mira 12–24 kHz.</p>
   </div>
   <div class="fig plano" role="img" aria-label="Vista isométrica del palpador"><svg viewBox="0 0 1240 400">{svg_iso()}</svg></div>
-  <div class="fig plano" role="img" aria-label="Alzado acotado con la carcasa y los topes"><svg viewBox="0 0 960 420">
+  <div class="fig plano" role="img" aria-label="Alzado acotado con la carcasa y los topes"><svg viewBox="0 0 960 360">
     <defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10z" style="fill:#6aa8ef"/></marker>
     <marker id="ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" style="fill:var(--ok)"/></marker></defs>
     {svg_alzado()}</svg></div>
@@ -420,26 +424,26 @@ def generar():
   <div class="fig plano" role="img" aria-label="Detalle de la punta" style="max-width:560px"><svg viewBox="0 0 560 215" style="min-width:0">{svg_detalle()}</svg></div>
   <div class="prose"><h3>Números</h3></div>
   <div class="tbl"><table><tbody>
-    <tr><td>Desarrollo</td><td class="n">{f(Ltot,1)} × {f(B_ALMA,0)} mm, 0,20 mm de espesor</td></tr>
+    <tr><td>Desarrollo</td><td class="n">{f(Ltot,1)} × {f(B_ALMA,0)} mm, 0,15 mm de espesor</td></tr>
     <tr><td>Rigidez de precarga en la punta · flecha para 2 N</td><td class="n">{f(st["k_vertice_N_mm"],2)} N/mm · {f(st["flecha_vertice_mm"],2)} mm</td></tr>
     <tr><td>Precarga con ±0,3 mm de altura de la carcasa</td><td class="n">{" – ".join(f(x,2) for x in rb["F0_por_altura_N"])} N</td></tr>
-    <tr><td>Tensión máxima: en precarga · en el tope de retracción · fluencia</td><td class="n">{f(rb["sigma_precarga_MPa"],0)} · {f(rb["sigma_tope_techo_MPa"],0)} · ~{f(sy,0)} MPa</td></tr>
+    <tr><td>Tensión máxima: en precarga · en el tope de retracción · fluencia CH900</td><td class="n">{f(rb["sigma_precarga_MPa"],0)} · {f(rb["sigma_tope_techo_MPa"],0)} · ~{f(rb["fluencia_CH900_MPa"],0)} MPa</td></tr>
     <tr><td>Giro del sensor al precargar · deslizamiento del hoyuelo</td><td class="n">{f(abs(st["giro_sensor_mrad"]),1)} mrad · {f(st["desliz_vertice_mm"],2)} mm</td></tr>
     <tr><td>Frecuencia del filtro (punta apoyada) · pico sin amortiguador</td><td class="n">{f(res["f0_Hz"],0)} Hz · {f(res["pico"],0)}</td></tr>
     <tr><td>Modos siguientes</td><td class="n">{" · ".join(f(x/1000,1) for x in res["modos_Hz"][1:6])} kHz</td></tr>
     <tr><td>Carro (ADXL1004 + extremo rígido del flex)</td><td class="n">{f(res["masa_carro_g"],3)} g</td></tr>
   </tbody></table></div>
   <div class="prose"><h3>Verificación contra la cuña 3D a 15 mm</h3>
-    <p>Son los 11 estados de la cuña, con energía del golpe ±10 % y rigidez de los flancos ±30 %. "Libre" es la punta que desliza; "adherido", la punta trabada por rozamiento. C1 se mide en {f(BANDA_C1[0]/1000,1)}–{f(BANDA_C1[1]/1000,0)} kHz. ζ 0,002 es el acero solo y ζ 0,005, por si el adhesivo y el flex suman algo. Los huecos de C1 son ajustada / moderada, moderada / floja y floja / muy floja; el de C2 es muy ajustada / ajustada. En "muy floja con juego" la cuña traquetea y la punta puede despegar en algunos golpes: no cambia la clasificación mientras el hueco floja / muy floja siga abierto.</p></div>
-  <div class="tbl"><table><thead><tr><th>ζ</th><th>F₀</th><th>Punta</th><th>¿Despega?</th><th>F mín (resto)</th><th>¿Satura?</th><th>Huecos de C1</th><th>Hueco de C2</th></tr></thead><tbody>{filas}</tbody></table></div>
-  <div class="prose"><h3>Umbrales de C1 (ζ 0,002, F₀ 2 N, punta libre o trabada)</h3></div>
+    <p>Son los 11 estados de la cuña, con energía del golpe ±10 % y rigidez de los flancos ±30 %, ζ 0,002 (acero solo). El rozamiento real es Coulomb con μ 0,3 (nominal) y 0,15 (superficie lubricada o barnizada); "sin rozamiento" y "trabada" son las dos cotas extremas. C1 se mide en {f(BANDA_C1[0]/1000,1)}–{f(BANDA_C1[1]/1000,0)} kHz. Los huecos de C1 son ajustada / moderada, moderada / floja y floja / muy floja; el de C2 es muy ajustada / ajustada (C2 necesita la calibración por generador).</p></div>
+  <div class="tbl"><table><thead><tr><th>Rozamiento</th><th>F₀</th><th>¿Despega?</th><th>¿Satura?</th><th>F mín (resto)</th><th>Huecos de C1</th><th>Hueco de C2</th></tr></thead><tbody>{filas}</tbody></table></div>
+  <div class="prose"><h3>Umbrales de C1 (F₀ 2 N, μ entre 0,15 y 0,3)</h3></div>
   <div class="tbl"><table><thead><tr><th>Entre</th><th>Umbral de C1</th><th>Margen</th></tr></thead><tbody>{umb}</tbody></table></div>
   <div class="prose"><h3>Fabricación</h3></div>
   <ol class="steps">
-    <li>Fotograbado del desarrollo en 17-7PH condición C de 0,20 mm, con las ranuras de {f(RANURA,1)} mm alrededor de la punta y la ventana entre las tiras.</li>
+    <li>Fotograbado del desarrollo en 17-7PH condición C de 0,15 mm, con las ranuras de {f(RANURA,1)} mm alrededor de la punta, la ventana entre las tiras y las esquinas del extremo de la punta redondeadas siguiendo el hoyuelo.</li>
     <li>Acuñado del hoyuelo (punzón esférico de R 2 mm, 0,25 mm de alto) en la chapa plana.</li>
-    <li>Plegado en un útil, en este orden: P5 (nariz), P4 y P3 (punta), P2 (las tiras hacia atrás) y P1 (el brazo superior). Radio interior ≥ 0,2 mm.</li>
-    <li>Sin tratamiento térmico: en condición C la tensión en los topes queda por debajo de la fluencia. El envejecido CH900 (unos 480 °C, 1 h) es opcional y suma margen.</li>
+    <li>Plegado en un útil, en este orden: P5 (nariz), P4 y P3 (rampa), P2 (las tiras hacia atrás) y P1 (el brazo superior). Radio interior ≥ 0,15 mm.</li>
+    <li>Envejecido a CH900 (unos 480 °C, 1 h), obligatorio: la tensión en el tope de retracción lo necesita.</li>
     <li>Pegado del extremo rígido del flex, con el ADXL1004 ya soldado, en la cara exterior del alma (epoxi rígido, capa fina).</li>
     <li>Montaje: un tornillo M1 en cada oreja, sobre los amarres de la carcasa. La carcasa lleva el piso de 0,5 mm con la ranura de {f(2*RAN_Z,1)} mm y el techo a {f(rb["retraccion_mm"],1)} mm del brazo superior.</li>
     <li>Ensayo de impacto del palpador montado: f₀ y ζ reales, para fijar los umbrales.</li>

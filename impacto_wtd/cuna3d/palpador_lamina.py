@@ -71,7 +71,8 @@ class Lamina:
     R_hoyuelo: float = 2e-3
     zeta: float = 0.002            # acero sin amortiguador agregado
     chi: float = 0.236
-    tangencial: str = "libre"      # "libre" o "adherido"
+    tangencial: str = "libre"      # "libre", "adherido" o "coulomb" (traba hasta mu·Fc y desliza)
+    mu: float = 0.3                # rozamiento punta-cuña para "coulomb"
     delta_precarga: float = None   # se calcula para F0
 
     # ------------------------------------------------------------------
@@ -210,6 +211,8 @@ class Lamina:
             Kt[3 * ia, 3 * ia] += 0.8 * kc
         Kr, Mr = Kt[np.ix_(fr, fr)], M[np.ix_(fr, fr)]
         pos = {g: k for k, g in enumerate(fr)}
+        self._ix = pos[3 * ia]         # dirección tangencial del vértice (para "coulomb")
+        self._kt = 0.8 * kc
         ns = self._ns
         # salida: aceleración vertical en el punto del sensor = v + theta * e
         out = np.zeros(len(fr))
@@ -266,6 +269,9 @@ class Lamina:
         a_out = np.empty(N)
         Fc_out = np.empty(N)
         two_z_w = 2 * self.zeta * wn
+        coulomb = self.tangencial == "coulomb"
+        px = phi[self._ix, :]
+        kt, s_t = self._kt, 0.0        # resorte tangencial del contacto y punto de anclaje (se corre al deslizar)
         for j in range(N):
             x_ap = pa @ q
             v_ap = pa @ v
@@ -278,6 +284,14 @@ class Lamina:
             # el contacto linealizado ya está en K: fuerza = (Fc - F0) + kc * (x_ap) ... respecto del equilibrio
             f_ap = (Fc - F0) + kc * x_ap
             a = -w2 * q - two_z_w * v + pa * f_ap
+            if coulomb:
+                x_t = px @ q
+                Ft = -kt * (x_t - s_t)
+                lim = self.mu * Fc
+                if abs(Ft) > lim:
+                    Ft = math.copysign(lim, Ft)
+                    s_t = x_t + Ft / kt
+                a += px * Ft
             v += dt * a if j else 0.5 * dt * a
             q += dt * v
             a_out[j] = po @ a
