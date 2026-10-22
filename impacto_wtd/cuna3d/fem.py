@@ -307,6 +307,27 @@ class Contactos:
     kappa_t_ripple: float = 0.3       # adherencia tangencial en las crestas [E]
     mu_ripple: float = 0.30
     ripple: bool = True               # False: fondo rígido con ley de Hertz como flancos
+    d_solido_ripple: float = 1.8e-3   # compresión a la que el ripple queda aplastado [E]
+
+    # CHOQUES. Los contactos normales disipan con la ley de Hunt-Crossley,
+    #     p = C delta^(3/2) (1 + chi * d(delta)/dt)_+
+    # que da un coeficiente de restitución e al cerrar a velocidad v_ref con
+    # chi = 8 (1 - e) / (5 e v_ref)   (Flores et al. 2011; la de Lankarani-
+    # Nikravesh, 3(1-e^2)/(4 v), sólo vale cerca de e = 1 y da 0,80 si se pide 0,7).
+    # Se aplica a los contactos que en reposo están abiertos o sin presión:
+    # son los que CHOCAN. Un asiento precargado disipa por microdeslizamiento
+    # (el rozamiento); Hunt-Crossley ahí daría un amortiguamiento irreal.
+    e_rest: float = 0.7               # restitución G11 contra acero [E]
+    v_ref_rest: float = 0.05          # velocidad a la que vale e_rest [m/s]
+
+    # PARED LATERAL de la cola de milano: la esquina inferior de la cuña
+    # contra la pared vertical del núcleo, a juego_lateral [E]. Contacto de
+    # línea, casi lineal: q = k_linea * delta por unidad de largo.
+    juego_lateral: float = 0.3e-3     # [m]
+    k_linea: float = 1.5e10           # ~ (pi/4) E* para G11 contra acero [N/m por m]
+
+    def chi(self) -> float:
+        return 8 * (1 - self.e_rest) / (5 * self.e_rest * self.v_ref_rest)
 
     def C_hertz(self) -> float:
         """C de p = C delta^1.5 que da kn_flanco_1MPa a p = 1 MPa."""
@@ -354,6 +375,13 @@ class ModeloCuna:
         f = self.S["fondo"]
         self.fo_nod, self.fo_A, self.fo_x = f.nodos, f.area, f.x
         self.C = self.cont.C_hertz()
+        # esquinas inferiores (y = 0 de cada flanco) contra la pared vertical
+        esq = np.isclose(self.m.X[self.fl_nod, 1], 0.0)
+        self.la_nod = self.fl_nod[esq]
+        self.la_n = np.zeros((self.la_nod.size, 3))
+        self.la_n[:, 2] = np.sign(self.fl_n[esq, 2])
+        wx = _pesos_1d(self.g.ne_x, self.g.L)
+        self.la_L = np.concatenate([wx, wx])            # largo tributario por nodo
 
     # ---- estado de precarga ------------------------------------------------
     def cargar_estado(self, est: Estado):
@@ -381,7 +409,9 @@ class ModeloCuna:
         """Presión del ripple (o barra rígida) sobre la cuña, >= 0."""
         d = self.d_rip0 - self._uy_fondo(u)          # compresión del ripple
         if self.cont.ripple:
-            return self.cont.k_ripple * np.maximum(d, 0.0), d
+            # más allá de la compresión de aplastado, la cuña apoya en la barra (Hertz)
+            tope = self.C * np.maximum(d - self.cont.d_solido_ripple, 0.0) ** 1.5
+            return self.cont.k_ripple * np.maximum(d, 0.0) + tope, d
         return self.C * np.maximum(d, 0.0) ** 1.5, d
 
     def flanco_penetracion(self, u):
@@ -443,7 +473,7 @@ class ModeloCuna:
         El ripple impone una compresión; la cuña sube contra los hombros
         hasta que los flancos (Hertz) equilibran. Como la cuña se mueve al
         asentarse, la presión final difiere un poco de la pedida: se
-        corrige la compresión inicial del ripple y se repite (2-3 vueltas).
+        impone como carga conocida y la interferencia se fija al final.
         """
         k_reg = 1e-6 * self.cont.kn_flanco_1MPa       # sólo para fijar el modo axial libre
         u = np.zeros(self.m.n_dof)
@@ -465,35 +495,61 @@ class ModeloCuna:
                 mid = 0.5 * (lo + hi)
                 lo, hi = (mid, hi) if res(mid) > 0 else (lo, mid)
             u[1::3] = 0.5 * (lo + hi)
-        for vuelta in range(4 if ajustar_presion else 1):
-            for it in range(max_it):
-                r = self.K @ u - self.fuerza_contacto_normal(u)
-                r[0::3] += 0.0
-                KT = self.K + self.rigidez_contacto(u, tangencial=False, k_reg=k_reg)
-                du = spla.spsolve(KT.tocsc(), -r)
-                # búsqueda lineal simple sobre la norma del residuo
-                a, r0 = 1.0, np.linalg.norm(r)
-                for _ in range(12):
-                    un = u + a * du
-                    rn = self.K @ un - self.fuerza_contacto_normal(un)
-                    if np.linalg.norm(rn) < r0 or a < 1e-3:
-                        break
-                    a *= 0.5
-                u = un
-                if np.linalg.norm(a * du) < tol * max(1e-9, np.abs(u).max()) + 1e-15:
-                    break
-            if not ajustar_presion or not np.any(self.p_obj > 0):
-                break
-            p_now, _ = self.fondo_presion(u)
-            act = self.p_obj > 0
-            err = np.max(np.abs(p_now[act] - self.p_obj[act])) / np.max(self.p_obj)
-            if err < 2e-3:
-                break
-            # corregir la compresión inicial para que la presión final sea la pedida
+
+        # La presión de asiento pedida se impone como CARGA conocida en los
+        # nodos del fondo que la tienen (p_obj > 0); los demás nodos del fondo
+        # (sin presión, con o sin juego) siguen con su ley de contacto. Se
+        # resuelve un solo Newton y después se fija la interferencia del fondo
+        # que da exactamente esa presión en la posición final. (Una versión
+        # anterior corregía la interferencia en un lazo exterior que, con el
+        # fondo rígido, no llegaba a converger y dejaba la cuña fuera de
+        # equilibrio.)
+        act = self.p_obj > 0
+        dof_fo = 3 * self.fo_nod + 1
+        F_obj = np.where(act, self.p_obj * self.fo_A, 0.0)
+        d_rip_libre = self.d_rip0.copy()
+
+        def f_eq(u):
+            f = self.fuerza_contacto_normal(u)
+            p_f, _ = self.fondo_presion(u)
+            f[dof_fo] += np.where(act, F_obj - p_f * self.fo_A, 0.0)   # reemplaza la ley por la carga
+            return f
+
+        def K_eq(u):
+            Kc = self.rigidez_contacto(u, tangencial=False, k_reg=k_reg)
+            _, d_f = self.fondo_presion(u)
             if self.cont.ripple:
-                self.d_rip0 = np.where(act, self._uy_fondo(u) + self.p_obj / self.cont.k_ripple, self.d_rip0)
+                kn = np.where(d_f > 0, self.cont.k_ripple, 0.0)
             else:
-                self.d_rip0 = np.where(act, self._uy_fondo(u) + (self.p_obj / self.C) ** (2 / 3), self.d_rip0)
+                kn = np.where(d_f > 0, 1.5 * self.C * np.sqrt(np.maximum(d_f, 0)), 0.0)
+            quitar = sp.coo_matrix((-np.where(act, kn * self.fo_A, 0.0), (dof_fo, dof_fo)),
+                                   shape=Kc.shape)
+            return (self.K + Kc + quitar).tocsc()
+
+        for it in range(max_it):
+            r = self.K @ u - f_eq(u)
+            du = spla.spsolve(K_eq(u), -r)
+            a, r0 = 1.0, np.linalg.norm(r)
+            for _ in range(12):                          # búsqueda lineal
+                un = u + a * du
+                if np.linalg.norm(self.K @ un - f_eq(un)) < r0 or a < 1e-3:
+                    break
+                a *= 0.5
+            u = un
+            if np.linalg.norm(a * du) < tol * max(1e-9, np.abs(u).max()) + 1e-15:
+                break
+        # interferencia del fondo que da la presión pedida en la posición final
+        if self.cont.ripple:
+            self.d_rip0 = np.where(act, self._uy_fondo(u) + self.p_obj / self.cont.k_ripple, d_rip_libre)
+        else:
+            self.d_rip0 = np.where(act, self._uy_fondo(u) + (self.p_obj / self.C) ** (2 / 3), d_rip_libre)
+        self.vueltas_equilibrio = it + 1
+        # control: el equilibrio tiene que cerrar el balance de fuerzas
+        r = self.K @ u - self.fuerza_contacto_normal(u)
+        ref = max(float(np.abs(self.fuerza_contacto_normal(u)).max()), 1e-12)
+        self.residuo_equilibrio = float(np.abs(r).max()) / ref
+        if self.residuo_equilibrio > 1e-6:
+            raise RuntimeError(f"equilibrio no convergido: residuo relativo {self.residuo_equilibrio:.2e}")
         self.u0 = u
         self.it_equilibrio = it
         return u
@@ -513,6 +569,8 @@ class ModeloCuna:
             "frac_flanco_en_contacto": float(np.mean(p_l > 0)),
             "frac_fondo_en_contacto": float(np.mean(p_f > 0)),
             "uy_medio_um": float(u[1::3].mean() * 1e6),
+            "residuo_equilibrio": float(getattr(self, "residuo_equilibrio", 0.0)),
+            "vueltas_equilibrio": int(getattr(self, "vueltas_equilibrio", 0)),
         }
 
     # ---- modos linealizados alrededor del equilibrio --------------------------
@@ -527,39 +585,130 @@ class ModeloCuna:
         f = np.sqrt(np.maximum(w2, 0)) / (2 * math.pi)
         return f, phi
 
-    # ---- integración explícita del golpe --------------------------------------
+    # ---- integración explícita (golpe y choques) ------------------------------
+    def _fuerzas_dinamicas(self, ut, choca_fl, choca_fo):
+        """Fuerzas de contacto normales ELÁSTICAS y datos del amortiguamiento de choque.
+
+        La parte disipativa de Hunt-Crossley, F_d = chi * F_e * d(delta)/dt,
+        no se suma acá: se integra de forma semi-implícita en la dirección
+        normal de cada nodo (ver golpe), porque en un choque fuerte supera lo
+        que tolera un paso explícito. Cada grupo devuelve (nodos, normales
+        salientes, F_e por nodo, chi por nodo).
+        """
+        c = self.cont
+        chi = c.chi()
+        f = np.zeros(self.m.n_dof)
+        U = 0.0
+        grupos = []
+        # flancos
+        d_l = self.flanco_penetracion(ut)
+        dp = np.maximum(d_l, 0.0)
+        p_l = self.C * dp ** 1.5
+        Fe = p_l * self.fl_A
+        f[(3 * self.fl_nod[:, None] + np.arange(3))] -= Fe[:, None] * self.fl_n
+        U += float(np.sum(0.4 * self.C * dp ** 2.5 * self.fl_A))
+        grupos.append((self.fl_nod, self.fl_n, Fe, np.where(choca_fl, chi, 0.0)))
+        # fondo (ripple elástico + tope de aplastado, o Hertz contra la barra)
+        d_f = self.d_rip0 - self._uy_fondo(ut)
+        nb = self._n_fondo
+        if c.ripple:
+            dt_ = np.maximum(d_f - c.d_solido_ripple, 0.0)
+            pt = self.C * dt_ ** 1.5
+            p_f = c.k_ripple * np.maximum(d_f, 0.0) + pt
+            U += float(np.sum((0.5 * c.k_ripple * np.maximum(d_f, 0.0) ** 2 + 0.4 * self.C * dt_ ** 2.5) * self.fo_A))
+            grupos.append((self.fo_nod, nb, pt * self.fo_A, np.full(self.fo_nod.size, chi)))
+        else:
+            dpf = np.maximum(d_f, 0.0)
+            p_f = self.C * dpf ** 1.5
+            U += float(np.sum(0.4 * self.C * dpf ** 2.5 * self.fo_A))
+            grupos.append((self.fo_nod, nb, p_f * self.fo_A, np.where(choca_fo, chi, 0.0)))
+        f[3 * self.fo_nod + 1] += p_f * self.fo_A
+        # pared lateral (contacto de línea)
+        d_a = -c.juego_lateral + np.einsum("ij,ij->i", ut.reshape(-1, 3)[self.la_nod], self.la_n)
+        da = np.maximum(d_a, 0.0)
+        q_a = c.k_linea * da * self.la_L
+        f[(3 * self.la_nod[:, None] + np.arange(3))] -= q_a[:, None] * self.la_n
+        U += float(np.sum(0.5 * c.k_linea * da ** 2 * self.la_L))
+        grupos.append((self.la_nod, self.la_n, q_a, np.full(self.la_nod.size, chi)))
+        return f, p_l, d_l, p_f, d_f, q_a, U, grupos
+
+    def paso_estable(self, p_diseno: float = 50e6, cfl: float = 0.7, beta: float = 0.0) -> float:
+        """Paso de tiempo estable con TODOS los contactos cerrados y cargados a p_diseno.
+
+        La versión anterior usaba la rigidez de contacto de la precarga, que
+        en una cuña floja vale casi cero: un choque fuerte podía volver
+        inestable la integración. Acá se usa la rigidez que tendrían los
+        contactos a una presión de diseño alta, y el integrador avisa si en
+        algún momento la presión real la supera.
+        """
+        c = self.cont
+        kn_p = 1.5 * self.C ** (2 / 3) * p_diseno ** (1 / 3)        # por área
+        n_dof = self.m.n_dof
+        rows, cols, vals = [], [], []
+
+        def add(nod, kn, kt, n):
+            I = np.eye(3)
+            nn = n[:, :, None] * n[:, None, :]
+            blk = kn[:, None, None] * nn + kt[:, None, None] * (I - nn)
+            d = 3 * nod[:, None] + np.arange(3)
+            rows.append(np.repeat(d, 3, axis=1).ravel())
+            cols.append(np.tile(d, (1, 3)).ravel())
+            vals.append(blk.ravel())
+        kn = kn_p * self.fl_A
+        add(self.fl_nod, kn, c.kappa_t * kn, self.fl_n)
+        kb = (c.k_ripple + kn_p) * self.fo_A if c.ripple else kn_p * self.fo_A
+        add(self.fo_nod, kb, c.kappa_t * kb, np.tile([0.0, -1.0, 0.0], (self.fo_nod.size, 1)))
+        add(self.la_nod, c.k_linea * self.la_L, 0 * self.la_L, self.la_n)
+        Kc = sp.coo_matrix((np.concatenate(vals), (np.concatenate(rows), np.concatenate(cols))),
+                           shape=(n_dof, n_dof)).tocsr()
+        Kmax = self.K + Kc
+        Minv = 1.0 / self.M
+        x = np.random.default_rng(0).standard_normal(n_dof)
+        for _ in range(80):
+            x = Minv * (Kmax @ x)
+            lam = np.linalg.norm(x)
+            x /= lam
+        w_max = math.sqrt(lam * 1.05)
+        xi = beta * w_max / 2
+        return cfl * 2 / w_max * (math.sqrt(1 + xi ** 2) - xi)
+
     def golpe(self, x_golpe: float, z_golpe: float = 0.0, energia: float = 5e-3,
               m_imp: float = 3e-3, R_punta: float = 3e-3, t_fin: float = 3e-3,
               zeta: tuple = (0.01, 2e3, 30e3), x_palp: float | None = None,
               frames_t: np.ndarray | None = None, nodos_vis: np.ndarray | None = None,
               E_punta: float = 210e9, nu_punta: float = 0.29,
               E_cuna_hertz: float = 20e9, nu_cuna_hertz: float = 0.20,
+              v_cuna0: np.ndarray | None = None, p_diseno: float = 50e6,
               cfl: float = 0.7, verbose: bool = False) -> dict:
-        """Golpe del impactador: dinámica no lineal completa, diferencia central.
+        """Golpe del impactador, o choque libre de la cuña: dinámica no lineal completa.
 
         Ecuación de movimiento (u medido desde el equilibrio con precarga u0):
 
-            M a + C v + K (u0 + u) = f_fondo(u0+u) + f_flancos(u0+u, historia)
-                                     + f_golpe(u0+u, s)
-            m_imp s'' = -F_H,   F_H = K_H max(0, s + u_y,parche)^(3/2)
+            M a + C v + K (u0 + u) = f_c(u0+u, v, historia) + f_golpe - r0
+            m_imp s'' = -F_H,   F_H = K_H <s + u_y,parche>^(3/2)
 
-        con s el avance de la punta (positivo hacia la cuña, -y).
-        Amortiguamiento de Rayleigh C = alfa M + beta K con zeta dado a dos
-        frecuencias. El rozamiento en los flancos disipa por su cuenta.
+        f_c reúne flancos (Hertz + Hunt-Crossley + Coulomb), fondo (ripple
+        con tope de aplastado, o Hertz), y pared lateral. r0 es el residuo
+        del equilibrio estático, para que el reposo sea exactamente reposo.
+        Con energia = 0 no hay impactador y la cuña arranca con v_cuna0.
+
+        Balance de energía, que se verifica en cada corrida:
+
+            E_entrada = T_cuna + U_elastica + U_contactos + T_imp + U_Hertz
+                        + D_Rayleigh + D_Hunt-Crossley + D_rozamiento
         """
         m = self.m
         c = self.cont
-        # --- Hertz de la punta
+        con_imp = energia > 0
         Est = 1 / ((1 - nu_punta ** 2) / E_punta + (1 - nu_cuna_hertz ** 2) / E_cuna_hertz)
         K_H = 4 / 3 * Est * math.sqrt(R_punta)
-        v0 = math.sqrt(2 * energia / m_imp)
-        # --- parche de golpe: las caras superiores que tocan el nodo golpeado
-        T = self.S["tapa"]
+        v0 = math.sqrt(2 * energia / m_imp) if con_imp else 0.0
+        # parche de golpe: las caras superiores que tocan el nodo golpeado
         ixg = int(round(x_golpe / self.g.L * (m.nx - 1)))
         izg = int(round((z_golpe / self.g.b + 0.5) * (m.nz - 1)))
         wpatch = np.zeros(m.n_nodos)
-        for ex in (ixg // 2 - 1, ixg // 2) if ixg % 2 == 0 else (ixg // 2,):
-            for ez in (izg // 2 - 1, izg // 2) if izg % 2 == 0 else (izg // 2,):
+        for ex in ((ixg // 2 - 1, ixg // 2) if ixg % 2 == 0 else (ixg // 2,)):
+            for ez in ((izg // 2 - 1, izg // 2) if izg % 2 == 0 else (izg // 2,)):
                 if 0 <= ex < self.g.ne_x and 0 <= ez < self.g.ne_z:
                     for a in range(3):
                         for cc in range(3):
@@ -567,79 +716,70 @@ class ModeloCuna:
         pn = np.nonzero(wpatch)[0]
         pw = wpatch[pn] / wpatch[pn].sum()
         pdof = 3 * pn + 1
-        # --- palpador
         x_palp = x_golpe + 10e-3 if x_palp is None else x_palp
         n_palp = int(m.nodo(int(round(x_palp / self.g.L * (m.nx - 1))), m.ny - 1, izg))
-        # --- amortiguamiento de Rayleigh
+        # Rayleigh
         z0, f1, f2 = zeta
         w1, w2 = 2 * math.pi * f1, 2 * math.pi * f2
         alfa = 2 * z0 * w1 * w2 / (w1 + w2)
         beta = 2 * z0 / (w1 + w2)
-        # --- paso estable: potencia sobre M^-1 (K + K_c) con contactos bien rígidos
-        Kc = self.rigidez_contacto(self.u0, tangencial=True)
-        Kmax = self.K + 3.0 * Kc
-        Minv = 1.0 / self.M
-        x = np.random.default_rng(0).standard_normal(m.n_dof)
-        for _ in range(60):
-            x = Minv * (Kmax @ x)
-            lam = np.linalg.norm(x)
-            x /= lam
-        w_max = math.sqrt(lam * 1.05)
-        dt = cfl * 2 / w_max * (math.sqrt(1 + (beta * w_max / 2) ** 2) - beta * w_max / 2)
+        dt = self.paso_estable(p_diseno, cfl, beta)
         n_pasos = int(math.ceil(t_fin / dt))
-        # --- estado
+        # estado
         u0 = self.u0
         u = np.zeros(m.n_dof)
-        v = np.zeros(m.n_dof)
-        s, sd = 0.0, v0
-        # rozamiento: fuerza tangencial acumulada por nodo de flanco y fondo
+        v = np.zeros(m.n_dof) if v_cuna0 is None else np.asarray(v_cuna0, float).copy()
+        s, sd = (0.0, v0) if con_imp else (-1.0, 0.0)
+        self._n_fondo = np.tile([0.0, -1.0, 0.0], (self.fo_nod.size, 1))
+        # chocan (llevan Hunt-Crossley) los contactos sin presión en reposo
+        choca_fl = self.flanco_presion(u0)[0] <= 0.0
+        choca_fo = self.fondo_presion(u0)[0] <= 0.0
+        f0c, *_ = self._fuerzas_dinamicas(u0, choca_fl, choca_fo)
+        r0 = self.K @ u0 - f0c                                 # residuo del equilibrio (~0)
+        U_ref = None
         qf = np.zeros((self.fl_nod.size, 3))
         qb = np.zeros((self.fo_nod.size, 3))
-        nb = np.tile([0.0, -1.0, 0.0], (self.fo_nod.size, 1))
         fl_dofs = (3 * self.fl_nod[:, None] + np.arange(3))
         fo_dofs = (3 * self.fo_nod[:, None] + np.arange(3))
-        f_eq = self.K @ u0 - self.fuerza_contacto_normal(u0)       # residuo del equilibrio (~0)
         u_prev_fl = np.zeros((self.fl_nod.size, 3))
         u_prev_fo = np.zeros((self.fo_nod.size, 3))
-
         frames_t = np.array([]) if frames_t is None else np.asarray(frames_t)
         nodos_vis = np.array([], int) if nodos_vis is None else np.asarray(nodos_vis)
         fr_u, fr_pf, fr_pb, fr_t = [], [], [], []
         k_frame = 0
         rec_every = max(1, int(round(0.5e-6 / dt)))
-        hist = {k: [] for k in ("t", "F_H", "s", "uy_golpe", "uy_palp", "vy_palp", "ay_palp",
-                                "F_flancos", "F_fondo", "frac_fl_abierto", "frac_fo_abierto", "E_cin_cuna")}
-        E_disip_roz = 0.0
-        a_palp = 0.0
+        claves = ("t", "F_H", "s", "uy_golpe", "uy_palp", "vy_palp", "ay_palp", "F_flancos", "F_fondo",
+                  "F_lateral", "frac_fl_abierto", "frac_fo_abierto", "E_cin_cuna", "E_balance")
+        hist = {k: [] for k in claves}
+        D_ray = D_hc = D_roz = 0.0
+        p_max = 0.0
+        E_in = 0.5 * m_imp * v0 ** 2 + 0.5 * float(np.sum(self.M * v * v))
         for n in range(n_pasos + 1):
             t = n * dt
             ut = u0 + u
-            # elástico + Rayleigh(beta) en una sola multiplicación
-            f = -(self.K @ (u + beta * v)) - alfa * self.M * v - f_eq
-            # fondo (normal)
-            p_f, d_f = self.fondo_presion(ut)
-            p_f0, _ = self.fondo_presion(u0)
-            f[3 * self.fo_nod + 1] += (p_f - p_f0) * self.fo_A
-            # flancos (normal)
-            p_l, d_l = self.flanco_presion(ut)
-            p_l0, _ = self.flanco_presion(u0)
-            f[fl_dofs] -= ((p_l - p_l0) * self.fl_A)[:, None] * self.fl_n
+            fK = self.K @ ut
+            fc, p_l, d_l, p_f, d_f, q_a, U_c, grupos = self._fuerzas_dinamicas(ut, choca_fl, choca_fo)
+            Kv = self.K @ v
+            f = -fK - beta * Kv - alfa * self.M * v + fc + r0
             # rozamiento con adherencia elástica (Coulomb + Mindlin), flancos
             ul = u[fl_dofs]
             du = ul - u_prev_fl
             du_t = du - np.einsum("ij,ij->i", du, self.fl_n)[:, None] * self.fl_n
             kn_l = 1.5 * self.C * np.sqrt(np.maximum(d_l, 0)) * self.fl_A
-            qtr = qf + (c.kappa_t * kn_l)[:, None] * du_t
+            kt_l = c.kappa_t * kn_l
+            qtr = qf + kt_l[:, None] * du_t
             qtr -= np.einsum("ij,ij->i", qtr, self.fl_n)[:, None] * self.fl_n
             lim = c.mu * p_l * self.fl_A
             nq = np.linalg.norm(qtr, axis=1)
             esc = np.where(nq > lim, lim / np.maximum(nq, 1e-30), 1.0)
             qnew = qtr * esc[:, None]
-            E_disip_roz += float(np.sum((qtr - qnew) * du_t)) if np.any(esc < 1) else 0.0
+            slip = qtr - qnew                                   # parte que excede el cono
+            ok = kt_l > 0
+            D_roz += float(np.sum(np.einsum("ij,ij->i", slip[ok], qnew[ok]) / kt_l[ok]))
             qf = qnew
             u_prev_fl = ul
             f[fl_dofs] -= qf
-            # rozamiento en el fondo (crestas del ripple)
+            # rozamiento en el fondo
             ub = u[fo_dofs]
             dub = ub - u_prev_fo
             dub[:, 1] = 0.0
@@ -654,62 +794,102 @@ class ModeloCuna:
             lim = mu_b * p_f * self.fo_A
             nq = np.linalg.norm(qtr, axis=1)
             esc = np.where(nq > lim, lim / np.maximum(nq, 1e-30), 1.0)
-            qb = qtr * esc[:, None]
+            qnew = qtr * esc[:, None]
+            okb = kt_b > 0
+            D_roz += float(np.sum(np.einsum("ij,ij->i", (qtr - qnew)[okb], qnew[okb]) / kt_b[okb]))
+            qb = qnew
             u_prev_fo = ub
             f[fo_dofs] -= qb
             # golpe (Hertz de la punta)
-            uy_p = float(np.dot(pw, ut[pdof]))
-            uy_p0 = float(np.dot(pw, u0[pdof]))
-            pen = s + (uy_p - uy_p0)
-            F_H = K_H * pen ** 1.5 if pen > 0 else 0.0
+            uy_p = float(np.dot(pw, u[pdof]))
+            pen = s + uy_p
+            F_H = K_H * pen ** 1.5 if (con_imp and pen > 0) else 0.0
             f[pdof] -= F_H * pw
             a = f / self.M
-            # registro
+            p_max = max(p_max, float(p_l.max()))
+            # energía (con v en el paso entero, promedio de los medios pasos)
+            if n % rec_every == 0 or n == n_pasos:
+                U_el = 0.5 * float(ut @ fK) - float(r0 @ u)
+                U_t = float(np.sum(np.einsum("ij,ij->i", qf[ok], qf[ok]) / (2 * kt_l[ok])))
+                if U_ref is None:
+                    U_ref = U_el + U_c
+                T = 0.5 * float(np.sum(self.M * v * v))
+                E_tot = (T + (U_el + U_c - U_ref) + U_t + 0.5 * m_imp * sd ** 2
+                         + (0.4 * K_H * pen ** 2.5 if F_H > 0 else 0.0) + D_ray + D_hc + D_roz)
             if n % rec_every == 0:
                 hist["t"].append(t)
                 hist["F_H"].append(F_H)
                 hist["s"].append(s)
-                hist["uy_golpe"].append(uy_p - uy_p0)
+                hist["uy_golpe"].append(uy_p)
                 hist["uy_palp"].append(u[3 * n_palp + 1])
                 hist["vy_palp"].append(v[3 * n_palp + 1])
                 hist["ay_palp"].append(a[3 * n_palp + 1])
                 hist["F_flancos"].append(float(np.sum(p_l * self.fl_A)))
                 hist["F_fondo"].append(float(np.sum(p_f * self.fo_A)))
+                hist["F_lateral"].append(float(np.sum(q_a)))
                 hist["frac_fl_abierto"].append(float(np.mean(p_l <= 0)))
                 hist["frac_fo_abierto"].append(float(np.mean(p_f <= 0)))
-                hist["E_cin_cuna"].append(float(0.5 * np.sum(self.M * v * v)))
+                hist["E_cin_cuna"].append(T)
+                hist["E_balance"].append(E_tot)
             while k_frame < frames_t.size and t >= frames_t[k_frame]:
                 fr_u.append(u.reshape(-1, 3)[nodos_vis].copy())
                 fr_pf.append(p_l.copy())
                 fr_pb.append(p_f.copy())
                 fr_t.append(t)
                 k_frame += 1
+            # disipación de Rayleigh del paso (con v del medio paso)
+            D_ray += dt * float(alfa * np.sum(self.M * v * v) + beta * (v @ Kv))
             # avance (leapfrog; v en medio paso)
-            v += dt * a if n > 0 else 0.5 * dt * a
+            h = dt if n > 0 else 0.5 * dt
+            v_old = v.copy()
+            v += h * a
+            # Hunt-Crossley semi-implícito en la normal de cada nodo en contacto:
+            #   v_n+ = v_n* - (h c / m) (v_n- + v_n+)/2,   c = chi F_e
+            # con la condición de que el contacto no tire: F_e + F_d >= 0
+            for nod, nrm, Fe, chi_n in grupos:
+                act = (Fe > 0) & (chi_n > 0)
+                if not np.any(act):
+                    continue
+                nd, nr, F, cc = nod[act], nrm[act], Fe[act], chi_n[act] * Fe[act]
+                mi = self.M[3 * nd]
+                d3 = 3 * nd[:, None] + np.arange(3)
+                vn_old = np.einsum("ij,ij->i", v_old[d3], nr)
+                vn_tr = np.einsum("ij,ij->i", v[d3], nr)
+                g = h * cc / (2 * mi)
+                vn_new = (vn_tr - g * vn_old) / (1 + g)
+                Fd = cc * 0.5 * (vn_old + vn_new)
+                tira = F + Fd < 0
+                Fd = np.where(tira, -F, Fd)
+                vn_new = np.where(tira, vn_tr + h * F / mi, vn_new)
+                v[d3] += (vn_new - vn_tr)[:, None] * nr
+                D_hc += dt * float(np.sum(Fd * 0.5 * (vn_old + vn_new)))
             u += dt * v
-            sd += -dt * F_H / m_imp if n > 0 else -0.5 * dt * F_H / m_imp
+            sd += -h * F_H / m_imp
             s += dt * sd
             if verbose and n % 5000 == 0:
                 print(f"  paso {n}/{n_pasos}  t={t*1e6:.0f} us  F_H={F_H:.1f} N")
         H = {k: np.asarray(vv) for k, vv in hist.items()}
-        # energía mecánica que queda en la cuña (cinética + elástica, desde el equilibrio)
-        E_cuna = 0.5 * float(np.sum(self.M * v * v)) + 0.5 * float(u @ (self.K @ u))
-        # velocidad de rebote: la del impactador una vez separado
-        v_reb = -sd if sd < 0 else 0.0
+        E_cuna = 0.5 * float(np.sum(self.M * v * v)) + (U_el + U_c - U_ref) + U_t
+        v_reb = -sd if (con_imp and sd < 0) else 0.0
         sep = H["F_H"] > 0
         t_c = float(H["t"][sep][-1] - H["t"][sep][0]) if sep.any() else 0.0
+        err_E = float(np.max(np.abs(H["E_balance"] - E_in))) / max(E_in, 1e-30)
         return {
             "dt": dt, "n_pasos": n_pasos, "K_H": K_H, "v0": v0,
             "hist": H, "v_rebote": v_reb,
-            "E_entrada_mJ": 0.5 * m_imp * v0 ** 2 * 1e3,
+            "E_entrada_mJ": E_in * 1e3,
             "E_rebote_mJ": 0.5 * m_imp * v_reb ** 2 * 1e3,
             "E_transmitida_mJ": 0.5 * m_imp * (v0 ** 2 - v_reb ** 2) * 1e3,
-            "E_rozamiento_mJ": E_disip_roz * 1e3,
+            "E_rozamiento_mJ": D_roz * 1e3, "E_choques_mJ": D_hc * 1e3, "E_rayleigh_mJ": D_ray * 1e3,
             "E_cuna_final_mJ": E_cuna * 1e3,
+            "error_balance_energia": err_E,
+            "p_flanco_max_MPa": p_max / 1e6, "p_diseno_MPa": p_diseno / 1e6,
             "F_H_max": float(H["F_H"].max()), "t_contacto_us": t_c * 1e6,
-            "golpe_rebota_aun": bool(sd > 0),
+            "F_lateral_max": float(H["F_lateral"].max()),
+            "golpe_rebota_aun": bool(con_imp and sd > 0),
             "frames": {"t": np.asarray(fr_t), "u": np.asarray(fr_u),
                        "p_flanco": np.asarray(fr_pf), "p_fondo": np.asarray(fr_pb)},
             "nodo_palp": n_palp, "parche_nodos": pn, "parche_pesos": pw,
             "rayleigh": {"alfa": alfa, "beta": beta},
+            "v_final": v.copy(), "u_final": u.copy(),
         }

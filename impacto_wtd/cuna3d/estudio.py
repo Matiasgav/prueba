@@ -70,6 +70,18 @@ ESTADOS = [
     (Estado("medio_flojo", lambda x: np.where(_zona(x, 60e-3, 140e-3), 0.0, NIVELES["ajustada"]),
             nivel="holgura parcial", nota="0 MPa entre 60 y 140 mm, 0,7 MPa en los extremos; golpe en el centro"),
      0.10, True),
+    (Estado("extremo_libre_juego", lambda x: np.where(x < 60e-3, 0.0, NIVELES["ajustada"]),
+            juego_fondo=lambda x: np.where(x < 60e-3, 20e-6, 0.0),
+            juego_flanco=lambda x: np.where(x < 60e-3, 10e-6, 0.0),
+            nivel="holgura parcial", nota="primeros 60 mm libres: 20 µm de juego contra el ripple y 10 µm contra "
+            "los hombros; 0,7 MPa en el resto. Golpe en la zona libre: choca contra el ripple y rebota contra los hombros"),
+     0.03, True),
+    (Estado("medio_libre_juego", lambda x: np.where(_zona(x, 60e-3, 140e-3), 0.0, NIVELES["ajustada"]),
+            juego_fondo=lambda x: np.where(_zona(x, 60e-3, 140e-3), 10e-6, 0.0),
+            juego_flanco=lambda x: np.where(_zona(x, 60e-3, 140e-3), 5e-6, 0.0),
+            nivel="holgura parcial", nota="tramo central de 80 mm libre, con 10 µm de juego contra el ripple y "
+            "5 µm contra los hombros; 0,7 MPa en los extremos. Golpe en el centro"),
+     0.10, True),
     (Estado("ajustada_sin_ripple", lambda x: NIVELES["ajustada"] + 0 * x, nivel="ajustada",
             nota="0,7 MPa, fondo rígido (sin ripple): contacto de Hertz contra la barra"), 0.10, False),
 ]
@@ -170,13 +182,18 @@ def correr(arg):
         "golpe": {
             "F_H_max_N": r["F_H_max"], "t_contacto_us": r["t_contacto_us"],
             "E_entrada_mJ": r["E_entrada_mJ"], "E_rebote_mJ": r["E_rebote_mJ"],
-            "E_transmitida_mJ": r["E_transmitida_mJ"], "E_rozamiento_mJ": r["E_rozamiento_mJ"],
+            "E_transmitida_mJ": r["E_transmitida_mJ"],
             "a_palp_max_g": float(a_g.max()),
             "a_palp_max_g_50k": float(np.abs(a_f[50e3]).max() / 9.81),
             "a_palp_max_g_20k": float(np.abs(a_f[20e3]).max() / 9.81), "uy_palp_max_um": float(np.abs(H["uy_palp"]).max() * 1e6),
             "frac_flanco_abierto_max": float(H["frac_fl_abierto"].max()),
             "frac_fondo_abierto_max": float(H["frac_fo_abierto"].max()),
             "dt_ns": r["dt"] * 1e9, "pasos": r["n_pasos"],
+            "E_rozamiento_mJ": r["E_rozamiento_mJ"], "E_choques_mJ": r["E_choques_mJ"],
+            "E_rayleigh_mJ": r["E_rayleigh_mJ"], "E_cuna_final_mJ": r["E_cuna_final_mJ"],
+            "error_balance_energia": r["error_balance_energia"],
+            "p_flanco_max_golpe_MPa": r["p_flanco_max_MPa"], "p_diseno_MPa": r["p_diseno_MPa"],
+            "F_lateral_max_N": r["F_lateral_max"],
         },
         "tiempo_s": time.time() - t0,
     }
@@ -189,7 +206,8 @@ def correr(arg):
         json.dump(web, fh, separators=(",", ":"))
     print(f"{est.nombre:24s} {res['tiempo_s']:6.0f} s  f1={res['modos_Hz'][0] if res['modos_Hz'] else 0:7.0f} Hz  "
           f"E_tr={res['golpe']['E_transmitida_mJ']:.3f} mJ  a={res['golpe']['a_palp_max_g']:.0f} g  "
-          f"a50k={res['golpe']['a_palp_max_g_50k']:.0f} g  a20k={res['golpe']['a_palp_max_g_20k']:.0f} g", flush=True)
+          f"a50k={res['golpe']['a_palp_max_g_50k']:.0f} g  balance={res['golpe']['error_balance_energia']*100:.2f} %  "
+          f"choques={res['golpe']['E_choques_mJ']:.3f} mJ  pmax={res['golpe']['p_flanco_max_golpe_MPa']:.1f} MPa", flush=True)
     return res
 
 

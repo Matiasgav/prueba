@@ -111,7 +111,7 @@ ol.steps{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px;
 <div class="wrap">
 
 <header class="prose">
-  <span class="eyebrow">Ensayo de ajuste de cuñas · etapa 1: el modelo de la cuña</span>
+  <span class="eyebrow">Ensayo de ajuste de cuñas · etapa 1: el modelo de la cuña · rev. 2</span>
   <h1>Modelo 3D de la cuña en la cola de milano</h1>
   <p class="lede">Sólido elástico 3D de G11 ortótropo, apoyado en el núcleo por los flancos con contacto de Hertz y rozamiento, empujado desde abajo por la barra a través del ripple spring, y golpeado por el impactador. Lo que se ve abajo es la solución de esas ecuaciones, no una animación dibujada.</p>
 </header>
@@ -163,12 +163,12 @@ ol.steps{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px;
 <section>
   <div class="prose">
     <span class="eyebrow">Resultados</span>
-    <h2>Los nueve estados, lado a lado</h2>
+    <h2>Los once estados, lado a lado</h2>
     <p>Golpe de 5 mJ con el Takaha CA0422 (3 g, punta esférica de 3 mm de radio), centrado en el ancho. Hacé clic en una fila para verla en el visor.</p>
   </div>
   <div class="tbl"><table id="tabla">
-    <thead><tr><th>Estado</th><th>Presión de asiento</th><th>Flancos: p máx</th><th>1.er modo</th><th>F Hertz máx</th><th>Contacto</th><th>Energía a la cuña</th><th>a pico a 10 mm (≤ 50 kHz)</th><th>Flanco abierto (máx)</th></tr></thead>
-    <tbody><tr><td colspan="9" class="loading">Cargando…</td></tr></tbody>
+    <thead><tr><th>Estado</th><th>Presión de asiento</th><th>Flancos: p máx</th><th>1.er modo</th><th>F Hertz máx</th><th>Contacto</th><th>Energía a la cuña</th><th>a pico a 10 mm (≤ 50 kHz)</th><th>Flanco abierto (máx)</th><th>Disipado en choques</th><th>Cierre del balance</th></tr></thead>
+    <tbody><tr><td colspan="11" class="loading">Cargando…</td></tr></tbody>
   </table></div>
   <div class="maps">
     <div class="plot"><h3>Presión estática en el flanco derecho</h3><canvas id="mF" style="height:150px"></canvas>
@@ -222,15 +222,26 @@ ol.steps{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px;
   </div>
   <div class="eq">\[ \mathbf q^{\text{tr}} = \mathbf q^{n} + \kappa_t\,k_n A\;\Delta\mathbf u_t, \qquad
   \mathbf q^{n+1} = \begin{cases} \mathbf q^{\text{tr}} & |\mathbf q^{\text{tr}}| \le \mu\,p\,A \ \ \text{(adherido)}\\[2pt] \mu\,p\,A\ \dfrac{\mathbf q^{\text{tr}}}{|\mathbf q^{\text{tr}}|} & \text{si no (desliza y disipa)}\end{cases} \]</div>
-  <div class="prose"><p>\(\kappa_t = 0{,}8 \approx 2(1-\nu)/(2-\nu)\) <span class="flag e">E</span>, \(\mu = 0{,}3\) <span class="flag e">E</span>.</p></div>
+  <div class="prose"><p>\(\kappa_t = 0{,}8 \approx 2(1-\nu)/(2-\nu)\) <span class="flag e">E</span>, \(\mu = 0{,}3\) <span class="flag e">E</span>.</p>
+    <h3>Choques: Hunt-Crossley</h3>
+    <p>Un tramo de cuña con juego recorre el juego y choca contra los hombros, la barra o la pared lateral. El choque no es elástico: a la fuerza de Hertz se le suma una disipación proporcional a ella y a la velocidad de cierre \(\dot\delta\):</p></div>
+  <div class="eq">\[ F_n = F_e\left(1 + \chi\,\dot\delta\right)_+, \qquad F_e = A\,C\,\delta^{3/2}, \qquad \chi = \frac{8\,(1-e)}{5\,e\,v_{ref}} \quad\text{(Flores et al., 2011)} \]</div>
+  <div class="prose">
+    <p>\(e = 0{,}7\) a \(v_{ref} = 0{,}05\) m/s <span class="flag e">E</span>. La restitución resultante depende de la velocidad, como en un choque real: cuanto más rápido se cierra el contacto, más disipa. Contra un flanco inclinado la velocidad normal es \(v\sin\alpha\), así que la restitución sube a unos 0,9. La disipación se aplica a los contactos que en reposo están abiertos o sin presión, que son los que chocan. Un asiento precargado disipa por microdeslizamiento, a través del rozamiento. Con \((\cdot)_+\) el contacto nunca tira de la cuña.</p>
+  </div>
 
   <div class="prose"><h2>5 · Contacto en el fondo: el ripple spring y la presión de asiento</h2>
     <p>La barra empuja la cuña hacia arriba a través del ripple. Lo modelo como un resorte distribuido, unilateral y precomprimido. La precompresión \(d_0(x)\) es la variable de ajuste del ensayo:</p></div>
   <div class="eq">\[ p_{fo}(x) = k_r\,\langle d_0(x) - u_y\rangle, \qquad \mathbf f_{fo,i} = +A_i\,p_{fo,i}\,\hat{\mathbf y} \;-\; \mathbf q_{fo,i} \]</div>
   <div class="prose">
-    <p>\(k_r = 7\times10^8\) N/m³: 1 MPa con 1,4 mm de compresión, un ripple de 1,8 mm al 80 % <span class="flag e">E</span>. El código corrige \(d_0(x)\) iterando hasta que la presión de asiento en el equilibrio sea exactamente el perfil pedido \(p_0(x)\). Con \(p_0 = 0\) y juego \(g\), \(d_0 = -g\): el ripple ni toca la cuña. Sin ripple (caso <i>ajustada sin ripple</i>), el fondo usa la misma ley de Hertz que los flancos, contra una barra rígida.</p>
+    <p>\(k_r = 7\times10^8\) N/m³: 1 MPa con 1,4 mm de compresión, un ripple de 1,8 mm al 80 % <span class="flag e">E</span>. Si la compresión pasa de \(d_s = 1{,}8\) mm el ripple queda aplastado y la cuña apoya en la barra: \(p_{fo} = k_r d + C\langle d - d_s\rangle^{3/2}\), con disipación de choque. El código corrige \(d_0(x)\) iterando hasta que la presión de asiento en el equilibrio sea exactamente el perfil pedido \(p_0(x)\). Con \(p_0 = 0\) y juego \(g\), \(d_0 = -g\): el ripple ni toca la cuña. Sin ripple (caso <i>ajustada sin ripple</i>), el fondo usa la misma ley de Hertz que los flancos, contra una barra rígida.</p>
     <p>Las holguras parciales salen de elegir \(p_0(x)\) a tramos. Con un extremo sin presión, la cuña queda en voladizo sobre la zona apoyada. Con el centro sin presión, queda como una viga empotrada en los dos extremos sobre el hueco.</p>
   </div>
+
+  <div class="prose"><h2>5b · Pared lateral de la cola de milano</h2>
+    <p>Si la cuña se corre de costado, la esquina inferior (\(y = 0\), \(z = \pm B/2\)) toca la pared vertical del núcleo, a un juego \(g_\ell\). Es un contacto de línea, casi lineal en la interpenetración:</p></div>
+  <div class="eq">\[ q = k_\ell\,\langle u_z\,\mathrm{sgn}(z) - g_\ell\rangle\,(1 + \chi\dot\delta)_+ \ \ \text{[N/m]}, \qquad k_\ell \approx \tfrac{\pi}{4}E^* = 1{,}5\times10^{10}\ \text{N/m}^2 \]</div>
+  <div class="prose"><p>\(g_\ell = 0{,}3\) mm <span class="flag e">E</span>, a confirmar con el plano de la ranura. Los flancos inclinados también frenan el desplazamiento lateral, porque su normal tiene componente en \(z\). En la práctica la pared sólo entra si hay juego en los flancos.</p></div>
 
   <div class="prose"><h2>6 · El golpe: Hertz esfera-plano</h2>
     <p>Punta esférica de acero de radio \(R\) sobre G11. \(s\) es el avance de la punta hacia la cuña. El desplazamiento de la cuña en el golpe es el promedio ponderado \(\bar u_y\) sobre las caras de los cuatro elementos que rodean el punto golpeado:</p></div>
@@ -239,11 +250,14 @@ ol.steps{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px;
 
   <div class="prose"><h2>7 · Cómo se resuelve</h2></div>
   <ol class="steps">
-    <li><b>Equilibrio con precarga.</b> Newton-Raphson sobre \(\mathbf K\mathbf u = \mathbf f_{fl}(\mathbf u) + \mathbf f_{fo}(\mathbf u)\), con la rigidez tangente \(\mathbf K + \sum A_i k_{n,i}\,\mathbf n_i\mathbf n_i^{\mathsf T}\) y búsqueda lineal. En el asiento no hay rozamiento: la cuña se acomoda radialmente al apretarla.</li>
+    <li><b>Equilibrio con precarga.</b> Newton-Raphson sobre \(\mathbf K\mathbf u = \mathbf f_{fl}(\mathbf u) + \mathbf f_{fo}(\mathbf u)\), con la rigidez tangente \(\mathbf K + \sum A_i k_{n,i}\,\mathbf n_i\mathbf n_i^{\mathsf T}\) y búsqueda lineal. Donde se pide presión de asiento, el fondo entra como carga conocida \(p_0(x)A_i\). Donde no (zonas libres o con juego), sigue su ley de contacto. Al final se fija la interferencia del fondo que da exactamente \(p_0\) en la posición de equilibrio. En el asiento no hay rozamiento: la cuña se acomoda radialmente al apretarla. El cálculo controla que el residuo de fuerzas sea menor que \(10^{-6}\) o se detiene.</li>
     <li><b>Modos.</b> Problema de autovalores linealizado alrededor de ese equilibrio:
       \( \left(\mathbf K + \mathbf K_c(\mathbf u_0)\right)\boldsymbol\phi = \omega^2\mathbf M\boldsymbol\phi \).
       \(\mathbf K_c\) incluye \(k_n\) de Hertz en cada nodo de flanco cargado y la rigidez de adherencia \(\kappa_t k_n\), así que cada estado de ajuste tiene sus propios modos.</li>
-    <li><b>Golpe.</b> Diferencia central explícita (leapfrog) con la ecuación completa: contactos que se abren y se cierran, rozamiento con historia, Hertz en la punta. El paso sale de \( \Delta t = 0{,}7\cdot\frac{2}{\omega_{max}}\left(\sqrt{1+\xi^2}-\xi\right) \), con \(\omega_{max}\) obtenido por iteración de potencia y \(\xi = \beta\omega_{max}/2\). Da unos 0,18 µs: unos 16 000 pasos en 3 ms.</li>
+    <li><b>Golpe y choques.</b> Diferencia central explícita (leapfrog) con la ecuación completa: contactos que se abren y se cierran, choques con Hunt-Crossley, rozamiento con historia, Hertz en la punta. El paso sale de \( \Delta t = 0{,}7\cdot\frac{2}{\omega_{max}}\left(\sqrt{1+\xi^2}-\xi\right) \), con \(\omega_{max}\) de \(\mathbf M^{-1}(\mathbf K + \mathbf K_c)\) obtenido por iteración de potencia. \(\mathbf K_c\) toma <b>todos</b> los contactos cerrados y cargados a 50 MPa, no la rigidez de la precarga, que en una cuña floja vale casi cero y dejaba el paso demasiado largo para un choque fuerte. El integrador registra la presión máxima alcanzada para confirmar que no pasa ese valor. La disipación de choque se integra semi-implícita en la normal de cada nodo, \(v_n^{+} = \big(v_n^{*} - g\,v_n^{-}\big)/(1+g)\) con \(g = h\chi F_e/2m_i\), que es estable para cualquier valor. El paso queda en unos 0,24 µs.</li>
+    <li><b>Balance de energía en cada corrida.</b> En todo instante tiene que valer
+      \( E_{entrada} = T + U_{el} + U_{c} + U_t + T_{imp} + U_H + D_{Rayleigh} + D_{choques} + D_{rozamiento} \),
+      con \(U_c\) la energía guardada en los contactos y \(U_t\) la de la adherencia tangencial. La tabla de resultados muestra cuánto se aparta como máximo, en % de la energía del golpe.</li>
     <li><b>Energía transmitida.</b> Lo que pierde el impactador: \(E_{tr} = \tfrac12 m_i (v_0^2 - v_r^2)\). En la cuña queda como vibración y movimiento; una parte se disipa por rozamiento y por amortiguamiento.</li>
   </ol>
 
@@ -273,12 +287,32 @@ ol.steps{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px;
       <tr><td>Ídem, modo axial</td><td class="n">8876,9 Hz</td><td class="n">8885,2 Hz (c/2L)</td><td>−0,1 %</td></tr>
       <tr><td>Ídem, torsión de Saint-Venant</td><td class="n">3107,6 Hz</td><td class="n">3098,0 Hz (Roark)</td><td>+0,3 %</td></tr>
       <tr><td>Modos de cuerpo rígido de la barra libre</td><td class="n">6</td><td class="n">6</td><td>exacto</td></tr>
-      <tr><td>Equilibrio a 1 MPa: fondo contra componente radial de los flancos</td><td class="n">6999,7 N</td><td class="n">7000 N</td><td>cierra a 10⁻⁶</td></tr>
+      <tr><td>Equilibrio a 0,7 MPa con ripple: fondo contra componente radial de los flancos</td><td class="n">4900,0 N</td><td class="n">4900 N</td><td>residuo 2·10⁻¹⁴</td></tr>
+      <tr><td>Ídem sin ripple (fondo rígido con Hertz)</td><td class="n">4900,0 N</td><td class="n">4900 N</td><td>residuo 2·10⁻¹⁴ (antes fallaba, ver la nota de revisión)</td></tr>
+      <tr><td>Tramo central libre con juego: presión en los extremos y balance</td><td class="n">0,700 MPa</td><td class="n">0,7 MPa</td><td>exacto</td></tr>
       <tr><td>Golpe sobre la cuña ajustada contra Hertz con masa infinita</td><td class="n">289 N · 66 µs</td><td class="n">328 N · 61 µs</td><td>menos fuerza y más tiempo: la cuña cede</td></tr>
       <tr><td>Cuña libre sin pérdidas: energía que queda en la cuña</td><td class="n" colspan="2">igual a la que pierde el impactador</td><td>dentro del 1 %</td></tr>
+      <tr><td>Tramo libre que choca contra los dos hombros (cuña 100 veces más rígida, cuerpo rígido)</td><td class="n">40,6 µs · e = 1,00</td><td class="n">40,2 µs (Hertz, 1 GDL)</td><td>+1 %</td></tr>
+      <tr><td>Ídem con la cuña de G11 real</td><td class="n">57 µs · e = 0,975</td><td class="n">—</td><td>la sección cede; 2,5 % queda en vibración</td></tr>
+      <tr><td>Tramo libre que choca contra la barra (sin ripple, cuerpo rígido)</td><td class="n">15,5 µs · e = 1,00</td><td class="n">15,0 µs (Hertz, 1 GDL)</td><td>+3 %</td></tr>
+      <tr><td>Esquina contra la pared lateral (cuerpo rígido que además gira)</td><td class="n">18,0 µs</td><td class="n">17,2 µs (π√(m_ef/k))</td><td>+5 %</td></tr>
+      <tr><td>Ídem con G11 real</td><td class="n">50 µs</td><td class="n">—</td><td>la esquina cede; depende de la malla</td></tr>
+      <tr><td>Restitución de Hunt-Crossley, choque de frente a v_ref</td><td class="n" id="v-rest">0,685</td><td class="n">0,70 pedido</td><td>−2 %</td></tr>
+      <tr><td>Golpe sobre un extremo libre con juego: cierre del balance de energía en 1 ms</td><td class="n" colspan="2">ver la última columna de la tabla de resultados</td><td>&lt; 2 %, sin pasar los 50 MPa de diseño</td></tr>
     </tbody></table></div>
 
-  <div class="prose"><h2>10 · Qué revisar y qué falta</h2></div>
+  <div class="prose"><h2>10 · Revisión 2: choques de tramos libres</h2>
+    <p>La pregunta fue si un tramo de cuña libre que se desplaza y choca contra la barra o contra la cola de milano está en el modelo. La revisión encontró lo siguiente y lo corrigió:</p></div>
+  <ol class="steps">
+    <li><b>Los choques ya existían, pero eran perfectamente elásticos.</b> Ahora disipan con Hunt-Crossley (sección 4).</li>
+    <li><b>El paso de tiempo se calculaba con la rigidez de la precarga</b>, que en una cuña floja es casi cero. Ahora se calcula con todos los contactos cargados a 50 MPa, y cada corrida informa la presión máxima alcanzada.</li>
+    <li><b>Faltaban la pared lateral de la cola de milano y el tope del ripple aplastado.</b> Están agregados (secciones 5 y 5b).</li>
+    <li><b>Ningún estado tenía juego en los flancos.</b> Se agregaron dos: un extremo libre y un tramo central libre, los dos con juego contra el ripple y contra los hombros.</li>
+    <li><b>Error en el equilibrio sin ripple.</b> El lazo que ajustaba la presión del fondo terminaba sin volver a resolver. Con el fondo rígido la cuña quedaba fuera de equilibrio: 4900 N de la barra contra 948 N de los flancos. Los 12 960 g que daba la versión anterior para "ajustada sin ripple" eran ese transitorio espurio. Ahora el equilibrio es directo y se controla el residuo.</li>
+    <li><b>Balance de energía en cada corrida.</b> Cierra al 0,5 % en todos los estados.</li>
+  </ol>
+
+  <div class="prose"><h2>11 · Qué revisar y qué falta</h2></div>
   <ol class="steps">
     <li><b>k_n del flanco</b> fija las frecuencias de la cuña ajustada (unos 18 kHz). Es estimada. La primera medición de banco debería ser una curva carga-desplazamiento del flanco contra chapa laminada, o el modo de una cuña ajustada medido con un martillo de impacto.</li>
     <li><b>La sección del flanco es plana y continua.</b> En la máquina real el borde de las chapas es escalonado (chapas de 0,35 a 0,5 mm con rebabas) y hay canales de ventilación cada tanto. Ambas cosas bajan la rigidez real y la hacen menos uniforme.</li>
@@ -286,6 +320,7 @@ ol.steps{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px;
     <li><b>El ripple es un resorte continuo.</b> En la realidad apoya en crestas cada pocos milímetros.</li>
     <li><b>El golpe reparte la fuerza</b> sobre unos 10 × 8 mm de cara para promediar el desplazamiento. La parte local de la deformación ya la incluye Hertz; el doble conteo es de unos 2 µm sobre 40 µm de aproximación.</li>
     <li>Sin gravedad. Una cuña totalmente floja queda libre hasta que el golpe la apoya contra el ripple.</li>
+    <li><b>Choques:</b> la restitución (0,7 a 0,05 m/s) y el juego lateral (0,3 mm) son estimados. Lo primero se mide dejando caer una probeta de G11 sobre chapa laminada; lo segundo sale del plano de la ranura.</li>
   </ol>
 </section>
 </div>
@@ -295,9 +330,10 @@ ol.steps{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px;
 const $ = id => document.getElementById(id);
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const fmt = (x, d = 0) => Number(x).toFixed(d).replace('.', ',');
-const ESTADOS = ['muy_ajustada','ajustada','moderada','floja','muy_floja_juego','extremo_flojo','extremo_poca_presion','medio_flojo','ajustada_sin_ripple'];
+const ESTADOS = ['muy_ajustada','ajustada','moderada','floja','muy_floja_juego','extremo_flojo','extremo_poca_presion','extremo_libre_juego','medio_flojo','medio_libre_juego','ajustada_sin_ripple'];
 const NOMBRE = { muy_ajustada:'Muy ajustada', ajustada:'Ajustada', moderada:'Moderada', floja:'Floja', muy_floja_juego:'Muy floja, con juego',
-  extremo_flojo:'Un extremo sin presión', extremo_poca_presion:'Un extremo con poca presión', medio_flojo:'Centro sin presión', ajustada_sin_ripple:'Ajustada, sin ripple' };
+  extremo_flojo:'Un extremo sin presión', extremo_poca_presion:'Un extremo con poca presión', medio_flojo:'Centro sin presión', ajustada_sin_ripple:'Ajustada, sin ripple',
+  extremo_libre_juego:'Extremo libre con juego', medio_libre_juego:'Centro libre con juego' };
 
 let malla = null, cache = {}, cur = null, vista = 'golpe', colorMode = 'uy', modo = 0;
 let playing = true, tAnim = 0, lastTs = 0;
@@ -477,6 +513,10 @@ function fillSide(){
     ['a pico a 10 mm, ≤ 50 kHz', fmt(g.a_palp_max_g_50k, 0) + ' g'],
     ['a pico a 10 mm, ≤ 20 kHz', fmt(g.a_palp_max_g_20k, 0) + ' g'],
     ['Flanco abierto (máx)', fmt(g.frac_flanco_abierto_max * 100, 0) + ' %'],
+    ['Presión máx en flancos (golpe)', fmt(g.p_flanco_max_golpe_MPa, 1) + ' MPa'],
+    ['Fuerza máx contra la pared lateral', fmt(g.F_lateral_max_N, 1) + ' N'],
+    ['Disipado: rozamiento · choques · material', fmt(g.E_rozamiento_mJ, 3) + ' · ' + fmt(g.E_choques_mJ, 3) + ' · ' + fmt(g.E_rayleigh_mJ, 3) + ' mJ'],
+    ['Cierre del balance de energía', fmt(g.error_balance_energia * 100, 2) + ' %'],
   ]);
   const mb = $('modos'); mb.innerHTML = cur.modos.map((m, i) => `<button class="chip" data-m="${i}" aria-pressed="${i === modo}">${fmt(m.f_Hz/1000, 2)} kHz</button>`).join('');
   mb.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { modo = +b.dataset.m; mb.querySelectorAll('button').forEach(o => o.setAttribute('aria-pressed', o === b)); drawFrame(); }));
@@ -564,7 +604,8 @@ async function fillTable(){
     <td class="n">${j.modos_Hz.length ? fmt(j.modos_Hz[0], 0) + ' Hz' : '—'}${j.modos_rigidos ? ' · ' + j.modos_rigidos + ' rígidos' : ''}</td>
     <td class="n">${fmt(j.golpe.F_H_max_N, 0)} N</td><td class="n">${fmt(j.golpe.t_contacto_us, 0)} µs</td>
     <td class="n">${fmt(j.golpe.E_transmitida_mJ, 2)} mJ</td><td class="n">${fmt(j.golpe.a_palp_max_g_50k, 0)} g</td>
-    <td class="n">${fmt(j.golpe.frac_flanco_abierto_max * 100, 0)} %</td></tr>`).join('');
+    <td class="n">${fmt(j.golpe.frac_flanco_abierto_max * 100, 0)} %</td>
+    <td class="n">${fmt(j.golpe.E_choques_mJ, 3)} mJ</td><td class="n">${fmt(j.golpe.error_balance_energia * 100, 2)} %</td></tr>`).join('');
   $('tabla').querySelectorAll('tbody tr').forEach(tr => tr.addEventListener('click', () => { select(tr.dataset.n); $('gl').scrollIntoView({ behavior: 'smooth', block: 'center' }); }));
   if (cur) document.querySelectorAll('#tabla tbody tr').forEach(tr => tr.classList.toggle('sel', tr.dataset.n === cur.nombre));
 }

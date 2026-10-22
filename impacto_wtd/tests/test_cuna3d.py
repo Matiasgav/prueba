@@ -9,7 +9,7 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from cuna3d.fem import Contactos, Estado, Geometria, ModeloCuna, isotropo  # noqa: E402
+from cuna3d.fem import Contactos, Estado, Geometria, ModeloCuna, Ortotropo, isotropo  # noqa: E402
 
 E, RHO, L = 24e9, 1900.0, 0.2
 
@@ -70,14 +70,34 @@ def cuna_ajustada():
     return mod
 
 
-def test_equilibrio_fuerzas(cuna_ajustada):
+@pytest.mark.parametrize("ripple", [True, False])
+def test_equilibrio_fuerzas(ripple):
     """La fuerza del fondo la equilibra la componente radial de los flancos,
-    y la normal vale la radial / sen(alfa) (sin rozamiento en el asiento)."""
-    r = cuna_ajustada.resumen_equilibrio()
-    assert r["F_fondo_N"] == pytest.approx(0.7e6 * 0.035 * 0.2, rel=3e-3)
+    y la normal vale la radial / sen(alfa) (sin rozamiento en el asiento).
+    Con ripple y sin ripple (fondo rígido con Hertz, que es el caso difícil)."""
+    mod = ModeloCuna(cont=Contactos(ripple=ripple))
+    mod.cargar_estado(Estado("u", lambda x: 0.7e6 + 0 * x))
+    mod.equilibrio()
+    r = mod.resumen_equilibrio()
+    assert r["F_fondo_N"] == pytest.approx(0.7e6 * 0.035 * 0.2, rel=1e-6)
     assert r["F_flancos_radial_N"] == pytest.approx(r["F_fondo_N"], rel=1e-6)
-    a = cuna_ajustada.g.alfa_flanco
+    a = mod.g.alfa_flanco
     assert r["F_flancos_normal_N"] == pytest.approx(r["F_fondo_N"] / math.sin(a), rel=1e-6)
+    assert r["residuo_equilibrio"] < 1e-9
+
+
+def test_equilibrio_tramo_libre():
+    """Tramo central libre con juego: equilibrio exacto y la presión pedida en los extremos."""
+    zona = lambda x: (x > 60e-3) & (x < 140e-3)
+    mod = ModeloCuna()
+    mod.cargar_estado(Estado("m", lambda x: np.where(zona(x), 0.0, 0.7e6),
+                             lambda x: np.where(zona(x), 10e-6, 0.0), lambda x: np.where(zona(x), 5e-6, 0.0)))
+    mod.equilibrio()
+    r = mod.resumen_equilibrio()
+    p_f, _ = mod.fondo_presion(mod.u0)
+    assert np.allclose(p_f[~zona(mod.fo_x)], 0.7e6, rtol=1e-6)
+    assert r["F_flancos_radial_N"] == pytest.approx(r["F_fondo_N"], rel=1e-6)
+    assert r["residuo_equilibrio"] < 1e-9
 
 
 def test_hertz_golpe(cuna_ajustada):
@@ -93,13 +113,98 @@ def test_hertz_golpe(cuna_ajustada):
     assert tc_rig < r["t_contacto_us"] * 1e-6 < 1.3 * tc_rig
 
 
+# ---------------------------------------------------------------------------
+# Choques de un tramo libre contra los hombros, la barra y la pared lateral.
+# Con el material 100 veces más rígido la cuña es un cuerpo rígido, y cada
+# choque tiene solución cerrada (Hertz de un grado de libertad).
+# ---------------------------------------------------------------------------
+
+V = 0.05
+RIGIDO = Ortotropo(*(np.array([24e9, 12e9, 24e9, 4.5e9, 5.5e9, 4.5e9]) * 100), 0.30, 0.12, 0.30, RHO)
+
+
+def _choque(comp, signo, cont, juego_flanco, juego_fondo, clave, t_fin, mat=RIGIDO):
+    mod = ModeloCuna(mat=mat, cont=cont)
+    mod.cargar_estado(Estado("libre", lambda x: 0 * x, lambda x: juego_fondo + 0 * x,
+                             lambda x: juego_flanco + 0 * x))
+    mod.equilibrio()
+    v = np.zeros(mod.m.n_dof)
+    v[comp::3] = signo * V
+    r = mod.golpe(0.1, energia=0, v_cuna0=v, t_fin=t_fin, zeta=(1e-9, 2e3, 30e3), cfl=0.5)
+    H = r["hist"]
+    on = H[clave] > 0
+    i0 = int(np.argmax(on))
+    i1 = i0 + int(np.argmax(~on[i0:]))
+    t_c = float(H["t"][i1] - H["t"][i0])
+    v_cm = float(np.sum(mod.M[comp::3] * r["v_final"][comp::3]) / np.sum(mod.M[comp::3]))
+    return mod, r, t_c, -v_cm / (signo * V)
+
+
+def _t_hertz(K, m):
+    return 2.94 * (5 * m * V ** 2 / (4 * K)) ** 0.4 / V
+
+
+def test_choque_contra_hombros():
+    """Tramo libre que sube 1 µm y choca contra los dos flancos inclinados."""
+    mod, r, t_c, e = _choque(1, +1, Contactos(mu=0.0, e_rest=1.0), 1e-6, 1e-3, "F_flancos", 160e-6)
+    g, C = mod.g, mod.C
+    K = 2 * g.L * math.hypot(g.e, 0.5 * (g.B - g.b)) * C * math.sin(g.alfa_flanco) ** 2.5
+    assert t_c == pytest.approx(_t_hertz(K, RHO * g.masa), rel=0.03)
+    assert e == pytest.approx(1.0, abs=0.02)
+    assert r["error_balance_energia"] < 0.01
+
+
+def test_choque_contra_barra():
+    """Sin ripple: tramo libre que baja 1 µm y choca contra la barra."""
+    mod, r, t_c, e = _choque(1, -1, Contactos(mu=0.0, e_rest=1.0, ripple=False), 1e-3, 1e-6, "F_fondo", 80e-6)
+    K = mod.g.B * mod.g.L * mod.C
+    assert t_c == pytest.approx(_t_hertz(K, RHO * mod.g.masa), rel=0.05)
+    assert e == pytest.approx(1.0, abs=0.02)
+    assert r["error_balance_energia"] < 0.01
+
+
+def test_choque_contra_pared_lateral():
+    """Desplazamiento lateral: la esquina inferior choca contra la pared vertical.
+    Cuerpo rígido que además gira, porque el contacto está debajo del centro de masa."""
+    mod, r, t_c, _ = _choque(2, +1, Contactos(mu=0.0, e_rest=1.0, juego_lateral=1e-6), 1e-3, 1e-3,
+                             "F_lateral", 100e-6)
+    m = RHO * mod.g.masa
+    Mn, X = mod.M[0::3], mod.m.X
+    yc = np.sum(Mn * X[:, 1]) / m
+    Ix = np.sum(Mn * ((X[:, 1] - yc) ** 2 + X[:, 2] ** 2))
+    m_ef = 1 / (1 / m + yc ** 2 / Ix)
+    t_an = math.pi * math.sqrt(m_ef / (mod.cont.k_linea * mod.g.L))
+    assert t_c == pytest.approx(t_an, rel=0.08)
+    assert r["error_balance_energia"] < 0.01
+
+
+def test_restitucion_hunt_crossley():
+    """Choque de frente contra la barra a v_ref: la restitución tiene que ser e_rest."""
+    _, r, _, e = _choque(1, -1, Contactos(mu=0.0, e_rest=0.7, v_ref_rest=V, ripple=False),
+                         1e-3, 1e-6, "F_fondo", 80e-6)
+    assert e == pytest.approx(0.7, abs=0.03)
+    assert r["E_choques_mJ"] > 0
+    assert r["error_balance_energia"] < 0.01
+
+
 def test_conservacion_energia():
-    """Sin amortiguamiento ni rozamiento, con la cuña libre: lo que pierde el
-    impactador lo tiene la cuña (cinética + elástica)."""
-    mod = ModeloCuna(cont=Contactos(mu=0.0, mu_ripple=0.0))
+    """Cuña libre sin pérdidas golpeada: lo que pierde el impactador lo tiene la cuña."""
+    mod = ModeloCuna(cont=Contactos(mu=0.0, mu_ripple=0.0, e_rest=1.0))
     mod.cargar_estado(Estado("libre", lambda x: 0 * x, lambda x: 1e-3 + 0 * x, lambda x: 1e-3 + 0 * x))
     mod.equilibrio()
     r = mod.golpe(0.1, t_fin=0.12e-3, zeta=(1e-9, 2e3, 30e3))
-    H = r["hist"]
-    assert H["F_H"][-1] == 0.0                     # ya se separaron
+    assert r["hist"]["F_H"][-1] == 0.0                     # ya se separaron
     assert r["E_cuna_final_mJ"] == pytest.approx(r["E_transmitida_mJ"], rel=0.01)
+
+
+def test_balance_energia_tramo_libre_con_choques():
+    """Golpe real sobre un extremo libre con juego: rebota contra el ripple y los
+    hombros. La energía tiene que cerrar con rozamiento, choques y Rayleigh."""
+    mod = ModeloCuna()
+    mod.cargar_estado(Estado("x", lambda x: np.where(x < 60e-3, 0.0, 0.7e6),
+                             lambda x: np.where(x < 60e-3, 20e-6, 0.0),
+                             lambda x: np.where(x < 60e-3, 10e-6, 0.0)))
+    mod.equilibrio()
+    r = mod.golpe(0.03, t_fin=1.0e-3)
+    assert r["error_balance_energia"] < 0.02
+    assert r["p_flanco_max_MPa"] < r["p_diseno_MPa"]
