@@ -246,7 +246,8 @@ ol.steps{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px;
   <div class="prose"><h2>6 · El golpe: Hertz esfera-plano</h2>
     <p>Punta esférica de acero de radio \(R\) sobre G11. \(s\) es el avance de la punta hacia la cuña. El desplazamiento de la cuña en el golpe es el promedio ponderado \(\bar u_y\) sobre las caras de los cuatro elementos que rodean el punto golpeado:</p></div>
   <div class="eq">\[ F_H = K_H\,\langle s + \bar u_y\rangle^{3/2}, \quad K_H = \tfrac43 E^*\sqrt R, \quad \frac1{E^*} = \frac{1-\nu_a^2}{E_a} + \frac{1-\nu_c^2}{E_c}, \qquad m_i\,\ddot s = -F_H \]</div>
-  <div class="prose"><p>\(m_i = 3\) g, \(R = 3\) mm, \(v_0 = \sqrt{2E/m_i} = 1{,}83\) m/s para 5 mJ. Para el G11 transversal, \(E_c = 20\) GPa y \(\nu_c = 0{,}2\) (los mismos que usa el repositorio), lo que da \(E^* = 19{,}1\) GPa.</p></div>
+  <div class="prose"><p>\(m_i = 3\) g, \(R = 3\) mm, \(v_0 = \sqrt{2E/m_i} = 1{,}83\) m/s para 5 mJ. Para el G11 transversal, \(E_c = 20\) GPa y \(\nu_c = 0{,}2\) (los mismos que usa el repositorio), lo que da \(E^* = 19{,}1\) GPa.</p>
+    <p><b>Pérdida local bajo la punta, calibrada con la dureza Leeb.</b> Una cuña ajustada mide HL 800 (dato de campo). Con la punta elástica el modelo daba HL 991, así que la pérdida está casi toda en la huella y no en la estructura. Se le agrega a \(F_H\) un factor \((1 + \chi_p\,\dot\delta)_+\), con \(\chi_p = 0{,}236\) s/m, que reproduce HL 800 con el durómetro D (5,45 g, bola de 3 mm, 11 mJ). Con eso el modelo predice HL 770 para la cuña moderada, 580 para la floja y unos 495 para la muy floja. Esa escala se puede verificar en campo. En el golpe del Takaha, la huella se lleva 1,45 mJ en todos los estados; la estructura se lleva de 0,22 a 1,8 mJ según el ajuste.</p></div>
 
   <div class="prose"><h2>7 · Cómo se resuelve</h2></div>
   <ol class="steps">

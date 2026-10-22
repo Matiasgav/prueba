@@ -1,0 +1,383 @@
+<meta charset="utf-8">
+<title>Palpador del ensayo de cuñas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
+<style>
+/* Layout: memoria de cálculo en una columna (~70ch) con tres estaciones anchas: la matriz de despegue, el gráfico de lectura por estado y el visor de señales. */
+:root{
+  --paper:#f2f4f6; --sheet:#ffffff; --ink:#17212c; --ink-2:#4b5966; --rule:#d4dbe2;
+  --wedge:#b4690e; --probe:#1f5fa8; --ok:#2e7d55; --alarm:#c0392b; --warn:#b7791f;
+  --band:#1f5fa81a; --okbg:#2e7d551f; --alarmbg:#c0392b1f; --warnbg:#b7791f22;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#10151b; --sheet:#171f28; --ink:#e2e8ee; --ink-2:#9ba9b7; --rule:#2b3642;
+  --wedge:#e0a050; --probe:#6aa8ef; --ok:#5cc28d; --alarm:#ff6b5b; --warn:#e6b450;
+  --band:#6aa8ef22; --okbg:#5cc28d22; --alarmbg:#ff6b5b22; --warnbg:#e6b45022; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#10151b; --sheet:#171f28; --ink:#e2e8ee; --ink-2:#9ba9b7; --rule:#2b3642;
+  --wedge:#e0a050; --probe:#6aa8ef; --ok:#5cc28d; --alarm:#ff6b5b; --warn:#e6b450;
+  --band:#6aa8ef22; --okbg:#5cc28d22; --alarmbg:#ff6b5b22; --warnbg:#e6b45022; color-scheme:dark}
+
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding-block:36px 80px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  display:flex;flex-direction:column;gap:52px}
+.prose{max-width:70ch;display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(2rem,4.6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.6rem;font-weight:700}
+h3{font-size:1.1rem;font-weight:600}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.lede{font-size:1.15rem;color:var(--ink-2)}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+section{display:flex;flex-direction:column;gap:18px}
+.eq{background:var(--sheet);border:1px solid var(--rule);border-radius:8px;padding:6px 18px;overflow-x:auto}
+.flag{font-family:var(--f-mono);font-size:.72rem;padding:1px 6px;border-radius:4px;border:1px solid currentColor}
+.flag.e{color:var(--wedge)}.flag.v{color:var(--ok)}
+.verdict{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.vcard{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.vcard b{font-family:var(--f-display);font-size:1.6rem;font-weight:700;line-height:1.1}
+.vcard span{font-size:.92rem;color:var(--ink-2)}
+table{border-collapse:collapse;font-variant-numeric:tabular-nums;width:100%}
+.tbl{overflow-x:auto;background:var(--sheet);border:1px solid var(--rule);border-radius:10px}
+th,td{padding:7px 10px;border-bottom:1px solid var(--rule);text-align:left;font-size:.9rem;vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-family:var(--f-mono);font-weight:600;font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2)}
+td.n{text-align:right;font-family:var(--f-mono);font-size:.82rem;white-space:nowrap}
+tr.rec td{background:var(--band)}
+.cell{font-family:var(--f-mono);font-size:.76rem;text-align:center;white-space:nowrap;border-radius:4px}
+.cell.ok{background:var(--okbg);color:var(--ok)}
+.cell.bad{background:var(--alarmbg);color:var(--alarm)}
+.cell.warn{background:var(--warnbg);color:var(--warn)}
+.fig{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:16px;overflow-x:auto}
+.fig svg{display:block;width:100%;min-width:620px;height:auto}
+.fig svg text{font-family:var(--f-mono);font-size:12px;fill:var(--ink-2)}
+.fig svg .lbl{fill:var(--ink);font-size:13px}
+.plot{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.plot canvas{width:100%;display:block}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+select{font:inherit;font-size:.9rem;padding:5px 8px;border-radius:6px;border:1px solid var(--rule);background:var(--paper);color:var(--ink)}
+label.inline{font-size:.88rem;color:var(--ink-2);display:flex;gap:6px;align-items:center}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.82rem;color:var(--ink-2)}
+.legend i{display:inline-block;width:16px;height:3px;vertical-align:middle;margin-right:5px;border-radius:2px}
+.state{font-family:var(--f-mono);font-size:.82rem;padding:3px 10px;border-radius:999px;border:1px solid currentColor;width:fit-content}
+.state.ok{color:var(--ok)}.state.bad{color:var(--alarm)}
+ol.steps{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px;max-width:74ch}
+select:focus-visible{outline:2px solid var(--probe);outline-offset:2px}
+.loading{font-family:var(--f-mono);font-size:.85rem;color:var(--ink-2)}
+</style>
+
+<div class="wrap">
+
+<header class="prose">
+  <span class="eyebrow">Ensayo de ajuste de cuñas · etapa 2: el sensor</span>
+  <h1>El palpador con acelerómetro MEMS</h1>
+  <p class="lede">Punta, flexura metálica y carro con un ADXL1004, apoyado con 1 N a 10 mm del golpe. Siete diseños excitados con el movimiento real de la cuña que da el modelo 3D, en once estados de ajuste: si despega, qué lee y qué tan bien separa los estados.</p>
+</header>
+
+<section>
+  <div class="verdict">
+    <div class="vcard"><span>Diseño recomendado</span><b>Flexura liviana</b><span>punta de 10 mg, flexura metálica de 1,25 kHz, carro de 0,40 g con el ADXL1004</span></div>
+    <div class="vcard"><span>Despegue</span><b>10 de 11 sin despegue</b><span>sólo despega con un extremo libre y con juego (9 % del tiempo), que es una cuña muy floja igual</span></div>
+    <div class="vcard"><span>Lectura de muy ajustada a muy floja</span><b>× 5000</b><span>energía de la señal en 150 Hz–5 kHz: 10,6 → 12,1 → 39 → 602 → 58 000 g²·ms</span></div>
+    <div class="vcard"><span>Precarga de 0,7 a 1,3 N</span><b>cambia menos del 5 %</b><span>la lectura no depende de qué tan exacta sea la precarga</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="prose">
+    <span class="eyebrow">1 · El acelerómetro</span>
+    <h2>ADXL1004, y por qué no el ADXL1005</h2>
+    <p>Los dos son de Analog Devices, de un solo eje, con salida analógica y ancho de banda de 23–24 kHz. Miden en el plano del encapsulado: la placa tiene que ir de canto respecto del eje del palpador.</p>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Rango</th><th>−3 dB</th><th>Resonancia</th><th>Ruido</th><th>Sensibilidad</th><th>Masa</th><th>Choque</th></tr></thead>
+    <tbody>
+      <tr class="rec"><td><b>ADXL1004</b></td><td class="n">±500 g</td><td class="n">24 kHz</td><td class="n">45 kHz (41 mín)</td><td class="n">125 µg/√Hz</td><td class="n">4 mV/g</td><td class="n">&lt; 0,2 g</td><td class="n">10 000 g</td></tr>
+      <tr><td>ADXL1005</td><td class="n">±100 g</td><td class="n">23 kHz</td><td class="n">42 kHz (37,7 mín)</td><td class="n">75 µg/√Hz</td><td class="n">—</td><td class="n">&lt; 0,2 g</td><td class="n">—</td></tr>
+    </tbody></table></div>
+  <div class="prose">
+    <p>El ruido no limita: el del ADXL1004 integrado en 50 kHz es de 0,02 g rms, y la señal de la cuña ajustada ya da picos de 19 g. Lo que limita es el rango. En las cuñas muy flojas y con holgura parcial el carro llega a 100–200 g antes del límite de despegue, y el ADXL1005 se satura. El ADXL1004 no se satura en ningún estado con las flexuras de 1,25 kHz. Los dos tienen una resonancia casi sin amortiguar a 42–45 kHz. El 3 dB a 24 kHz no es un filtro: es la subida de esa resonancia. Si algo excita esa frecuencia, el sensor la amplifica. La flexura está para que no llegue.</p>
+    <p class="mono" style="font-size:.8rem">Fuentes: <a href="https://www.analog.com/media/en/technical-documentation/data-sheets/adxl1004.pdf">hoja de datos ADXL1004</a> · <a href="https://www.analog.com/media/en/technical-documentation/data-sheets/adxl1005.pdf">hoja de datos ADXL1005</a> · <a href="https://www.mouser.in/new/Analog-Devices/adi-adxl100x-accelerometers/">familia ADXL100x</a></p>
+  </div>
+</section>
+
+<section>
+  <div class="prose">
+    <span class="eyebrow">2 · El modelo</span>
+    <h2>Una cadena de masas excitada por la cuña real</h2>
+    <p>El modelo 3D de la cuña da el desplazamiento \(w(t)\) del punto de la cara superior a 10 mm del golpe, en cada estado. Ese \(w(t)\) mueve la base de la cadena. La punta toca la cuña con un contacto de Hertz unilateral, que sólo empuja, y una precarga constante \(F_0\) la apoya desde atrás:</p>
+  </div>
+  <div class="fig" role="img" aria-label="Esquema del palpador: cuña, punta, flexura, carro con acelerómetro, resorte de precarga">
+    <svg viewBox="0 0 900 200">
+      <rect x="30" y="40" width="80" height="120" style="fill:var(--warnbg);stroke:var(--wedge)" stroke-width="2"/>
+      <text class="lbl" x="70" y="30" text-anchor="middle" style="fill:var(--wedge)">cuña · w(t)</text>
+      <text x="70" y="182" text-anchor="middle">del modelo 3D</text>
+      <circle cx="122" cy="100" r="10" style="fill:var(--sheet);stroke:var(--ink)" stroke-width="2"/>
+      <text class="lbl" x="122" y="140" text-anchor="middle">punta m₁</text>
+      <text x="122" y="156" text-anchor="middle">10 mg · R 1 mm</text>
+      <text x="122" y="70" text-anchor="middle">Hertz</text>
+      <path d="M132 100 h20 M152 75 v50 M152 75 h14 l8 -10 l12 20 l12 -20 l12 20 l12 -20 l8 10 h14 M152 125 h36 M188 113 v24 M180 113 h40 v24 h-40 M204 125 h40 M244 75 v50 M244 100 h20" style="stroke:var(--ink)" stroke-width="2" fill="none"/>
+      <text class="lbl" x="198" y="56" text-anchor="middle">flexura k</text>
+      <text x="198" y="158" text-anchor="middle">ζ = 0,02 (metal)</text>
+      <rect x="264" y="62" width="110" height="76" rx="4" style="fill:var(--band);stroke:var(--probe)" stroke-width="2"/>
+      <rect x="300" y="44" width="38" height="18" rx="2" style="fill:var(--probe)"/>
+      <text x="319" y="36" text-anchor="middle" style="fill:var(--probe)">ADXL1004</text>
+      <text class="lbl" x="319" y="98" text-anchor="middle" style="fill:var(--probe)">carro m₂</text>
+      <text x="319" y="118" text-anchor="middle">0,40 g</text>
+      <path d="M374 100 h30 l8 -12 l12 24 l12 -24 l12 24 l12 -24 l12 24 l8 -12 h30" style="stroke:var(--ink-2)" stroke-width="1.6" fill="none"/>
+      <text x="460" y="76" text-anchor="middle">precarga F₀ = 1 N</text>
+      <text x="460" y="134" text-anchor="middle">resorte muy blando</text>
+      <rect x="540" y="40" width="22" height="120" style="fill:var(--paper);stroke:var(--ink-2)" stroke-width="1.5"/>
+      <text class="lbl" x="551" y="30" text-anchor="middle">robot</text>
+      <text x="600" y="70" class="lbl">Doble etapa:</text>
+      <text x="600" y="92">punta → k₁ → m (0,15 g) → k₂ → carro</text>
+      <text x="600" y="122" class="lbl">Rígido:</text>
+      <text x="600" y="144">punta, placa y sensor en una masa</text>
+    </svg>
+  </div>
+  <div class="eq">\[ \delta = \delta_0 + w - x_1,\qquad F_c = K_c\,\langle\delta\rangle^{3/2}\left(1 + \chi\,\dot\delta\right)_+,\qquad K_c = \tfrac43 E^*\sqrt{R} \]
+  \[ m_1\ddot x_1 = F_c - F_1,\qquad m_i\ddot x_i = F_{i-1} - F_i,\qquad m_n\ddot x_n = F_{n-1} - F_0,\qquad F_i = k_i\left(s_{i0} + x_i - x_{i+1}\right) + c_i\left(\dot x_i - \dot x_{i+1}\right) \]</div>
+  <div class="prose">
+    <p>\(x\) se mide desde el equilibrio con precarga: \(\delta_0 = (F_0/K_c)^{2/3}\) y \(s_{i0} = F_0/k_i\). La punta es una bolita de acero de \(R = 1\) mm sobre G11. Su contacto tiene \(k_c = 1{,}5\,K_c^{2/3}F_0^{1/3} = 1{,}36\) N/µm, y \(\chi = 0{,}236\) s/m es la pérdida local del G11 calibrada con tu dato de Leeb. <b>Hay despegue cuando \(F_c = 0\).</b> Se integra con Runge-Kutta de 4.º orden a 0,1 µs.</p>
+    <p>El acople va en un solo sentido: el palpador empuja la cuña con 1 N, frente a los ~300 N del golpe y los 114 g de la cuña, así que no cambia su movimiento.</p>
+    <p>El acelerómetro se modela como un segundo orden a 45 kHz con \(Q = 30\) <span class="flag e">E</span>, con ruido blanco de 125 µg/√Hz, saturación a ±500 g y muestreo a 100 kHz.</p>
+  </div>
+  <div class="eq">\[ H(s) = \frac{\omega_r^2}{s^2 + \frac{\omega_r}{Q}s + \omega_r^2},\qquad a_{\text{despegue}} = \frac{F_0}{\sum m_i}\ \ \text{(vale para cualquier resorte)} \]</div>
+</section>
+
+<section>
+  <div class="prose">
+    <span class="eyebrow">3 · Los diseños</span>
+    <h2>Siete palpadores</h2>
+  </div>
+  <div class="tbl"><table id="tdis"><thead><tr><th>Diseño</th><th>Masas</th><th>Flexura</th><th>ζ</th><th>Modos con la punta apoyada</th><th>Despega a</th><th>Qué es</th></tr></thead><tbody><tr><td colspan="7" class="loading">Cargando…</td></tr></tbody></table></div>
+</section>
+
+<section>
+  <div class="prose">
+    <span class="eyebrow">4 · ¿Despega?</span>
+    <h2>Fuerza de contacto mínima durante el golpe</h2>
+    <p>Verde: no despega (fuerza mínima en N). Rojo: despega (% del tiempo con la punta en el aire). Ámbar: no despega, pero la fuerza baja de 0,2 N. Una S marca que el ADXL1004 se saturó.</p>
+  </div>
+  <div class="tbl"><table id="tlift"><tbody><tr><td class="loading">Cargando…</td></tr></tbody></table></div>
+</section>
+
+<section>
+  <div class="prose">
+    <span class="eyebrow">5 · Qué tan bien sensa</span>
+    <h2>La característica a medir: energía de la señal entre 150 Hz y 5 kHz</h2>
+    <p>Probé cuatro rasgos de la señal del acelerómetro en una ventana de 3 ms. La energía en la banda de 150 Hz a 5 kHz, \(E_b = \int a_b^2\,dt\), es el que mejor separa: crece en orden con la soltura en toda la serie uniforme y cubre cuatro décadas. El pico también crece en orden, pero apenas: de 19 a 44 g entre ajustada y floja. La banda corta abajo para que no entre la deriva, y arriba porque por encima de 5 kHz la flexura ya filtró casi todo.</p>
+  </div>
+  <div class="plot">
+    <div class="controls">
+      <label class="inline" for="selD">Diseño <select id="selD"></select></label>
+      <label class="inline" for="selA">Acelerómetro <select id="selA"><option>ADXL1004</option><option>ADXL1005</option></select></label>
+    </div>
+    <canvas id="cBar" height="420" aria-label="Energía de la señal por estado, escala logarítmica"></canvas>
+    <div class="legend"><span><i style="background:var(--probe);height:10px"></i>sin despegue</span><span><i style="background:var(--alarm);height:10px"></i>despega: lectura no confiable, pero la cuña está muy floja</span><span><i style="background:var(--ink-2)"></i>restitución del impactador (eje derecho)</span></div>
+  </div>
+  <div class="tbl"><table id="tsep"><tbody><tr><td class="loading">Cargando…</td></tr></tbody></table></div>
+  <div class="prose">
+    <p><b>Qué separa y qué no.</b> Con la flexura liviana, los cuatro saltos de la serie uniforme son:</p>
+  </div>
+  <ol class="steps">
+    <li><b>Muy ajustada contra ajustada:</b> × 1,13. Está 20 veces por encima del ruido, pero es menos que lo que puede mover la posición del palpador o la rigidez real de los flancos. En la práctica son <b>una sola clase: "ajustada"</b>.</li>
+    <li><b>Ajustada contra moderada:</b> × 3,2. Separa bien.</li>
+    <li><b>Moderada contra floja:</b> × 15.</li>
+    <li><b>Floja contra muy floja:</b> × 97, y en los casos con juego, despegue.</li>
+  </ol>
+  <div class="prose">
+    <p>Las holguras parciales caen donde corresponde. Un extremo con poca presión lee 665, como una floja (602). Un extremo o el centro sin presión leen 3500–5600, entre floja y muy floja. El centro libre con juego lee 8800. El extremo libre con juego despega, y eso indica una cuña muy floja.</p>
+    <p><b>Energía transmitida.</b> El palpador no mide la energía que entra a la cuña de forma proporcional. Esa energía crece × 8 entre ajustada y muy floja (de 0,22 a 1,8 mJ); la lectura del palpador crece × 5000. Mide el movimiento lento de la cuña, que es mucho más sensible al ajuste. La energía transmitida la da el impactador con su velocidad de rebote: la restitución baja de 0,81 a 0,60. Son dos mediciones independientes que dicen lo mismo, y conviene usar las dos.</p>
+  </div>
+</section>
+
+<section>
+  <div class="prose">
+    <span class="eyebrow">6 · Señales</span>
+    <h2>Qué ve el acelerómetro</h2>
+  </div>
+  <div class="plot">
+    <div class="controls">
+      <label class="inline" for="selD2">Diseño <select id="selD2"></select></label>
+      <label class="inline" for="selE2">Estado <select id="selE2"></select></label>
+      <span id="st2" class="state ok">—</span>
+    </div>
+    <canvas id="cSig" height="380" aria-label="Aceleración del carro y fuerza de contacto en el tiempo"></canvas>
+    <div class="legend"><span><i style="background:var(--probe)"></i>aceleración del carro [g]</span><span><i style="background:var(--ink-2)"></i>± límite de despegue F₀/m (se dibuja si la señal se acerca)</span><span><i style="background:var(--ok)"></i>fuerza de contacto [N]</span><span><i style="background:var(--alarm)"></i>punta en el aire</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="prose">
+    <span class="eyebrow">7 · Robustez</span>
+    <h2>Precarga entre 0,7 y 1,3 N</h2>
+  </div>
+  <div class="tbl"><table id="trob"><tbody><tr><td class="loading">Cargando…</td></tr></tbody></table></div>
+  <div class="prose">
+    <p>Con flexura metálica la lectura casi no depende de la precarga: en esta banda el carro sigue a la cuña por cinemática, no por la fuerza. La precarga decide sólo el margen al despegue. Con 0,7 N, y también con 1 N y el carro de 0,68 g, despegan la muy floja con juego y el extremo libre con juego. Con 1,3 N, sólo el extremo libre.</p>
+  </div>
+</section>
+
+<section>
+  <div class="prose">
+    <span class="eyebrow">8 · Recomendación</span>
+    <h2>Cómo construirlo</h2>
+  </div>
+  <ol class="steps">
+    <li><b>Flexura metálica, f₀ = 1,25 kHz.</b> Un elastómero no sirve: con ζ = 0,15 la lectura deja de crecer en orden (la muy ajustada lee 69 y la ajustada 15). Un corte más alto (3 kHz) despega desde "floja". Uno más bajo (600 Hz) achica la señal unas 80 veces, la lectura deja de crecer en orden (la muy ajustada lee 0,31 y la ajustada 0,15) y la cuña muy floja igual lo despega.</li>
+    <li><b>Carro lo más liviano posible.</b> 0,40 g con el ADXL1004 sobre una placa mínima: despega a 249 g. La lectura no depende de la masa, así que esto es sólo margen.</li>
+    <li><b>Punta de 10 mg</b>, bolita de acero de 1,3 mm. Con la punta apoyada, su modo queda en 58 kHz, por encima de la resonancia del sensor (45 kHz).</li>
+    <li><b>Precarga de 1 a 1,3 N</b> con un resorte blando aparte (unos 0,3 N/mm), para que no cambie con la posición del robot.</li>
+    <li><b>Placa del sensor de canto:</b> el eje del ADXL1004 está en el plano del encapsulado.</li>
+    <li><b>Leer y registrar:</b>
+      <ul>
+        <li>\(E_b\) en 150 Hz–5 kHz durante 3 ms, normalizada por la energía del golpe que mide el impactador;</li>
+        <li>la salida de sobrerrango del ADXL1004 y el recorte en F₀/m, como detector de despegue: si despega, la cuña está muy floja y no hace falta más;</li>
+        <li>la restitución del impactador, como segunda medición.</li>
+      </ul></li>
+  </ol>
+  <div class="prose"><h3>Qué falta verificar</h3></div>
+  <ol class="steps">
+    <li><b>Posición del palpador.</b> Todo es a 10 mm del golpe y centrado en el ancho. Falta barrer 8–15 mm y el corrimiento lateral.</li>
+    <li><b>La rigidez de los flancos sigue siendo estimada</b> y fija la vibración de la cuña ajustada. El salto ajustada/moderada (× 3,2) depende de ella.</li>
+    <li><b>La resonancia del ADXL1004</b> se modeló con Q = 30, sin el dato de la hoja. Conviene un ensayo de barrido del sensor montado.</li>
+    <li><b>Lo que no está en el modelo:</b> la vibración del cuerpo del robot por la reacción del solenoide y la interferencia eléctrica del pulso en la señal analógica.</li>
+  </ol>
+</section>
+</div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmt = (x, d = 0) => Number(x).toFixed(d).replace('.', ',');
+const ORDEN = ['muy_ajustada','ajustada','moderada','floja','muy_floja_juego','extremo_poca_presion','extremo_flojo','medio_flojo','medio_libre_juego','extremo_libre_juego','ajustada_sin_ripple'];
+const NOM = { muy_ajustada:'Muy ajustada', ajustada:'Ajustada', moderada:'Moderada', floja:'Floja', muy_floja_juego:'Muy floja, juego',
+  extremo_poca_presion:'Extremo, poca presión', extremo_flojo:'Extremo sin presión', medio_flojo:'Centro sin presión', medio_libre_juego:'Centro libre, juego',
+  extremo_libre_juego:'Extremo libre, juego', ajustada_sin_ripple:'Ajustada sin ripple' };
+const DIS = ['rigido','flexura_3k','elastomero','flexura_600','doble_etapa','flexura','flexura_liviana'];
+const DNOM = { rigido:'Rígido', flexura_3k:'Flexura 3 kHz', elastomero:'Elastómero', flexura_600:'Flexura 600 Hz', doble_etapa:'Doble etapa',
+  flexura:'Flexura 1,25 kHz', flexura_liviana:'Flexura liviana (recomendado)', 'flexura_F0.7':'Flexura, 0,7 N', 'flexura_F1.3':'Flexura, 1,3 N' };
+let D = null;
+
+function prep(cv){
+  const dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = +cv.getAttribute('height');
+  cv.width = w * dpr; cv.height = h * dpr; cv.style.height = h + 'px';
+  const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.font = '11px "JetBrains Mono", ui-monospace, monospace';
+  return { c, w, h };
+}
+
+function tablas(){
+  const P = D.palpadores;
+  $('tdis').querySelector('tbody').innerHTML = DIS.map(k => { const p = P[k];
+    return `<tr class="${k === 'flexura_liviana' ? 'rec' : ''}"><td><b>${DNOM[k]}</b></td><td class="n">${p.masas_g.map(m => fmt(m, m < 0.1 ? 3 : 2)).join(' · ')} g</td>
+      <td class="n">${p.k_N_mm.length ? p.k_N_mm.map(v => fmt(v, 1)).join(' · ') + ' N/mm' : '—'}</td><td class="n">${p.zeta.length ? p.zeta.map(z => fmt(z, 2)).join(' · ') : '—'}</td>
+      <td class="n">${p.modos_Hz.map(f => f >= 1000 ? fmt(f/1000, 2) + ' k' : fmt(f, 0)).join(' · ')} Hz</td><td class="n">${fmt(p.a_despegue_g, 0)} g</td><td>${p.nota}</td></tr>`; }).join('');
+  // matriz de despegue
+  let h = '<thead><tr><th>Diseño</th>' + ORDEN.map(e => `<th style="text-align:center">${NOM[e]}</th>`).join('') + '</tr></thead><tbody>';
+  for (const k of DIS){
+    h += `<tr class="${k === 'flexura_liviana' ? 'rec' : ''}"><td><b>${DNOM[k]}</b></td>`;
+    for (const e of ORDEN){ const r = P[k].estados[e]; if (!r){ h += '<td></td>'; continue; }
+      const sat = r.ADXL1004.satura ? ' S' : '';
+      if (r.despega) h += `<td><div class="cell bad">${fmt(r.frac_despegado*100, 1)} %${sat}</div></td>`;
+      else h += `<td><div class="cell ${r.Fc_min_N < 0.2 ? 'warn' : 'ok'}">${fmt(r.Fc_min_N, 2)} N${sat}</div></td>`; }
+    h += '</tr>';
+  }
+  $('tlift').innerHTML = h + '</tbody>';
+  // robustez
+  const R = ['flexura_F0.7','flexura','flexura_F1.3'];
+  let t = '<thead><tr><th>Estado</th>' + R.map(k => `<th>${k === 'flexura' ? '1,0 N' : DNOM[k].split(', ')[1]}: E_b</th>`).join('') + '<th>Variación</th></tr></thead><tbody>';
+  for (const e of ORDEN){ const v = R.map(k => P[k].estados[e]); const E = v.map(r => r.ADXL1004.E_banda_g2ms);
+    const ok = v.every(r => !r.despega); const varr = ok ? (Math.max(...E) / Math.min(...E) - 1) * 100 : null;
+    t += `<tr><td>${NOM[e]}</td>` + v.map(r => `<td class="n">${r.despega ? '<span style="color:var(--alarm)">despega</span>' : fmt(r.ADXL1004.E_banda_g2ms, 1)}</td>`).join('') +
+      `<td class="n">${varr == null ? '—' : fmt(varr, 1) + ' %'}</td></tr>`; }
+  $('trob').innerHTML = t + '</tbody>';
+}
+
+function tablaSep(){
+  const k = $('selD').value, ac = $('selA').value, P = D.palpadores[k].estados;
+  const serie = ['muy_ajustada','ajustada','moderada','floja','muy_floja_juego'];
+  let t = '<thead><tr><th>Serie uniforme</th><th>E_b [g²·ms]</th><th>± ruido</th><th>Salto respecto del anterior</th><th>Pico [g]</th><th>Leeb (modelo)</th><th>Restitución Takaha</th></tr></thead><tbody>';
+  serie.forEach((e, i) => { const r = P[e], a = r[ac], L = D.leeb[e];
+    const prev = i ? P[serie[i-1]][ac].E_banda_g2ms : null;
+    t += `<tr><td>${NOM[e]}${r.despega ? ' <span style="color:var(--alarm)">(despega)</span>' : ''}${a.satura ? ' <span style="color:var(--alarm)">(satura)</span>' : ''}</td>
+      <td class="n">${fmt(a.E_banda_g2ms, a.E_banda_g2ms < 10 ? 2 : 1)}</td><td class="n">${fmt(a.E_banda_sigma, 3)}</td>
+      <td class="n">${prev == null ? '—' : '× ' + fmt(a.E_banda_g2ms / prev, 2)}</td><td class="n">${fmt(a.pico_g, 1)}</td>
+      <td class="n">${fmt(L.HL, 0)}</td><td class="n">${fmt(L.e_takaha, 3)}</td></tr>`; });
+  $('tsep').innerHTML = t + '</tbody>';
+}
+
+function barras(){
+  const k = $('selD').value, ac = $('selA').value, P = D.palpadores[k].estados;
+  const { c, w, h } = prep($('cBar')); const L = 120, R = 56, T = 14, B = 140, pw = w - L - R, ph = h - T - B;
+  c.fillStyle = css('--sheet'); c.fillRect(0, 0, w, h);
+  const lo = -1, hi = 6; const Y = v => T + ph * (hi - Math.log10(Math.max(v, 1e-1))) / (hi - lo);
+  c.strokeStyle = css('--rule'); c.fillStyle = css('--ink-2'); c.textAlign = 'right';
+  for (let e = lo; e <= hi; e++){ const y = Y(10**e); c.beginPath(); c.moveTo(L, y); c.lineTo(L + pw, y); c.stroke(); c.fillText(e === 0 ? '1' : '10^' + e, L - 6, y + 4); }
+  c.save(); c.translate(14, T + ph/2); c.rotate(-Math.PI/2); c.textAlign = 'center'; c.fillText('E_b [g²·ms]', 0, 0); c.restore();
+  const n = ORDEN.length, bw = pw / n;
+  // eje derecho: restitución 0,5 .. 0,85
+  const eY = v => T + ph * (0.85 - v) / 0.35;
+  c.textAlign = 'left'; for (const v of [0.5, 0.6, 0.7, 0.8]) c.fillText(fmt(v, 1), L + pw + 6, eY(v) + 4);
+  ORDEN.forEach((e, i) => { const r = P[e]; if (!r) return; const v = r[ac].E_banda_g2ms;
+    c.fillStyle = r.despega ? css('--alarm') : css('--probe');
+    const x = L + i * bw + bw * 0.18, y = Y(v); c.fillRect(x, y, bw * 0.64, T + ph - y);
+    c.save(); c.translate(L + i * bw + bw/2, T + ph + 8); c.rotate(-Math.PI/4); c.fillStyle = css('--ink-2'); c.textAlign = 'right'; c.fillText(NOM[e], 0, 0); c.restore(); });
+  c.strokeStyle = css('--ink-2'); c.fillStyle = css('--ink-2'); c.lineWidth = 1.5; c.beginPath();
+  ORDEN.forEach((e, i) => { const v = D.leeb[e].e_takaha, x = L + i * bw + bw/2, y = eY(v); i ? c.lineTo(x, y) : c.moveTo(x, y); }); c.stroke();
+  ORDEN.forEach((e, i) => { const v = D.leeb[e].e_takaha; c.beginPath(); c.arc(L + i * bw + bw/2, eY(v), 3, 0, 2 * Math.PI); c.fill(); });
+}
+
+function senal(){
+  const k = $('selD2').value, e = $('selE2').value, r = D.palpadores[k].estados[e], lim = D.palpadores[k].a_despegue_g;
+  const st = $('st2'); st.className = 'state ' + (r.despega ? 'bad' : 'ok');
+  st.textContent = r.despega ? `despega · ${fmt(r.frac_despegado*100, 1)} % del tiempo` : `sin despegue · F mín ${fmt(r.Fc_min_N, 2)} N`;
+  const { c, w, h } = prep($('cSig')); const L = 54, R = 10, T = 10, gap = 26, B = 26, ph = (h - T - B - gap) / 2, pw = w - L - R;
+  c.fillStyle = css('--sheet'); c.fillRect(0, 0, w, h);
+  const t = r.t_ms, X = v => L + pw * v / t[t.length - 1];
+  const panel = (y0, y, col, lo, hi, unit, lines) => {
+    const Y = v => y0 + ph * (hi - v) / (hi - lo);
+    c.fillStyle = css('--alarm'); c.globalAlpha = 0.15;
+    r.Fc_N.forEach((f, i) => { if (f <= 0 && i < t.length - 1) c.fillRect(X(t[i]), y0, Math.max(1, X(t[i+1]) - X(t[i])), ph); }); c.globalAlpha = 1;
+    c.strokeStyle = css('--rule'); c.strokeRect(L, y0, pw, ph);
+    if (lo < 0 && hi > 0){ c.beginPath(); c.moveTo(L, Y(0)); c.lineTo(L + pw, Y(0)); c.stroke(); }
+    (lines || []).filter(v => v > lo && v < hi).forEach(v => { c.strokeStyle = css('--ink-2'); c.setLineDash([4, 4]); c.beginPath(); c.moveTo(L, Y(v)); c.lineTo(L + pw, Y(v)); c.stroke(); c.setLineDash([]); });
+    c.strokeStyle = col; c.lineWidth = 1.4; c.beginPath(); y.forEach((v, i) => i ? c.lineTo(X(t[i]), Y(v)) : c.moveTo(X(t[i]), Y(v))); c.stroke();
+    c.fillStyle = css('--ink-2'); c.textAlign = 'right'; c.fillText(fmt(hi, Math.abs(hi) < 10 ? 2 : 0), L - 5, y0 + 10); c.fillText(fmt(lo, Math.abs(lo) < 10 ? 2 : 0), L - 5, y0 + ph - 2);
+    c.textAlign = 'left'; c.fillStyle = col; c.fillText(unit, L + 6, y0 + 13);
+  };
+  const am = Math.max(...r.a_g.map(Math.abs)) < lim * 0.6 ? Math.max(...r.a_g.map(Math.abs)) : lim;
+  panel(T, r.a_g, css('--probe'), -am * 1.1, am * 1.1, 'carro [g]', [lim, -lim]);
+  const fm = Math.max(...r.Fc_N, 1.2);
+  panel(T + ph + gap, r.Fc_N, css('--ok'), 0, fm * 1.05, 'contacto [N]', []);
+  c.fillStyle = css('--ink-2'); c.textAlign = 'center';
+  for (let ms = 0; ms <= 3; ms += 0.5) c.fillText(fmt(ms, 1) + ' ms', Math.min(Math.max(X(ms), L + 18), w - R - 22), h - 8);
+}
+
+fetch('datos/sensor.json').then(r => r.json()).then(d => {
+  D = d;
+  const opts = DIS.map(k => `<option value="${k}">${DNOM[k]}</option>`).join('');
+  $('selD').innerHTML = opts; $('selD2').innerHTML = opts; $('selD').value = 'flexura_liviana'; $('selD2').value = 'flexura_liviana';
+  $('selE2').innerHTML = ORDEN.map(e => `<option value="${e}">${NOM[e]}</option>`).join(''); $('selE2').value = 'floja';
+  tablas(); tablaSep(); barras(); senal();
+  ['selD','selA'].forEach(id => $(id).addEventListener('change', () => { tablaSep(); barras(); }));
+  ['selD2','selE2'].forEach(id => $(id).addEventListener('change', senal));
+}).catch(err => { document.querySelectorAll('.loading').forEach(el => el.textContent = 'No se pudieron cargar los datos: ' + err.message); });
+const redraw = () => { if (D){ barras(); senal(); } };
+window.addEventListener('resize', redraw);
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', redraw);
+new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+})();
+</script>

@@ -37,7 +37,15 @@ RAIZ = pathlib.Path(__file__).resolve().parent.parent
 OUT = RAIZ / "results" / "cuna3d"
 WEB = RAIZ / "docs" / "cuna3d" / "datos"
 
+PALP = OUT / "palpador"
+
 MPa = 1e6
+
+
+def chi_punta() -> float:
+    """Pérdida local bajo la punta calibrada con HL 800 en la cuña ajustada (cuna3d/leeb.py)."""
+    f = OUT / "leeb.json"
+    return float(json.loads(f.read_text())["chi_punta_s_m"]) if f.exists() else 0.0
 L = 200e-3
 
 # Escala de 5 niveles (propuesta, ver docs/cuna3d): valor representativo de cada nivel
@@ -136,7 +144,12 @@ def correr(arg):
     nod_vis, tri = nodos_visibles(mod)
     t_fin = 0.4e-3 if rapido else 3.0e-3
     fr = FRAMES_T[FRAMES_T <= t_fin]
-    r = mod.golpe(x_golpe, t_fin=t_fin, frames_t=fr, nodos_vis=nod_vis)
+    r = mod.golpe(x_golpe, t_fin=t_fin, frames_t=fr, nodos_vis=nod_vis, chi_punta=chi_punta())
+    # movimiento del punto del palpador a resolución completa (para cuna3d/sensor.py)
+    PALP.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(PALP / f"{est.nombre}.npz", t=r["hist"]["t"], uy=r["hist"]["uy_palp"],
+                        vy=r["hist"]["vy_palp"], ay=r["hist"]["ay_palp"], F_H=r["hist"]["F_H"],
+                        x_golpe=x_golpe, x_palp=x_golpe + 10e-3)
     H = r["hist"]
     # ---- presiones estáticas sobre los flancos y el fondo (para mapas)
     p_l, _ = mod.flanco_presion(mod.u0)
@@ -190,6 +203,7 @@ def correr(arg):
             "frac_fondo_abierto_max": float(H["frac_fo_abierto"].max()),
             "dt_ns": r["dt"] * 1e9, "pasos": r["n_pasos"],
             "E_rozamiento_mJ": r["E_rozamiento_mJ"], "E_choques_mJ": r["E_choques_mJ"],
+            "E_punta_mJ": r["E_punta_mJ"], "restitucion": r["restitucion"], "chi_punta": chi_punta(),
             "E_rayleigh_mJ": r["E_rayleigh_mJ"], "E_cuna_final_mJ": r["E_cuna_final_mJ"],
             "error_balance_energia": r["error_balance_energia"],
             "p_flanco_max_golpe_MPa": r["p_flanco_max_MPa"], "p_diseno_MPa": r["p_diseno_MPa"],
