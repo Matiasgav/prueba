@@ -184,7 +184,7 @@ class Lamina:
         X, conn, bseg, _ = self.malla()
         smax, donde = 0.0, None
         for (i, j), (b, tk, Em, rho) in zip(conn, bseg):
-            if Em != E_AC:             # la tensión que interesa es la del acero
+            if Em < 50e9:              # la tensión que interesa es la de los metales (no la del holder)
                 continue
             d = X[j] - X[i]
             L = np.linalg.norm(d)
@@ -194,7 +194,7 @@ class Lamina:
             v2 = -s * u[3 * j] + c * u[3 * j + 1]
             t1, t2 = u[3 * i + 2], u[3 * j + 2]
             I = b * tk ** 3 / 12
-            M1 = E_AC * I / L ** 2 * (6 * v1 + 4 * L * t1 - 6 * v2 + 2 * L * t2)
+            M1 = Em * I / L ** 2 * (6 * v1 + 4 * L * t1 - 6 * v2 + 2 * L * t2)
             sig = abs(M1) * (tk / 2) / I
             if sig > smax:
                 smax, donde = sig, X[i]
