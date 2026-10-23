@@ -90,14 +90,15 @@ class Lamina:
         conn, bseg, segs_nodos = [], [], []
         for seg in self.S:
             a, c, b = seg[:3]
-            tt_ = seg[3] if len(seg) > 3 else self.t
+            tt_ = seg[3] if len(seg) > 3 and seg[3] else self.t
+            mat = (seg[4], seg[5]) if len(seg) > 5 else (E_AC, RHO_AC)   # (E, densidad): acero por defecto
             pa, pc = np.array(self.P[a]), np.array(self.P[c])
             n = max(2, int(math.ceil(np.linalg.norm(pc - pa) / self.h_elem)))
             ids = [nodo(pa + (pc - pa) * k / n) for k in range(n + 1)]
             segs_nodos.append(ids)
             for k in range(n):
                 conn.append((ids[k], ids[k + 1]))
-                bseg.append((b, tt_))
+                bseg.append((b, tt_) + mat)
         idx_P = [nodo(p) for p in self.P]
         self._segs = segs_nodos
         return np.array(X), conn, bseg, idx_P
@@ -107,12 +108,12 @@ class Lamina:
         nn = len(X)
         K = np.zeros((3 * nn, 3 * nn))
         M = np.zeros((3 * nn, 3 * nn))
-        for (i, j), (b, tk) in zip(conn, bseg):
+        for (i, j), (b, tk, Em, rho) in zip(conn, bseg):
             d = X[j] - X[i]
             L = np.linalg.norm(d)
             c, s = d / L
             A, I = b * tk, b * tk ** 3 / 12
-            EA, EI = E_AC * A, E_AC * I
+            EA, EI = Em * A, Em * I
             kl = np.zeros((6, 6))
             kl[[0, 3], [0, 3]] = EA / L
             kl[0, 3] = kl[3, 0] = -EA / L
@@ -122,7 +123,7 @@ class Lamina:
             for a_, p in enumerate(ib):
                 for b_, q in enumerate(ib):
                     kl[p, q] += kb[a_, b_]
-            m = RHO_AC * A * L
+            m = rho * A * L
             ml = np.zeros((6, 6))
             ml[[0, 3], [0, 3]] = m / 3
             ml[0, 3] = ml[3, 0] = m / 6
@@ -182,7 +183,9 @@ class Lamina:
         # tensión de flexión máxima por elemento (momento en los extremos, local)
         X, conn, bseg, _ = self.malla()
         smax, donde = 0.0, None
-        for (i, j), (b, tk) in zip(conn, bseg):
+        for (i, j), (b, tk, Em, rho) in zip(conn, bseg):
+            if Em != E_AC:             # la tensión que interesa es la del acero
+                continue
             d = X[j] - X[i]
             L = np.linalg.norm(d)
             c, s = d / L
