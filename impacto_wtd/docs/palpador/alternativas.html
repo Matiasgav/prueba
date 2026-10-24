@@ -72,10 +72,11 @@ svg text{font-family:var(--f-mono)}
     <h2>Preselección</h2>
     <ol>
       <li><b>8 · Patín copiador + palpador fino.</b> El patín sigue los 4 mm y protege; encima va el palpador que ya funciona, sin cambios.</li>
-      <li><b>3 · Balancín con pivote en cruz</b>, con la <b>12 · cinta de fuerza constante</b> como precarga. Un solo movimiento libre, sin cabeceo, en una chapa cortada con láser. Ya está en simulación.</li>
+      <li><b>3 · Balancín con pivote en cruz</b>, con la <b>12 · cinta de fuerza constante</b> como precarga. Un solo movimiento libre, sin cabeceo, en una chapa cortada con láser. Simulada: la mecánica es buena (no despega, banda limpia), pero C1 no separa los niveles; queda condicionada a revisar la característica (ver nota).</li>
       <li><b>5 · Paralelogramo de eslabones rígidos.</b> Mantiene el carro derecho con recorrido largo y sin vigas largas que vibren.</li>
       <li><b>18 · Medir en el impactor</b>, como segunda medición sin palpador. Conviene evaluarla aparte: el modelo ya separa tres o cuatro niveles con el Leeb.</li>
     </ol>
+    <p><b>Nota.</b> Varios mecanismos que en el modelo no despegan, no saturan y no tienen modos en la banda (balancín, doble etapa, punta de alambre, goma) igual mezclan niveles en C1. La característica depende de cómo es el palpador, no sólo de la cuña. Antes de elegir mecánica conviene probar una C1 corregida por el palpador: dividir la señal por la transmisión medida del palpador (calibrada una vez por unidad) para estimar el movimiento de la cuña, y clasificar con eso.</p>
   </section>
   <section class="grid">
 <article class="alt" id="a1">
@@ -93,10 +94,10 @@ svg text{font-family:var(--f-mono)}
   <ul class="crit"><li class="c-no"><span>Recorrido 3–4 mm</span><b>no</b></li><li class="c-ok"><span>Sin cabeceo en 1–3 kHz</span><b>sí</b></li><li class="c-ok"><span>Punta liviana</span><b>sí</b></li><li class="c-mid"><span>Precarga estable</span><b>regular</b></li><li class="c-ok"><span>Se retrae sola</span><b>sí</b></li><li class="c-mid"><span>Simple</span><b>regular</b></li></ul>
 </article>
 <article class="alt" id="a3">
-  <header><span class="num">3</span><div><h3>Balancín con pivote en cruz</h3><span class="fam">Guía</span></div><span class="est e-run">en simulación</span></header>
+  <header><span class="num">3</span><div><h3>Balancín con pivote en cruz</h3><span class="fam">Guía</span></div><span class="est e-no">simulada: falló</span></header>
   <div class="sk"><svg viewBox="0 0 300 180" role="img" aria-label="Balancín con pivote en cruz"><defs><marker id="mk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path class="mkp" d="M0 0 L10 5 L0 10z"/></marker></defs><rect class="wedge" x="0" y="152" width="300" height="26"/><text class="tw" x="6" y="170">cuña</text><rect class="gnd" x="90" y="8" width="70" height="12"/><rect class="gnd" x="18" y="52" width="22" height="40"/><line class="beam" x1="42" y1="60" x2="62" y2="80"/><line class="beam" x1="42" y1="80" x2="62" y2="60"/><polygon class="rigid" points="52,62 52,78 205,96 205,84"/><polygon class="car" points="196,80 230,80 230,91.4 198.08,118 227.92,118 196,91.4"/><rect class="chip" x="205" y="86" width="15" height="15" rx="1"/><path class="ax" d="M212.5 98 L212.5 90 M210 92 L212.5 89 L215 92"/><path class="tip" d="M213 118 L213 137 L221 146 L239 146 L245 140"/><path class="tip" d="M226 146 Q232 155 238 146"/><polyline class="spr" points="125.0,20.0 125.0,27.1 120.0,29.9 130.0,35.5 120.0,41.1 130.0,46.7 120.0,52.3 130.0,57.9 120.0,63.5 130.0,69.1 125.0,71.9 125.0,79.0"/><text class="tl" x="44" y="104" text-anchor="start">pivote en cruz</text><text class="tl" x="132" y="44" text-anchor="start">resorte blando</text><text class="tl" x="132" y="54" text-anchor="start">precargado</text><text class="tl" x="90" y="116" text-anchor="start">brazo rígido</text></svg></div>
   <p>Brazo rígido que gira sobre una flexura en cruz cortada en la chapa; resorte blando precargado aparte; lengüeta de acero en la punta.</p>
-  <dl><dt>A favor</dt><dd>Un solo movimiento libre: no hay cabeceo. Recorrido por giro (4 mm a 25 mm = 0,16 rad). La banda queda limpia en el modelo.</dd><dt>En contra</dt><dd>La precarga varía ±0,55 N por la rigidez del pivote. El sensor se inclina ±4,6°.</dd></dl>
+  <dl><dt>A favor</dt><dd>Un solo movimiento libre: no hay cabeceo. Recorrido por giro (4 mm a 25 mm = 0,16 rad). La banda queda limpia en el modelo.</dd><dt>En contra</dt><dd>Simulado: no despega ni satura, pero se mezclan ajustada, moderada y floja (huecos −0,27 a −0,65), aunque la transmisión es limpia. La precarga varía ±0,55 N.</dd></dl>
   <ul class="crit"><li class="c-ok"><span>Recorrido 3–4 mm</span><b>sí</b></li><li class="c-ok"><span>Sin cabeceo en 1–3 kHz</span><b>sí</b></li><li class="c-ok"><span>Punta liviana</span><b>sí</b></li><li class="c-mid"><span>Precarga estable</span><b>regular</b></li><li class="c-ok"><span>Se retrae sola</span><b>sí</b></li><li class="c-ok"><span>Simple</span><b>sí</b></li></ul>
 </article>
 <article class="alt" id="a4">
