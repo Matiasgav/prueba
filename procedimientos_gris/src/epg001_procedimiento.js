@@ -80,7 +80,7 @@ const etapas = [
     [null, "Ajustar la rampa con los valores obtenidos para posicionar tangencialmente el robot sobre la ranura a inspeccionar.", "—"],
     [null, "Proteger con cinta (duct tape) las zonas de contacto de la rampa con el cuerpo del rotor y, cuando corresponda, el trinquete.", "—"],
     [null, "Ajustar las cámaras inferiores, las cámaras laterales y el captor Chattock según la geometría de la ranura y del entrehierro. Instalar las guías centrales adecuadas, dejando una holgura recomendada de 1 a 2 mm.", "—"],
-    [null, "Realizar las conexiones de la Figura 1: robot con control box y con tablero EL CID; PC GRIS con control box (USB y Ethernet); PC EL CID con tablero EL CID (USB); circuito de excitación y alimentaciones, respetando el esquema de puesta a tierra.", `${ESQUEMA} / ${P1}`],
+    [null, "Realizar las conexiones de la Figura 1: arnés del robot al control box (cable principal) y al tablero EL CID (señal del captor); control box al tablero EL CID (señal de posición); PC GRIS al control box (USB y Ethernet); PC EL CID al tablero EL CID (USB); circuito de excitación y alimentaciones desde la zapatilla, respetando el esquema de puesta a tierra.", `${ESQUEMA} / ${P1}`],
     [null, "Instalar las cuerdas de seguridad del robot.", "—"],
     [null, "Configurar en ELCSoft los parámetros del ensayo y el paso de registro EL CID (recomendado: 7 mm). Configurar el paso de adquisición automática de fotografías y el paso de muestreo WTT.", `${P3} / Manual de software GRIS`],
     ["check", "Realizar la verificación pre-ensayo de desprendimiento de piezas del robot y registrarla en el checklist antes de introducir el robot.", `${CHECKLIST} (Pre-Test)`],
