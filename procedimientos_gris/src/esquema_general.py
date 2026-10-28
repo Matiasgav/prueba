@@ -449,7 +449,7 @@ def cableado_interno(tx):
 # Hoja A3 apaisada: columnas PC/alimentación · control box y tablero EL CID · tablero de excitación y Variac · estator.
 W, H = 2600, 1500
 fondo.append(f'<rect x="20" y="20" width="{W - 40}" height="{H - 40}" fill="none" stroke="{NEG}" stroke-width="1"/>')
-texto(W / 2, 82, "ESQUEMA GENERAL DE CONEXIONES – SISTEMA GRIS", 42, "middle")
+texto(W / 2, 82, "ESQUEMA GENERAL DE CONEXIONES", 42, "middle")
 EX_X, EX_Y, EX_W = 1150, 1040, 560
 
 
