@@ -185,7 +185,7 @@ const cuerpo = [
     ["**Variac**", "Fuente de CA de tensión variable que alimenta el circuito de excitación."],
     ["**Tablero de excitación**", "Tablero donde se conectan en serie los hilos del cable de excitación y el circuito de la espira auxiliar."],
     ["**ELCSoft**", "Software de adquisición y visualización del ensayo EL CID."],
-    ["**Gota de resina**", "Protuberancia de resina sobre la superficie del estator (resin drip) que puede dificultar el paso o la adherencia del robot."],
+    ["**Punta de resina**", "Protuberancia de resina sobre la superficie del estator (resin tip) que puede dificultar el paso o la adherencia del robot."],
     ["**ATS**", "Análisis de Trabajo Seguro."],
     ["**PMS**", "Punto muerto superior (Top Dead Centre, TDC)."],
     ["**DE / NDE**", "Drive End / Non-Drive End: lado acople / lado opuesto al acople del generador."],
