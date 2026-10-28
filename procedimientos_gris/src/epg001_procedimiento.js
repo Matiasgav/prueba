@@ -8,6 +8,7 @@ const P1 = `${ANEXO} – Protocolo 1`;
 const P2 = `${ANEXO} – Protocolo 2`;
 const P3 = `${ANEXO} – Protocolo 3`;
 const CHECKLIST = "00503-00-ZRQ001";
+const MANUAL = "00503-00-EPG003";
 const RIESGO = "00503-00-ZIT003";
 const ESQUEMA = "Figura 1";
 
@@ -77,17 +78,17 @@ const etapas = [
     [null, "Instalar la espira auxiliar en la primera ranura a inspeccionar o en la ranura definida por Ingeniería.", P1],
   ], despues: () => [espacio(), nota("Precaución:", ref("el tablero de excitación se encuentra en desarrollo. No operarlo ni manipularlo con tensión. La ficha que viene del Variac queda con los contactos macho expuestos: nunca manipularla con el Variac conectado a la red (paso {variac})."))] },
 
-  { id: "conf", titulo: "CONFIGURACIÓN Y MONTAJE DEL SISTEMA GRIS", ref: `${P3} / Manual de software GRIS / Figura 1`, intro: "Las conexiones se realizan según el esquema general de la Figura 1.", pasos: [
-    [null, "Ingresar en el software GRIS los parámetros geométricos medidos y obtener los valores de ajuste del robot y de la rampa.", "Manual de software GRIS"],
+  { id: "conf", titulo: "CONFIGURACIÓN Y MONTAJE DEL SISTEMA GRIS", ref: `${P3} / ${MANUAL} / Figura 1`, intro: "Las conexiones se realizan según el esquema general de la Figura 1.", pasos: [
+    ["sw_config", "Ingresar en el software GRIS los parámetros geométricos medidos y obtener los valores de ajuste del robot y de la rampa.", `${MANUAL}, apartado 4.2`],
     [null, "Cortar los rieles de la rampa a la longitud requerida. Limar los bordes y eliminar rebabas.", "—"],
-    [null, "Ajustar la rampa con los valores obtenidos para posicionar tangencialmente el robot sobre la ranura a inspeccionar.", "—"],
+    ["sw_rampa", "Ajustar la rampa con los valores obtenidos para posicionar tangencialmente el robot sobre la ranura a inspeccionar.", `${MANUAL}, apartado 4.2`],
     [null, "Proteger con cinta (duct tape) las zonas de contacto de la rampa con el cuerpo del rotor y, cuando corresponda, el trinquete.", "—"],
     [null, "Ajustar las cámaras inferiores, las cámaras laterales y el captor Chattock según la geometría de la ranura y del entrehierro. Instalar las guías centrales adecuadas, dejando una holgura recomendada de 1 a 2 mm.", "—"],
-    [null, "Realizar las conexiones de la Figura 1: arnés del robot al control box (cable principal) y al tablero EL CID (señal del captor); control box al tablero EL CID (señal de posición); PC GRIS al control box (USB y Ethernet); PC EL CID al tablero EL CID (USB); tablero de excitación (Variac, cable de 5 hilos, espira auxiliar y salida al tablero EL CID) y alimentaciones desde la zapatilla, respetando el esquema de puesta a tierra.", `${ESQUEMA} / ${P1}`],
+    ["conexiones", "Realizar las conexiones de la Figura 1: arnés del robot al control box (cable principal) y al tablero EL CID (señal del captor); control box al tablero EL CID (señal de posición); PC GRIS al control box (USB y Ethernet); PC EL CID al tablero EL CID (USB); tablero de excitación (Variac, cable de 5 hilos, espira auxiliar y salida al tablero EL CID) y alimentaciones desde la zapatilla, respetando el esquema de puesta a tierra.", `${ESQUEMA} / ${P1} / ${MANUAL}, apartado 3.1`],
     ["cuerdas", "Instalar las cuerdas de seguridad del robot.", "—"],
-    [null, "Configurar en ELCSoft los parámetros del ensayo y el paso de registro EL CID (recomendado: 7 mm). Configurar el paso de adquisición automática de fotografías y el paso de muestreo WTT.", `${P3} / Manual de software GRIS`],
+    ["sw_param", "Configurar en ELCSoft los parámetros del ensayo y el paso de registro EL CID (recomendado: 7 mm). Configurar el paso de adquisición automática de fotografías y el paso de muestreo WTT.", `${P3} / ${MANUAL}, apartados 4.4 y 5.3`],
     ["check", "Realizar la verificación pre-ensayo de desprendimiento de piezas del robot y registrarla en el checklist antes de introducir el robot.", `${CHECKLIST} (Pre-Test)`],
-    [null, "Montar el robot sobre la rampa y verificar que el conjunto ingresa, se posiciona y se desplaza sin interferencias.", "—"],
+    ["montaje", "Montar el robot sobre la rampa y verificar que el conjunto ingresa, se posiciona y se desplaza sin interferencias.", `${MANUAL}, apartado 4.3`],
   ], despues: () => [
     F.hojaA3("esquema_general.png", 5200, 3000, "Figura 1: Esquema general de conexiones del sistema GRIS"),
     ...F.figura("detalle_tablero_excitacion.png", 2540, 1200, "Figura 2: Detalle del tablero de excitación (conexiones internas)", 17),
@@ -95,12 +96,12 @@ const etapas = [
   ] },
 
   { id: "cal", titulo: "RECONOCIMIENTO Y CALIBRACIÓN", ref: P2, intro: "Se realizan sobre la primera ranura a inspeccionar, antes de iniciar la secuencia completa.", pasos: [
-    ["recon", "Realizar una pasada lenta de reconocimiento con las cámaras para detectar gotas de resina, rebabas, obstáculos o cualquier condición que impida el paso o la adherencia del robot.", "Apartado 2.1"],
+    ["recon", "Realizar una pasada lenta de reconocimiento con las cámaras para detectar gotas de resina, rebabas, obstáculos o cualquier condición que impida el paso o la adherencia del robot.", `Apartado 2.1 / ${MANUAL}, apartado 4.3`],
     [null, "Registrar la ubicación de los límites de cuñas y de las referencias axiales visibles, para referenciar la posición axial del robot.", "—"],
-    ["limite", "Definir la posición máxima de avance axial seguro y los límites de recorrido del robot dentro del núcleo.", "Apartado 2.1"],
-    [null, "Realizar verificaciones funcionales del WTT sobre la misma ranura/cuña: detección, repetibilidad y registro correcto.", "—"],
+    ["limite", "Definir la posición máxima de avance axial seguro y los límites de recorrido del robot dentro del núcleo.", `Apartado 2.1 / ${MANUAL}, apartado 4.3`],
+    ["wtt_verif", "Realizar verificaciones funcionales del WTT sobre la misma ranura/cuña: detección, repetibilidad y registro correcto.", `${MANUAL}, apartado 5.2`],
     [null, "Calibrar el sistema EL CID: elevar gradualmente la tensión de excitación hasta el valor calculado, verificar la tensión por espira, realizar la medición de falla controlada con la espira auxiliar y el robot, y ajustar la constante del captor (KF).", P2],
-    [null, "Fijar el foco de las cámaras donde se requiera.", "—"],
+    ["foco", "Fijar el foco de las cámaras donde se requiera.", `${MANUAL}, apartado 4.4`],
   ] },
 
   { id: "ran", titulo: "INSPECCIÓN POR RANURA", ref: `${P2} / ${P3}`, antes: () => [
@@ -108,17 +109,17 @@ const etapas = [
     espacio(),
   ], pasos: [
     { seccion: "Posicionamiento" },
-    ["ciclo_ini", "Posicionar el robot en una posición axial conocida de la ranura, utilizando las cámaras laterales y las referencias físicas del núcleo.", "—"],
-    [null, "Establecer el cero de posición axial en el software antes de iniciar el avance de medición.", `Tabla 2 / ${P3}`],
+    ["ciclo_ini", "Posicionar el robot en una posición axial conocida de la ranura, utilizando las cámaras laterales y las referencias físicas del núcleo.", `${MANUAL}, apartado 4.3`],
+    ["cero", "Establecer el cero de posición axial en el software antes de iniciar el avance de medición.", `Tabla 2 / ${P3} / ${MANUAL}, apartado 4.3`],
     [null, "Durante todo movimiento del robot, un operador acompaña el cable y las cuerdas de seguridad manteniendo una tensión constante, para evitar atrapamientos y que el robot los pise.", "—"],
     { seccion: "Ensayo EL CID (avance)" },
-    [null, "Avanzar axialmente a velocidad constante (recomendada: 50 mm/s) registrando el EL CID, sin superar el límite de avance seguro definido en el paso {limite}. Activar las cámaras laterales y monitorearlas junto con las demás para detectar anomalías.", P3],
+    ["avance", "Avanzar axialmente a velocidad constante (recomendada: 50 mm/s) registrando el EL CID, sin superar el límite de avance seguro definido en el paso {limite}. Activar las cámaras laterales y monitorearlas junto con las demás para detectar anomalías.", `${P3} / ${MANUAL}, apartado 4.3`],
     [null, "Controlar periódicamente la tensión de excitación mediante la medición del sistema y la espira auxiliar.", P2],
     { seccion: "Ensayo WTT e inspección visual (retroceso)" },
-    [null, "Retroceder axialmente registrando el WTT de las cuñas. Durante el retroceso, activar las cámaras inferiores e inspeccionar los canales de ventilación.", "—"],
+    ["wtt", "Retroceder axialmente registrando el WTT de las cuñas. Durante el retroceso, activar las cámaras inferiores e inspeccionar los canales de ventilación.", `${MANUAL}, apartados 5.3 y 5.4`],
     ["fallas", "Comunicar en forma inmediata toda indicación de falla (EL CID, WTT o visual) al ingeniero de generadores a cargo y al Cliente, para que pueda planificar, si corresponde, la extracción del rotor.", "—"],
     { seccion: "Avance angular" },
-    ["ciclo_fin", "Desplazar la rampa a la ranura siguiente, verificar la alineación y repetir desde el paso {ciclo_ini}.", "—"],
+    ["ciclo_fin", "Desplazar la rampa a la ranura siguiente, verificar la alineación y repetir desde el paso {ciclo_ini}.", `${MANUAL}, apartado 4.3`],
     ["reubicar", "Antes de que el arrollamiento de excitación quede a menos de 120° de la ranura inspeccionada: detener, desenergizar, reubicar el arrollamiento y verificar nuevamente la excitación.", P2],
   ], despues: () => [
     espacio(),
@@ -133,7 +134,7 @@ const etapas = [
   ] },
 
   { id: "cierre", titulo: "CIERRE: DATOS, DESMONTAJE E INFORME", ref: "—", pasos: [
-    [null, "Guardar los datos periódicamente en las PC y en un segundo dispositivo de almacenamiento.", "—"],
+    ["guardar", "Guardar los datos periódicamente en las PC y en un segundo dispositivo de almacenamiento.", `${MANUAL}, apartado 7`],
     ["revision", "Revisar los datos al finalizar cada sector y al completar el ensayo. Repetir las ranuras o zonas con datos incompletos, ruido, pérdida de posición o anomalías.", "—"],
     ["post", "Al retirar el robot del entrehierro, realizar la verificación post-ensayo y confirmar en el checklist que las cantidades verificadas coinciden con las esperadas. Ante cualquier faltante, informar al Cliente y no devolver la máquina hasta recuperar la pieza.", `${CHECKLIST} (Post-Test)`],
     [null, "Desmontar el robot, la rampa, el tablero EL CID, el control box, el tablero de excitación, el Variac, el arrollamiento de excitación, la espira auxiliar, las barreras y la cartelería. Limpiar el área y cerrar los permisos.", "Permiso de trabajo"],
@@ -201,7 +202,7 @@ const cuerpo = [
   p("Este procedimiento establece la secuencia general de la inspección y remite a los siguientes documentos para el detalle técnico:"),
   tabla(["Documento", "Contenido"], [3800, 5838], [
     [`${ANEXO} – Protocolos de ensayo EL CID`, "Protocolo 1: excitación del núcleo. Protocolo 2: calibración. Protocolo 3: operación de ELCSoft."],
-    ["Manual de software GRIS", "Operación del software de control del robot."],
+    [`${MANUAL} – Manual de uso del software GRIS`, "Operación del software GRIS: configuración del robot y de la rampa, movimiento, cámaras, ensayo de ajuste de cuñas (WTT) y almacenamiento de los datos."],
     [`${RIESGO} – Residual Part Detachment Risk Assessment`, "Evaluación del riesgo residual de desprendimiento de 22 posiciones del robot GRIS."],
     [`${CHECKLIST} – Inspection Detachment Checklist`, "Verificación pre y post-ensayo de las 22 posiciones evaluadas."],
   ]),

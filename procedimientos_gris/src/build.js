@@ -103,4 +103,8 @@ function esquema() {
   fs.mkdirSync(path.join(SALIDA, "pdf"), { recursive: true });
   esquema();
   for (const [m, n] of DOCS) await construir(m, n);
+  // Manual del software (se edita aparte): actualizar los pasos de EPG001 que cita y exportarlo a PDF.
+  sh("python3", [path.join(__dirname, "epg003_referencias.py")]);
+  const manual = path.join(SALIDA, "00503-00-EPG003 Manual de uso del software GRIS.docx");
+  sh(SOFFICE, ["--headless", "--convert-to", "pdf", "--outdir", path.join(SALIDA, "pdf"), manual]);
 })().catch((e) => { console.error(e.stderr ? e.stderr.toString() : e); process.exit(1); });
