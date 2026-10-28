@@ -68,8 +68,8 @@ const etapas = [
   ] },
 
   { id: "exc", titulo: "MONTAJE DE LA EXCITACIÓN DEL NÚCLEO", ref: P1, pasos: [
-    [null, "Montar el cable de excitación de 5 hilos a través del entrehierro y conectar sus extremos a la bornera EXCITATION del tablero de excitación, haciendo coincidir números y colores, de modo que las espiras queden en serie.", P1],
-    ["variac", "Con el Variac desconectado de la red, conectar su ficha al tablero de excitación. Recién entonces conectar el Variac a la red. Para desconectar, seguir el orden inverso: primero desconectar el Variac de la red y luego la ficha.", "Apartado 2.1"],
+    [null, "Montar el cable de excitación de 5 hilos a través del entrehierro y conectar sus extremos a la bornera EXCITATION del tablero de excitación, haciendo coincidir números y colores, de modo que las espiras queden en serie.", `${P1} / Figuras 2 y 3`],
+    ["variac", "Con el Variac desconectado de la red, conectar su ficha al tablero de excitación. Recién entonces conectar el Variac a la red. Para desconectar, seguir el orden inverso: primero desconectar el Variac de la red y luego la ficha.", "Apartado 2.1 / Figura 2"],
     [null, "Ubicar inicialmente el arrollamiento a 120° de la primera ranura a inspeccionar, en sentido opuesto al avance angular previsto.", "—"],
     [null, "Planificar la reubicación del arrollamiento cada 120° de avance angular, de modo que durante el ensayo nunca quede a menos de 120° de la ranura inspeccionada.", "Paso {reubicar}"],
     [null, "Instalar la espira auxiliar en la primera ranura a inspeccionar o en la ranura definida por Ingeniería.", P1],
@@ -87,8 +87,9 @@ const etapas = [
     ["check", "Realizar la verificación pre-ensayo de desprendimiento de piezas del robot y registrarla en el checklist antes de introducir el robot.", `${CHECKLIST} (Pre-Test)`],
     [null, "Montar el robot sobre la rampa y verificar que el conjunto ingresa, se posiciona y se desplaza sin interferencias.", "—"],
   ], despues: () => [
-    F.saltoPagina(),
-    ...F.figura("esquema_general_vertical.png", 2200, 3200, "Figura 1: Esquema general de conexiones del sistema GRIS", 15.2),
+    F.pliego("esquema_general_izq.png", "esquema_general_der.png", 2070, 2900, "Figura 1: Esquema general de conexiones del sistema GRIS"),
+    ...F.figura("detalle_tablero_excitacion.png", 2540, 1200, "Figura 2: Detalle del tablero de excitación (conexiones internas)", 17),
+    ...F.figura("detalle_borneras.png", 2400, 1440, "Figura 3: Ampliación de las borneras EXCITATION y AUX (numeración de bornes)", 17),
   ] },
 
   { id: "cal", titulo: "RECONOCIMIENTO Y CALIBRACIÓN", ref: P2, intro: "Se realizan sobre la primera ranura a inspeccionar, antes de iniciar la secuencia completa.", pasos: [
