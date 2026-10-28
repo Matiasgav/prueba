@@ -197,16 +197,25 @@ def tablero_excitacion(x, y, w):
     rect(fondo, X(0.20), Y(0.425), w * 0.76, h * 0.045, "#B4B7B9", "#8E9194", 0.5)
     for i in range(30):
         rect(fondo, X(0.21) + i * w * 0.025, Y(0.44), w * 0.012, h * 0.015, "#9DA0A2")
-    # bornera EXCITATION: 7 bornes juntos, de dos niveles (superior e inferior)
+    # bornera EXCITATION: 7 bornes de paso juntos (tornillo superior e inferior del mismo borne enfrentados)
     bx0, bx1 = X(0.224), X(0.361)
     paso = (bx1 - bx0) / 7
-    rect(fondo, bx0 - 1.5, Y(0.335), bx1 - bx0 + 3, h * 0.27, "#1B1B1B", "#000", 0.5, 1)
-    for i in range(7):
-        terminal(bx0 + i * paso + 0.4, Y(0.344), paso - 0.8, h * 0.065)
-        terminal(bx0 + i * paso + 0.4, Y(0.530), paso - 0.8, h * 0.065)
-        texto(bx0 + (i + 0.5) * paso, Y(0.428), str(i + 1), 5.5, "middle", "#EEE", peso="bold", capa=fondo)
-        texto(bx0 + (i + 0.5) * paso, Y(0.518), str(i + 1), 5.5, "middle", "#EEE", peso="bold", capa=fondo)
-    texto(X(0.2925), Y(0.66), "EXCITATION", 5.4, "middle", "#333", peso="bold", capa=fondo)
+
+    def bornes(x0, n, y0, y1, nombre):
+        rect(fondo, x0 - 1.5, y0, n * paso + 3, y1 - y0, "#1B1B1B", "#000", 0.5, 1)
+        for k in range(n):
+            xk = x0 + k * paso
+            rect(fondo, xk + 0.5, y0 + 1, paso - 1, y1 - y0 - 2, "#EDEDE9", "#9A9A95", 0.5)
+            for yy in (y0 + (y1 - y0) * 0.14, y0 + (y1 - y0) * 0.86):
+                circ(fondo, xk + paso / 2, yy, paso * 0.3, "#C8C8C4", "#8A8A86", 0.4)
+                fondo.append(f'<line x1="{xk + paso * 0.28:.1f}" y1="{yy:.1f}" x2="{xk + paso * 0.72:.1f}" y2="{yy:.1f}" stroke="#777" stroke-width="0.6"/>')
+            for yy in (y0 + (y1 - y0) * 0.33, y0 + (y1 - y0) * 0.72):
+                texto(xk + paso / 2, yy, str(k + 1), 5.5, "middle", "#222", peso="bold", capa=fondo)
+        rect(fondo, x0 - 1.5, y0 + (y1 - y0) * 0.43, n * paso + 3, (y1 - y0) * 0.16, "#1B1B1B")
+        texto(x0 + n * paso / 2, y0 + (y1 - y0) * 0.545, nombre, 4.6, "middle", "#F2F2F2", peso="bold", capa=fondo)
+
+    yb0, yb1 = Y(0.335), Y(0.605)
+    bornes(bx0, 7, yb0, yb1, "EXCITATION")
     # interruptor termomagnético
     rect(fondo, X(0.372), Y(0.252), w * 0.06, h * 0.446, "#F8F8F8", "#9A9A9A", 0.7, 1.5)
     rect(fondo, X(0.378), Y(0.27), w * 0.048, h * 0.06, "#ECECEC", "#BBB", 0.4)
@@ -216,12 +225,10 @@ def tablero_excitacion(x, y, w):
     for fy in (0.29, 0.66):
         circ(fondo, X(0.402), Y(fy), w * 0.007, "#C8C8C4", "#888", 0.4)
     texto(X(0.402), Y(0.36), "Schneider", 3.8, "middle", "#2E9B48", capa=fondo)
-    # bornera AUXILIAR
-    rect(fondo, X(0.628), Y(0.365), w * 0.104, h * 0.239, "#E9E9E6", "#9A9A9A", 0.7, 1)
-    for fx in (0.638, 0.684):
-        for fy in (0.38, 0.525):
-            terminal(X(fx), Y(fy), w * 0.04, h * 0.065)
-    etiqueta(X(0.61), Y(0.27), w * 0.13, h * 0.05, "AUXILIAR", 0, 6)
+    # bornera AUXILIAR: mismo tipo de borne de paso, 2 bornes
+    ax0 = X(0.66) - paso
+    bornes(ax0, 2, yb0, yb1, "AUX")
+    etiqueta(ax0 - w * 0.02, Y(0.27), 2 * paso + w * 0.04, h * 0.05, "AUXILIAR", 0, 5.5)
     # protoboard con las resistencias de calibración
     rect(fondo, X(0.432), Y(0.615), w * 0.426, h * 0.218, "#F8F8F3", "#BDBDB7", 0.7, 1.5)
     for fy, col in ((0.632, "#D33"), (0.645, "#36C"), (0.800, "#D33"), (0.813, "#36C")):
@@ -230,12 +237,7 @@ def tablero_excitacion(x, y, w):
         for i in range(40):
             if j != 3:
                 circ(fondo, X(0.442) + i * w * 0.0102, Y(0.665) + j * h * 0.022, 0.55, "#B8B8B2")
-    for fx in (0.53, 0.62):
-        rect(fondo, X(fx), Y(0.77), w * 0.048, h * 0.028, "#D9B98A", "#A88A5E", 0.5, 2.5)
-        for k, col in enumerate(("#7A3B12", "#111", "#C62", "#C9A23A")):
-            rect(fondo, X(fx) + w * (0.008 + k * 0.009), Y(0.77), 1.3, h * 0.028, col)
-        poli(fondo, [(X(fx) - w * 0.012, Y(0.784)), (X(fx), Y(0.784))], "#999", 0.8)
-        poli(fondo, [(X(fx + 0.048), Y(0.784)), (X(fx + 0.06), Y(0.784))], "#999", 0.8)
+    texto(X(0.645), Y(0.735), "Espacio para las resistencias de calibración", 6, "middle", "#7A7A75", capa=fondo)
     # fichas banana (medición de tensión por espira) y llave del circuito auxiliar
     for fx, fy, col in ((0.803, 0.10, "#151515"), (0.836, 0.073, "#C8202A")):
         circ(fondo, X(fx), Y(fy), w * 0.013, col, "#000", 0.5)
@@ -243,14 +245,14 @@ def tablero_excitacion(x, y, w):
     rect(fondo, X(0.918), Y(0.4375), w * 0.06, h * 0.0725, "#FBFBFB", "#999", 0.7, 2)
     rect(fondo, X(0.935), Y(0.452), w * 0.025, h * 0.04, "#E5E5E5", "#AAA", 0.4)
     term = [bx0 + (i + 0.5) * paso for i in range(7)]
+    aux_t = [ax0 + (i + 0.5) * paso for i in range(2)]
     rs = w * 0.022
     fc = (X(0.579), Y(0.167))
-    return {"ficha": (X(0.637), Y(-0.02)), "sup": term, "y_sup": Y(0.344), "y_sup_b": Y(0.409),
-            "y_inf": Y(0.595), "y_inf_t": Y(0.530), "izq": bx0, "der": bx1,
+    return {"ficha": (X(0.637), Y(-0.02)), "sup": term, "y_sup": yb0 + 1, "y_inf": yb1 - 1, "izq": bx0, "der": bx1,
             "L": (fc[0] + rs * math.cos(math.radians(210)), fc[1] + rs * 0.5), "N": (fc[0] + rs * math.cos(math.radians(330)), fc[1] + rs * 0.5),
             "mcb_sup": (X(0.402), Y(0.29)), "mcb_izq": X(0.372), "mcb_der": X(0.432),
-            "aux": (X(0.658), X(0.704)), "y_aux": Y(0.38), "y_aux_inf": Y(0.59),
-            "r1": (X(0.518), X(0.578)), "r2": (X(0.608), X(0.668)), "y_r": Y(0.784),
+            "aux": tuple(aux_t), "y_aux": yb0 + 1, "y_aux_inf": yb1 - 1,
+            "mcb_inf": (X(0.402), Y(0.66)), "bus": (X(0.85), Y(0.800), Y(0.813)),
             "llave": (X(0.918), X(0.978), Y(0.474)), "j_neg": (X(0.803), Y(0.10)), "j_roj": (X(0.836), Y(0.073)), "h": h}
 
 
@@ -274,18 +276,30 @@ def multimetro(x, y, w=82):
     return {"v": jacks[0], "com": jacks[1], "h": h}
 
 
-def pinza(x, y, w=70):
-    """Pinza amperométrica UNI-T: mordaza arriba, alrededor del cable."""
-    h = w * 2.0
-    cx, cy, ra = x + w / 2, y + w * 0.38, w * 0.36
-    frente.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{ra:.1f}" fill="none" stroke="#3A3A3A" stroke-width="{w * 0.16:.1f}"/>')
-    frente.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{ra:.1f}" fill="none" stroke="#C8102E" stroke-width="{w * 0.08:.1f}"/>')
-    rect(frente, x, y + w * 0.78, w, h - w * 0.78, "#C8102E", "#8E0B20", 1, 8)
-    rect(frente, x + w * 0.1, y + w * 0.9, w * 0.8, h - w * 1.0, "#3A3A3A", "#222", 0.6, 4)
-    rect(frente, x + w * 0.18, y + w * 0.98, w * 0.64, w * 0.38, "#B9C7A6", "#6E7A60", 0.6, 2)
-    texto(cx, y + w * 1.26, "150", w * 0.22, "middle", "#1F261A", peso="bold", capa=frente)
-    texto(cx, y + w * 1.52, "UNI-T", w * 0.13, "middle", "#FFFFFF", peso="bold", capa=frente)
-    circ(frente, cx, y + w * 1.78, w * 0.17, "#555", "#222", 0.8)
+def pinza(x, y, w=64):
+    """Pinza amperométrica UNI-T (UT211B): mordaza abierta arriba, gatillo lateral, cuerpo rojo y gris."""
+    cx, cy, ra = x + w / 2, y + w * 0.36, w * 0.30
+    # mordaza: anillo con una pequeña apertura arriba a la derecha
+    C = 2 * math.pi * ra
+    for col, wd in (("#2E2E2E", w * 0.17), ("#D7192D", w * 0.06)):
+        frente.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{ra:.1f}" fill="none" stroke="{col}" stroke-width="{wd:.1f}" '
+                      f'stroke-dasharray="{C * 0.93:.1f} {C * 0.07:.1f}" transform="rotate(-70 {cx:.1f} {cy:.1f})"/>')
+    # cuerpo
+    yb = y + w * 0.62
+    frente.append(f'<path d="M{x + w * 0.12:.1f},{yb:.1f} Q{cx:.1f},{yb - w * 0.1:.1f} {x + w * 0.88:.1f},{yb:.1f} L{x + w * 0.96:.1f},{yb + w * 0.5:.1f} '
+                  f'L{x + w * 0.9:.1f},{y + w * 2.45:.1f} Q{cx:.1f},{y + w * 2.58:.1f} {x + w * 0.1:.1f},{y + w * 2.45:.1f} L{x + w * 0.04:.1f},{yb + w * 0.5:.1f} Z" '
+                  f'fill="#D7192D" stroke="#8E0B20" stroke-width="1"/>')
+    rect(frente, x - w * 0.06, yb + w * 0.18, w * 0.12, w * 0.34, "#2E2E2E", "#111", 0.6, 3)             # gatillo
+    rect(frente, x + w * 0.16, yb + w * 0.2, w * 0.68, w * 1.6, "#333", "#1A1A1A", 0.6, 4)             # frente gris
+    rect(frente, x + w * 0.24, yb + w * 0.3, w * 0.52, w * 0.34, "#B9C7A6", "#6E7A60", 0.6, 2)        # display
+    texto(cx, yb + w * 0.55, "0.150", w * 0.15, "middle", "#1F261A", peso="bold", capa=frente)
+    for k in range(3):
+        rect(frente, x + w * (0.25 + k * 0.18), yb + w * 0.74, w * 0.13, w * 0.08, "#5A5A5A", "none", 0, 2)
+    circ(frente, cx, yb + w * 1.18, w * 0.2, "#4A4A4A", "#1A1A1A", 0.8)                                 # selector
+    poli(frente, [(cx, yb + w * 1.18), (cx + w * 0.1, yb + w * 1.06)], "#FFFFFF", 1.6)
+    texto(cx, yb + w * 1.58, "UNI-T", w * 0.13, "middle", "#FFFFFF", peso="bold", capa=frente)
+    for k, col in enumerate(("#111", "#C8102E")):
+        circ(frente, x + w * (0.36 + k * 0.28), yb + w * 1.72, w * 0.05, col, "#000", 0.5)
     return (cx, cy)
 
 
@@ -383,20 +397,18 @@ poli(frente, [(c1[0] - 26, ry0 + 6), (c1[0] - 70, ry0 - 20)], NEG, 1)
 texto(c1[0] - 74, ry0 - 22, "Robot", 13, "end")
 
 # ======================================================================== conexiones
-# arnés del robot (malla negra): cable principal + señal del captor; se abre junto a los tableros
+# arnés del robot (malla negra) hasta el conector del control box; la señal del captor sale de ese punto
 xa = c1[0]
-arnes = [(xa, ry0), (xa, 304), (860, 304)]
+yp = cb["principal"][1]
+arnes = [(xa, ry0), (xa, yp), (cb["principal"][0] + 4, yp)]
 poli(cables, arnes, "#1E1E1E", 9)
 poli(cables, arnes, "#555", 9, extra=' stroke-dasharray="2 4"')
-poli(cables, [(xa, 304), (xa, te["captor"][1])], "#1E1E1E", 9)
-poli(cables, [(xa, 304), (xa, te["captor"][1])], "#555", 9, extra=' stroke-dasharray="2 4"')
-linea([(860, cb["principal"][1]), cb["principal"]])
-linea([(xa - 5, te["captor"][1]), te["captor"]])
-texto(1130, 290, "Arnés del robot (cable principal y señal del captor)", 12, "middle")
-texto(1080, te["captor"][1] - 6, "Señal del captor", 11.5, "middle")
+linea([(cb["principal"][0] + 12, yp + 4), (cb["principal"][0] + 12, yp + 10), (850, yp + 10), (850, te["captor"][1]), te["captor"]])
+texto(1130, yp - 12, "Arnés del robot (cable principal y señal del captor)", 12, "middle")
+texto(858, te["captor"][1] + 4, "Señal del captor", 11.5)
 # control box → tablero EL CID (posición) y PC (USB / Ethernet por debajo del control box)
 linea([cb["bnc"], (830, cb["bnc"][1]), (830, te["pos"][1]), te["pos"]])
-texto(838, 620, "Señal de\nposición", 11.5)
+texto(858, te["pos"][1] + 4, "Señal de posición", 11.5)
 linea([cb["usb"], (800, cb["usb"][1]), (800, 510), (340, 510)])
 linea([cb["eth"], (785, cb["eth"][1]), (785, 500), (340, 500)])
 texto(450, 494, "Ethernet", 11.5, "middle")
@@ -413,40 +425,43 @@ texto(380, te["iec"][1] - 6, "Alimentación", 11, "middle")
 # tierras: tablero EL CID → zapatilla; zapatilla → núcleo estatórico (por arriba)
 linea([te["ground"], (260, te["ground"][1]), (260, 1017), (240, 1017)], VERDE, 2.6)
 texto(400, te["ground"][1] - 6, "Tierra tablero EL CID", 11, "middle")
-linea([(110, 1017), (60, 1017), (60, 130), (1760, 130), (1760, 760), (c2[0] + math.sqrt(R ** 2 - 45 ** 2), 760)], VERDE, 2.6)
-texto(940, 124, "Tierra principal (desde el núcleo estatórico)", 11.5, "middle")
-simbolo_tierra(1760, 784)
+linea([(110, 1017), (80, 1017), (80, 1046)], VERDE, 2.6)
+simbolo_tierra(80, 1058)
+pt_n = (c2[0] + math.sqrt(R ** 2 - 45 ** 2), 760)
+linea([pt_n, (1760, 760), (1760, 790)], VERDE, 2.6)
+simbolo_tierra(1760, 802)
+texto(1755, 748, "Tierra del núcleo", 11.5, "end")
 # corriente de excitación: bornes 6 y 7 → tablero EL CID (rojo)
 ROJO = "#D32F2F"
-linea([te["b1"], (te["b1"][0], 950), (tx["sup"][5], 950), (tx["sup"][5], tx["y_sup"])], ROJO, 2.4)
-linea([te["b2"], (te["b2"][0], 962), (tx["sup"][6], 962), (tx["sup"][6], tx["y_sup"])], ROJO, 2.4)
+linea([te["b1"], (te["b1"][0], 932), (tx["sup"][5], 932), (tx["sup"][5], tx["y_sup"])], ROJO, 2.4)
+linea([te["b2"], (te["b2"][0], 940), (tx["sup"][6], 940), (tx["sup"][6], tx["y_sup"])], ROJO, 2.4)
 
 # cable de excitación de 5 hilos: vaina negra, pasa por el entrehierro y vuelve por fuera del núcleo
 pf, pb = (c1[0] - 28, c1[1] + 30), (c2[0] - 28, c2[1] + 30)
 sup_x = sum(tx["sup"][:5]) / 5
 cable_5_hilos([(sup_x, 965), (sup_x, 880), (420, 880), (420, 1238), (1700, 1238), (1700, pb[1] - 12), (pb[0], pb[1] - 12)],
               (sup_x, 965), tx["sup"][:5], tx["y_sup"])
-cable_5_hilos([(sup_x, 1120), (sup_x, 1224), (1350, 1224), (1350, pf[1]), pf],
-              (sup_x, 1120), tx["sup"][:5], tx["y_inf"], desde_abajo=True)
+inf_x = sum(tx["sup"][1:6]) / 5
+cable_5_hilos([(inf_x, 1120), (inf_x, 1224), (1350, 1224), (1350, pf[1]), pf],
+              (inf_x, 1120), tx["sup"][1:6], tx["y_inf"], desde_abajo=True)
 poli(cables, [pf, (pb[0], pb[1] - 12)], "#111", 6, extra=' stroke-dasharray="10 7"')
 texto(1180, 1217, "Cable de excitación de 5 hilos (espiras en serie)", 12, "middle")
 
 # conexiones internas del tablero de excitación
-MARRON, AZUL = "#7B4A2A", "#2A62C9"
-ys, ysb, yi, yit = tx["y_sup"], tx["y_sup_b"], tx["y_inf"], tx["y_inf_t"]
+MARRON, AZUL, GRIS_W = "#7B4A2A", "#2A62C9", "#4D4D4D"
 t = tx["sup"]
-poli(cables, [tx["L"], (tx["L"][0], 972), (tx["mcb_sup"][0], 972), tx["mcb_sup"]], MARRON, 1.8)
-poli(cables, [(tx["mcb_izq"], ys + 9), (tx["der"] + 1, ys + 9)], MARRON, 1.8)                  # interruptor → borne 7
-for k in range(5):                                                                              # puentes: inferior k → superior k+1
-    poli(cables, [(t[k], yit), (t[k + 1], ysb)], ROJO, 1.4)
-linea([tx["N"], (tx["N"][0], 980), (696, 980), (696, 1165), (566, 1165), (566, yit + 9), (tx["izq"] - 1, yit + 9)], AZUL, 1.8)
-# circuito auxiliar: espira · resistencias · llave, y fichas banana en paralelo
+# ficha (salida del Variac) → borne 1 inferior y borne 7 inferior
+linea([tx["N"], (tx["N"][0], 952), (566, 952), (566, tx["y_inf"] + 10), (t[0], tx["y_inf"] + 10), (t[0], tx["y_inf"])], AZUL, 1.8)
+linea([tx["L"], (tx["L"][0], 970), (655, 970), (655, tx["y_inf"] + 10), (t[6], tx["y_inf"] + 10), (t[6], tx["y_inf"])], MARRON, 1.8)
+# circuito auxiliar: borne AUX 1 → llave → bus de la protoboard; borne AUX 2 → bus de la protoboard
 a1, a2 = tx["aux"]
-GRIS_W = "#4D4D4D"
-poli(cables, [(a1, tx["y_aux_inf"]), (a1, 1118), (tx["r1"][0] - 6, 1118), (tx["r1"][0] - 6, tx["y_r"]), (tx["r1"][0], tx["y_r"])], GRIS_W, 1.4)
-poli(cables, [(tx["r1"][1], tx["y_r"]), (tx["r2"][0], tx["y_r"])], GRIS_W, 1.4)
-poli(cables, [(tx["r2"][1], tx["y_r"]), (980, tx["y_r"]), (980, tx["llave"][2] + 8)], GRIS_W, 1.4)
-poli(cables, [(tx["llave"][0], tx["llave"][2]), (875, tx["llave"][2]), (875, 1095), (a2, 1095), (a2, tx["y_aux_inf"])], GRIS_W, 1.4)
+bx, bya, byb = tx["bus"]
+linea([(a1, tx["y_aux_inf"]), (a1, tx["y_aux_inf"] + 4), (700, tx["y_aux_inf"] + 4), (700, 980), (tx["mcb_sup"][0], 980), (tx["mcb_sup"][0], tx["mcb_sup"][1])], GRIS_W, 1.5)
+linea([(tx["mcb_inf"][0], tx["mcb_inf"][1] + 4), (tx["mcb_inf"][0], 1162), (962, 1162), (962, byb), (bx, byb)], GRIS_W, 1.5)
+linea([(a2, tx["y_aux_inf"]), (a2, tx["y_aux_inf"] + 8), (955, tx["y_aux_inf"] + 8), (955, bya), (bx, bya)], GRIS_W, 1.5)
+circ(cables, bx, bya, 1.8, "#C8102E")
+circ(cables, bx, byb, 1.8, "#2A62C9")
+# fichas banana en paralelo con la espira auxiliar
 poli(cables, [tx["j_neg"], (tx["j_neg"][0], 985), (a1, 985), (a1, tx["y_aux"])], "#151515", 1.4)
 poli(cables, [tx["j_roj"], (918, tx["j_roj"][1]), (918, 995), (a2, 995), (a2, tx["y_aux"])], ROJO, 1.4)
 
@@ -463,7 +478,7 @@ def punta(p0, p1, col, baja):
 punta(tx["j_roj"], mm["v"], "#C8102E", 1130)
 punta(tx["j_neg"], mm["com"], "#151515", 1150)
 texto(1180, 1000, "Voltímetro\n(tensión por espira)", 11.5)
-pz = pinza(1295, 1000 - 70 * 0.38 + 14)
+pz = pinza(1330 - 32, 1000 - 64 * 0.36)
 texto(1375, 1060, "Pinza amperométrica\n(corriente en la\nespira auxiliar)", 11.5)
 
 texto(W - 36, H - 30, "Mecanálisis – 00503-00-EPG001 – 28/10/2026", 11, "end")
@@ -485,8 +500,8 @@ def verticales_de(objs):
 
 # vainas del cable de 5 hilos como verticales a saltar
 vainas = [{"pts": p, "ancho": 6} for p in ([(1350, 1224), (1350, 935)], [(1700, 1238), (1700, 793)], [(420, 880), (420, 1238)],
-                                         [(sup_x, 1120), (sup_x, 1224)], [(sup_x, 880), (sup_x, 965)])]
-vainas.append({"pts": [(xa, ry0), (xa, 304)], "ancho": 9})
+                                         [(inf_x, 1120), (inf_x, 1224)], [(sup_x, 880), (sup_x, 965)])]
+vainas.append({"pts": [(xa, ry0), (xa, yp)], "ancho": 9})
 verticales = verticales_de(lineas) + verticales_de(vainas)
 
 
