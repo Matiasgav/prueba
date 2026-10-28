@@ -81,7 +81,19 @@ async function construir(modulo, nombre) {
   fs.rmSync(tmp, { recursive: true, force: true });
 }
 
+// Esquema general: SVG → PNG (horizontal y girado para la página vertical) y PDF A4 apaisado.
+function esquema() {
+  const img = path.join(__dirname, "img");
+  sh("python3", [path.join(__dirname, "esquema_general.py")]);
+  const conv = (salida) => execFileSync("node", [path.join(__dirname, "svg_a_png.js"), path.join(img, "esquema_general.svg"), salida, "2"],
+    { env: { ...process.env, NODE_PATH: process.env.NODE_PATH || "/usr/local/lib/node_modules_global" } });
+  conv(path.join(img, "esquema_general.png"));
+  conv(path.join(SALIDA, "pdf", "00503-00-EPG001 Figura 1 Esquema general de conexiones.pdf"));
+  sh("python3", ["-c", `from PIL import Image; Image.open(r"${path.join(img, "esquema_general.png")}").rotate(90, expand=True).save(r"${path.join(img, "esquema_general_vertical.png")}")`]);
+}
+
 (async () => {
   fs.mkdirSync(path.join(SALIDA, "pdf"), { recursive: true });
+  esquema();
   for (const [m, n] of DOCS) await construir(m, n);
 })().catch((e) => { console.error(e.stderr ? e.stderr.toString() : e); process.exit(1); });

@@ -9,7 +9,7 @@ const P2 = `${ANEXO} – Protocolo 2`;
 const P3 = `${ANEXO} – Protocolo 3`;
 const CHECKLIST = "00503-00-ZRQ001";
 const RIESGO = "00503-00-ZIT003";
-const ESQUEMA = "Esquema de conexiones";
+const ESQUEMA = "Figura 1";
 
 const meta = {
   codigo: "00503-00-EPG001",
@@ -74,7 +74,7 @@ const etapas = [
     [null, "Instalar la espira auxiliar en la primera ranura a inspeccionar o en la ranura definida por Ingeniería.", P1],
   ] },
 
-  { id: "conf", titulo: "CONFIGURACIÓN Y MONTAJE DEL SISTEMA GRIS", ref: `${P3} / Manual de software GRIS`, pasos: [
+  { id: "conf", titulo: "CONFIGURACIÓN Y MONTAJE DEL SISTEMA GRIS", ref: `${P3} / Manual de software GRIS / Figura 1`, intro: "Las conexiones se realizan según el esquema general de la Figura 1.", pasos: [
     [null, "Ingresar en el software GRIS los parámetros geométricos medidos y obtener los valores de ajuste del robot y de la rampa.", "Manual de software GRIS"],
     [null, "Cortar los rieles de la rampa a la longitud requerida. Limar los bordes y eliminar rebabas.", "—"],
     [null, "Ajustar la rampa con los valores obtenidos para posicionar tangencialmente el robot sobre la ranura a inspeccionar.", "—"],
@@ -85,6 +85,9 @@ const etapas = [
     [null, "Configurar en ELCSoft los parámetros del ensayo y el paso de registro EL CID (recomendado: 7 mm). Configurar el paso de adquisición automática de fotografías y el paso de muestreo WTT.", `${P3} / Manual de software GRIS`],
     ["check", "Realizar la verificación pre-ensayo de desprendimiento de piezas del robot y registrarla en el checklist antes de introducir el robot.", `${CHECKLIST} (Pre-Test)`],
     [null, "Montar el robot sobre la rampa y verificar que el conjunto ingresa, se posiciona y se desplaza sin interferencias.", "—"],
+  ], despues: () => [
+    F.saltoPagina(),
+    ...F.figura("esquema_general_vertical.png", 2200, 3200, "Figura 1: Esquema general de conexiones del sistema GRIS (líneas a trazos: conexiones a confirmar)", 15.2),
   ] },
 
   { id: "cal", titulo: "RECONOCIMIENTO Y CALIBRACIÓN", ref: P2, intro: "Se realizan sobre la primera ranura a inspeccionar, antes de iniciar la secuencia completa.", pasos: [
@@ -188,7 +191,6 @@ const cuerpo = [
   tabla(["Documento", "Contenido"], [3800, 5838], [
     [`${ANEXO} – Protocolos de ensayo EL CID`, "Protocolo 1: excitación del núcleo. Protocolo 2: calibración. Protocolo 3: operación de ELCSoft."],
     ["Manual de software GRIS", "Operación del software de control del robot y de la rampa."],
-    [ESQUEMA, "Conexionado del robot, la rampa, el control box, el tablero EL CID, el Variac y la PC."],
     [`${RIESGO} – Residual Part Detachment Risk Assessment`, "Evaluación del riesgo residual de desprendimiento de 22 posiciones del robot GRIS."],
     [`${CHECKLIST} – Inspection Detachment Checklist`, "Verificación pre y post-ensayo de las 22 posiciones evaluadas."],
   ]),
