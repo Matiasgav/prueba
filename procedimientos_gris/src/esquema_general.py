@@ -410,11 +410,18 @@ texto(c1[0] - 74, ry0 - 22, "Robot", 13, "end")
 # arnés del robot (malla negra) hasta el conector del control box; la señal del captor sale de ese punto
 xa = c1[0]
 yp = cb["principal"][1]
-arnes = [(xa, ry0), (xa, yp), (cb["principal"][0] + 4, yp)]
+xb = 905                                                                             # fin de la malla (funda de terminación)
+arnes = [(xa, ry0), (xa, yp), (xb + 16, yp)]
 poli(cables, arnes, "#1E1E1E", 9)
 poli(cables, arnes, "#555", 9, extra=' stroke-dasharray="2 4"')
-linea([(850, yp + 5), (850, te["captor"][1]), te["captor"]])
-rect(frente, 843, yp + 3, 14, 9, "#1E1E1E", "#000", 0.6, 2)                         # salida de la señal del captor desde el arnés
+# los dos cables salen de la funda: el principal recto al conector, el del captor baja al tablero EL CID
+xc = 862
+cables.append(f'<path d="M{xb},{yp - 1.5} L{cb["principal"][0]:.1f},{yp - 1.5}" stroke="#2B2B2B" stroke-width="3.6" fill="none"/>')
+cables.append(f'<path d="M{xb},{yp + 2.5} C{xb - 22},{yp + 2.5} {xc},{yp + 6} {xc},{yp + 26} L{xc},{te["captor"][1]} '
+              f'L{te["captor"][0]:.1f},{te["captor"][1]:.1f}" stroke="#000" stroke-width="1.6" fill="none"/>')
+frente.append(f'<path d="M{xb},{yp - 4.5} L{xb + 18},{yp - 6.5} L{xb + 18},{yp + 6.5} L{xb},{yp + 4.5} Z" fill="#111" stroke="#000" stroke-width="0.6"/>')
+frente.append(f'<line x1="{xb + 3}" y1="{yp - 3.5}" x2="{xb + 15}" y2="{yp - 5}" stroke="#555" stroke-width="0.8"/>')
+texto(822, yp - 7, "Cable principal", 10.5, "middle")
 texto(1130, yp - 12, "Arnés del robot (cable principal y señal del captor)", 12, "middle")
 texto(858, te["captor"][1] + 4, "Señal del captor", 11.5)
 # control box → tablero EL CID (posición) y PC (USB / Ethernet por debajo del control box)
