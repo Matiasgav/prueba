@@ -76,7 +76,7 @@ const etapas = [
     [null, "Ubicar inicialmente el arrollamiento a 120° de la primera ranura a inspeccionar, en sentido opuesto al avance angular previsto.", "—"],
     [null, "Planificar la reubicación del arrollamiento cada 120° de avance angular, de modo que durante el ensayo nunca quede a menos de 120° de la ranura inspeccionada.", "Paso {reubicar}"],
     [null, "Instalar la espira auxiliar en la primera ranura a inspeccionar o en la ranura definida por Ingeniería.", P1],
-  ], despues: () => [espacio(), nota("Precaución:", ref("el tablero de excitación se encuentra en desarrollo. No operarlo ni manipularlo con tensión. La ficha que viene del Variac queda con los contactos macho expuestos: nunca manipularla con el Variac conectado a la red (paso {variac})."))] },
+  ], despues: () => [espacio(), nota("Precaución:", ref("la ficha que viene del Variac queda con los contactos macho expuestos: nunca manipularla con el Variac conectado a la red (paso {variac})."))] },
 
   { id: "conf", titulo: "CONFIGURACIÓN Y MONTAJE DEL SISTEMA GRIS", ref: `${P3} / ${MANUAL} / Figura 1`, intro: "Las conexiones se realizan según el esquema general de la Figura 1.", pasos: [
     ["sw_config", "Ingresar en el software GRIS los parámetros geométricos medidos y obtener los valores de ajuste del robot y de la rampa.", `${MANUAL}, apartado 4.2`],
@@ -201,7 +201,6 @@ const cuerpo = [
     ["Desprendimiento de piezas del robot dentro del generador.", "Pieza suelta dentro de la máquina; daño a sus componentes si se pone en servicio.", `Riesgo residual evaluado en ${RIESGO} (todas las posiciones: bajo o muy bajo). Verificación pre y post-ensayo con ${CHECKLIST} (pasos ${num.check} y ${num.post}).`],
     ["Falla del robot durante el ensayo.", "Demora de la inspección.", "Kit de repuestos GRIS completo (Tabla 1)."],
     ["Fatiga del operador.", "Error de operación: caída del robot, salida por el extremo o datos erróneos.", `Al menos dos operadores calificados y pausas regulares (paso ${num.operadores}).`],
-    ["Tablero de excitación en desarrollo; ficha del Variac con contactos macho expuestos.", "Choque eléctrico.", `No operar ni manipular el tablero con tensión; conectar el Variac a la red solo con la ficha ya conectada (paso ${num.variac}).`],
     ["Riesgo eléctrico: equipos alimentados en 220 V CA y arrollamiento de excitación energizado.", "Choque eléctrico.", "Protección diferencial; desenergizar en pausas e intervenciones; puesta a tierra única."],
     ["Manipulación de la rampa con esfuerzos elevados en posiciones incómodas.", "Golpes, caídas y cortes.", "EPP; rieles limados y sin rebabas."],
   ]),
