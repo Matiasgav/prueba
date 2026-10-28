@@ -414,11 +414,11 @@ def advertencia_icono(capa, x, y, a=16):
 
 
 ROJO, MARRON, AZUL, GRIS_W = "#D32F2F", "#7B4A2A", "#2A62C9", "#4D4D4D"
-EX_X, EX_Y, EX_W = 450, 980, 560          # tablero de excitación (mismas coordenadas en ambas figuras)
+EX_X, EX_Y, EX_W = 450, 980, 560          # tablero de excitación: posición de referencia de cableado_interno
 
 
 def cableado_interno(tx):
-    """Conexiones internas del tablero de excitación (iguales en la figura general y en el detalle)."""
+    """Conexiones internas del tablero de excitación."""
     t = tx["sup"]
     k = EX_W / 560                       # coordenadas de referencia: tablero en (450, 980) con 560 de ancho
     gx = lambda v: EX_X + (v - 450) * k
@@ -588,66 +588,3 @@ texto(W - 36, H - 34, "Mecanálisis – 00503-00-EPG001 – 28/10/2026", T, "end
 vainas = [{"pts": p, "ancho": 6} for p in ([(sup_x, 900), (sup_x, yA)], [(2070, pf[1]), (2070, 900)], [(inf_x, yB), (inf_x, 1420)],
                                          [(2560, pb[1]), (2560, 1420)], [(xa, ry0), (xa, yp)])]
 armar_svg((0, 0, W, H), vainas, "esquema_general.svg")
-
-# ======================================================================== FIGURA 2: detalle del tablero de excitación
-def detalle():
-    """Tablero de excitación con sus conexiones internas y los extremos de los cables que salen de él."""
-    global fondo, cables, frente, lineas, EX_X, EX_Y, EX_W
-    EX_X, EX_Y, EX_W = 450, 980, 560
-    fondo, cables, frente, lineas = [], [], [], []
-    tx = tablero_excitacion(EX_X, EX_Y, EX_W)
-    cableado_interno(tx)
-    sup_x = sum(tx["sup"][:5]) / 5
-    inf_x = sum(tx["sup"][1:6]) / 5
-    yA, yB = tx["y_sup"] - 36, tx["y_inf"] + 36
-    cable_5_hilos([(sup_x, yA), (sup_x, 900)], (sup_x, yA), tx["sup"][:5], tx["y_sup"])
-    cable_5_hilos([(inf_x, yB), (inf_x, 1320)], (inf_x, yB), tx["sup"][1:6], tx["y_inf"], desde_abajo=True)
-    for k, xt in enumerate((tx["sup"][5], tx["sup"][6])):
-        linea([(xt, tx["y_sup"]), (xt, 900 - k * 12)], ROJO, 2.4)
-    a1, a2 = tx["aux"]
-    linea([(a1, tx["y_aux"]), (a1, 940), (1060, 940)], VIOL, 2)
-    linea([(a2, tx["y_aux"]), (a2, 952), (1060, 952)], VIOL, 2)
-    poli(cables, [tx["ficha"], (1060, tx["ficha"][1])], "#111", 6)
-    for p0, col in ((tx["j_roj"], "#C8102E"), (tx["j_neg"], "#151515")):
-        cables.append(f'<path d="M{p0[0]:.1f},{p0[1]:.1f} C{p0[0] + 40:.1f},{p0[1] + 10:.1f} 1030,{p0[1] + 40:.1f} 1060,{p0[1] + 40:.1f}" fill="none" stroke="{col}" stroke-width="2.2"/>')
-
-    return tx
-
-
-TD = 27                                   # ≥ 10 pt con la figura a 17 cm de ancho
-VX, VY, VW, VH = 120, 790, 1270, 600
-tx = detalle()
-sup_x = sum(tx["sup"][:5]) / 5
-inf_x = sum(tx["sup"][1:6]) / 5
-yA, yB = tx["y_sup"] - 36, tx["y_inf"] + 36
-a1, a2 = tx["aux"]
-
-def nota_d(x, y, lineas_txt, hacia, ancla="start", color=NEG):
-    """Rótulo con línea de referencia al punto `hacia`."""
-    alto = len(lineas_txt) * (TD + 4)
-    xr = x - 6 if ancla == "end" else x + 0
-    poli(frente, [hacia, (x - 8 if ancla == "start" else x + 8, y - TD * 0.35)], NEG, 1.1)
-    circ(frente, *hacia, 3, NEG)
-    for k, t_ in enumerate(lineas_txt):
-        texto(x, y + k * (TD + 4), t_, TD, ancla, color)
-
-
-bx, bya, byb = tx["bus"]
-nota_d(445, 905, ["Hilos 1–5", "(extremo A)"], (sup_x - 4, yA + 6), "end")
-nota_d(445, 1080, ["Bornera", "EXCITATION"], (tx["izq"] + 2, (tx["y_sup"] + tx["y_inf"]) / 2), "end")
-nota_d(445, 1250, ["Hilos 1–5 (extremo B,", "corridos un borne)"], (inf_x - 4, yB - 6), "end")
-nota_d(660, 850, ["Bornes 6 y 7: corriente de", "excitación al tablero EL CID"], (tx["sup"][6], 905), "start", ROJO)
-nota_d(1075, 905, ["Salida del Variac", "→ bornes 1 y 7"], (tx["ficha"][0] - 4, tx["ficha"][1]), "start")
-nota_d(1075, 1000, ["Espira auxiliar", "(bornes AUX, arriba)"], (1056, 946), "start", VIOL)
-nota_d(1075, 1095, ["Fichas banana", "(voltímetro)"], (tx["j_roj"][0] + 4, tx["j_roj"][1] + 4), "start")
-nota_d(700, 1318, ["Llave de la espira auxiliar"], (tx["mcb_inf"][0], tx["mcb_inf"][1] + 8), "start")
-nota_d(1075, 1262, ["Protoboard:", "resistencias de", "calibración"], (bx - 30, (bya + byb) / 2 + 12), "start")
-advertencia_icono(frente, 140, 1372, 24)
-texto(172, 1369, "Tablero en desarrollo: no operar ni manipular con tensión.", TD, peso="bold")
-vainas = [{"pts": p, "ancho": 6} for p in ([(sup_x, 900), (sup_x, yA)], [(inf_x, yB), (inf_x, 1320)])]
-armar_svg((VX, VY, VW, VH), vainas, "detalle_tablero_excitacion.svg")
-
-# ======================================================================== FIGURA 3: ampliación de las borneras (numeración legible)
-tx = detalle()
-vainas = [{"pts": p, "ancho": 6} for p in ([(sup_x, 900), (sup_x, yA)], [(inf_x, yB), (inf_x, 1320)])]
-armar_svg((530, 1000, 400, 240), vainas, "detalle_borneras.svg")

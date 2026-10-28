@@ -71,8 +71,8 @@ const etapas = [
   ] },
 
   { id: "exc", titulo: "MONTAJE DE LA EXCITACIÓN DEL NÚCLEO", ref: P1, pasos: [
-    [null, "Montar el cable de excitación de 5 hilos a través del entrehierro y conectar sus extremos a la bornera EXCITATION del tablero de excitación, haciendo coincidir números y colores, de modo que las espiras queden en serie.", `${P1} / Figuras 2 y 3`],
-    ["variac", "Con el Variac desconectado de la red, conectar su ficha al tablero de excitación. Recién entonces conectar el Variac a la red. Para desconectar, seguir el orden inverso: primero desconectar el Variac de la red y luego la ficha.", "Apartado 2.1 / Figura 2"],
+    [null, "Montar el cable de excitación de 5 hilos a través del entrehierro y conectar sus extremos a la bornera EXCITATION del tablero de excitación, haciendo coincidir números y colores, de modo que las espiras queden en serie.", `${P1} / Figura 1`],
+    ["variac", "Con el Variac desconectado de la red, conectar su ficha al tablero de excitación. Recién entonces conectar el Variac a la red. Para desconectar, seguir el orden inverso: primero desconectar el Variac de la red y luego la ficha.", "Apartado 2.1 / Figura 1"],
     [null, "Ubicar inicialmente el arrollamiento a 120° de la primera ranura a inspeccionar, en sentido opuesto al avance angular previsto.", "—"],
     [null, "Planificar la reubicación del arrollamiento cada 120° de avance angular, de modo que durante el ensayo nunca quede a menos de 120° de la ranura inspeccionada.", "Paso {reubicar}"],
     [null, "Instalar la espira auxiliar en la primera ranura a inspeccionar o en la ranura definida por Ingeniería.", P1],
@@ -91,8 +91,6 @@ const etapas = [
     ["montaje", "Montar el robot sobre la rampa y verificar que el conjunto ingresa, se posiciona y se desplaza sin interferencias.", `${MANUAL}, apartado 4.3`],
   ], despues: () => [
     F.hojaA3("esquema_general.png", 5200, 3000, "Figura 1: Esquema general de conexiones del sistema GRIS"),
-    ...F.figura("detalle_tablero_excitacion.png", 2540, 1200, "Figura 2: Detalle del tablero de excitación (conexiones internas)", 17),
-    ...F.figura("detalle_borneras.png", 2400, 1440, "Figura 3: Ampliación de las borneras EXCITATION y AUX (numeración de bornes)", 17),
   ] },
 
   { id: "cal", titulo: "RECONOCIMIENTO Y CALIBRACIÓN", ref: P2, intro: "Se realizan sobre la primera ranura a inspeccionar, antes de iniciar la secuencia completa.", pasos: [

@@ -13,8 +13,7 @@ PDF = RAIZ / "pdf"
 CONTENIDO = [
     ("1 Procedimiento", [RAIZ / "00503-00-EPG001 Procedimiento Inspeccion Robotizada GRIS.docx",
                          PDF / "00503-00-EPG001 Procedimiento Inspeccion Robotizada GRIS.pdf",
-                         PDF / "00503-00-EPG001 Figura 1 Esquema general de conexiones (A3).pdf",
-                         PDF / "00503-00-EPG001 Figura 2 Detalle del tablero de excitacion.pdf"]),
+                         PDF / "00503-00-EPG001 Figura 1 Esquema general de conexiones (A3).pdf"]),
     ("2 Anexo EL CID", [RAIZ / "00503-00-EPG002 Anexo Protocolos de Ensayo EL CID.docx",
                         PDF / "00503-00-EPG002 Anexo Protocolos de Ensayo EL CID.pdf",
                         F / "RME-ELC-01 Registro de calculo de excitacion.xlsx"]),
@@ -31,7 +30,7 @@ El documento principal es 00503-00-EPG001. Los demás derivan de él y se invoca
 
 1 Procedimiento
   00503-00-EPG001  Procedimiento de inspección robotizada GRIS (ensayos EL CID y WTT en entrehierro).
-                   Figura 1 en hoja A3 y Figura 2 también como PDF sueltos, para imprimir.
+                   Figura 1 (esquema de conexiones) también como PDF A3 suelto, para imprimir.
 2 Anexo EL CID
   00503-00-EPG002  Protocolos de ensayo EL CID: excitación, calibración, ELCSoft y cálculo de la excitación.
   RME-ELC-01       Registro de cálculo de excitación (planilla).
