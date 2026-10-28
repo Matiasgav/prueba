@@ -106,7 +106,7 @@ const etapas = [
   ] },
 
   { id: "cal", titulo: "RECONOCIMIENTO Y CALIBRACIÓN", ref: P2, intro: "Se realizan sobre la primera ranura a inspeccionar, antes de iniciar la secuencia completa.", pasos: [
-    ["recon", "Realizar una pasada lenta de reconocimiento con las cámaras para detectar gotas de resina, rebabas, obstáculos o cualquier condición que impida el paso o la adherencia del robot.", `Apartado 2.1 / ${MANUAL}, apartado 4.3`],
+    ["recon", "Realizar una pasada lenta de reconocimiento con las cámaras para detectar puntas de resina, rebabas, obstáculos o cualquier condición que impida el paso o la adherencia del robot.", `Apartado 2.1 / ${MANUAL}, apartado 4.3`],
     [null, "Registrar la ubicación de los límites de cuñas y de las referencias axiales visibles, para referenciar la posición axial del robot.", "—"],
     ["limite", "Definir la posición máxima de avance axial seguro y los límites de recorrido del robot dentro del núcleo.", `Apartado 2.1 / ${MANUAL}, apartado 4.3`],
     ["wtt_verif", "Realizar verificaciones funcionales del WTT sobre la misma ranura/cuña: detección, repetibilidad y registro correcto.", `${MANUAL}, apartado 5.2`],
@@ -195,9 +195,9 @@ const cuerpo = [
   h2("2.1 RIESGOS PRINCIPALES"),
   p("Antes de iniciar el trabajo, todo el personal debe conocer los siguientes riesgos, que pueden ocasionar accidentes o incidentes, y las medidas de este procedimiento que los controlan. Los riesgos propios de la inspección robotizada se toman de la Tabla 4-4 del informe EPRI 3002013612 (2018), «Generator Robotic Inspection and Test Guidelines», en lo que aplica al sistema GRIS:"),
   tabla(["Riesgo", "Consecuencia posible", "Control"], [3500, 2900, 3238], [
-    ["Pérdida de adherencia del robot al pasar sobre una gota de resina de gran altura, en especial en la parte superior del estator.", "Caída del robot dentro del entrehierro; daño al robot o a la máquina.", `Pasada de reconocimiento (paso ${num.recon}); cuerdas de seguridad con tensión constante.`],
+    ["Pérdida de adherencia del robot al pasar sobre una punta de resina de gran altura, en especial en la parte superior del estator.", "Caída del robot dentro del entrehierro; daño al robot o a la máquina.", `Pasada de reconocimiento (paso ${num.recon}); cuerdas de seguridad con tensión constante.`],
     ["Salida del robot por el extremo opuesto del núcleo o caída por uno de los extremos del estator.", "Caída del robot; daño al robot o a la máquina.", `Límite de avance axial seguro (paso ${num.limite}); cuerdas de seguridad.`],
-    ["Robot atascado en el entrehierro (gota de resina, pérdida de energía o falla del robot).", "Demora de la parada; en el peor caso, abrir el otro extremo del generador.", `Recuperación con las cuerdas de seguridad (paso ${num.cuerdas}).`],
+    ["Robot atascado en el entrehierro (punta de resina, pérdida de energía o falla del robot).", "Demora de la parada; en el peor caso, abrir el otro extremo del generador.", `Recuperación con las cuerdas de seguridad (paso ${num.cuerdas}).`],
     ["Desprendimiento de piezas del robot dentro del generador.", "Pieza suelta dentro de la máquina; daño a sus componentes si se pone en servicio.", `Riesgo residual evaluado en ${RIESGO} (todas las posiciones: bajo o muy bajo). Verificación pre y post-ensayo con ${CHECKLIST} (pasos ${num.check} y ${num.post}).`],
     ["Falla del robot durante el ensayo.", "Demora de la inspección.", "Kit de repuestos GRIS completo (Tabla 1)."],
     ["Fatiga del operador.", "Error de operación: caída del robot, salida por el extremo o datos erróneos.", `Al menos dos operadores calificados y pausas regulares (paso ${num.operadores}).`],
