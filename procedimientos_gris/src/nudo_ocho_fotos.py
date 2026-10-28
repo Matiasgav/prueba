@@ -71,10 +71,6 @@ def main():
     xt = M + grande + 30
     texto(xt, y + 50, "Nudo terminado", T, "bold")
     texto(xt, y + 96, "Apretar tirando de\nlas cuatro puntas.\nDejar 3 a 5 cm\nde punta libre.")
-    texto(xt, y + 300, "Punta (chicote):", T, "bold")
-    texto(xt, y + 346, "el extremo libre, con\nel que se hace el nudo.")
-    texto(xt, y + 470, "Cuerda (firme):", T, "bold")
-    texto(xt, y + 516, "la parte que va\nhacia el operador.")
     H = y + alto + M
     svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" '
            f'font-family="Arial, Liberation Sans, Helvetica, sans-serif"><rect width="{W}" height="{H}" fill="#FFFFFF"/>'
