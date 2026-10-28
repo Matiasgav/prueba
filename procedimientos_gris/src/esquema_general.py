@@ -99,24 +99,24 @@ def control_box(x, y, w):
     rect(fondo, x, y, w, h, "#C9CDD0", "#8C9195", 0.6, 2)
     for cx, cy in ((x, y), (x + w, y), (x, y + h), (x + w, y + h)):              # esquineros
         rect(fondo, cx - 7, cy - 7, 14, 14, "#B8BDC1", "#7D8286", 0.6, 3)
-    rect(fondo, X(0.028), Y(0.023), w * 0.944, h * 0.954, "#141414")             # tapa negra
-    rect(fondo, X(0.028), Y(0.023), w * 0.944, 2, "#2A2A2A")
+    rect(fondo, X(0.028), Y(0.023), w * 0.944, h * 0.954, "#3A3D40")             # tapa negra (aclarada para que se distingan líneas y conectores)
+    rect(fondo, X(0.028), Y(0.023), w * 0.944, 2, "#4A4D50")
     for fx, fy in ((0.06, 0.045), (0.94, 0.045), (0.06, 0.955), (0.94, 0.955), (0.5, 0.045), (0.5, 0.955)):
-        tornillo(fondo, X(fx), Y(fy), 1.6, "#2E2E2E")
+        tornillo(fondo, X(fx), Y(fy), 1.6, "#55595D")
     rect(fondo, x - 6, Y(0.42), 8, h * 0.1, "#B8BDC1", "#7D8286", 0.6, 2)        # cierre lateral
     iec(X(0.211), Y(0.107), w * 0.165, h * 0.063)
     llave(X(0.232), Y(0.194), w * 0.097, h * 0.069)
-    rejilla(X(0.705), Y(0.180), w * 0.185, h * 0.176, 3.6)                      # ventilador
+    rejilla(X(0.705), Y(0.180), w * 0.185, h * 0.176, 3.6, "#26292B", "#5E6266")  # ventilador
     for fx, fy in ((0.705, 0.18), (0.89, 0.18), (0.705, 0.356), (0.89, 0.356)):
-        tornillo(fondo, X(fx), Y(fy), 1.8, "#1E1E1E")
-    rejilla(X(0.165), Y(0.772), w * 0.447, h * 0.10, 3.6)                       # rejilla inferior
+        tornillo(fondo, X(fx), Y(fy), 1.8, "#26292B")
+    rejilla(X(0.165), Y(0.772), w * 0.447, h * 0.10, 3.6, "#26292B", "#5E6266")   # rejilla inferior
     # conector del cable principal
     rect(fondo, X(0.79), Y(0.500), w * 0.13, h * 0.056, "#8E9396", "#5F6468", 0.6, 1.5)
     rect(fondo, X(0.802), Y(0.509), w * 0.105, h * 0.038, "#C3C7CA", "#6F7478", 0.6, 1)
     for fx in (0.797, 0.913):
         tornillo(fondo, X(fx), Y(0.528), 1.3, "#7A7F83")
     bnc(X(0.840), Y(0.593), w * 0.017)                                           # BNC posición
-    rect(fondo, X(0.803), Y(0.640), w * 0.086, h * 0.094, "#0B0B0B", "#555", 0.6, 2)  # USB (Neutrik)
+    rect(fondo, X(0.803), Y(0.640), w * 0.086, h * 0.094, "#1A1C1E", "#777", 0.6, 2)  # USB (Neutrik)
     rect(fondo, X(0.826), Y(0.667), w * 0.04, h * 0.035, "#2C5BD6", "#1B3C93", 0.5)
     for fx, fy in ((0.812, 0.648), (0.880, 0.726)):
         tornillo(fondo, X(fx), Y(fy), 1.1, "#555")
@@ -472,7 +472,6 @@ texto(285, 625, "PC GRIS", T, "middle")
 pc(230, 760, "")
 texto(285, 880, "PC EL CID", T, "middle")
 z1 = zapatilla(110, 1180, "")
-texto(200, 1300, "Zapatilla", T)
 red(147, 1250)
 linea([(170, 1214), (170, 1250)], NEG, 2)
 circ(frente, 236, 1197, 4, "#FFFFFF", VERDE, 1.6)
@@ -510,19 +509,19 @@ texto(c1[0] - 76, ry0 + 64, "Robot", T, "end")
 # ---------------------------------------------------------------- arnés del robot: del control box al robot
 xa, yp = c1[0], cb["principal"][1]
 xb = 1400
-poli(cables, [(xa, ry0), (xa, yp), (xb + 14, yp)], "#111", 6)
+poli(cables, [(xa, ry0), (xa, yp), (cb["principal"][0], yp)], "#111", 6)
 cables.append(f'<path d="M{xb},{yp - 3.5} L{xb + 14},{yp - 3.5} L{xb + 14},{yp + 3.5} L{xb},{yp + 3.5} Z" fill="#000"/>')
 cables.append(f'<path d="M{xb - 2},{yp - 4.5} L{xb + 2},{yp - 4.5} L{xb + 2},{yp + 4.5} L{xb - 2},{yp + 4.5} Z" fill="#000"/>')
 xc = 1370
-cables.append(f'<path d="M{xb - 2},{yp - 1.5} L{cb["principal"][0]:.1f},{yp - 1.5}" stroke="#2B2B2B" stroke-width="3" fill="none"/>')
 cables.append(f'<path d="M{xb - 2},{yp + 2} C{xb - 22},{yp + 2} {xc},{yp + 6} {xc},{yp + 26} L{xc},{te["captor"][1]} '
               f'L{te["captor"][0]:.1f},{te["captor"][1]:.1f}" stroke="#000" stroke-width="1.6" fill="none"/>')
 rotulo(1750, yp, "Arnés del robot")
 
 # ---------------------------------------------------------------- control box ↔ tablero EL CID y PC
 linea([cb["bnc"], (1330, cb["bnc"][1]), (1330, te["pos"][1]), te["pos"]])
-rotulo(1150, te["pos"][1], "Señal de posición")
-rotulo(1150, te["captor"][1], "Señal del captor")
+for k_, (con, txt) in enumerate(((te["pos"], "Señal de posición"), (te["captor"], "Señal del captor"))):
+    texto(1012, con[1] - 9, txt, T)
+    frente.append(f'<path d="M{con[0] + 4:.1f},{con[1]:.1f} l12,-6 l0,12 z" fill="{NEG}"/>')
 linea([cb["eth"], (1025, cb["eth"][1]), (1025, 520), (340, 520)])
 rotulo(600, 520, "Ethernet")
 linea([cb["usb"], (1045, cb["usb"][1]), (1045, 570), (340, 570)])
@@ -540,9 +539,9 @@ linea([te["ground"], (400, te["ground"][1]), (400, 1197), (240, 1197)], VERDE, 2
 rotulo(600, te["ground"][1], "Tierra", VERDE)
 linea([(110, 1197), (80, 1197), (80, 1226)], VERDE, 2.6)
 simbolo_tierra(80, 1238)
-linea([(c2[0] + R, c2[1]), (2470, c2[1]), (2470, c2[1] + 30)], VERDE, 2.6)
-simbolo_tierra(2470, c2[1] + 42)
-texto(2470, c2[1] - 14, "Tierra", T, "middle", VERDE)
+linea([(c1[0], c1[1] + R), (c1[0], c1[1] + R + 40)], VERDE, 2.6)
+simbolo_tierra(c1[0], c1[1] + R + 52)
+texto(c1[0] + 26, c1[1] + R + 50, "Tierra", T, color=VERDE)
 # ---------------------------------------------------------------- corriente de excitación (bornes 6 y 7 → tablero EL CID)
 linea([te["b1"], (te["b1"][0], 1007), (tx["sup"][5], 1007), (tx["sup"][5], tx["y_sup"])], ROJO, 2.4)
 linea([te["b2"], (te["b2"][0], 995), (tx["sup"][6], 995), (tx["sup"][6], tx["y_sup"])], ROJO, 2.4)
@@ -556,8 +555,6 @@ yA, yB = tx["y_sup"] - 36, tx["y_inf"] + 36
 cable_5_hilos([(sup_x, yA), (sup_x, 900), (2070, 900), (2070, pf[1]), pf], (sup_x, yA), tx["sup"][:5], tx["y_sup"])
 cable_5_hilos([(inf_x, yB), (inf_x, 1420), (2560, 1420), (2560, pb[1]), pb], (inf_x, yB), tx["sup"][1:6], tx["y_inf"], desde_abajo=True)
 poli(cables, [pf, pb], "#111", 6, extra=' stroke-dasharray="10 7"')
-rotulo(1900, 900, "Cable de 5 hilos")
-rotulo(1900, 1420, "Cable de 5 hilos")
 cableado_interno(tx)
 # ---------------------------------------------------------------- espira auxiliar
 a1, a2 = tx["aux"]
@@ -576,12 +573,17 @@ punta(tx["j_neg"], mm["com"], "#151515", 1195)
 pinza(2110, 760, 60, -90)
 texto(2165, 850, "Pinza amperométrica", T)
 # ---------------------------------------------------------------- advertencia vinculada a la ficha del Variac
+# Recuadro de advertencia con flecha a la ficha (tapa azul en el borde superior del tablero de excitación).
+bx_, by_, bw_, bh_ = 1440, 690, 540, 160
+rect(frente, bx_, by_, bw_, bh_, "#FFF6CC", "#C9A100", 2, 6)
+advertencia_icono(frente, bx_ + 16, by_ + 56, 34)
+texto(bx_ + 62, by_ + 50, "Ficha del Variac:", T, peso="bold")
+texto(bx_ + 62, by_ + 95, "no manipularla con el Variac", T)
+texto(bx_ + 62, by_ + 137, "conectado a la red.", T)
 cap = (tx["ficha"][0] - 30, tx["ficha"][1] - 30)
-poli(frente, [cap, (1500, 862)], NEG, 1.4)
-circ(frente, *cap, 3.5, NEG)
-advertencia_icono(frente, 1470, 800, 26)
-texto(1505, 798, "No manipular la ficha", T, peso="bold")
-texto(1470, 834, "con el Variac en la red", T, peso="bold")
+p0_ = (bx_ + 40, by_ + bh_)
+poli(frente, [p0_, (cap[0] + 4, cap[1] - 14)], "#C9A100", 3)
+frente.append(f'<path d="M{cap[0] + 4:.1f},{cap[1] - 2:.1f} l-9,-18 l18,0 z" fill="#C9A100"/>')
 
 texto(W - 36, H - 34, "Mecanálisis – 00503-00-EPG001 – 28/10/2026", T, "end")
 
