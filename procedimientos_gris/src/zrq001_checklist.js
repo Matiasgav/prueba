@@ -50,7 +50,7 @@ const linea = { style: BorderStyle.SINGLE, size: 4, color: "A6B4B8" };
 const bordes = { top: linea, bottom: linea, left: linea, right: linea };
 
 const parrafo = (texto, o = {}) => new Paragraph({  // "\n" separa renglones
-  alignment: o.align || AlignmentType.LEFT, spacing: { before: 0, after: 0, line: 228 },
+  alignment: o.align || AlignmentType.LEFT, spacing: { before: 0, after: 0, line: 216 },
   children: String(texto).split("\n").map((t, i) => new TextRun({ text: t, break: i ? 1 : 0, size: o.size || 14, bold: o.bold, color: o.color })),
 });
 
@@ -58,7 +58,7 @@ function celda(texto, ancho, o = {}) {
   return new TableCell({
     width: { size: ancho, type: WidthType.DXA }, borders: bordes,
     shading: o.fill ? { fill: o.fill, type: ShadingType.CLEAR } : undefined,
-    margins: { top: 18, bottom: 18, left: 60, right: 60 },
+    margins: { top: 8, bottom: 8, left: 60, right: 60 },
     verticalAlign: VerticalAlign.CENTER, rowSpan: o.rowSpan, columnSpan: o.span,
     children: [parrafo(texto, o)],
   });
@@ -103,19 +103,9 @@ function bloque(titulo, campos) {
   const filas = [];
   if (titulo) filas.push(new TableRow({ cantSplit: true, children: [cab(titulo, 0, { span: 2, ancho: F.ANCHO })] }));
   for (const c of campos) {
-    filas.push(new TableRow({ cantSplit: true, height: { value: 230, rule: "atLeast" }, children: [
+    filas.push(new TableRow({ cantSplit: true, height: { value: 210, rule: "atLeast" }, children: [
       celda(c, a[0], { bold: true, align: AlignmentType.RIGHT, fill: "F7F9F9" }), celda("", a[1]),
     ] }));
-  }
-  return new Table({ width: { size: F.ANCHO, type: WidthType.DXA }, columnWidths: a, rows: filas });
-}
-
-function verificaciones() {
-  const a = [1600, (F.ANCHO - 1600) / 2, (F.ANCHO - 1600) / 2];
-  const fila = (cs, alto) => new TableRow({ cantSplit: true, height: alto ? { value: alto, rule: "atLeast" } : undefined, children: cs });
-  const filas = [fila([cab("", 0, { ancho: a[0] }), cab("Pre-Test Verification", 0, { ancho: a[1] }), cab("Post-Test Verification", 0, { ancho: a[2] })])];
-  for (const c of ["Verified by:", "Signature:", "Date:"]) {
-    filas.push(fila([celda(c, a[0], { bold: true, align: AlignmentType.RIGHT, fill: "F7F9F9" }), celda("", a[1]), celda("", a[2])], 260));
   }
   return new Table({ width: { size: F.ANCHO, type: WidthType.DXA }, columnWidths: a, rows: filas });
 }
@@ -131,7 +121,9 @@ const cuerpo = [
   sep(),
   tablaPosiciones(),
   sep(),
-  verificaciones(),
+  bloque("Pre-Test Verification", ["Verified by:", "Signature:", "Date:"]),
+  sep(),
+  bloque("Post-Test Verification", ["Verified by:", "Signature:", "Date:"]),
   titulo("Position Identification", true),
   ...F.figura("zrq001_vista_superior.png", 660, 480, "Figure 1. Position Identification - GRIS isometric top view", 12),
   ...F.figura("zrq001_vista_inferior.png", 936, 771, "Figure 2. Position Identification - GRIS isometric bottom view", 12),
