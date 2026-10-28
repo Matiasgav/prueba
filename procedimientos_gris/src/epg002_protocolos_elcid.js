@@ -1,5 +1,7 @@
 // 00503-00-EPG002 — Anexo: Protocolos de ensayo EL CID (excitación, calibración, software ELCSoft).
-const { Paragraph, AlignmentType, TextRun } = require("docx");
+const fs = require("fs");
+const path = require("path");
+const { Paragraph, AlignmentType, TextRun, ImageRun } = require("docx");
 const F = require("./formato_mecanalisis");
 const { p, vineta, numerada, h1, h2, h3, rol, nota, espacio, tabla, figura } = F;
 
@@ -11,20 +13,27 @@ const invocado = (nro) => etapas
   .map((e) => e.apartado).join(", ");
 
 // ---------- ecuaciones ----------
-// Texto con subíndices: "v_t" → v con subíndice t. Se evita OMML para que se vea igual en cualquier visor.
-const ec = (expr, nro) => new Paragraph({
-  alignment: AlignmentType.LEFT, spacing: { before: 80, after: 120 },
-  tabStops: [{ type: "center", position: F.ANCHO / 2 }, { type: "right", position: F.ANCHO }],
-  children: [
-    new TextRun({ text: "\t" }),
-    ...expr.split(/(\S_\{[^}]+\}|\S_[a-z]+)/u).filter(Boolean).map((t) => {
-      const m = t.match(/^(\S)_\{?([^}]+?)\}?$/u);
-      if (m) return [new TextRun({ text: m[1], italics: true, size: 24 }), new TextRun({ text: m[2], subScript: true, size: 24 })];
-      return [new TextRun({ text: t, size: 24 })];
-    }).flat(),
-    new TextRun({ text: `\t(${nro})`, color: F.C.gris }),
-  ],
-});
+// Imágenes generadas por ecuaciones.py (mathtext, 600 dpi), centradas y con su número a la derecha.
+const EC = JSON.parse(fs.readFileSync(path.join(__dirname, "img", "ec", "medidas.json"), "utf8"));
+// Numeración en el orden en que aparecen en el apéndice (permite citarlas antes de insertarlas).
+const ORDEN_EC = ["faraday", "fem", "vt", "q", "k", "tph", "practica", "yugo", "rotor", "vvar", "fmm", "q_reac", "pfe", "s", "n"];
+const numEc = Object.fromEntries(ORDEN_EC.map((id, i) => [id, i + 1]));
+const ec = (id) => {
+  const [w, h] = EC.ecuaciones[id];
+  const k = 96 / EC.dpi;
+  const nroEc = numEc[id];
+  return new Paragraph({
+    alignment: AlignmentType.LEFT, spacing: { before: 100, after: 140 }, keepLines: true,
+    tabStops: [{ type: "center", position: F.ANCHO / 2 }, { type: "right", position: F.ANCHO }],
+    children: [
+      new TextRun({ text: "\t" }),
+      new ImageRun({ type: "png", data: fs.readFileSync(path.join(__dirname, "img", "ec", `${id}.png`)),
+        transformation: { width: Math.round(w * k), height: Math.round(h * k) }, altText: { title: id, description: `Ecuación ${nroEc}`, name: id } }),
+      new TextRun({ text: `\t(${nroEc})`, color: F.C.gris }),
+    ],
+  });
+};
+const e = (id) => `(${numEc[id]})`;
 
 const meta = {
   codigo: "00503-00-EPG002",
@@ -36,10 +45,10 @@ const meta = {
   objetivo: `Establecer los protocolos técnicos para la excitación del núcleo, la calibración del sistema de medición y la operación del software ELCSoft en el ensayo EL CID, como anexo del procedimiento ${PROC}.`,
   alcance: "Ensayo EL CID para determinar la condición de la aislación interlaminar de núcleos estatóricos de generadores eléctricos, con el rotor colocado (inspección robotizada GRIS) o con el rotor desmontado.",
   listasNumeradas: ["calib", "secuencia"],
-  registros: [],
+  registros: [["RME-ELC-01", "Registro de cálculo de excitación – Ensayo EL CID"]],
   revisiones: [["00", "28/10/2026", "Versión inicial. Adaptación al formato Mecanálisis de los «Protocolos de ensayo ELCID robotizado» (Nexergy Corp., junio 2025)."]],
   firmas: ["", "", "", ""],
-  referencias: [],
+  referencias: ["[1] Ridley G. K., «EL CID – Application and Analysis», 2000."],
 };
 
 const cuerpo = [
@@ -53,7 +62,6 @@ const cuerpo = [
     ["**Variac**", "Fuente de CA de tensión variable que alimenta el arrollamiento de excitación."],
     ["**ELCSoft**", "Software de adquisición y visualización del ensayo EL CID (versión 1.0)."],
     ["**DAQ**", "Unidad de adquisición de datos."],
-    ["**Vl, Tph, K**", "Tensión de línea nominal, número de espiras en serie por fase y factor de bobinado (paso × distribución) del generador."],
   ]),
 
   h1("2. CONTENIDO"),
@@ -82,7 +90,7 @@ const cuerpo = [
   h3("2.1.2 Puesta a tierra"),
   nota("Precaución:", "la puesta a tierra se realiza en forma local desde el estator de la máquina y se distribuye radialmente hacia cada equipo del ensayo. El borne «Ground» del tablero EL CID es su única vinculación a tierra: no se admite ninguna otra conexión paralela o secundaria. Esta disposición evita lazos de corriente que inducen señales espurias y ponen en riesgo los equipos conectados."),
   h3("2.1.3 Cálculo del número de espiras"),
-  p("El número de espiras se determina a partir de la tensión por espira calculada según el apartado 2.4 (Apéndice), considerando que:"),
+  p("El número de espiras N se determina a partir de la tensión por espira calculada según el apartado 2.4 (Apéndice) y se registra en RME-ELC-01, considerando que:"),
   vineta("La tensión aplicada no supere la capacidad nominal del Variac."),
   vineta("La corriente de excitación resultante quede dentro del rango operativo recomendado: **5 A a 40 A**."),
   h3("2.1.4 Selección de la sección del conductor"),
@@ -188,18 +196,94 @@ const cuerpo = [
   ]),
 
   // ---------------- APÉNDICE ----------------
-  h2("2.4 APÉNDICE – DETERMINACIÓN DE LA TENSIÓN POR ESPIRA"),
-  p("Para un flujo sinusoidal Φ = Φm · sen(2πft) inducido en forma anular en el núcleo, la tensión inducida por espira (ley de Faraday) tiene un valor eficaz:"),
-  ec("v_t = 2π · f · Φ_m / √2", 1),
-  p("Como el flujo por polo en el entrehierro, Φa, se divide en dos mitades en el yugo (Φm = Φa/2):"),
-  ec("v_t = π · f · Φ_a / √2 = 2,22 · f · Φ_a", 2),
-  p("Para el 4 % del flujo nominal: v4% = 0,0888·f·Φa, es decir **4,44·Φa** a 50 Hz y **5,33·Φa** a 60 Hz. El flujo en el entrehierro [Wb] es:"),
-  ec("Φ_a = (V_l / √3) / (4,44 · K · T_{ph} · f)", 3),
-  p("Reemplazando, la tensión por espira para el 4 % del flujo nominal resulta:"),
-  ec("v_t = 0,04 · V_l / (√3 · 2 · K · T_{ph})", 4),
-  p("Con Vl en kV y K = 0,926 se obtiene la expresión práctica [V/espira]:"),
-  ec("v_t ≈ 12,5 · V_l [kV] / T_{ph}", 5),
-  p("Donde Vl es la tensión de línea nominal, K el factor de bobinado (paso × distribución) y Tph el número de espiras en serie por fase."),
+  h2("2.4 APÉNDICE – CÁLCULO DE LA EXCITACIÓN: TENSIÓN Y CORRIENTE"),
+  p("Este apartado explica cómo se obtienen la tensión por espira, el número de espiras del arrollamiento de excitación y la tensión y la corriente que debe entregar el Variac. Las expresiones siguen a Ridley [1] y son las del formulario **RME-ELC-01 «Registro de cálculo de excitación – Ensayo EL CID»**, donde se registra el cálculo de cada máquina."),
+
+  h3("2.4.1 Criterio: 4 % del flujo nominal"),
+  p("Según Ridley [1], el ensayo EL CID se realiza con el núcleo magnetizado a aproximadamente el **4 % del flujo nominal**. A ese nivel, las corrientes de falla entre laminaciones son medibles con el captor, el núcleo no se calienta y la potencia necesaria es de pocos kVA, que puede entregar un Variac monofásico."),
+  p("Todo el cálculo parte de la **tensión por espira** $v_t$: la tensión que se induce en una espira que abraza el yugo con ese 4 % del flujo. Es lo que mide la espira auxiliar y, por lo tanto, la referencia de la calibración (Protocolo 2, paso 3) y del control durante todo el ensayo. Con $v_t$ se eligen el número de espiras $N$ y, con él, la tensión y la corriente del Variac."),
+
+  h3("2.4.2 Parámetros"),
+  p("La tabla reúne todos los parámetros que intervienen, su unidad y de dónde se obtienen:", { keepNext: true }),
+  tabla(["Símbolo", "Parámetro", "Unidad", "Origen"], [1150, 4000, 1000, 3488], [
+    { seccion: "Datos del generador" },
+    ["$V_L$", "Tensión de línea nominal.", "V", "Placa del generador."],
+    ["$f$", "Frecuencia nominal; es también la del ensayo.", "Hz", "Placa (50 o 60 Hz)."],
+    ["$p$", "Número de polos.", "—", "Placa, o p = 120 · f / n con n la velocidad nominal [rpm]."],
+    ["$Z$", "Número de ranuras del estator.", "—", "Documentación del fabricante o conteo."],
+    ["$b$", "Barras (lados de bobina) por ranura.", "—", "Documentación; normalmente 2."],
+    ["$n$", "Espiras en serie por barra.", "—", "Documentación; 1 en barras Roebel."],
+    ["$a$", "Circuitos en paralelo por fase.", "—", "Documentación del fabricante."],
+    ["$y$", "Paso de bobina, en ranuras.", "—", "Documentación o inspección del cabezal."],
+    ["$d_ext$, $d_int$", "Diámetros exterior e interior del núcleo.", "m", "Planos o medición."],
+    ["$h_r$", "Profundidad de ranura.", "m", "Planos o medición."],
+    ["$l$", "Longitud axial total del núcleo.", "m", "Planos o medición."],
+    ["$N_v$, $l_v$", "Cantidad y ancho de los canales de ventilación.", "—, m", "Planos o inspección."],
+    ["$d_r$", "Diámetro del rotor (solo método 3).", "m", "Planos."],
+    ["$B_nom$, $B_g$", "Inducción nominal en el yugo y en el entrehierro (métodos 2 y 3).", "T", "Diseño del generador; si no se dispone, el valor adoptado se indica en RME-ELC-01."],
+    { seccion: "Magnitudes calculadas" },
+    ["$q$, $τ$", "Ranuras por polo y fase; paso polar en ranuras.", "—", `Ecuación ${e("q")}.`],
+    ["$k_d$, $k_p$, $K$", "Factores de distribución, de paso y de bobinado.", "—", `Ecuación ${e("k")}.`],
+    ["$T_ph$", "Espiras en serie por fase.", "—", `Documentación o ecuación ${e("tph")}.`],
+    ["$Φ_a$", "Flujo por polo en el entrehierro, a tensión nominal.", "Wb", `Ecuación ${e("fem")}.`],
+    ["$v_t$", "Tensión por espira al 4 % del flujo nominal.", "V", `Ecuación ${e("vt")} (o ${e("yugo")}, ${e("rotor")}).`],
+    ["$d_m$, $l_Fe$", "Diámetro medio del núcleo; longitud efectiva de hierro.", "m", `Ecuaciones ${e("fmm")} y ${e("yugo")}.`],
+    { seccion: "Excitación" },
+    ["$N$", "Espiras del arrollamiento de excitación.", "—", `Se elige con la ecuación ${e("n")}.`],
+    ["$H$", "Campo magnético necesario para el 4 % del flujo.", "A/m", "RME-ELC-01 adopta 15 A/m como máximo estimado."],
+    ["$ρ$, $p_Fe$", "Densidad del acero; pérdidas específicas al 4 % del flujo.", "kg/m³, W/kg", "7870 kg/m³; ≈ 0,014 W/kg (RME-ELC-01)."],
+    ["$V_var$, $I_var$", "Tensión y corriente que entrega el Variac.", "V, A", `Ecuaciones ${e("vvar")} y ${e("s")}.`],
+    ["$V_var,máx$, $I_máx$", "Límites del Variac y del ensayo.", "V, A", "230 V; 25 A (nominal del Variac) dentro del rango de 5 A a 40 A."],
+  ]),
+
+  h3("2.4.3 Tensión por espira – método 1: datos de bobinado (referencia)"),
+  p("Para un flujo sinusoidal que recorre el yugo en forma anular, la ley de Faraday da el valor eficaz de la tensión inducida en una espira. El flujo por polo $Φ_a$ se divide en dos mitades al entrar en el yugo:"),
+  ec("faraday"),
+  p("En servicio, la tensión de fase fija el flujo por polo a través de la ecuación general de la fuerza electromotriz:"),
+  ec("fem"),
+  p("Reemplazando y tomando el 4 % del flujo nominal, la frecuencia se cancela y la tensión por espira depende solo de la tensión nominal y del bobinado:"),
+  ec("vt"),
+  p("Si $K$ y $T_ph$ no figuran en la documentación, se calculan con los datos constructivos del estator:"),
+  ec("q"),
+  ec("k"),
+  ec("tph"),
+  p("Para una verificación rápida en campo, con $K$ ≈ 0,926 la expresión se reduce a:"),
+  ec("practica"),
+
+  h3("2.4.4 Tensión por espira – métodos 2 y 3: geometría (verificación)"),
+  p("Si no se conocen los datos de bobinado, o para verificar el método 1, $v_t$ se estima con la sección del yugo (método 2) o con el flujo en el entrehierro calculado con la geometría del rotor (método 3):"),
+  ec("yugo"),
+  ec("rotor"),
+  p("Si estos valores difieren mucho del método 1, revisar los datos de entrada antes de iniciar el ensayo."),
+
+  h3("2.4.5 Tensión y corriente del Variac"),
+  p("El arrollamiento de excitación de $N$ espiras abraza el yugo igual que la espira auxiliar, por lo que la tensión que debe entregar el Variac es:"),
+  ec("vvar"),
+  p("**Corriente de magnetización.** Para establecer el flujo se necesita una fuerza magnetomotriz igual al campo $H$ por la longitud media del recorrido del flujo en el yugo:"),
+  ec("fmm"),
+  p("Multiplicando ambas expresiones, la potencia reactiva no depende del número de espiras:"),
+  ec("q_reac"),
+  p("**Pérdidas en el núcleo.** Se estiman con la masa del núcleo y las pérdidas específicas al 4 % del flujo:"),
+  ec("pfe"),
+  p("**Potencia y corriente.** La potencia aparente y la corriente que debe entregar el Variac son:"),
+  ec("s"),
+  p("**Elección de N.** Más espiras aumentan la tensión del Variac y reducen su corriente. $N$ debe cumplir a la vez el límite de tensión y el de corriente:"),
+  ec("n"),
+  p("Verificar además que $S$ no supere la potencia nominal del Variac (6 kVA) y que $I_var$ quede dentro del rango de 5 A a 40 A."),
+  nota("Importante:", "la corriente y la potencia calculadas son estimaciones para elegir N y verificar el Variac. En el ensayo, la referencia es siempre la tensión medida en la espira auxiliar, que debe igualar el valor de vt calculado (Protocolo 2). La tensión y la corriente reales se registran en RME-ELC-01.", F.C.gris),
+
+  h3("2.4.6 Ejemplo de cálculo (método 1)"),
+  p("Generador de 11,5 kV, 50 Hz, 2 polos, 54 ranuras, 2 barras por ranura, 1 espira en serie por barra, paso de bobina de 22 ranuras y 1 circuito por fase:", { keepNext: true }),
+  tabla(["Paso", "Cálculo", "Resultado"], [3000, 4238, 2400], [
+    ["Ranuras por polo y fase; paso polar", "$q$ = 54 / (3 · 2);  $τ$ = 54 / 2", "9;  27 ranuras"],
+    ["Factor de distribución", "$k_d$ = sen(9π/54) / (9 · sen(π/54))", "0,9555"],
+    ["Factor de paso", "$k_p$ = sen((22/27) · π/2)", "0,9580"],
+    ["Factor de bobinado", "$K$ = 0,9555 · 0,9580", "0,9153"],
+    ["Espiras en serie por fase", "$T_ph$ = 54 · 2 · 1 / (6 · 1)", "18"],
+    ["Tensión por espira", "$v_t$ = 0,04 · 11 500 / (2 · √3 · 0,9153 · 18)", "8,07 V/espira"],
+    ["Verificación rápida", "$v_t$ ≈ 12,5 · 11,5 / 18", "7,99 V/espira"],
+    ["Tensión del Variac con N = 5", "$V_var$ = 5 · 8,07", "40,3 V"],
+  ]),
 
   h1("3. REGISTROS"),
   p("Los registros generados como consecuencia de las acciones involucradas en el documento son:", { keepNext: true }),

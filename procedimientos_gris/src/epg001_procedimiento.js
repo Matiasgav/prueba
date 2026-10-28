@@ -44,8 +44,8 @@ const etapas = [
 
   { id: "prep", titulo: "PREPARACIÓN TÉCNICA PREVIA", ref: P1, pasos: [
     [null, "Definir con el Cliente los ensayos a realizar: inspección visual, EL CID y/o WTT.", "Alcance del servicio"],
-    [null, "Obtener los datos de la máquina: número de serie, datos de placa, dimensiones principales, número de ranuras, longitud axial del núcleo, diámetro y entrehierro disponibles, y datos para el cálculo de la excitación.", `${P1}, Apéndice`],
-    [null, "Calcular la excitación del núcleo (tensión por espira, número de espiras, corriente y sección del conductor) o solicitarla a Ingeniería.", P1],
+    [null, "Obtener los datos de la máquina: número de serie, datos de placa, dimensiones principales, número de ranuras, longitud axial del núcleo, diámetro y entrehierro disponibles, y datos para el cálculo de la excitación.", `${ANEXO}, apartado 2.4`],
+    [null, "Calcular la excitación del núcleo (tensión por espira, número de espiras, tensión y corriente del Variac y sección del conductor) y registrarla en RME-ELC-01, o solicitarla a Ingeniería.", `${ANEXO}, apartado 2.4 / RME-ELC-01`],
     ["operadores", "Asignar al menos dos operadores calificados para el ensayo y planificar pausas regulares.", "—"],
     [null, "Verificar que el kit de repuestos GRIS esté completo.", "Tabla 1"],
     [null, "Confirmar la disponibilidad de alimentación para la PC GRIS, la PC EL CID, el control box, el tablero EL CID y el Variac. Verificar la protección diferencial.", "—"],

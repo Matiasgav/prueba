@@ -26,11 +26,17 @@ const bordes = { top: linea, bottom: linea, left: linea, right: linea };
 
 // ---------- texto ----------
 // Admite **negrita** dentro del texto.
+// Admite $X_sub$ para símbolos: X en cursiva y sub como subíndice (p. ej. $v_t$, $T_ph$, $B_nom$).
 function runs(texto, base = {}) {
-  return String(texto).split(/(\*\*[^*]+\*\*)/).filter(Boolean).map((t) =>
-    t.startsWith("**")
-      ? new TextRun({ text: t.slice(2, -2), bold: true, ...base })
-      : new TextRun({ text: t, ...base }));
+  return String(texto).split(/(\*\*[^*]+\*\*|\$[^$]+\$)/).filter(Boolean).flatMap((t) => {
+    if (t.startsWith("**")) return [new TextRun({ text: t.slice(2, -2), bold: true, ...base })];
+    if (t.startsWith("$")) {
+      const [x, sub] = t.slice(1, -1).split("_");
+      return [new TextRun({ text: x, italics: true, ...base }),
+        ...(sub ? [new TextRun({ text: sub, subScript: true, ...base })] : [])];
+    }
+    return [new TextRun({ text: t, ...base })];
+  });
 }
 
 const p = (texto, o = {}) => new Paragraph({
