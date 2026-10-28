@@ -12,17 +12,17 @@ from PIL import Image
 
 AQUI = Path(__file__).parent
 PASOS = [
-    "Formar un seno a unos\n30 cm del extremo.",
-    "Rodear el firme\ncon el chicote.",
-    "Pasar el chicote por el\nseno: queda el ocho simple.",
-    "Pasar el chicote por el\nojal de amarre del robot.",
-    "Repasar el ocho con el\nchicote, en sentido inverso.",
-    "Completar el repaso: el\nchicote sale junto al firme.",
-    "Peinar y apretar tirando de los cuatro\nramales. Chicote de 3 a 5 cm.",
+    "A unos 30 cm de la punta,\nhacer un bucle.",
+    "Dar una vuelta con la punta\nalrededor de la cuerda.",
+    "Pasar la punta por el\nbucle: queda un ocho.",
+    "Pasar la punta por el\nojal del robot.",
+    "Volver con la punta por el\nmismo camino del ocho.",
+    "Seguir hasta que la punta\nsalga junto a la cuerda.",
+    "",
 ]
 # Zoom de cada paso sobre la foto ya girada (1156 × 651 px): centro (x, y) y ancho del recorte.
 ZOOM = {1: (578, 325, 1156), 2: (635, 370, 1000), 3: (559, 300, 600), 4: (455, 450, 380),
-        5: (565, 320, 400), 6: (410, 380, 400), 7: (520, 380, 560)}
+        5: (410, 380, 400), 6: (565, 320, 400), 7: (520, 380, 560)}
 T = 34                    # ≥ 10 pt con la figura a 17 cm de ancho
 W, M = 1600, 20           # ancho total y margen
 NAR = "#E8731A"
@@ -68,8 +68,13 @@ def main():
     # paso final más grande, con su leyenda al costado
     grande = 2 * ancho + 30
     alto = celda(7, M, y, grande)
-    texto(M + grande + 30, y + 60, "Nudo terminado", T, "bold")
-    texto(M + grande + 30, y + 110, "Peinar y apretar\ntirando de los\ncuatro ramales.\n\nChicote de\n3 a 5 cm.")
+    xt = M + grande + 30
+    texto(xt, y + 50, "Nudo terminado", T, "bold")
+    texto(xt, y + 96, "Apretar tirando de\nlas cuatro puntas.\nDejar 3 a 5 cm\nde punta libre.")
+    texto(xt, y + 300, "Punta (chicote):", T, "bold")
+    texto(xt, y + 346, "el extremo libre, con\nel que se hace el nudo.")
+    texto(xt, y + 470, "Cuerda (firme):", T, "bold")
+    texto(xt, y + 516, "la parte que va\nhacia el operador.")
     H = y + alto + M
     svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" '
            f'font-family="Arial, Liberation Sans, Helvetica, sans-serif"><rect width="{W}" height="{H}" fill="#FFFFFF"/>'
