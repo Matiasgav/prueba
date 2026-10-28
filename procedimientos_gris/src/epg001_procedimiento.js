@@ -87,7 +87,7 @@ const etapas = [
     [null, "Montar el robot sobre la rampa y verificar que el conjunto ingresa, se posiciona y se desplaza sin interferencias.", "—"],
   ], despues: () => [
     F.saltoPagina(),
-    ...F.figura("esquema_general_vertical.png", 2200, 3200, "Figura 1: Esquema general de conexiones del sistema GRIS (líneas a trazos: conexiones a confirmar)", 15.2),
+    ...F.figura("esquema_general_vertical.png", 2200, 3200, "Figura 1: Esquema general de conexiones del sistema GRIS", 15.2),
   ] },
 
   { id: "cal", titulo: "RECONOCIMIENTO Y CALIBRACIÓN", ref: P2, intro: "Se realizan sobre la primera ranura a inspeccionar, antes de iniciar la secuencia completa.", pasos: [
