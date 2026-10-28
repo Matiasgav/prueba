@@ -68,11 +68,12 @@ const etapas = [
   ] },
 
   { id: "exc", titulo: "MONTAJE DE LA EXCITACIÓN DEL NÚCLEO", ref: P1, pasos: [
-    [null, "Montar el cable de excitación de 5 hilos a través del entrehierro y conectar sus extremos a la bornera EXCITATION del tablero de excitación, haciendo coincidir números y colores, de modo que las espiras queden en serie. Conectar el Variac a la ficha del tablero de excitación, según el cálculo aprobado.", P1],
+    [null, "Montar el cable de excitación de 5 hilos a través del entrehierro y conectar sus extremos a la bornera EXCITATION del tablero de excitación, haciendo coincidir números y colores, de modo que las espiras queden en serie.", P1],
+    ["variac", "Con el Variac desconectado de la red, conectar su ficha al tablero de excitación. Recién entonces conectar el Variac a la red. Para desconectar, seguir el orden inverso: primero desconectar el Variac de la red y luego la ficha.", "Apartado 2.1"],
     [null, "Ubicar inicialmente el arrollamiento a 120° de la primera ranura a inspeccionar, en sentido opuesto al avance angular previsto.", "—"],
     [null, "Planificar la reubicación del arrollamiento cada 120° de avance angular, de modo que durante el ensayo nunca quede a menos de 120° de la ranura inspeccionada.", "Paso {reubicar}"],
     [null, "Instalar la espira auxiliar en la primera ranura a inspeccionar o en la ranura definida por Ingeniería.", P1],
-  ] },
+  ], despues: () => [espacio(), nota("Precaución:", ref("el tablero de excitación se encuentra en desarrollo. No operarlo ni manipularlo con tensión. La ficha que viene del Variac queda con los contactos macho expuestos: nunca manipularla con el Variac conectado a la red (paso {variac})."))] },
 
   { id: "conf", titulo: "CONFIGURACIÓN Y MONTAJE DEL SISTEMA GRIS", ref: `${P3} / Manual de software GRIS / Figura 1`, intro: "Las conexiones se realizan según el esquema general de la Figura 1.", pasos: [
     [null, "Ingresar en el software GRIS los parámetros geométricos medidos y obtener los valores de ajuste del robot y de la rampa.", "Manual de software GRIS"],
@@ -183,6 +184,7 @@ const cuerpo = [
     ["Pérdida de adherencia del robot al pasar sobre una gota de resina de gran altura, en especial en la parte superior del estator.", "Caída del robot dentro del entrehierro; daño al robot o a la máquina.", `Pasada de reconocimiento (paso ${num.recon}); cuerdas de seguridad con tensión constante.`],
     ["Salida del robot por el extremo opuesto del núcleo o caída por uno de los extremos del estator.", "Caída del robot; daño al robot o a la máquina.", `Límite de avance axial seguro (paso ${num.limite}); cuerdas de seguridad.`],
     ["Desprendimiento de piezas del robot dentro del generador.", "Pieza suelta dentro de la máquina; daño a sus componentes si se pone en servicio.", `Riesgo residual evaluado en ${RIESGO} (todas las posiciones: bajo o muy bajo). Verificación pre y post-ensayo con ${CHECKLIST} (pasos ${num.check} y ${num.post}).`],
+    ["Tablero de excitación en desarrollo; ficha del Variac con contactos macho expuestos.", "Choque eléctrico.", `No operar ni manipular el tablero con tensión; conectar el Variac a la red solo con la ficha ya conectada (paso ${num.variac}).`],
     ["Riesgo eléctrico: equipos alimentados en 220 V CA y arrollamiento de excitación energizado.", "Choque eléctrico.", "Protección diferencial; desenergizar en pausas e intervenciones; puesta a tierra única."],
     ["Manipulación de la rampa con esfuerzos elevados en posiciones incómodas.", "Golpes, caídas y cortes.", "EPP; rieles limados y sin rebabas."],
   ]),

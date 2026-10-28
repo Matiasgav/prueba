@@ -201,7 +201,9 @@ def tablero_excitacion(x, y, w):
     bx0, bx1 = X(0.224), X(0.361)
     paso = (bx1 - bx0) / 7
 
-    def bornes(x0, n, y0, y1, nombre):
+    def bornes(x0, n, y0, y1, nombre, et_sup=None, et_inf=None):
+        et_sup = et_sup or [str(k + 1) for k in range(n)]
+        et_inf = et_inf or [str(k + 1) for k in range(n)]
         rect(fondo, x0 - 1.5, y0, n * paso + 3, y1 - y0, "#1B1B1B", "#000", 0.5, 1)
         for k in range(n):
             xk = x0 + k * paso
@@ -209,51 +211,51 @@ def tablero_excitacion(x, y, w):
             for yy in (y0 + (y1 - y0) * 0.14, y0 + (y1 - y0) * 0.86):
                 circ(fondo, xk + paso / 2, yy, paso * 0.3, "#C8C8C4", "#8A8A86", 0.4)
                 fondo.append(f'<line x1="{xk + paso * 0.28:.1f}" y1="{yy:.1f}" x2="{xk + paso * 0.72:.1f}" y2="{yy:.1f}" stroke="#777" stroke-width="0.6"/>')
-            for yy in (y0 + (y1 - y0) * 0.33, y0 + (y1 - y0) * 0.72):
-                texto(xk + paso / 2, yy, str(k + 1), 5.5, "middle", "#222", peso="bold", capa=fondo)
+            for yy, et in ((y0 + (y1 - y0) * 0.33, et_sup[k]), (y0 + (y1 - y0) * 0.72, et_inf[k])):
+                texto(xk + paso / 2, yy, et, 5.5, "middle", "#222", peso="bold", capa=fondo)
         rect(fondo, x0 - 1.5, y0 + (y1 - y0) * 0.43, n * paso + 3, (y1 - y0) * 0.16, "#1B1B1B")
         texto(x0 + n * paso / 2, y0 + (y1 - y0) * 0.545, nombre, 4.6, "middle", "#F2F2F2", peso="bold", capa=fondo)
 
     yb0, yb1 = Y(0.335), Y(0.605)
-    bornes(bx0, 7, yb0, yb1, "EXCITATION")
-    # interruptor termomagnético
-    rect(fondo, X(0.372), Y(0.252), w * 0.06, h * 0.446, "#F8F8F8", "#9A9A9A", 0.7, 1.5)
-    rect(fondo, X(0.378), Y(0.27), w * 0.048, h * 0.06, "#ECECEC", "#BBB", 0.4)
-    rect(fondo, X(0.389), Y(0.41), w * 0.026, h * 0.11, "#E6E6E6", "#999", 0.5, 1)
-    rect(fondo, X(0.393), Y(0.415), w * 0.018, h * 0.05, "#1A1A1A")
-    rect(fondo, X(0.413), Y(0.275), w * 0.013, h * 0.026, "#2E9B48")
-    for fy in (0.29, 0.66):
-        circ(fondo, X(0.402), Y(fy), w * 0.007, "#C8C8C4", "#888", 0.4)
-    texto(X(0.402), Y(0.36), "Schneider", 3.8, "middle", "#2E9B48", capa=fondo)
+    bornes(bx0, 7, yb0, yb1, "EXCITATION", ["1", "2", "3", "4", "5", "", ""], ["", "1", "2", "3", "4", "5", ""])
+    # llave del circuito de la espira auxiliar (separada de la bornera de excitación)
+    mx, my, mw, mh = X(0.80), Y(0.435), w * 0.06, h * 0.42
+    rect(fondo, mx, my, mw, mh, "#F8F8F8", "#9A9A9A", 0.7, 1.5)
+    rect(fondo, mx + mw * 0.1, my + mh * 0.05, mw * 0.8, mh * 0.13, "#ECECEC", "#BBB", 0.4)
+    rect(fondo, mx + mw * 0.28, my + mh * 0.38, mw * 0.44, mh * 0.24, "#E6E6E6", "#999", 0.5, 1)
+    rect(fondo, mx + mw * 0.35, my + mh * 0.40, mw * 0.3, mh * 0.11, "#1A1A1A")
+    rect(fondo, mx + mw * 0.68, my + mh * 0.06, mw * 0.2, mh * 0.06, "#2E9B48")
+    for fy in (0.1, 0.9):
+        circ(fondo, mx + mw / 2, my + mh * fy, w * 0.007, "#C8C8C4", "#888", 0.4)
+    texto(mx + mw / 2, my + mh * 0.3, "Schneider", 3.8, "middle", "#2E9B48", capa=fondo)
     # bornera AUXILIAR: mismo tipo de borne de paso, 2 bornes
     ax0 = X(0.66) - paso
     bornes(ax0, 2, yb0, yb1, "AUX")
     etiqueta(ax0 - w * 0.02, Y(0.27), 2 * paso + w * 0.04, h * 0.05, "AUXILIAR", 0, 5.5)
-    # protoboard con las resistencias de calibración
-    rect(fondo, X(0.432), Y(0.615), w * 0.426, h * 0.218, "#F8F8F3", "#BDBDB7", 0.7, 1.5)
+    # protoboard: espacio libre para las resistencias de calibración
+    rect(fondo, X(0.432), Y(0.615), w * 0.158, h * 0.218, "#F8F8F3", "#BDBDB7", 0.7, 1.5)
     for fy, col in ((0.632, "#D33"), (0.645, "#36C"), (0.800, "#D33"), (0.813, "#36C")):
-        rect(fondo, X(0.44), Y(fy), w * 0.41, 0.7, col)
-    for j in range(6):
-        for i in range(40):
-            if j != 3:
-                circ(fondo, X(0.442) + i * w * 0.0102, Y(0.665) + j * h * 0.022, 0.55, "#B8B8B2")
-    texto(X(0.645), Y(0.735), "Espacio para las resistencias de calibración", 6, "middle", "#7A7A75", capa=fondo)
+        rect(fondo, X(0.44), Y(fy), w * 0.142, 0.7, col)
+    for jj in range(6):
+        for ii in range(15):
+            if jj != 3:
+                circ(fondo, X(0.442) + ii * w * 0.0095, Y(0.665) + jj * h * 0.022, 0.55, "#B8B8B2")
+    texto(X(0.511), Y(0.72), "Espacio para las", 5.5, "middle", "#7A7A75", capa=fondo)
+    texto(X(0.511), Y(0.745), "resistencias de calibración", 5.5, "middle", "#7A7A75", capa=fondo)
     # fichas banana (medición de tensión por espira) y llave del circuito auxiliar
     for fx, fy, col in ((0.803, 0.10, "#151515"), (0.836, 0.073, "#C8202A")):
         circ(fondo, X(fx), Y(fy), w * 0.013, col, "#000", 0.5)
         circ(fondo, X(fx), Y(fy), w * 0.005, "#777")
-    rect(fondo, X(0.918), Y(0.4375), w * 0.06, h * 0.0725, "#FBFBFB", "#999", 0.7, 2)
-    rect(fondo, X(0.935), Y(0.452), w * 0.025, h * 0.04, "#E5E5E5", "#AAA", 0.4)
     term = [bx0 + (i + 0.5) * paso for i in range(7)]
     aux_t = [ax0 + (i + 0.5) * paso for i in range(2)]
     rs = w * 0.022
     fc = (X(0.579), Y(0.167))
-    return {"ficha": (X(0.637), Y(-0.02)), "sup": term, "y_sup": yb0 + 1, "y_inf": yb1 - 1, "izq": bx0, "der": bx1,
+    return {"ficha": (X(0.637), Y(-0.07)), "sup": term, "y_sup": yb0 + 1, "y_inf": yb1 - 1, "izq": bx0, "der": bx1,
             "L": (fc[0] + rs * math.cos(math.radians(210)), fc[1] + rs * 0.5), "N": (fc[0] + rs * math.cos(math.radians(330)), fc[1] + rs * 0.5),
-            "mcb_sup": (X(0.402), Y(0.29)), "mcb_izq": X(0.372), "mcb_der": X(0.432),
+            "mcb_sup": (X(0.83), Y(0.477)), "mcb_inf": (X(0.83), Y(0.813)),
             "aux": tuple(aux_t), "y_aux": yb0 + 1, "y_aux_inf": yb1 - 1,
-            "mcb_inf": (X(0.402), Y(0.66)), "bus": (X(0.85), Y(0.800), Y(0.813)),
-            "llave": (X(0.918), X(0.978), Y(0.474)), "j_neg": (X(0.803), Y(0.10)), "j_roj": (X(0.836), Y(0.073)), "h": h}
+            "bus": (X(0.58), Y(0.800), Y(0.813)),
+            "j_neg": (X(0.803), Y(0.10)), "j_roj": (X(0.836), Y(0.073)), "h": h}
 
 
 def multimetro(x, y, w=82):
@@ -263,7 +265,6 @@ def multimetro(x, y, w=82):
     rect(fondo, x + w * 0.08, y + h * 0.06, w * 0.84, h * 0.88, "#3A3A3A", "#222", 0.6, 5)
     rect(fondo, x + w * 0.16, y + h * 0.1, w * 0.68, h * 0.2, "#B9C7A6", "#6E7A60", 0.6, 2)
     texto(x + w * 0.5, y + h * 0.235, "0.124", w * 0.17, "middle", "#1F261A", peso="bold", capa=fondo)
-    texto(x + w * 0.5, y + h * 0.36, "UNI-T", w * 0.1, "middle", "#FFFFFF", peso="bold", capa=fondo)
     circ(fondo, x + w * 0.5, y + h * 0.56, w * 0.24, "#555", "#222", 0.8)
     circ(fondo, x + w * 0.5, y + h * 0.56, w * 0.17, "#6A6A6A")
     poli(fondo, [(x + w * 0.5, y + h * 0.56), (x + w * 0.5 - w * 0.12, y + h * 0.56 - w * 0.12)], "#FFFFFF", 2)
@@ -276,7 +277,17 @@ def multimetro(x, y, w=82):
     return {"v": jacks[0], "com": jacks[1], "h": h}
 
 
-def pinza(x, y, w=64):
+def pinza(cx_m, cy_m, w=64, giro=90):
+    """Dibuja la pinza con la mordaza centrada en (cx_m, cy_m), girada `giro` grados."""
+    antes = len(frente)
+    _pinza(cx_m - w / 2, cy_m - w * 0.36, w)
+    grupo = "".join(frente[antes:])
+    del frente[antes:]
+    frente.append(f'<g transform="rotate({giro} {cx_m:.1f} {cy_m:.1f})">{grupo}</g>')
+    return (cx_m, cy_m)
+
+
+def _pinza(x, y, w=64):
     """Pinza amperométrica UNI-T (UT211B): mordaza abierta arriba, gatillo lateral, cuerpo rojo y gris."""
     cx, cy, ra = x + w / 2, y + w * 0.36, w * 0.30
     # mordaza: anillo con una pequeña apertura arriba a la derecha
@@ -297,7 +308,6 @@ def pinza(x, y, w=64):
         rect(frente, x + w * (0.25 + k * 0.18), yb + w * 0.74, w * 0.13, w * 0.08, "#5A5A5A", "none", 0, 2)
     circ(frente, cx, yb + w * 1.18, w * 0.2, "#4A4A4A", "#1A1A1A", 0.8)                                 # selector
     poli(frente, [(cx, yb + w * 1.18), (cx + w * 0.1, yb + w * 1.06)], "#FFFFFF", 1.6)
-    texto(cx, yb + w * 1.58, "UNI-T", w * 0.13, "middle", "#FFFFFF", peso="bold", capa=frente)
     for k, col in enumerate(("#111", "#C8102E")):
         circ(frente, x + w * (0.36 + k * 0.28), yb + w * 1.72, w * 0.05, col, "#000", 0.5)
     return (cx, cy)
@@ -403,7 +413,8 @@ yp = cb["principal"][1]
 arnes = [(xa, ry0), (xa, yp), (cb["principal"][0] + 4, yp)]
 poli(cables, arnes, "#1E1E1E", 9)
 poli(cables, arnes, "#555", 9, extra=' stroke-dasharray="2 4"')
-linea([(cb["principal"][0] + 12, yp + 4), (cb["principal"][0] + 12, yp + 10), (850, yp + 10), (850, te["captor"][1]), te["captor"]])
+linea([(850, yp + 5), (850, te["captor"][1]), te["captor"]])
+rect(frente, 843, yp + 3, 14, 9, "#1E1E1E", "#000", 0.6, 2)                         # salida de la señal del captor desde el arnés
 texto(1130, yp - 12, "Arnés del robot (cable principal y señal del captor)", 12, "middle")
 texto(858, te["captor"][1] + 4, "Señal del captor", 11.5)
 # control box → tablero EL CID (posición) y PC (USB / Ethernet por debajo del control box)
@@ -453,33 +464,46 @@ t = tx["sup"]
 # ficha (salida del Variac) → borne 1 inferior y borne 7 inferior
 linea([tx["N"], (tx["N"][0], 952), (566, 952), (566, tx["y_inf"] + 10), (t[0], tx["y_inf"] + 10), (t[0], tx["y_inf"])], AZUL, 1.8)
 linea([tx["L"], (tx["L"][0], 970), (655, 970), (655, tx["y_inf"] + 10), (t[6], tx["y_inf"] + 10), (t[6], tx["y_inf"])], MARRON, 1.8)
-# circuito auxiliar: borne AUX 1 → llave → bus de la protoboard; borne AUX 2 → bus de la protoboard
+# circuito auxiliar (sin conexión con el de excitación): la espira llega por arriba a AUX 1 y 2;
+# por abajo: AUX 2 → llave → bus de la protoboard; AUX 1 → bus de la protoboard; fichas banana en paralelo
 a1, a2 = tx["aux"]
 bx, bya, byb = tx["bus"]
-linea([(a1, tx["y_aux_inf"]), (a1, tx["y_aux_inf"] + 4), (700, tx["y_aux_inf"] + 4), (700, 980), (tx["mcb_sup"][0], 980), (tx["mcb_sup"][0], tx["mcb_sup"][1])], GRIS_W, 1.5)
-linea([(tx["mcb_inf"][0], tx["mcb_inf"][1] + 4), (tx["mcb_inf"][0], 1162), (962, 1162), (962, byb), (bx, byb)], GRIS_W, 1.5)
-linea([(a2, tx["y_aux_inf"]), (a2, tx["y_aux_inf"] + 8), (955, tx["y_aux_inf"] + 8), (955, bya), (bx, bya)], GRIS_W, 1.5)
+ms, mi = tx["mcb_sup"], tx["mcb_inf"]
+yai = tx["y_aux_inf"]
+linea([(a2, yai), (a2, yai + 7), (880, yai + 7), (880, ms[1] - 16), (ms[0], ms[1] - 16), (ms[0], ms[1] - 3)], GRIS_W, 1.5)
+linea([(mi[0], mi[1] + 3), (mi[0], 1162), (765, 1162), (765, bya), (bx, bya)], GRIS_W, 1.5)
+linea([(a1, yai), (a1, yai + 19), (785, yai + 19), (785, byb), (bx, byb)], GRIS_W, 1.5)
 circ(cables, bx, bya, 1.8, "#C8102E")
 circ(cables, bx, byb, 1.8, "#2A62C9")
-# fichas banana en paralelo con la espira auxiliar
-poli(cables, [tx["j_neg"], (tx["j_neg"][0], 985), (a1, 985), (a1, tx["y_aux"])], "#151515", 1.4)
-poli(cables, [tx["j_roj"], (918, tx["j_roj"][1]), (918, 995), (a2, 995), (a2, tx["y_aux"])], ROJO, 1.4)
+linea([tx["j_neg"], (tx["j_neg"][0], ms[1] - 16)], "#151515", 1.4)
+circ(cables, tx["j_neg"][0], ms[1] - 16, 2.2, "#151515")
+linea([tx["j_roj"], (945, tx["j_roj"][1]), (945, 1172), (750, 1172), (750, byb)], ROJO, 1.4)
+circ(cables, 750, byb, 2.2, ROJO)
 
-# espira auxiliar: rodea el núcleo igual que el cable de excitación
+# espira auxiliar: rodea el núcleo igual que el cable de excitación; entra por arriba a AUX 1 y 2
 pfa, pba = (c1[0] - 48, c1[1] + 12), (c2[0] - 48, c2[1] + 12)
-linea([(a1, tx["y_aux"]), (a1, 1003), (1030, 1003), (1030, 1170), (1330, 1170), (1330, pfa[1]), pfa], VIOL, 2)
-linea([(a2, tx["y_aux"]), (a2, 1012), (1020, 1012), (1020, 1182), (1680, 1182), (1680, pba[1] - 6), (pba[0], pba[1] - 6)], VIOL, 2)
+ya = tx["y_aux"]
+linea([(a1, ya), (a1, 905), (1030, 905), (1030, 1170), (1290, 1170), (1290, pfa[1]), pfa], VIOL, 2)
+linea([(a2, ya), (a2, 912), (1020, 912), (1020, 1182), (1680, 1182), (1680, pba[1] - 6), (pba[0], pba[1] - 6)], VIOL, 2)
 poli(cables, [pfa, (pba[0], pba[1] - 6)], VIOL, 2, extra=' stroke-dasharray="7 5"')
-texto(1180, 1164, "Espira auxiliar", 12, "middle")
+texto(1160, 1164, "Espira auxiliar", 12, "middle")
 # voltímetro en las fichas banana (tensión por espira) y pinza en la espira auxiliar (corriente)
 mm = multimetro(1065, 975)
 def punta(p0, p1, col, baja):
-    cables.append(f'<path d="M{p0[0]:.1f},{p0[1]:.1f} C{p0[0] + 40:.1f},{baja:.1f} {p1[0]:.1f},{baja + 40:.1f} {p1[0]:.1f},{p1[1]:.1f}" fill="none" stroke="{col}" stroke-width="2.2" stroke-linecap="round"/>')
-punta(tx["j_roj"], mm["v"], "#C8102E", 1130)
+    cables.append(f'<path d="M{p0[0]:.1f},{p0[1]:.1f} C{p0[0] + 60:.1f},{baja:.1f} {p1[0]:.1f},{baja + 40:.1f} {p1[0]:.1f},{p1[1]:.1f}" fill="none" stroke="{col}" stroke-width="2.2" stroke-linecap="round"/>')
+punta(tx["j_roj"], mm["v"], "#C8102E", 1135)
 punta(tx["j_neg"], mm["com"], "#151515", 1150)
-texto(1180, 1000, "Voltímetro\n(tensión por espira)", 11.5)
-pz = pinza(1330 - 32, 1000 - 64 * 0.36)
-texto(1375, 1060, "Pinza amperométrica\n(corriente en la\nespira auxiliar)", 11.5)
+texto(1160, 980, "Voltímetro", 11.5)
+texto(1160, 994, "(tensión por espira)", 11.5)
+pz = pinza(1290, 1075, 60, 90)
+texto(1225, 1118, "Pinza amperométrica", 11.5, "middle")
+texto(1225, 1132, "(corriente en la espira auxiliar)", 11.5, "middle")
+# advertencia junto a la ficha del Variac
+fondo.append('<path d="M866,806 l8,-14 l8,14 z" fill="#F2C200" stroke="#000" stroke-width="0.8"/>')
+texto(874, 804, "!", 9, "middle", peso="bold")
+texto(888, 800, "Tablero en desarrollo:", 10, peso="bold")
+texto(888, 813, "no manipular la ficha con el", 10, peso="bold")
+texto(888, 826, "Variac conectado a la red.", 10, peso="bold")
 
 texto(W - 36, H - 30, "Mecanálisis – 00503-00-EPG001 – 28/10/2026", 11, "end")
 
