@@ -220,7 +220,7 @@ const cuerpo = [
     ["Cable de puesta a tierra (verde/amarillo)", `Puesta a tierra única desde el estator (${P1}).`],
     ["Detector WTT y bloque de calibración", "Verificación del ajuste de cuñas."],
     { seccion: "Instrumentos" },
-    ["Multímetro y pinza amperométrica", "Control de la tensión por espira y de la corriente de excitación."],
+    ["Multímetro y pinza amperométrica (UNI-T)", "Medición de la tensión por espira (fichas banana del tablero de excitación) y de la corriente en la espira auxiliar."],
     ["Inclinómetro digital", "Posicionamiento de la rampa."],
     ["Calibre y cinta métrica", "Medición de los parámetros geométricos de la máquina."],
     { seccion: "Informática y conexiones" },

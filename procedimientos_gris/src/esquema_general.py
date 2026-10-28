@@ -197,18 +197,16 @@ def tablero_excitacion(x, y, w):
     rect(fondo, X(0.20), Y(0.425), w * 0.76, h * 0.045, "#B4B7B9", "#8E9194", 0.5)
     for i in range(30):
         rect(fondo, X(0.21) + i * w * 0.025, Y(0.44), w * 0.012, h * 0.015, "#9DA0A2")
-    # bornera EXCITATION: 7 bornes arriba (1–5 y 2 de salida al tablero EL CID), 5 abajo
+    # bornera EXCITATION: 7 bornes juntos, de dos niveles (superior e inferior)
     bx0, bx1 = X(0.224), X(0.361)
     paso = (bx1 - bx0) / 7
-    rect(fondo, bx0 - 1, Y(0.335), bx1 - bx0 + 2, h * 0.27, "#1B1B1B", "#000", 0.5, 1)
+    rect(fondo, bx0 - 1.5, Y(0.335), bx1 - bx0 + 3, h * 0.27, "#1B1B1B", "#000", 0.5, 1)
     for i in range(7):
-        terminal(bx0 + i * paso + 0.5, Y(0.344), paso - 1, h * 0.065)
-        texto(bx0 + (i + 0.5) * paso, Y(0.403), str(i + 1) if i < 5 else "", 5, "middle", "#333", capa=fondo)
-    for i in range(5):
-        terminal(bx0 + i * paso + 0.5, Y(0.530), paso - 1, h * 0.065)
-        texto(bx0 + (i + 0.5) * paso, Y(0.525), str(i + 1), 5, "middle", "#DDD", capa=fondo)
-    rect(fondo, X(0.237), Y(0.44), w * 0.11, h * 0.055, "#FAFAFA", "#AAA", 0.4)
-    texto(X(0.292), Y(0.478), "EXCITATION", 5.4, "middle", "#111", peso="bold", capa=fondo)
+        terminal(bx0 + i * paso + 0.4, Y(0.344), paso - 0.8, h * 0.065)
+        terminal(bx0 + i * paso + 0.4, Y(0.530), paso - 0.8, h * 0.065)
+        texto(bx0 + (i + 0.5) * paso, Y(0.428), str(i + 1), 5.5, "middle", "#EEE", peso="bold", capa=fondo)
+        texto(bx0 + (i + 0.5) * paso, Y(0.518), str(i + 1), 5.5, "middle", "#EEE", peso="bold", capa=fondo)
+    texto(X(0.2925), Y(0.66), "EXCITATION", 5.4, "middle", "#333", peso="bold", capa=fondo)
     # interruptor termomagnético
     rect(fondo, X(0.372), Y(0.252), w * 0.06, h * 0.446, "#F8F8F8", "#9A9A9A", 0.7, 1.5)
     rect(fondo, X(0.378), Y(0.27), w * 0.048, h * 0.06, "#ECECEC", "#BBB", 0.4)
@@ -244,9 +242,51 @@ def tablero_excitacion(x, y, w):
         circ(fondo, X(fx), Y(fy), w * 0.005, "#777")
     rect(fondo, X(0.918), Y(0.4375), w * 0.06, h * 0.0725, "#FBFBFB", "#999", 0.7, 2)
     rect(fondo, X(0.935), Y(0.452), w * 0.025, h * 0.04, "#E5E5E5", "#AAA", 0.4)
-    term_sup = [bx0 + (i + 0.5) * paso for i in range(7)]
-    return {"ficha": (X(0.637), Y(-0.02)), "sup": term_sup, "y_sup": Y(0.344), "y_inf": Y(0.595),
-            "izq": bx0, "aux": (X(0.658), X(0.704)), "y_aux": Y(0.38), "h": h}
+    term = [bx0 + (i + 0.5) * paso for i in range(7)]
+    rs = w * 0.022
+    fc = (X(0.579), Y(0.167))
+    return {"ficha": (X(0.637), Y(-0.02)), "sup": term, "y_sup": Y(0.344), "y_sup_b": Y(0.409),
+            "y_inf": Y(0.595), "y_inf_t": Y(0.530), "izq": bx0, "der": bx1,
+            "L": (fc[0] + rs * math.cos(math.radians(210)), fc[1] + rs * 0.5), "N": (fc[0] + rs * math.cos(math.radians(330)), fc[1] + rs * 0.5),
+            "mcb_sup": (X(0.402), Y(0.29)), "mcb_izq": X(0.372), "mcb_der": X(0.432),
+            "aux": (X(0.658), X(0.704)), "y_aux": Y(0.38), "y_aux_inf": Y(0.59),
+            "r1": (X(0.518), X(0.578)), "r2": (X(0.608), X(0.668)), "y_r": Y(0.784),
+            "llave": (X(0.918), X(0.978), Y(0.474)), "j_neg": (X(0.803), Y(0.10)), "j_roj": (X(0.836), Y(0.073)), "h": h}
+
+
+def multimetro(x, y, w=82):
+    """Multímetro UNI-T (rojo y gris)."""
+    h = w * 1.6
+    rect(fondo, x, y, w, h, "#C8102E", "#8E0B20", 1, 8)
+    rect(fondo, x + w * 0.08, y + h * 0.06, w * 0.84, h * 0.88, "#3A3A3A", "#222", 0.6, 5)
+    rect(fondo, x + w * 0.16, y + h * 0.1, w * 0.68, h * 0.2, "#B9C7A6", "#6E7A60", 0.6, 2)
+    texto(x + w * 0.5, y + h * 0.235, "0.124", w * 0.17, "middle", "#1F261A", peso="bold", capa=fondo)
+    texto(x + w * 0.5, y + h * 0.36, "UNI-T", w * 0.1, "middle", "#FFFFFF", peso="bold", capa=fondo)
+    circ(fondo, x + w * 0.5, y + h * 0.56, w * 0.24, "#555", "#222", 0.8)
+    circ(fondo, x + w * 0.5, y + h * 0.56, w * 0.17, "#6A6A6A")
+    poli(fondo, [(x + w * 0.5, y + h * 0.56), (x + w * 0.5 - w * 0.12, y + h * 0.56 - w * 0.12)], "#FFFFFF", 2)
+    jacks = []
+    for i, col in enumerate(("#C8102E", "#111", "#111")):
+        cx = x + w * (0.25 + i * 0.25)
+        circ(fondo, cx, y + h * 0.84, w * 0.06, col, "#000", 0.6)
+        circ(fondo, cx, y + h * 0.84, w * 0.025, "#888")
+        jacks.append((cx, y + h * 0.84))
+    return {"v": jacks[0], "com": jacks[1], "h": h}
+
+
+def pinza(x, y, w=70):
+    """Pinza amperométrica UNI-T: mordaza arriba, alrededor del cable."""
+    h = w * 2.0
+    cx, cy, ra = x + w / 2, y + w * 0.38, w * 0.36
+    frente.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{ra:.1f}" fill="none" stroke="#3A3A3A" stroke-width="{w * 0.16:.1f}"/>')
+    frente.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{ra:.1f}" fill="none" stroke="#C8102E" stroke-width="{w * 0.08:.1f}"/>')
+    rect(frente, x, y + w * 0.78, w, h - w * 0.78, "#C8102E", "#8E0B20", 1, 8)
+    rect(frente, x + w * 0.1, y + w * 0.9, w * 0.8, h - w * 1.0, "#3A3A3A", "#222", 0.6, 4)
+    rect(frente, x + w * 0.18, y + w * 0.98, w * 0.64, w * 0.38, "#B9C7A6", "#6E7A60", 0.6, 2)
+    texto(cx, y + w * 1.26, "150", w * 0.22, "middle", "#1F261A", peso="bold", capa=frente)
+    texto(cx, y + w * 1.52, "UNI-T", w * 0.13, "middle", "#FFFFFF", peso="bold", capa=frente)
+    circ(frente, cx, y + w * 1.78, w * 0.17, "#555", "#222", 0.8)
+    return (cx, cy)
 
 
 def pc(x, y, nombre):
@@ -294,27 +334,33 @@ fondo.append(f'<rect x="20" y="20" width="{W - 40}" height="{H - 40}" fill="none
 texto(W / 2, 80, "ESQUEMA GENERAL DE CONEXIONES – SISTEMA GRIS", 30, "middle")
 
 # ======================================================================== equipos
+# orden de izquierda a derecha: alimentación y PC · tableros · estator
 cb = control_box(520, 160, 240)
 texto(640, 145, "Control box", 14, "middle")
 te = tablero_elcid(520, 560, 240)
 texto(640, 548, "Tablero EL CID", 14, "middle")
 tx = tablero_excitacion(450, 900, 560)
 texto(730, 900 + tx["h"] + 20, "Tablero de excitación", 14, "middle")
-pc(960, 350, "PC GRIS")
-pc(960, 575, "PC EL CID")
-z1 = zapatilla(130, 560, "Zapatilla")
-red(60, 542)
-z2 = zapatilla(1150, 690, "Zapatilla")
-red(1060, 672)
-caja_v = (1060, 830, 140, 100)
-rect(fondo, *caja_v, "#FFFFFF", NEG, 1.4)
-fondo.append('<path d="M1130,850 ' + " ".join("a7,6 0 1 1 0,12" for _ in range(5)) + f'" fill="none" stroke="{NEG}" stroke-width="1.4"/>')
-poli(fondo, [(1145, 848), (1119, 912)], NEG, 1.4)
-fondo.append(f'<path d="M1119,912 l-1,-9 l7,4 z" fill="{NEG}"/>')
-texto(1066, 892, "0–250 V", 11)
-texto(1194, 892, "220 V", 11, "end")
-texto(1130, 952, "Variac", 14, "middle")
-red(1235, 845)
+pc(230, 470, "PC GRIS")
+pc(230, 610, "PC EL CID")
+z1 = zapatilla(110, 1000, "Zapatilla")
+red(147, 1070)
+linea([(170, 1034), (170, 1070)], NEG, 2)
+circ(frente, 236, 1017, 4, "#FFFFFF", VERDE, 1.6)                       # borne de tierra de la zapatilla
+
+# Variac: en línea con la ficha del tablero de excitación
+vx, vy = 1060, 850
+rect(fondo, vx, vy, 140, 100, "#FFFFFF", NEG, 1.4)
+fondo.append(f'<path d="M{vx + 70},{vy + 20} ' + " ".join("a7,6 0 1 1 0,12" for _ in range(5)) + f'" fill="none" stroke="{NEG}" stroke-width="1.4"/>')
+poli(fondo, [(vx + 85, vy + 18), (vx + 59, vy + 82)], NEG, 1.4)
+fondo.append(f'<path d="M{vx + 59},{vy + 82} l-1,-9 l7,4 z" fill="{NEG}"/>')
+texto(vx + 6, vy + 62, "0–250 V", 11)
+texto(vx + 134, vy + 62, "220 V", 11, "end")
+texto(vx + 70, vy - 10, "Variac", 14, "middle")
+red(1235, vy + 15)
+linea([(vx + 140, vy + 50), (1235, vy + 50)], NEG, 2)
+poli(cables, [(vx, tx["ficha"][1]), tx["ficha"]], "#111", 6)              # salida del Variac: cable grueso
+texto(930, tx["ficha"][1] - 8, "Salida del Variac", 11.5, "middle")
 
 # ======================================================================== estator (derecha)
 c1, c2, R, r = (1420, 905), (1565, 805), 105, 65
@@ -326,68 +372,99 @@ for s_ in (1, -1):
 circ(fondo, *c1, R, "#FFFFFF", NEG, 1.4)
 circ(fondo, *c1, r, "#FFFFFF", NEG, 1.4)
 texto(1630, 960, "Núcleo\nestatórico", 14, "middle")
-rby = c1[1] - r + 6
-rect(fondo, c1[0] - 22, rby + 4, 44, 16, "#FFFFFF", NEG, 1.4)
-rect(fondo, c1[0] - 22, rby, 44, 3, "#FFFFFF", NEG, 1.2)
-texto(c1[0] - 30, rby + 8, "Robot", 13, "end")
+# robot en la parte superior del entrehierro
+ry0 = c1[1] - r + 5
+rect(frente, c1[0] - 22, ry0, 44, 14, "#4A4F54", "#2B2F33", 1, 3)                # cuerpo
+rect(frente, c1[0] - 25, ry0 + 12, 50, 6, "#1E1E1E", "none", 0, 3)              # orugas
+for dx in (-18, -6, 6, 18):
+    circ(frente, c1[0] + dx, ry0 + 15, 1.6, "#777")
+rect(frente, c1[0] - 6, ry0 + 3, 12, 5, NAR, "none", 0, 1)                       # captor
+poli(frente, [(c1[0] - 26, ry0 + 6), (c1[0] - 70, ry0 - 20)], NEG, 1)
+texto(c1[0] - 74, ry0 - 22, "Robot", 13, "end")
 
 # ======================================================================== conexiones
-# arnés del robot: cable principal + señal del captor, juntos hasta el tablero EL CID
-poli(fondo, [(c1[0], rby), (c1[0], 304), (cb["principal"][0] + 40, 304)], ARNES, 18)
-poli(fondo, [(c1[0], 304), (c1[0], te["captor"][1])], ARNES, 18)
-linea([(c1[0] - 4, rby), (c1[0] - 4, cb["principal"][1]), cb["principal"]])
-linea([(c1[0] + 4, rby), (c1[0] + 4, te["captor"][1]), te["captor"]])
-texto(1060, 292, "Arnés del robot (cable principal y señal del captor)", 12, "middle")
-texto(900, te["captor"][1] - 6, "Señal del captor", 11.5, "middle")
-# control box ↔ tablero EL CID y PC
-linea([cb["bnc"], (790, cb["bnc"][1]), (790, te["pos"][1]), te["pos"]])
-texto(798, 520, "Señal de\nposición", 11.5)
-linea([cb["usb"], (960, cb["usb"][1])])
-texto(875, cb["usb"][1] - 6, "USB", 11.5, "middle")
-linea([cb["eth"], (956, cb["eth"][1])])
-texto(875, cb["eth"][1] - 6, "Ethernet", 11.5, "middle")
-linea([te["usb"], (960, te["usb"][1])])
-texto(875, te["usb"][1] - 6, "USB", 11.5, "middle")
-# alimentación de la mesa (zapatilla izquierda) y de las PC (zapatilla derecha)
-linea([cb["iec"], (z1[2], cb["iec"][1]), (z1[2], 560)])
-texto(380, cb["iec"][1] - 6, "Alimentación", 11, "middle")
-linea([te["iec"], (z1[2], te["iec"][1]), (z1[2], 594)])
+# arnés del robot (malla negra): cable principal + señal del captor; se abre junto a los tableros
+xa = c1[0]
+arnes = [(xa, ry0), (xa, 304), (860, 304)]
+poli(cables, arnes, "#1E1E1E", 9)
+poli(cables, arnes, "#555", 9, extra=' stroke-dasharray="2 4"')
+poli(cables, [(xa, 304), (xa, te["captor"][1])], "#1E1E1E", 9)
+poli(cables, [(xa, 304), (xa, te["captor"][1])], "#555", 9, extra=' stroke-dasharray="2 4"')
+linea([(860, cb["principal"][1]), cb["principal"]])
+linea([(xa - 5, te["captor"][1]), te["captor"]])
+texto(1130, 290, "Arnés del robot (cable principal y señal del captor)", 12, "middle")
+texto(1080, te["captor"][1] - 6, "Señal del captor", 11.5, "middle")
+# control box → tablero EL CID (posición) y PC (USB / Ethernet por debajo del control box)
+linea([cb["bnc"], (830, cb["bnc"][1]), (830, te["pos"][1]), te["pos"]])
+texto(838, 620, "Señal de\nposición", 11.5)
+linea([cb["usb"], (800, cb["usb"][1]), (800, 510), (340, 510)])
+linea([cb["eth"], (785, cb["eth"][1]), (785, 500), (340, 500)])
+texto(450, 494, "Ethernet", 11.5, "middle")
+texto(450, 524, "USB", 11.5, "middle")
+linea([te["usb"], (775, te["usb"][1]), (775, 530), (380, 530), (380, 645), (340, 645)])
+texto(450, 544, "USB", 11.5, "middle")
+# alimentaciones desde la zapatilla
+linea([cb["iec"], (z1[0], cb["iec"][1]), (z1[0], 1000)])
+texto(340, cb["iec"][1] - 6, "Alimentación", 11, "middle")
+linea([(230, 505), (z1[1], 505), (z1[1], 1000)])
+linea([(230, 645), (z1[2], 645), (z1[2], 1000)])
+linea([te["iec"], (z1[3], te["iec"][1]), (z1[3], 1000)])
 texto(380, te["iec"][1] - 6, "Alimentación", 11, "middle")
-linea([(130, 577), (105, 577)], NEG, 2)
-linea([(1070, 385), (z2[1], 385), (z2[1], 690)])
-linea([(1070, 610), (z2[0], 610), (z2[0], 690)])
-texto(1120, 379, "Alimentación", 11, "middle")
-texto(1120, 604, "Alimentación", 11, "middle")
-linea([(1150, 707), (1105, 707)], NEG, 2)
 # tierras: tablero EL CID → zapatilla; zapatilla → núcleo estatórico (por arriba)
-linea([te["ground"], (z1[3], te["ground"][1]), (z1[3], 594)], VERDE, 2.6)
-texto(380, te["ground"][1] - 6, "Tierra tablero EL CID", 11, "middle")
-linea([(z1[0], 560), (z1[0], 130), (1760, 130), (1760, 760), (c2[0] + math.sqrt(R ** 2 - 45 ** 2), 760)], VERDE, 2.6)
+linea([te["ground"], (260, te["ground"][1]), (260, 1017), (240, 1017)], VERDE, 2.6)
+texto(400, te["ground"][1] - 6, "Tierra tablero EL CID", 11, "middle")
+linea([(110, 1017), (60, 1017), (60, 130), (1760, 130), (1760, 760), (c2[0] + math.sqrt(R ** 2 - 45 ** 2), 760)], VERDE, 2.6)
 texto(940, 124, "Tierra principal (desde el núcleo estatórico)", 11.5, "middle")
 simbolo_tierra(1760, 784)
-# corriente de magnetización: bornes 6 y 7 → tablero EL CID
-linea([te["b1"], (te["b1"][0], 960), (tx["sup"][5], 960), (tx["sup"][5], tx["y_sup"])], NAR, 2)
-linea([te["b2"], (te["b2"][0], 975), (tx["sup"][6], 975), (tx["sup"][6], tx["y_sup"])], NAR, 2)
-# Variac → ficha del tablero de excitación
-linea([(1060, 875), (1030, 875), (1030, tx["ficha"][1]), tx["ficha"]], NEG, 2)
-texto(920, tx["ficha"][1] - 6, "Salida del Variac", 11.5, "middle")
-linea([(1200, 880), (1235, 880)], NEG, 2)
+# corriente de excitación: bornes 6 y 7 → tablero EL CID (rojo)
+ROJO = "#D32F2F"
+linea([te["b1"], (te["b1"][0], 950), (tx["sup"][5], 950), (tx["sup"][5], tx["y_sup"])], ROJO, 2.4)
+linea([te["b2"], (te["b2"][0], 962), (tx["sup"][6], 962), (tx["sup"][6], tx["y_sup"])], ROJO, 2.4)
 
 # cable de excitación de 5 hilos: vaina negra, pasa por el entrehierro y vuelve por fuera del núcleo
 pf, pb = (c1[0] - 28, c1[1] + 30), (c2[0] - 28, c2[1] + 30)
 sup_x = sum(tx["sup"][:5]) / 5
 cable_5_hilos([(sup_x, 965), (sup_x, 880), (420, 880), (420, 1238), (1700, 1238), (1700, pb[1] - 12), (pb[0], pb[1] - 12)],
               (sup_x, 965), tx["sup"][:5], tx["y_sup"])
-cable_5_hilos([(sup_x, 1120), (440, 1120), (440, 1224), (1350, 1224), (1350, pf[1]), pf],
+cable_5_hilos([(sup_x, 1120), (sup_x, 1224), (1350, 1224), (1350, pf[1]), pf],
               (sup_x, 1120), tx["sup"][:5], tx["y_inf"], desde_abajo=True)
 poli(cables, [pf, (pb[0], pb[1] - 12)], "#111", 6, extra=' stroke-dasharray="10 7"')
 texto(1180, 1217, "Cable de excitación de 5 hilos (espiras en serie)", 12, "middle")
+
+# conexiones internas del tablero de excitación
+MARRON, AZUL = "#7B4A2A", "#2A62C9"
+ys, ysb, yi, yit = tx["y_sup"], tx["y_sup_b"], tx["y_inf"], tx["y_inf_t"]
+t = tx["sup"]
+poli(cables, [tx["L"], (tx["L"][0], 972), (tx["mcb_sup"][0], 972), tx["mcb_sup"]], MARRON, 1.8)
+poli(cables, [(tx["mcb_izq"], ys + 9), (tx["der"] + 1, ys + 9)], MARRON, 1.8)                  # interruptor → borne 7
+for k in range(5):                                                                              # puentes: inferior k → superior k+1
+    poli(cables, [(t[k], yit), (t[k + 1], ysb)], ROJO, 1.4)
+linea([tx["N"], (tx["N"][0], 980), (696, 980), (696, 1165), (566, 1165), (566, yit + 9), (tx["izq"] - 1, yit + 9)], AZUL, 1.8)
+# circuito auxiliar: espira · resistencias · llave, y fichas banana en paralelo
+a1, a2 = tx["aux"]
+GRIS_W = "#4D4D4D"
+poli(cables, [(a1, tx["y_aux_inf"]), (a1, 1118), (tx["r1"][0] - 6, 1118), (tx["r1"][0] - 6, tx["y_r"]), (tx["r1"][0], tx["y_r"])], GRIS_W, 1.4)
+poli(cables, [(tx["r1"][1], tx["y_r"]), (tx["r2"][0], tx["y_r"])], GRIS_W, 1.4)
+poli(cables, [(tx["r2"][1], tx["y_r"]), (980, tx["y_r"]), (980, tx["llave"][2] + 8)], GRIS_W, 1.4)
+poli(cables, [(tx["llave"][0], tx["llave"][2]), (875, tx["llave"][2]), (875, 1095), (a2, 1095), (a2, tx["y_aux_inf"])], GRIS_W, 1.4)
+poli(cables, [tx["j_neg"], (tx["j_neg"][0], 985), (a1, 985), (a1, tx["y_aux"])], "#151515", 1.4)
+poli(cables, [tx["j_roj"], (918, tx["j_roj"][1]), (918, 995), (a2, 995), (a2, tx["y_aux"])], ROJO, 1.4)
+
 # espira auxiliar: rodea el núcleo igual que el cable de excitación
 pfa, pba = (c1[0] - 48, c1[1] + 12), (c2[0] - 48, c2[1] + 12)
-linea([(tx["aux"][0], tx["y_aux"]), (tx["aux"][0], 1003), (1030, 1003), (1030, 1050), (1330, 1050), (1330, pfa[1]), pfa], VIOL, 2)
-linea([(tx["aux"][1], tx["y_aux"]), (tx["aux"][1], 1012), (1020, 1012), (1020, 1062), (1680, 1062), (1680, pba[1] - 6), (pba[0], pba[1] - 6)], VIOL, 2)
+linea([(a1, tx["y_aux"]), (a1, 1003), (1030, 1003), (1030, 1170), (1330, 1170), (1330, pfa[1]), pfa], VIOL, 2)
+linea([(a2, tx["y_aux"]), (a2, 1012), (1020, 1012), (1020, 1182), (1680, 1182), (1680, pba[1] - 6), (pba[0], pba[1] - 6)], VIOL, 2)
 poli(cables, [pfa, (pba[0], pba[1] - 6)], VIOL, 2, extra=' stroke-dasharray="7 5"')
-texto(1180, 1044, "Espira auxiliar", 12, "middle")
+texto(1180, 1164, "Espira auxiliar", 12, "middle")
+# voltímetro en las fichas banana (tensión por espira) y pinza en la espira auxiliar (corriente)
+mm = multimetro(1065, 975)
+def punta(p0, p1, col, baja):
+    cables.append(f'<path d="M{p0[0]:.1f},{p0[1]:.1f} C{p0[0] + 40:.1f},{baja:.1f} {p1[0]:.1f},{baja + 40:.1f} {p1[0]:.1f},{p1[1]:.1f}" fill="none" stroke="{col}" stroke-width="2.2" stroke-linecap="round"/>')
+punta(tx["j_roj"], mm["v"], "#C8102E", 1130)
+punta(tx["j_neg"], mm["com"], "#151515", 1150)
+texto(1180, 1000, "Voltímetro\n(tensión por espira)", 11.5)
+pz = pinza(1295, 1000 - 70 * 0.38 + 14)
+texto(1375, 1060, "Pinza amperométrica\n(corriente en la\nespira auxiliar)", 11.5)
 
 texto(W - 36, H - 30, "Mecanálisis – 00503-00-EPG001 – 28/10/2026", 11, "end")
 
@@ -407,7 +484,9 @@ def verticales_de(objs):
 
 
 # vainas del cable de 5 hilos como verticales a saltar
-vainas = [{"pts": p, "ancho": 6} for p in ([(1350, 1224), (1350, 935)], [(1700, 1238), (1700, 793)], [(420, 880), (420, 1238)], [(440, 1120), (440, 1224)])]
+vainas = [{"pts": p, "ancho": 6} for p in ([(1350, 1224), (1350, 935)], [(1700, 1238), (1700, 793)], [(420, 880), (420, 1238)],
+                                         [(sup_x, 1120), (sup_x, 1224)], [(sup_x, 880), (sup_x, 965)])]
+vainas.append({"pts": [(xa, ry0), (xa, 304)], "ancho": 9})
 verticales = verticales_de(lineas) + verticales_de(vainas)
 
 
