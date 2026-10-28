@@ -12,6 +12,7 @@ const SOFFICE = process.env.SOFFICE || "soffice";
 const DOCS = [
   ["epg001_procedimiento", "00503-00-EPG001 Procedimiento Inspeccion Robotizada GRIS"],
   ["epg002_protocolos_elcid", "00503-00-EPG002 Anexo Protocolos de Ensayo EL CID"],
+  ["zrq001_checklist", "00503-00-ZRQ001 Inspection Detachment Checklist"],
 ];
 
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

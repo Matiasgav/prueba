@@ -21,7 +21,8 @@ CONTENIDO = [
                                PDF / "00503-00-EPG003 Manual de uso del software GRIS.pdf"]),
     ("4 Desprendimiento de piezas", [F / "00503-00-ZIT003 Residual Part Detachment Risk Assessment.docx",
                                      F / "00503-00-ZIT003 Residual Part Detachment Risk Assessment.pdf",
-                                     F / "00503-00-ZRQ001 Inspection Detachment Checklist.pdf"]),
+                                     RAIZ / "00503-00-ZRQ001 Inspection Detachment Checklist.docx",
+                                     PDF / "00503-00-ZRQ001 Inspection Detachment Checklist.pdf"]),
 ]
 
 INDICE = """PAQUETE DOCUMENTAL – INSPECCIÓN ROBOTIZADA GRIS (00503)
@@ -38,7 +39,7 @@ El documento principal es 00503-00-EPG001. Los demás derivan de él y se invoca
   00503-00-EPG003  Manual de uso del software GRIS.
 4 Desprendimiento de piezas
   00503-00-ZIT003  Evaluación del riesgo residual de desprendimiento de piezas del robot.
-  00503-00-ZRQ001  Checklist de verificación pre y post-ensayo.
+  00503-00-ZRQ001  Checklist de verificación pre y post-ensayo (formato Mecanálisis).
 """
 
 

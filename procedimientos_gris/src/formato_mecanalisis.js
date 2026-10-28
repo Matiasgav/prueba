@@ -287,7 +287,8 @@ function documento(meta, cuerpo) {
       ...(meta.listasNumeradas || []).map((ref) => ({ reference: ref, levels: [
         { level: 0, format: LevelFormat.DECIMAL, text: "%1.", alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: 567, hanging: 340 } } } }] })),
     ] },
-    sections: secciones(meta, [...portada(meta), ...cuerpo, ...cierre(meta)]),
+    // Un formulario (checklist, registro) lleva solo encabezado, pie y su contenido: sin portada ni bloque de cierre.
+    sections: secciones(meta, meta.formulario ? cuerpo : [...portada(meta), ...cuerpo, ...cierre(meta)]),
   });
 }
 
