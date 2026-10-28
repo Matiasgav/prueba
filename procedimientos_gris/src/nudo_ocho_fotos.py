@@ -21,7 +21,7 @@ PASOS = [
     "",
 ]
 # Zoom de cada paso sobre la foto ya girada (1156 × 651 px): centro (x, y) y ancho del recorte.
-ZOOM = {1: (578, 325, 1156), 2: (635, 370, 1000), 3: (559, 300, 600), 4: (455, 450, 380),
+ZOOM = {1: (578, 325, 1156), 2: (716, 254, 880), 3: (559, 300, 600), 4: (455, 450, 380),
         5: (410, 380, 400), 6: (565, 320, 400), 7: (520, 380, 560)}
 T = 34                    # ≥ 10 pt con la figura a 17 cm de ancho
 W, M = 1600, 20           # ancho total y margen
