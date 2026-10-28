@@ -106,6 +106,7 @@ function celda(contenido, ancho, o = {}) {
   const parrafos = (Array.isArray(contenido) ? contenido : [contenido]).map((c) =>
     c instanceof Paragraph ? c : new Paragraph({
       spacing: { after: 0, line: 252 },
+      keepNext: o.keepNext,
       alignment: o.align || AlignmentType.LEFT,
       children: runs(c, { size: o.size || 19, bold: o.bold, color: o.color }),
     }));
@@ -126,7 +127,7 @@ function tabla(cols, anchos, filas, o = {}) {
   const cab = new TableRow({
     tableHeader: true, cantSplit: true,
     children: cols.map((c, i) => celda(c, anchos[i], {
-      bold: true, fill: C.grisClaro, align: o.alignCab || AlignmentType.LEFT })),
+      bold: true, fill: C.grisClaro, align: o.alignCab || AlignmentType.LEFT, keepNext: o.keepNext })),
   });
   const cuerpo = filas.map((f) => {
     if (f.seccion) {
@@ -137,15 +138,16 @@ function tabla(cols, anchos, filas, o = {}) {
       align: (o.centrar || []).includes(i) ? AlignmentType.CENTER : AlignmentType.LEFT,
       bold: (o.negrita || []).includes(i),
       vAlign: VerticalAlign.TOP,
+      keepNext: o.keepNext,
     })) });
   });
   return new Table({ width: { size: total, type: WidthType.DXA }, columnWidths: anchos, rows: [cab, ...cuerpo] });
 }
 
-// Tabla de pasos: Nº | Actividad | Resp. | Ref./Registro
+// Tabla de pasos: Nº | Actividad | Referencia
 function pasos(filas) {
-  return tabla(["Nº", "Actividad", "Resp.", "Referencia / Registro"], [560, 6018, 1060, 2000], filas,
-    { centrar: [0, 2], negrita: [0], alignCab: AlignmentType.CENTER });
+  return tabla(["Nº", "Actividad", "Referencia"], [560, 6878, 2200], filas,
+    { centrar: [0], negrita: [0], alignCab: AlignmentType.CENTER });
 }
 
 function figura(archivo, anchoPx, altoPx, leyenda, anchoCm = 16) {
@@ -213,7 +215,9 @@ function portada(meta) {
     new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 240 },
       children: [new TextRun({ text: meta.tituloPortada[1], bold: true, size: 30, color: C.naranja })] }),
   ];
-  for (const [titulo, texto] of [["OBJETIVO", meta.objetivo], ["ALCANCE", meta.alcance], ["RESPONSABLE DEL PROCESO", meta.responsable]]) {
+  const bloques = [["OBJETIVO", meta.objetivo], ["ALCANCE", meta.alcance]];
+  if (meta.responsable) bloques.push(["RESPONSABLE DEL PROCESO", meta.responsable]);
+  for (const [titulo, texto] of bloques) {
     out.push(hPortada(titulo));
     (Array.isArray(texto) ? texto : [texto]).forEach((t) => out.push(p(t)));
   }
@@ -229,13 +233,14 @@ function portada(meta) {
 // ---------- bloque de control (cierre del documento) ----------
 function cierre(meta) {
   const out = [];
-  out.push(tabla(["CÓDIGO", "TÍTULO"], [2200, 7438], meta.registros, { centrar: [0], alignCab: AlignmentType.CENTER }));
-  out.push(espacio(200));
-  out.push(tabla(["REVISIÓN", "FECHA", "DESCRIPCIÓN"], [1400, 1400, 6838], meta.revisiones));
-  out.push(espacio(200));
-  out.push(tabla(["PREPARÓ", "REVISÓ", "APROBÓ", "FECHA DE EMISIÓN"], [2410, 2410, 2409, 2409], [meta.firmas]));
-  out.push(espacio(200));
-  out.push(tabla(["DOCUMENTOS DE REFERENCIA"], [ANCHO], meta.referencias.map((r) => [r])));
+  const oVacia = (filas, n) => (filas && filas.length ? filas : [Array(n).fill(" ")]);
+  out.push(tabla(["CÓDIGO", "TÍTULO"], [2200, 7438], oVacia(meta.registros, 2), { centrar: [0], alignCab: AlignmentType.CENTER, keepNext: true }));
+  out.push(new Paragraph({ keepNext: true, spacing: { after: 200 }, children: [] }));
+  out.push(tabla(["REVISIÓN", "FECHA", "DESCRIPCIÓN"], [1400, 1400, 6838], meta.revisiones, { keepNext: true }));
+  out.push(new Paragraph({ keepNext: true, spacing: { after: 200 }, children: [] }));
+  out.push(tabla(["PREPARÓ", "REVISÓ", "APROBÓ", "FECHA DE EMISIÓN"], [2410, 2410, 2409, 2409], [meta.firmas], { keepNext: true }));
+  out.push(new Paragraph({ keepNext: true, spacing: { after: 200 }, children: [] }));
+  out.push(tabla(["DOCUMENTOS DE REFERENCIA"], [ANCHO], oVacia((meta.referencias || []).map((r) => [r]), 1), { keepNext: true }));
   out.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 480 },
     children: [new TextRun({ text: "FIN DE DOCUMENTO", bold: true, size: 28, color: C.naranja })] }));
   return out;

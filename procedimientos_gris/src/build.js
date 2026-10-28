@@ -43,7 +43,7 @@ function paginasDeTitulos(pdf, entradas) {
   const norm = (s) => s.replace(/\s+/g, " ").trim().toUpperCase();
   let desde = 2; // las páginas 1 (portada) y 2 (índice) contienen los títulos del índice
   return entradas.map((e, i) => {
-    if (i < 3) return { ...e, pagina: 1 }; // OBJETIVO, ALCANCE, RESPONSABLE
+    if (["OBJETIVO", "ALCANCE", "RESPONSABLE DEL PROCESO"].includes(e.texto)) return { ...e, pagina: 1 };
     for (let k = desde; k < paginas.length; k++) {
       if (paginas[k].split("\n").some((l) => norm(l) === norm(e.texto))) {
         desde = k; return { ...e, pagina: k + 1 };

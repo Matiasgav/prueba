@@ -4,6 +4,11 @@ const F = require("./formato_mecanalisis");
 const { p, vineta, numerada, h1, h2, h3, rol, nota, espacio, tabla, figura } = F;
 
 const PROC = "00503-00-EPG001";
+// Apartados del procedimiento general que invocan cada protocolo (se calculan desde EPG001).
+const { etapas } = require("./epg001_procedimiento");
+const invocado = (nro) => etapas
+  .filter((e) => e.pasos.some((ps) => !ps.seccion && ps[2].includes(`Protocolo ${nro}`)))
+  .map((e) => e.apartado).join(", ");
 
 // ---------- ecuaciones ----------
 // Texto con subíndices: "v_t" → v con subíndice t. Se evita OMML para que se vea igual en cualquier visor.
@@ -24,27 +29,17 @@ const ec = (expr, nro) => new Paragraph({
 const meta = {
   codigo: "00503-00-EPG002",
   version: "00",
-  fecha: "26/10/2026",
+  fecha: "28/10/2026",
   tipo: "PROCEDIMIENTO – ANEXO",
   tituloEncabezado: ["PROTOCOLOS DE ENSAYO EL CID", "EXCITACIÓN, CALIBRACIÓN Y SOFTWARE"],
   tituloPortada: ["PROTOCOLOS DE ENSAYO EL CID", "Excitación del núcleo, calibración y operación de ELCSoft"],
   objetivo: `Establecer los protocolos técnicos para la excitación del núcleo, la calibración del sistema de medición y la operación del software ELCSoft en el ensayo EL CID, como anexo del procedimiento ${PROC}.`,
   alcance: "Ensayo EL CID para determinar la condición de la aislación interlaminar de núcleos estatóricos de generadores eléctricos, con el rotor colocado (inspección robotizada GRIS) o con el rotor desmontado.",
-  responsable: "Gerente de Operaciones e Ingeniería.",
   listasNumeradas: ["calib", "secuencia"],
-  registros: [
-    ["A asignar", "Registro de calibración EL CID (tensión por espira, corriente de falla, KF)"],
-    ["—", "Archivos de ensayo ELCSoft: parámetros, matrices Iq e Iqp y registro en bruto (reg)"],
-    ["A asignar", "Memoria de cálculo de la excitación del núcleo (#####-##-EMC###)"],
-  ],
-  revisiones: [["N° 00", "26/10/2026", "Versión inicial. Adaptación al formato Mecanálisis de los «Protocolos de ensayo ELCID robotizado» (Nexergy Corp., junio 2025)."]],
+  registros: [],
+  revisiones: [["00", "28/10/2026", "Versión inicial. Adaptación al formato Mecanálisis de los «Protocolos de ensayo ELCID robotizado» (Nexergy Corp., junio 2025)."]],
   firmas: ["", "", "", ""],
-  referencias: [
-    "Norma ISO 9001:2015",
-    `${PROC} – Procedimiento de inspección robotizada GRIS`,
-    "Protocolos de ensayo ELCID robotizado – Nexergy Corp., junio 2025 (Tarea N° 19, Producto N° 7)",
-    "IEEE Std 56-2016 – Guide for Insulation Maintenance of Electric Machines",
-  ],
+  referencias: [],
 };
 
 const cuerpo = [
@@ -61,24 +56,18 @@ const cuerpo = [
     ["**Vl, Tph, K**", "Tensión de línea nominal, número de espiras en serie por fase y factor de bobinado (paso × distribución) del generador."],
   ]),
 
-  h1("2. RESPONSABILIDADES"),
-  rol("Ingeniero de Generadores (IG)"),
-  vineta("Calcular la excitación del núcleo (Protocolo 1) y validar la calibración (Protocolo 2)."),
-  rol("Responsable del Ensayo (RE)"),
-  vineta("Aplicar los protocolos en sitio, registrar la calibración y resguardar los archivos generados por ELCSoft."),
-
-  h1("3. CONTENIDO"),
+  h1("2. CONTENIDO"),
   p(`Este anexo contiene los tres protocolos que se invocan desde ${PROC}:`),
   tabla(["Protocolo", "Contenido", "Invocado en " + PROC], [2600, 4238, 2800], [
-    ["Protocolo 1 – Excitación del núcleo", "Equipo, puesta a tierra, cálculo y montaje del arrollamiento de excitación y espira auxiliar.", "Pasos 6, 7, 10, 15, 18 y 25"],
-    ["Protocolo 2 – Calibración", "Tensión por espira, corriente de falla controlada y constante KF.", "Pasos 13, 34, 40 y 44"],
-    ["Protocolo 3 – Software ELCSoft", "Parámetros, registro de ranuras, visualización y archivos.", "Pasos 27, 37 y 39"],
+    ["Protocolo 1 – Excitación del núcleo", "Equipo, puesta a tierra, cálculo y montaje del arrollamiento de excitación y espira auxiliar.", `Apartados ${invocado(1)}`],
+    ["Protocolo 2 – Calibración", "Tensión por espira, corriente de falla controlada y constante KF.", `Apartados ${invocado(2)}`],
+    ["Protocolo 3 – Software ELCSoft", "Parámetros, registro de ranuras, visualización y archivos.", `Apartados ${invocado(3)}`],
   ]),
 
   // ---------------- PROTOCOLO 1 ----------------
-  h2("3.1 PROTOCOLO 1 – EXCITACIÓN DEL NÚCLEO"),
+  h2("2.1 PROTOCOLO 1 – EXCITACIÓN DEL NÚCLEO"),
   p("Guía para la magnetización débil del núcleo estatórico a ensayar."),
-  h3("3.1.1 Características técnicas del equipo"),
+  h3("2.1.1 Características técnicas del equipo"),
   tabla(["Característica", "Valor"], [4200, 5438], [
     ["Alimentación eléctrica", "CA 110/220 V, 50/60 Hz"],
     ["Corriente máxima de excitación", "Hasta 50 A"],
@@ -90,35 +79,35 @@ const cuerpo = [
     ["DAQ – humedad relativa", "10 % a 90 % sin condensación"],
     ["DAQ – altitud máxima de operación", "2000 m s. n. m."],
   ]),
-  h3("3.1.2 Puesta a tierra"),
-  nota("Precaución:", "la puesta a tierra se realiza en forma local desde el estator de la máquina y se distribuye radialmente hacia cada equipo del ensayo. El borne «Ground» del equipo EL CID es su única vinculación a tierra: no se admite ninguna otra conexión paralela o secundaria. Esta disposición evita lazos de corriente que inducen señales espurias y ponen en riesgo los equipos conectados."),
-  h3("3.1.3 Cálculo del número de espiras"),
-  p("El número de espiras se determina a partir de la tensión por espira calculada según el apartado 3.4 (Apéndice), considerando que:"),
+  h3("2.1.2 Puesta a tierra"),
+  nota("Precaución:", "la puesta a tierra se realiza en forma local desde el estator de la máquina y se distribuye radialmente hacia cada equipo del ensayo. El borne «Ground» del tablero EL CID es su única vinculación a tierra: no se admite ninguna otra conexión paralela o secundaria. Esta disposición evita lazos de corriente que inducen señales espurias y ponen en riesgo los equipos conectados."),
+  h3("2.1.3 Cálculo del número de espiras"),
+  p("El número de espiras se determina a partir de la tensión por espira calculada según el apartado 2.4 (Apéndice), considerando que:"),
   vineta("La tensión aplicada no supere la capacidad nominal del Variac."),
   vineta("La corriente de excitación resultante quede dentro del rango operativo recomendado: **5 A a 40 A**."),
-  h3("3.1.4 Selección de la sección del conductor"),
+  h3("2.1.4 Selección de la sección del conductor"),
   p("La sección del conductor debe admitir la corriente de ensayo sin sobrecalentamiento. Un conductor sobrecalentado aumenta su resistencia, reduce la corriente de excitación y obliga a recalibrar y a corregir permanentemente la tensión aplicada para mantener constante la tensión por espira."),
-  h3("3.1.5 Montaje con rotor desmontado"),
+  h3("2.1.5 Montaje con rotor desmontado"),
   vineta("Fijar el arrollamiento en forma concéntrica respecto del eje del núcleo, cubriendo toda su longitud axial."),
   vineta("En los extremos del núcleo, utilizar un radio de curvatura amplio para evitar efectos de borde."),
   vineta("Agrupar en forma compacta el tramo del arrollamiento dispuesto a lo largo del eje."),
-  h3("3.1.6 Montaje con rotor colocado"),
+  h3("2.1.6 Montaje con rotor colocado"),
   vineta("Aislar eléctricamente el rotor de su apoyo, al menos en uno de sus extremos, para que no forme una espira de falla con el núcleo y el arrollamiento de excitación."),
   vineta("Ubicar el arrollamiento lateralmente al núcleo, en la medida de lo posible."),
   vineta("Desplazar el arrollamiento a medida que avanza el ensayo, para evitar que el captor quede próximo al conductor de excitación (el acoplamiento directo produce lecturas erróneas)."),
-  nota("Inspección GRIS:", `la ubicación inicial y la reubicación del arrollamiento cada 120° se realizan según ${PROC}, pasos 16, 17 y 44.`, F.C.gris),
-  h3("3.1.7 Montaje de la espira auxiliar"),
+  nota("Inspección GRIS:", `la ubicación inicial y la reubicación del arrollamiento cada 120° se realizan según ${PROC}, apartados ${etapas.find((e) => e.id === "exc").apartado} (montaje de la excitación) y ${etapas.find((e) => e.id === "ran").apartado} (inspección por ranura).`, F.C.gris),
+  h3("2.1.7 Montaje de la espira auxiliar"),
   p("La espira auxiliar permite medir la tensión por espira durante todo el ensayo y generar la corriente de falla controlada de calibración (Protocolo 2). Se aloja dentro de una ranura del estator, en una posición fija y representativa."),
   p("Dado que la corriente de calibración es baja (100 mA a 200 mA) y que la espira no conduce corriente en forma permanente, se recomienda un conductor de **1,5 mm²**."),
   nota("Precaución:", "verificar que la espira auxiliar no quede en cortocircuito en ningún momento del ensayo. Un cortocircuito provocaría una corriente elevada y no controlada, con riesgo para el equipo, el sensor y la validez del ensayo."),
 
   // ---------------- PROTOCOLO 2 ----------------
-  h2("3.2 PROTOCOLO 2 – CALIBRACIÓN"),
-  p("Establece la correspondencia entre la señal medida por el captor y una corriente de falla conocida, a partir de la configuración de referencia de la Figura 1. La puesta a tierra se realiza según 3.1.2."),
+  h2("2.2 PROTOCOLO 2 – CALIBRACIÓN"),
+  p("Establece la correspondencia entre la señal medida por el captor y una corriente de falla conocida, a partir de la configuración de referencia de la Figura 1. La puesta a tierra se realiza según 2.1.2."),
   ...figura("fig_calibracion.png", 1292, 537, "Figura 1: Configuración de referencia para la calibración del ensayo EL CID"),
   numerada("**Preparación.** Verificar que el arrollamiento de excitación (número de espiras calculado) y la espira auxiliar estén montados según el Protocolo 1.", "calib"),
   numerada("**Ausencia de espiras parásitas.** Antes de energizar, retirar o reubicar todo elemento conductor que forme un lazo cerrado alrededor del núcleo: cintas pasacables metálicas, alambres o cables sueltos, herramientas, fijaciones o elementos estructurales transversales al flujo. Estos lazos inducen corrientes espurias que simulan fallas inexistentes.", "calib"),
-  numerada("**Tensión por espira.** Alimentar el arrollamiento con el Variac y ajustar la tensión hasta que la tensión medida en la espira auxiliar sea igual al valor teórico calculado (apartado 3.4).", "calib"),
+  numerada("**Tensión por espira.** Alimentar el arrollamiento con el Variac y ajustar la tensión hasta que la tensión medida en la espira auxiliar sea igual al valor teórico calculado (apartado 2.4).", "calib"),
   numerada("**Corriente de falla.** Con la espira auxiliar firmemente alojada en su ranura, conectar en serie una resistencia de calibración de valor tal que circule una corriente de **100 mA a 200 mA**.", "calib"),
   numerada("**Posicionamiento del captor.** Alinear el eje central entre las dos bobinas captoras con el centro de la ranura de la espira auxiliar, a una distancia del borde del núcleo de aproximadamente **¼ de la longitud total del núcleo**, para minimizar los efectos de borde.", "calib"),
   numerada("**Constante KF.** En ELCSoft, ajustar KF hasta que la lectura coincida con la corriente de falla establecida.", "calib"),
@@ -127,18 +116,18 @@ const cuerpo = [
   nota("Durante el ensayo:", "monitorear continuamente la tensión por espira y corregirla cuando sea necesario para mantenerla constante.", F.C.gris),
 
   // ---------------- PROTOCOLO 3 ----------------
-  h2("3.3 PROTOCOLO 3 – OPERACIÓN DEL SOFTWARE ELCSOFT"),
+  h2("2.3 PROTOCOLO 3 – OPERACIÓN DEL SOFTWARE ELCSOFT"),
   p("ELCSoft 1.0 es el software de adquisición del ensayo EL CID. Permite iniciar ensayos, continuar ensayos incompletos y visualizar los resultados en forma gráfica."),
-  h3("3.3.1 Menú principal"),
+  h3("2.3.1 Menú principal"),
   ...figura("fig_menu_principal.png", 1340, 644, "Figura 2: Menú principal de ELCSoft", 14),
   tabla(["Opción", "Función"], [2600, 7038], [
-    ["Iniciar nuevo ensayo", "Comienza un nuevo ensayo. Requiere completar los datos de la máquina, del ensayo y la configuración del hardware (3.3.2)."],
+    ["Iniciar nuevo ensayo", "Comienza un nuevo ensayo. Requiere completar los datos de la máquina, del ensayo y la configuración del hardware (2.3.2)."],
     ["Continuar un ensayo", "Retoma un ensayo interrumpido. Se carga el archivo principal (.csv); el programa detecta las ranuras registradas y continúa en la siguiente."],
-    ["Abrir gráficos 2D", "Muestra Iq [mA] en función de la posición axial, por ranura (3.3.5)."],
-    ["Abrir gráficos 3D", "Muestra el mapa completo: posición axial, número de ranura y magnitud de Iq (3.3.5)."],
+    ["Abrir gráficos 2D", "Muestra Iq [mA] en función de la posición axial, por ranura (2.3.5)."],
+    ["Abrir gráficos 3D", "Muestra el mapa completo: posición axial, número de ranura y magnitud de Iq (2.3.5)."],
     ["Parámetros", "Permite prefijar los mismos datos requeridos al iniciar un ensayo."],
   ]),
-  h3("3.3.2 Parámetros del ensayo"),
+  h3("2.3.2 Parámetros del ensayo"),
   ...figura("fig_parametros.png", 1356, 674, "Figura 3: Menú de parámetros", 14),
   tabla(["Grupo / parámetro", "Descripción"], [2900, 6738], [
     { seccion: "Datos generales" },
@@ -153,7 +142,7 @@ const cuerpo = [
     ["Constante de posición [mm/V]", "Convierte la señal analógica del sensor de posición axial en desplazamiento."],
     ["Constante de sensor Iq (KF)", "Constante adimensional del captor, determinada según el Protocolo 2."],
   ]),
-  h3("3.3.3 Pantalla de adquisición"),
+  h3("2.3.3 Pantalla de adquisición"),
   ...figura("fig_adquisicion.png", 1344, 646, "Figura 4: Pantalla de adquisición de datos – registro de ranura", 15),
   tabla(["Elemento", "Descripción"], [2900, 6738], [
     { seccion: "Visualización" },
@@ -175,7 +164,7 @@ const cuerpo = [
     ["Guardar ranura", "Almacena en forma definitiva los datos de la ranura."],
     ["Volver al Menú", "Regresa al menú principal."],
   ]),
-  h3("3.3.4 Secuencia de registro"),
+  h3("2.3.4 Secuencia de registro"),
   p("Con la calibración finalizada y KF definida, ubicar el robot en la posición axial cero sobre la ranura inicial:", { keepNext: true }),
   numerada("Presionar **Posición Cero** para fijar la referencia respecto del borde del núcleo.", "secuencia"),
   numerada("Presionar **Iniciar**; el indicador pasa a verde (ON).", "secuencia"),
@@ -184,14 +173,14 @@ const cuerpo = [
   numerada("Al finalizar, presionar **Guardar ranura**; el registro se detiene y el indicador vuelve a rojo (OFF).", "secuencia"),
   numerada("Posicionar el robot en la ranura siguiente y repetir hasta completar las ranuras previstas.", "secuencia"),
   numerada("Al completar la última ranura, presionar **Volver al Menú**.", "secuencia"),
-  h3("3.3.5 Visualización de resultados"),
+  h3("2.3.5 Visualización de resultados"),
   ...figura("fig_graficos_2d.png", 1353, 701, "Figura 5: Visualización de gráficos 2D", 15),
   vineta("**Mapa 2D (izquierda):** cada línea es una ranura; el color indica la intensidad relativa de Iq según los umbrales ingresados."),
   vineta("**Gráficos por ranura (derecha):** Iq [mA] en función de la posición [mm], con número de ranura, Iq máxima e indicador de condición: verde (normal), amarillo (precaución), rojo (posible defecto)."),
   vineta("**Controles:** Amp2D (amplitud del mapa 2D), Up / Down / X5 (grupo de ranuras visualizado), Archivo (abrir otro registro) y Volver al Menú."),
   ...figura("fig_graficos_3d.png", 1356, 704, "Figura 6: Visualización de gráficos 3D", 15),
   p("El gráfico 3D (posición axial, número de ranura y magnitud de Iq) brinda una visión global del núcleo y facilita la localización de zonas con posibles defectos mediante una paleta de colores por umbral."),
-  h3("3.3.6 Archivos generados"),
+  h3("2.3.6 Archivos generados"),
   tabla(["Archivo", "Contenido"], [2900, 6738], [
     ["Parámetros", "Todos los parámetros del ensayo."],
     ["Sufijo Iq / Iqp", "Datos matriciales para los gráficos 2D y 3D."],
@@ -199,7 +188,7 @@ const cuerpo = [
   ]),
 
   // ---------------- APÉNDICE ----------------
-  h2("3.4 APÉNDICE – DETERMINACIÓN DE LA TENSIÓN POR ESPIRA"),
+  h2("2.4 APÉNDICE – DETERMINACIÓN DE LA TENSIÓN POR ESPIRA"),
   p("Para un flujo sinusoidal Φ = Φm · sen(2πft) inducido en forma anular en el núcleo, la tensión inducida por espira (ley de Faraday) tiene un valor eficaz:"),
   ec("v_t = 2π · f · Φ_m / √2", 1),
   p("Como el flujo por polo en el entrehierro, Φa, se divide en dos mitades en el yugo (Φm = Φa/2):"),
@@ -212,8 +201,8 @@ const cuerpo = [
   ec("v_t ≈ 12,5 · V_l [kV] / T_{ph}", 5),
   p("Donde Vl es la tensión de línea nominal, K el factor de bobinado (paso × distribución) y Tph el número de espiras en serie por fase."),
 
-  h1("4. REGISTROS"),
-  p("Los registros generados como consecuencia de las acciones involucradas en el documento son:"),
+  h1("3. REGISTROS"),
+  p("Los registros generados como consecuencia de las acciones involucradas en el documento son:", { keepNext: true }),
 ];
 
 module.exports = { meta, cuerpo };
