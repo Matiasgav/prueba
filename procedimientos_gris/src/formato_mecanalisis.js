@@ -5,7 +5,7 @@ const path = require("path");
 const {
   Document, Paragraph, TextRun, Table, TableRow, TableCell, Header, Footer,
   ImageRun, AlignmentType, WidthType, BorderStyle, ShadingType, HeadingLevel,
-  PageNumber, VerticalAlign, LevelFormat, TabStopType, PageBreak, SectionType,
+  PageNumber, VerticalAlign, LevelFormat, TabStopType, PageBreak, SectionType, PageOrientation,
 } = require("docx");
 
 const C = {
@@ -162,35 +162,27 @@ function figura(archivo, anchoPx, altoPx, leyenda, anchoCm = 16) {
   ];
 }
 
-// Figura en pliego (dos páginas enfrentadas al imprimir en formato libro): la mitad izquierda va en página
-// par y la derecha en la impar siguiente; cada mitad se apoya contra el lomo para que el pliegue no corte nada.
-function pliego(izq, der, anchoPx, altoPx, leyenda, altoCm = 21.2) {
+// Figura en hoja A3 apaisada propia (en la impresión en formato libro se pliega hacia adentro).
+const ANCHO_A3 = 23811 - 2 * 1134;
+function hojaA3(archivo, anchoPx, altoPx, leyenda, altoCm = 21.6) {
   const h = Math.round(altoCm / 2.54 * 96);
   const w = Math.round(h * anchoPx / altoPx);
-  const hacia = 800; // dxa que la imagen avanza sobre el margen del lado del lomo
-  const mitad = (archivo, lado, texto) => [
-    // alineada a la izquierda en ambos casos (la sangría negativa con alineación derecha no se respeta en LibreOffice)
-    new Paragraph({ alignment: AlignmentType.LEFT, keepNext: true, spacing: { before: 0, after: 60 },
-      indent: lado === "izq" ? { left: ANCHO + hacia - w * 15 - 20, right: -hacia } : { left: -hacia },
+  return { hojaA3: [
+    new Paragraph({ alignment: AlignmentType.CENTER, keepNext: true, spacing: { before: 0, after: 60 },
       children: [new ImageRun({ type: "png", data: fs.readFileSync(path.join(IMG, archivo)),
         transformation: { width: w, height: h }, altText: { title: leyenda, description: leyenda, name: archivo } })] }),
-    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: texto, italics: true, size: 18, color: C.gris })] }),
-  ];
-  return { pliego: [
-    ...mitad(izq, "izq", `${leyenda} (pliego de dos páginas; continúa en la página siguiente)`),
-    new Paragraph({ children: [new PageBreak()] }),
-    ...mitad(der, "der", `${leyenda} (continuación)`),
+    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: leyenda, italics: true, size: 18, color: C.gris })] }),
   ] };
 }
 
 // ---------- encabezado y pie ----------
-function encabezado(meta) {
+function encabezado(meta, ancho = ANCHO) {
   const lab = (t, align = AlignmentType.LEFT) => new Paragraph({ alignment: align, spacing: { after: 20 },
     children: [new TextRun({ text: t, size: 14, font: FUENTE })] });
   const val = (t, o = {}) => new Paragraph({ alignment: o.align || AlignmentType.LEFT, spacing: { after: 0 },
     children: [new TextRun({ text: t, size: o.size || 16, bold: true, color: o.color || C.gris, font: FUENTE })] });
   const bordeNaranja = { ...sinBordes, right: { style: BorderStyle.SINGLE, size: 12, color: C.naranja } };
-  const anchos = [1750, 3900, 1900, 2088];
+  const anchos = [1750, 3900 + ancho - ANCHO, 1900, 2088];
   const tituloLineas = meta.tituloEncabezado.map((t) => val(t));
   const fila = new TableRow({ children: [
     celda([lab("TIPO DE DOCUMENTO"), lab("TÍTULO DE DOCUMENTO")], anchos[0], { borders: sinBordes, vAlign: VerticalAlign.TOP }),
@@ -206,7 +198,7 @@ function encabezado(meta) {
     anchos[3], { borders: bordeNaranja, vAlign: VerticalAlign.TOP }),
   ] });
   return new Header({ children: [
-    new Table({ width: { size: ANCHO, type: WidthType.DXA }, columnWidths: anchos, rows: [fila] }),
+    new Table({ width: { size: ancho, type: WidthType.DXA }, columnWidths: anchos, rows: [fila] }),
     new Paragraph({ alignment: AlignmentType.RIGHT, spacing: { before: 60, after: 0 }, children: [
       new TextRun({ children: [PageNumber.CURRENT], size: 28, color: C.gris }),
       new TextRun({ text: "/", size: 28, color: C.gris }),
@@ -214,14 +206,14 @@ function encabezado(meta) {
   ] });
 }
 
-function pie() {
+function pie(ancho = ANCHO) {
   const logo = fs.readFileSync(path.join(IMG, "logo_mecanalisis.jpeg"));
   const t = (x) => new Paragraph({ spacing: { after: 0 }, children: [new TextRun({ text: x, size: 16, color: C.pie })] });
   return new Footer({ children: [
     new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 80 }, children: [
       new TextRun({ text: "SI ESTE DOCUMENTO SE ENCUENTRA IMPRESO SE CONSIDERA COPIA NO CONTROLADA", bold: true, italics: true, size: 16 })] }),
-    new Table({ width: { size: ANCHO, type: WidthType.DXA }, columnWidths: [6638, 3000], rows: [new TableRow({ children: [
-      celda([t("www.mecanalisis.com.ar | +54 261 476 9010"), t("Pedro del Castillo 3160 . 5519 Guaymallén – Mendoza, Argentina.")], 6638, { borders: sinBordes }),
+    new Table({ width: { size: ancho, type: WidthType.DXA }, columnWidths: [ancho - 3000, 3000], rows: [new TableRow({ children: [
+      celda([t("www.mecanalisis.com.ar | +54 261 476 9010"), t("Pedro del Castillo 3160 . 5519 Guaymallén – Mendoza, Argentina.")], ancho - 3000, { borders: sinBordes }),
       celda(new Paragraph({ alignment: AlignmentType.RIGHT, children: [new ImageRun({ type: "jpg", data: logo,
         transformation: { width: 150, height: 42 }, altText: { title: "Mecanálisis", description: "Logo Mecanálisis", name: "logo" } })] }), 3000, { borders: sinBordes }),
     ] })] }),
@@ -293,20 +285,21 @@ function documento(meta, cuerpo) {
   });
 }
 
-// Corta el contenido en secciones: cada pliego abre una sección que empieza en página par.
+// Corta el contenido en secciones: cada hoja A3 es una sección apaisada propia, entre dos secciones A4.
 function secciones(meta, contenido) {
-  const pagina = { size: { width: 11906, height: 16838 },
-    margin: { top: 2100, bottom: 1700, left: 1134, right: 1134, header: 500, footer: 400 } };
-  const nueva = (type) => ({ properties: { ...(type ? { type } : {}), page: pagina },
+  const margin = { top: 2100, bottom: 1700, left: 1134, right: 1134, header: 500, footer: 400 };
+  const a4 = () => ({ properties: { page: { size: { width: 11906, height: 16838 }, margin } },
     headers: { default: encabezado(meta) }, footers: { default: pie() }, children: [] });
-  const out = [nueva()];
+  const out = [a4()];
   for (const el of contenido) {
-    if (el && el.pliego) {
-      out.push({ ...nueva(SectionType.EVEN_PAGE), children: el.pliego });
-      out.push(nueva(SectionType.NEXT_PAGE));
+    if (el && el.hojaA3) {
+      out.push({ properties: { type: SectionType.NEXT_PAGE,
+        page: { size: { width: 16838, height: 23811, orientation: PageOrientation.LANDSCAPE }, margin } },
+        headers: { default: encabezado(meta, ANCHO_A3) }, footers: { default: pie(ANCHO_A3) }, children: el.hojaA3 });
+      out.push(a4());
     } else out[out.length - 1].children.push(el);
   }
   return out;
 }
 
-module.exports = { C, ANCHO, p, vineta, numerada, h1, h2, h3, rol, nota, espacio, tabla, pasos, figura, pliego, saltoPagina, documento, runs };
+module.exports = { C, ANCHO, p, vineta, numerada, h1, h2, h3, rol, nota, espacio, tabla, pasos, figura, hojaA3, saltoPagina, documento, runs };

@@ -71,8 +71,7 @@ async function construir(modulo, nombre) {
     fs.writeFileSync(docPath, original.replace(marcador, campoIndice(entradas)));
     if (fs.existsSync(final)) fs.unlinkSync(final);
     sh("zip", ["-q", "-X", "-r", final, "."], dir);
-    // IsSkipEmptyPages=false: exporta también las páginas en blanco que fuerza el pliego (página par)
-    sh(SOFFICE, ["--headless", "--convert-to", 'pdf:writer_pdf_Export:{"IsSkipEmptyPages":{"type":"boolean","value":"false"}}', "--outdir", tmp, final]);
+    sh(SOFFICE, ["--headless", "--convert-to", "pdf", "--outdir", tmp, final]);
     const pdf = path.join(tmp, `${nombre}.pdf`);
     if (pasada === 0) entradas = paginasDeTitulos(pdf, entradas);
     else fs.copyFileSync(pdf, path.join(SALIDA, "pdf", `${nombre}.pdf`));
@@ -97,9 +96,6 @@ function esquema() {
     { env: { ...process.env, NODE_PATH: process.env.NODE_PATH || "/usr/local/lib/node_modules_global" } });
   execFileSync("node", [path.join(__dirname, "svg_a_png.js"), path.join(img, "detalle_tablero_excitacion.svg"), path.join(SALIDA, "pdf", "00503-00-EPG001 Figura 2 Detalle del tablero de excitacion.pdf"), "2"],
     { env: { ...process.env, NODE_PATH: process.env.NODE_PATH || "/usr/local/lib/node_modules_global" } });
-  // Figura 1 en pliego: mitad izquierda (página par) y mitad derecha (página impar), cortadas en el pliegue.
-  sh("python3", ["-c", `from PIL import Image; im = Image.open(r"${path.join(img, "esquema_general.png")}"); w, h = im.size
-im.crop((0, 0, w // 2, h)).save(r"${path.join(img, "esquema_general_izq.png")}"); im.crop((w // 2, 0, w, h)).save(r"${path.join(img, "esquema_general_der.png")}")`]);
 }
 
 (async () => {

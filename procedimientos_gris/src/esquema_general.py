@@ -446,12 +446,10 @@ def cableado_interno(tx):
 
 
 # ======================================================================== FIGURA 1: esquema general
-# Pliego A3 (dos páginas A4 enfrentadas): el pliegue cae en x = W/2 y la franja PLIEGUE ± 45 queda libre de equipos y textos.
+# Hoja A3 apaisada.
 W, H = 2070, 1450
-PLIEGUE = W / 2
-for x0_, x1_ in ((20, PLIEGUE - 20), (PLIEGUE + 20, W - 20)):
-    fondo.append(f'<rect x="{x0_}" y="20" width="{x1_ - x0_}" height="{H - 40}" fill="none" stroke="{NEG}" stroke-width="1"/>')
-texto(60, 82, "ESQUEMA GENERAL DE CONEXIONES – SISTEMA GRIS", 33)
+fondo.append(f'<rect x="20" y="20" width="{W - 40}" height="{H - 40}" fill="none" stroke="{NEG}" stroke-width="1"/>')
+texto(W / 2, 82, "ESQUEMA GENERAL DE CONEXIONES – SISTEMA GRIS", 42, "middle")
 EX_X, EX_W = 420, 540                     # más angosto en la figura general, para no invadir el pliegue
 
 # ---------------------------------------------------------------- equipos (izquierda → derecha: alimentación y PC · tableros · estator)

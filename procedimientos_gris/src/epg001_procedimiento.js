@@ -87,7 +87,7 @@ const etapas = [
     ["check", "Realizar la verificación pre-ensayo de desprendimiento de piezas del robot y registrarla en el checklist antes de introducir el robot.", `${CHECKLIST} (Pre-Test)`],
     [null, "Montar el robot sobre la rampa y verificar que el conjunto ingresa, se posiciona y se desplaza sin interferencias.", "—"],
   ], despues: () => [
-    F.pliego("esquema_general_izq.png", "esquema_general_der.png", 2070, 2900, "Figura 1: Esquema general de conexiones del sistema GRIS"),
+    F.hojaA3("esquema_general.png", 4140, 2900, "Figura 1: Esquema general de conexiones del sistema GRIS"),
     ...F.figura("detalle_tablero_excitacion.png", 2540, 1200, "Figura 2: Detalle del tablero de excitación (conexiones internas)", 17),
     ...F.figura("detalle_borneras.png", 2400, 1440, "Figura 3: Ampliación de las borneras EXCITATION y AUX (numeración de bornes)", 17),
   ] },
