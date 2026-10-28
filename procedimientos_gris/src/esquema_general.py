@@ -506,7 +506,7 @@ rect(frente, c1[0] - 6, ry0 + 3, 12, 5, NAR, "none", 0, 1)
 poli(frente, [(c1[0] - 26, ry0 + 8), (c1[0] - 70, ry0 + 50)], NEG, 1)
 texto(c1[0] - 76, ry0 + 64, "Robot", T, "end")
 
-# ---------------------------------------------------------------- arnés del robot: del control box al robot
+# ---------------------------------------------------------------- cable del robot: del control box al robot
 xa, yp = c1[0], cb["principal"][1]
 xb = 1400
 poli(cables, [(xa, ry0), (xa, yp), (cb["principal"][0], yp)], "#111", 6)
@@ -515,7 +515,7 @@ cables.append(f'<path d="M{xb - 2},{yp - 4.5} L{xb + 2},{yp - 4.5} L{xb + 2},{yp
 xc = 1370
 cables.append(f'<path d="M{xb - 2},{yp + 2} C{xb - 22},{yp + 2} {xc},{yp + 6} {xc},{yp + 26} L{xc},{te["captor"][1]} '
               f'L{te["captor"][0]:.1f},{te["captor"][1]:.1f}" stroke="#000" stroke-width="1.6" fill="none"/>')
-rotulo(1750, yp, "Arnés del robot")
+rotulo(1750, yp, "Cable del robot")
 
 # ---------------------------------------------------------------- control box ↔ tablero EL CID y PC
 linea([cb["bnc"], (1330, cb["bnc"][1]), (1330, te["pos"][1]), te["pos"]])
