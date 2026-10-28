@@ -86,6 +86,9 @@ function esquema() {
   const img = path.join(__dirname, "img");
   sh("python3", [path.join(__dirname, "esquema_general.py")]);
   sh("python3", [path.join(__dirname, "ecuaciones.py")]);
+  sh("python3", [path.join(__dirname, "nudo_ocho_3d.py")]);
+  execFileSync("node", [path.join(__dirname, "svg_a_png.js"), path.join(img, "nudo_ocho_3d.svg"), path.join(img, "nudo_ocho_3d.png"), "2"],
+    { env: { ...process.env, NODE_PATH: process.env.NODE_PATH || "/usr/local/lib/node_modules_global" } });
   const conv = (salida) => execFileSync("node", [path.join(__dirname, "svg_a_png.js"), path.join(img, "esquema_general.svg"), salida, "2"],
     { env: { ...process.env, NODE_PATH: process.env.NODE_PATH || "/usr/local/lib/node_modules_global" } });
   conv(path.join(img, "esquema_general.png"));

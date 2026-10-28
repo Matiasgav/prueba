@@ -29,7 +29,7 @@ const meta = {
   ],
   registros: [],
   revisiones: [["00", "28/10/2026", "Versión inicial."]],
-  firmas: ["", "", "", ""],
+  firmas: ["Matias Gaviño", "", "", ""],
   referencias: [],
 };
 
@@ -85,13 +85,15 @@ const etapas = [
     [null, "Proteger con cinta (duct tape) las zonas de contacto de la rampa con el cuerpo del rotor y, cuando corresponda, el trinquete.", "—"],
     [null, "Ajustar las cámaras inferiores, las cámaras laterales y el captor Chattock según la geometría de la ranura y del entrehierro. Instalar las guías centrales adecuadas, dejando una holgura recomendada de 1 a 2 mm.", "—"],
     ["conexiones", "Realizar las conexiones de la Figura 1: arnés del robot al control box (cable principal) y al tablero EL CID (señal del captor); control box al tablero EL CID (señal de posición); PC GRIS al control box (USB y Ethernet); PC EL CID al tablero EL CID (USB); tablero de excitación (Variac, cable de excitación, espira auxiliar y salida al tablero EL CID) y alimentaciones desde la red (regleta de enchufes), respetando el esquema de puesta a tierra.", `${ESQUEMA} / ${P1} / ${MANUAL}, apartado 3.1`],
-    ["cuerdas", "Instalar las cuerdas de seguridad del robot y atarlas al punto de amarre con un nudo ocho reconstruido. Verificar el nudo según la Tabla 3.", "Tabla 3"],
+    ["cuerdas", "Instalar las cuerdas de seguridad del robot y atarlas al punto de amarre con un nudo ocho reconstruido. Verificar el nudo según la Tabla 3.", "Figura 2 / Tabla 3"],
     ["sw_param", "Configurar en ELCSoft los parámetros del ensayo y el paso de registro EL CID (recomendado: 7 mm). Configurar el paso de adquisición automática de fotografías y el paso de muestreo WTT.", `${P3} / ${MANUAL}, apartados 4.4 y 5.3`],
     ["check", "Realizar la verificación pre-ensayo de desprendimiento de piezas del robot y registrarla en el checklist antes de introducir el robot.", `${CHECKLIST} (Pre-Test)`],
     ["montaje", "Montar el robot sobre la rampa y verificar que el conjunto ingresa, se posiciona y se desplaza sin interferencias.", `${MANUAL}, apartado 4.3`],
   ], despues: () => [
     F.hojaA3("esquema_general.png", 5200, 3000, "Figura 1: Esquema general de conexiones del sistema GRIS"),
-    p(ref("**Amarre de las cuerdas de seguridad: nudo ocho reconstruido (paso {cuerdas}).** Las cuerdas de seguridad (3 mm) se atan al punto de amarre del robot con un nudo ocho reconstruido, también llamado ocho por seno reconstituido. Se usa este nudo porque, bien hecho y apretado, no se corre ni se desata con los tirones y las vibraciones del ensayo: al tensarse, los ramales paralelos se aprietan entre sí y el nudo se bloquea. Además es fácil de controlar a simple vista, porque bien hecho siempre muestra la misma figura."), { keepNext: true }),
+    p(ref("**Amarre de las cuerdas de seguridad: nudo ocho reconstruido (paso {cuerdas}).** Las cuerdas de seguridad (3 mm) se atan al punto de amarre del robot con un nudo ocho reconstruido, también llamado ocho por seno reconstituido. Se usa este nudo porque, bien hecho y apretado, no se corre ni se desata con los tirones y las vibraciones del ensayo: al tensarse, los ramales paralelos se aprietan entre sí y el nudo se bloquea. Además es fácil de controlar a simple vista, porque bien hecho siempre muestra la misma figura. La Figura 2 muestra la secuencia de atado; en ella el repaso del chicote se ve en otro color para seguir su recorrido."), { keepNext: true }),
+    ...F.figura("nudo_ocho_3d.png", 3200, 3400, "Figura 2: Nudo ocho reconstruido paso a paso (en naranja, el repaso del chicote)", 16.5),
+    p("Secuencia de atado:", { keepNext: true }),
     tabla(["Paso", "Acción"], [900, 8738], [
       ["1", "A unos 30 cm del extremo de la cuerda, hacer un ocho simple flojo, con el chicote (extremo libre) hacia el robot."],
       ["2", "Pasar el chicote por el ojal de amarre del robot."],
