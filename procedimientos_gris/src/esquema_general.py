@@ -423,7 +423,7 @@ def cableado_interno(tx):
     k = EX_W / 560                       # coordenadas de referencia: tablero en (450, 980) con 560 de ancho
     gx = lambda v: EX_X + (v - 450) * k
     gy = lambda v: EX_Y + (v - 980) * k
-    # salida del Variac (ficha) → bornes 1 y 7 (inferiores), por la izquierda de la bornera
+    # salida del autotransformador (ficha) → bornes 1 y 7 (inferiores), por la izquierda de la bornera
     yi = tx["y_inf"]
     linea([tx["N"], (tx["N"][0], gy(1030)), (gx(566), gy(1030)), (gx(566), yi + 10), (t[0], yi + 10), (t[0], yi)], AZUL, 1.8)
     linea([tx["L"], (tx["L"][0], gy(1037)), (gx(556), gy(1037)), (gx(556), yi + 46), (t[6] + 4, yi + 46), (t[6] + 4, yi + 20), (t[6], yi + 12), (t[6], yi)], MARRON, 1.8)
@@ -446,7 +446,7 @@ def cableado_interno(tx):
 
 
 # ======================================================================== FIGURA 1: esquema general
-# Hoja A3 apaisada: columnas PC/alimentación · control box y tablero EL CID · tablero de excitación y Variac · estator.
+# Hoja A3 apaisada: columnas PC/alimentación · control box y tablero EL CID · tablero de excitación y autotransformador · estator.
 W, H = 2600, 1500
 fondo.append(f'<rect x="20" y="20" width="{W - 40}" height="{H - 40}" fill="none" stroke="{NEG}" stroke-width="1"/>')
 texto(W / 2, 82, "ESQUEMA GENERAL DE CONEXIONES", 42, "middle")
@@ -475,14 +475,14 @@ z1 = zapatilla(110, 1180, "")
 red(147, 1250)
 linea([(170, 1214), (170, 1250)], NEG, 2)
 circ(frente, 236, 1197, 4, "#FFFFFF", VERDE, 1.6)
-# Variac, a la altura de la ficha del tablero de excitación
+# autotransformador, a la altura de la ficha del tablero de excitación
 fy_ = tx["ficha"][1]
 vx, vy = 1830, fy_ - 50
 rect(fondo, vx, vy, 140, 100, "#FFFFFF", NEG, 1.4)
 fondo.append(f'<path d="M{vx + 70},{vy + 20} ' + " ".join("a7,6 0 1 1 0,12" for _ in range(5)) + f'" fill="none" stroke="{NEG}" stroke-width="1.4"/>')
 poli(fondo, [(vx + 85, vy + 18), (vx + 59, vy + 82)], NEG, 1.4)
 fondo.append(f'<path d="M{vx + 59},{vy + 82} l-1,-9 l7,4 z" fill="{NEG}"/>')
-texto(vx + 70, vy + 136, "Variac", T, "middle")
+texto(vx + 70, vy + 136, "Autotransformador", T, "middle")
 red(vx + 175, vy + 15)
 linea([(vx + 140, vy + 50), (vx + 175, vy + 50)], NEG, 2)
 poli(cables, [(vx, fy_), tx["ficha"]], "#111", 6)
@@ -572,13 +572,13 @@ punta(tx["j_roj"], mm["v"], "#C8102E", 1180)
 punta(tx["j_neg"], mm["com"], "#151515", 1195)
 pinza(2110, 760, 60, -90)
 texto(2165, 850, "Pinza amperométrica", T)
-# ---------------------------------------------------------------- advertencia vinculada a la ficha del Variac
+# ---------------------------------------------------------------- advertencia vinculada a la ficha del autotransformador
 # Recuadro de advertencia con flecha a la ficha (tapa azul en el borde superior del tablero de excitación).
-bx_, by_, bw_, bh_ = 1440, 690, 540, 160
+bx_, by_, bw_, bh_ = 1440, 690, 575, 160
 rect(frente, bx_, by_, bw_, bh_, "#FFF6CC", "#C9A100", 2, 6)
 advertencia_icono(frente, bx_ + 16, by_ + 56, 34)
-texto(bx_ + 62, by_ + 50, "Ficha del Variac:", T, peso="bold")
-texto(bx_ + 62, by_ + 95, "no manipularla con el Variac", T)
+texto(bx_ + 62, by_ + 50, "Ficha del autotransformador:", T, peso="bold")
+texto(bx_ + 62, by_ + 95, "no manipularla con el equipo", T)
 texto(bx_ + 62, by_ + 137, "conectado a la red.", T)
 cap = (tx["ficha"][0] - 30, tx["ficha"][1] - 30)
 p0_ = (bx_ + 40, by_ + bh_)

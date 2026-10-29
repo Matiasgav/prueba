@@ -56,10 +56,10 @@ const cuerpo = [
   tabla(["Término", "Significado"], [1700, 7938], [
     ["**EL CID**", "Electromagnetic Core Imperfection Detection. Ensayo de la aislación interlaminar del núcleo estatórico mediante magnetización débil (≈ 4 % del flujo nominal)."],
     ["**Iq**", "Componente en cuadratura de la corriente de falla, medida por el captor [mA]."],
-    ["**Captor**", "Sensor magnético (bobina Chattock) de dos bobinas captoras que mide la corriente de falla."],
+    ["**Captor**", "Sensor magnético de dos bobinas captoras que mide la corriente de falla."],
     ["**Espira auxiliar**", "Conductor fijo en una ranura que permite medir la tensión por espira y generar la corriente de falla de calibración."],
     ["**KF**", "Constante de calibración del captor (constante de sensor Iq) en el software."],
-    ["**Variac**", "Fuente de CA de tensión variable que alimenta el arrollamiento de excitación."],
+    ["**Autotransformador**", "Equipo de tensión de salida variable que alimenta el arrollamiento de excitación."],
     ["**ELCSoft**", "Software de adquisición y visualización del ensayo EL CID (versión 1.0)."],
     ["**DAQ**", "Unidad de adquisición de datos."],
   ]),
@@ -68,7 +68,7 @@ const cuerpo = [
   p(`Este anexo contiene los tres protocolos que se invocan desde ${PROC}:`),
   tabla(["Protocolo", "Contenido", "Invocado en " + PROC], [2600, 4238, 2800], [
     ["Protocolo 1 – Excitación del núcleo", "Equipo, puesta a tierra, cálculo y montaje del arrollamiento de excitación y espira auxiliar.", `Apartados ${invocado(1)}`],
-    ["Protocolo 2 – Calibración", "Tensión por espira, corriente de falla controlada y constante KF.", `Apartados ${invocado(2)}`],
+    ["Protocolo 2 – Calibración", "Tensión por espira, falla simulada de calibración y constante KF.", `Apartados ${invocado(2)}`],
     ["Protocolo 3 – Software ELCSoft", "Parámetros, registro de ranuras, visualización y archivos.", `Apartados ${invocado(3)}`],
   ]),
 
@@ -78,7 +78,7 @@ const cuerpo = [
   h3("2.1.1 Características técnicas del equipo"),
   tabla(["Característica", "Valor"], [4200, 5438], [
     ["Alimentación eléctrica", "CA 110/220 V, 50/60 Hz"],
-    ["Corriente máxima de excitación", "Hasta 50 A"],
+    ["Corriente de excitación", "5 A a 40 A"],
     ["Entrada de posición axial", "Analógica 0 – 10 V"],
     ["Entrada de captor", "Analógica, conector dedicado"],
     ["Puesta a tierra", "Borne «Ground»"],
@@ -91,7 +91,7 @@ const cuerpo = [
   nota("Precaución:", "la puesta a tierra se realiza en forma local desde el estator de la máquina y se distribuye radialmente hacia cada equipo del ensayo. El borne «Ground» del tablero EL CID es su única vinculación a tierra: no se admite ninguna otra conexión paralela o secundaria. Esta disposición evita lazos de corriente que inducen señales espurias y ponen en riesgo los equipos conectados."),
   h3("2.1.3 Cálculo del número de espiras"),
   p("El número de espiras N se determina a partir de la tensión por espira calculada según el apartado 2.4 (Apéndice) y se registra en RME-ELC-01, considerando que:"),
-  vineta("La tensión aplicada no supere la capacidad nominal del Variac."),
+  vineta("La tensión aplicada no supere la capacidad nominal del autotransformador."),
   vineta("La corriente de excitación resultante quede dentro del rango operativo recomendado: **5 A a 40 A**."),
   h3("2.1.4 Selección de la sección del conductor"),
   p("La sección del conductor debe admitir la corriente de ensayo sin sobrecalentamiento. Un conductor sobrecalentado aumenta su resistencia, reduce la corriente de excitación y obliga a recalibrar y a corregir permanentemente la tensión aplicada para mantener constante la tensión por espira."),
@@ -105,7 +105,7 @@ const cuerpo = [
   vineta("Desplazar el arrollamiento a medida que avanza el ensayo, para evitar que el captor quede próximo al conductor de excitación (el acoplamiento directo produce lecturas erróneas)."),
   nota("Inspección GRIS:", `la ubicación inicial y la reubicación del arrollamiento cada 120° se realizan según ${PROC}, apartados ${etapas.find((e) => e.id === "exc").apartado} (montaje de la excitación) y ${etapas.find((e) => e.id === "ran").apartado} (inspección por ranura).`, F.C.gris),
   h3("2.1.7 Montaje de la espira auxiliar"),
-  p("La espira auxiliar permite medir la tensión por espira durante todo el ensayo y generar la corriente de falla controlada de calibración (Protocolo 2). Se aloja dentro de una ranura del estator, en una posición fija y representativa."),
+  p("La espira auxiliar permite medir la tensión por espira durante todo el ensayo y generar la falla simulada de calibración (Protocolo 2). Se aloja dentro de una ranura del estator, en una posición fija y representativa."),
   p("Dado que la corriente de calibración es baja (100 mA a 200 mA) y que la espira no conduce corriente en forma permanente, se recomienda un conductor de **1,5 mm²**."),
   nota("Precaución:", "verificar que la espira auxiliar no quede en cortocircuito en ningún momento del ensayo. Un cortocircuito provocaría una corriente elevada y no controlada, con riesgo para el equipo, el sensor y la validez del ensayo."),
 
@@ -115,7 +115,7 @@ const cuerpo = [
   ...figura("fig_calibracion.png", 1292, 537, "Figura 1: Configuración de referencia para la calibración del ensayo EL CID"),
   numerada("**Preparación.** Verificar que el arrollamiento de excitación (número de espiras calculado) y la espira auxiliar estén montados según el Protocolo 1.", "calib"),
   numerada("**Ausencia de espiras parásitas.** Antes de energizar, retirar o reubicar todo elemento conductor que forme un lazo cerrado alrededor del núcleo: cintas pasacables metálicas, alambres o cables sueltos, herramientas, fijaciones o elementos estructurales transversales al flujo. Estos lazos inducen corrientes espurias que simulan fallas inexistentes.", "calib"),
-  numerada("**Tensión por espira.** Alimentar el arrollamiento con el Variac y ajustar la tensión hasta que la tensión medida en la espira auxiliar sea igual al valor teórico calculado (apartado 2.4).", "calib"),
+  numerada("**Tensión por espira.** Alimentar el arrollamiento con el autotransformador y ajustar la tensión hasta que la tensión medida en la espira auxiliar sea igual al valor teórico calculado (apartado 2.4).", "calib"),
   numerada("**Corriente de falla.** Con la espira auxiliar firmemente alojada en su ranura, conectar en serie una resistencia de calibración de valor tal que circule una corriente de **100 mA a 200 mA**.", "calib"),
   numerada("**Posicionamiento del captor.** Alinear el eje central entre las dos bobinas captoras con el centro de la ranura de la espira auxiliar, a una distancia del borde del núcleo de aproximadamente **¼ de la longitud total del núcleo**, para minimizar los efectos de borde.", "calib"),
   numerada("**Constante KF.** En ELCSoft, ajustar KF hasta que la lectura coincida con la corriente de falla establecida.", "calib"),
