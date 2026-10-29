@@ -59,7 +59,6 @@ const cuerpo = [
     ["**Captor**", "Sensor magnético de dos bobinas captoras que mide la corriente de falla."],
     ["**Espira auxiliar**", "Conductor fijo en una ranura que permite medir la tensión por espira y generar la falla simulada de calibración."],
     ["**KF**", "Constante de calibración del captor (constante de sensor Iq) en el software."],
-    ["**Autotransformador**", "Equipo de tensión de salida variable que alimenta el arrollamiento de excitación."],
     ["**ELCSoft**", "Software de adquisición y visualización del ensayo EL CID (versión 1.0)."],
     ["**DAQ**", "Unidad de adquisición de datos."],
   ]),

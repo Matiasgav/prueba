@@ -1,7 +1,7 @@
 // 00503-00-EPG001 — Procedimiento general de inspección robotizada GRIS (visual, EL CID y WTT).
 // Los pasos se numeran automáticamente; las referencias cruzadas usan {id} → número de paso.
 const F = require("./formato_mecanalisis");
-const { p, h1, h2, nota, espacio, tabla, pasos } = F;
+const { p, vineta, h1, h2, nota, espacio, tabla, pasos } = F;
 
 const ANEXO = "00503-00-EPG002";
 const P1 = `${ANEXO} – Protocolo 1`;
@@ -201,7 +201,6 @@ const cuerpo = [
     ["**WTT**", "Ensayo de ajuste de cuñas (Wedge Tightness Test). Verifica el ajuste e integridad de las cuñas del estator."],
     ["**Captor**", "Sensor magnético de dos bobinas montado en el robot que mide la corriente de falla Iq."],
     ["**Espira auxiliar**", "Conductor alojado en una ranura que permite medir la tensión por espira y generar la falla simulada de calibración."],
-    ["**Autotransformador**", "Equipo de tensión de salida variable que alimenta el circuito de excitación."],
     ["**Tablero de excitación**", "Tablero donde se conectan en serie los hilos del cable de excitación y el circuito de la espira auxiliar."],
     ["**ELCSoft**", "Software de adquisición y visualización del ensayo EL CID."],
     ["**ATS**", "Análisis de Trabajo Seguro."],
@@ -210,6 +209,13 @@ const cuerpo = [
   ]),
 
   h1("2. CONTENIDO"),
+  p("**Cómo usar este procedimiento**", { keepNext: true }),
+  vineta("Leer los riesgos del apartado 2.1 antes de iniciar el trabajo."),
+  vineta("Ejecutar los pasos numerados en orden, de la etapa 2.4 a la 2.11 (resumen en el apartado 2.3)."),
+  vineta(`La columna «Referencia» indica dónde está el detalle de cada paso: protocolos EL CID (${ANEXO}), manual del software (${MANUAL}), esquema de conexiones (${ESQUEMA}) o checklist (${CHECKLIST}).`),
+  vineta(`Tener impreso el ${ESQUEMA} y el checklist ${CHECKLIST} antes de comenzar.`),
+  vineta("Los recuadros con borde naranja indican precauciones de seguridad; los de borde gris, información complementaria."),
+  espacio(),
   h2("2.1 RIESGOS PRINCIPALES"),
   p("Antes de iniciar el trabajo, todo el personal debe conocer los siguientes riesgos, que pueden ocasionar accidentes o incidentes, y las medidas de este procedimiento que los controlan. Los riesgos propios de la inspección robotizada se toman de la Tabla 4-4 del informe EPRI 3002013612 (2018), «Generator Robotic Inspection and Test Guidelines», en lo que aplica al sistema GRIS:"),
   tabla(["Riesgo", "Consecuencia posible", "Control"], [3500, 2900, 3238], [
@@ -256,7 +262,6 @@ const cuerpo = [
     ["Cable de excitación", "Espiras de excitación del núcleo, conectadas en serie en el tablero de excitación."],
     ["Cable de espira auxiliar", "Medición de la tensión por espira y calibración."],
     ["Cable de puesta a tierra (verde/amarillo)", `Puesta a tierra única desde el estator (${P1}).`],
-    ["Detector WTT", "Verificación del ajuste de cuñas."],
     { seccion: "Instrumentos" },
     ["Multímetro y pinza amperométrica (UNI-T)", "Medición de la tensión por espira (fichas banana del tablero de excitación) y de la corriente en la espira auxiliar."],
     ["Inclinómetro digital", "Posicionamiento de la rampa."],
