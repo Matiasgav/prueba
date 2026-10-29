@@ -116,7 +116,7 @@ const etapas = [
       ["6", "**Retirar** el dispositivo de cortocircuito del cable principal."],
       ["7", "Conectar el cable principal al robot."],
       ["8", "Energizar el control box (llave en CERRADO / ON)."],
-      ["9", "Con el control box ya energizado, esperar 2 minutos y recién entonces iniciar el software GRIS."],
+      ["9", "Iniciar el software GRIS."],
     ], { keepNext: true }),
     espacio(),
     tabla(["Nº", "Parada / desenergización"], [700, 8938], [
@@ -129,7 +129,7 @@ const etapas = [
       ["7", "Desconectar el control box de la red eléctrica."],
     ], { keepNext: true }),
     espacio(),
-    nota("Reencendido:", "si el cable principal sigue conectado al control box y al robot, para volver a encender basta con poner la llave en CERRADO (ON) e iniciar el software de inmediato: no es necesaria la espera de 2 minutos del punto 9. Para apagar, cerrar el software y poner la llave en ABIERTO (OFF).", F.C.gris),
+    nota("Reencendido:", "si el cable principal sigue conectado al control box y al robot, para volver a encender basta con poner la llave en CERRADO (ON) e iniciar el software. Para apagar, cerrar el software y poner la llave en ABIERTO (OFF).", F.C.gris),
   ] },
 
   { id: "cal", titulo: "RECONOCIMIENTO Y CALIBRACIÓN", ref: P2, intro: "Se realizan sobre la primera ranura a inspeccionar, antes de iniciar la secuencia completa.", pasos: [
