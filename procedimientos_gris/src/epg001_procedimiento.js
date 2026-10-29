@@ -96,7 +96,7 @@ const etapas = [
     p(ref("Las cuerdas de seguridad (3 mm) se atan al ojal del robot con un nudo ocho reconstruido (paso {cuerdas}), que no se corre ni se desata con los tirones ni con las vibraciones del ensayo. Se ata según la Figura 1."), { keepNext: true }),
     ...F.figura("nudo_ocho.png", 3200, 3000, "Figura 1: Nudo ocho reconstruido paso a paso en el ojal del robot", 17),
     F.h3(`${etapas.find((e) => e.id === "conf").apartado}.2 Puesta en marcha y parada del control box`),
-    p(ref("Para reducir el riesgo de que una descarga electrostática dañe los componentes del robot, el cable principal se conecta y se desconecta siempre con la llave del control box en ABIERTO (OFF) y en el orden de la Tabla 3: mientras el cable no está conectado al control box, lleva colocado el dispositivo de cortocircuito conectado a tierra. La secuencia de puesta en marcha se aplica cada vez que se conecta el cable principal (paso {cb_on}) y la de parada, cada vez que se desconecta."), { keepNext: true }),
+    p(ref("La secuencia de la Tabla 3 protege los componentes del robot contra descargas electrostáticas. Se aplica cada vez que se conecta el cable principal (puesta en marcha, paso {cb_on}) y cada vez que se desconecta (parada)."), { keepNext: true }),
     p("**Tabla 3: Secuencias de puesta en marcha y de parada del control box.**", { keepNext: true }),
     tabla(["Nº", "Puesta en marcha"], [700, 8938], [
       ["1", "Colocar el dispositivo de cortocircuito en el cable principal y conectarlo a tierra."],
