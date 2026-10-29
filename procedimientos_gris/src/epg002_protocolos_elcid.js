@@ -38,7 +38,7 @@ const e = (id) => `(${numEc[id]})`;
 const meta = {
   codigo: "00503-00-EPG002",
   version: "00",
-  fecha: "28/10/2026",
+  fecha: "29/10/2026",
   tipo: "PROCEDIMIENTO – ANEXO",
   tituloEncabezado: ["PROTOCOLOS DE ENSAYO EL CID", "EXCITACIÓN, CALIBRACIÓN Y SOFTWARE"],
   tituloPortada: ["PROTOCOLOS DE ENSAYO EL CID", "Excitación del núcleo, calibración y operación de ELCSoft"],
@@ -46,7 +46,7 @@ const meta = {
   alcance: "Ensayo EL CID para determinar la condición de la aislación interlaminar de núcleos estatóricos de generadores eléctricos, con el rotor colocado (inspección robotizada GRIS) o con el rotor desmontado.",
   listasNumeradas: ["calib", "secuencia"],
   registros: [["RME-ELC-01", "Registro de cálculo de excitación – Ensayo EL CID"]],
-  revisiones: [["00", "28/10/2026", "Versión inicial. Adaptación al formato Mecanálisis de los «Protocolos de ensayo ELCID robotizado» (Nexergy Corp., junio 2025)."]],
+  revisiones: [["00", "29/10/2026", "Versión inicial. Adaptación al formato Mecanálisis de los «Protocolos de ensayo ELCID robotizado» (Nexergy Corp., junio 2025)."]],
   firmas: ["Matias Gaviño", "", "", ""],
   referencias: ["[1] Ridley G. K., «EL CID – Application and Analysis», 2000."],
 };
@@ -57,7 +57,7 @@ const cuerpo = [
     ["**EL CID**", "Electromagnetic Core Imperfection Detection. Ensayo de la aislación interlaminar del núcleo estatórico mediante magnetización débil (≈ 4 % del flujo nominal)."],
     ["**Iq**", "Componente en cuadratura de la corriente de falla, medida por el captor [mA]."],
     ["**Captor**", "Sensor magnético de dos bobinas captoras que mide la corriente de falla."],
-    ["**Espira auxiliar**", "Conductor fijo en una ranura que permite medir la tensión por espira y generar la corriente de falla de calibración."],
+    ["**Espira auxiliar**", "Conductor fijo en una ranura que permite medir la tensión por espira y generar la falla simulada de calibración."],
     ["**KF**", "Constante de calibración del captor (constante de sensor Iq) en el software."],
     ["**Autotransformador**", "Equipo de tensión de salida variable que alimenta el arrollamiento de excitación."],
     ["**ELCSoft**", "Software de adquisición y visualización del ensayo EL CID (versión 1.0)."],

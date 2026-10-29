@@ -9,7 +9,7 @@ const { C } = F;
 const meta = {
   codigo: "00503-00-ZRQ001",
   version: "00",
-  fecha: "13/04/2026",
+  fecha: "29/10/2026",
   tipo: "CHECKLIST",
   tituloEncabezado: ["GRIS – DETACHMENT INSPECTION CHECKLIST"],
   tituloPortada: ["GRIS – DETACHMENT INSPECTION CHECKLIST", ""],

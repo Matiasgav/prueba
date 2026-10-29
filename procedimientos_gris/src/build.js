@@ -93,7 +93,7 @@ function esquema() {
   const conv = (salida) => execFileSync("node", [path.join(__dirname, "svg_a_png.js"), path.join(img, "esquema_general.svg"), salida, "2"],
     { env: { ...process.env, NODE_PATH: process.env.NODE_PATH || "/usr/local/lib/node_modules_global" } });
   conv(path.join(img, "esquema_general.png"));
-  execFileSync("node", [path.join(__dirname, "svg_a_png.js"), path.join(img, "esquema_general.svg"), path.join(SALIDA, "pdf", "00503-00-EPG001 Figura 1 Esquema general de conexiones (A3).pdf"), "2", "A3"],
+  execFileSync("node", [path.join(__dirname, "svg_a_png.js"), path.join(img, "esquema_general.svg"), path.join(SALIDA, "pdf", "00503-00-EPG001 Anexo A Esquema general de conexiones (A3).pdf"), "2", "A3"],
     { env: { ...process.env, NODE_PATH: process.env.NODE_PATH || "/usr/local/lib/node_modules_global" } });
 }
 

@@ -14,6 +14,7 @@ from pathlib import Path
 
 AQUI = Path(__file__).parent
 ORIGEN = AQUI / "fuentes" / "00503-00-EPG003 Manual de uso del software GRIS (original).docx"
+FECHA_ORIGEN, FECHA = "26/10/2026", "29/10/2026"
 DESTINO = AQUI.parent / "00503-00-EPG003 Manual de uso del software GRIS.docx"
 
 num = json.loads(subprocess.check_output(
@@ -68,6 +69,10 @@ def main():
         s, n = re.subn(patron, nuevo, s)
         assert n == 1, patron
     doc.write_text(s, encoding="utf8")
+    for xml in (tmp / "word").glob("*.xml"):  # fecha de revisión unificada del paquete
+        x = xml.read_text(encoding="utf8")
+        if FECHA_ORIGEN in x:
+            xml.write_text(x.replace(FECHA_ORIGEN, FECHA), encoding="utf8")
     if DESTINO.exists():
         DESTINO.unlink()
     with zipfile.ZipFile(DESTINO, "w", zipfile.ZIP_DEFLATED) as z:

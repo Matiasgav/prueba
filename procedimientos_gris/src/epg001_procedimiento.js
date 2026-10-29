@@ -10,12 +10,13 @@ const P3 = `${ANEXO} – Protocolo 3`;
 const CHECKLIST = "00503-00-ZRQ001";
 const MANUAL = "00503-00-EPG003";
 const RIESGO = "00503-00-ZIT003";
-const ESQUEMA = "Figura 1";
+const ESQUEMA = "Anexo A";
+const ESQUEMA_ARCHIVO = "archivo A3 separado";
 
 const meta = {
   codigo: "00503-00-EPG001",
   version: "00",
-  fecha: "28/10/2026",
+  fecha: "29/10/2026",
   tipo: "PROCEDIMIENTO",
   tituloEncabezado: ["INSPECCIÓN ROBOTIZADA GRIS", "ENSAYOS EL CID Y WTT EN ENTREHIERRO"],
   tituloPortada: ["INSPECCIÓN ROBOTIZADA GRIS", "Inspección visual, EL CID y WTT en el entrehierro"],
@@ -28,7 +29,7 @@ const meta = {
     "Este documento es el procedimiento general de la inspección. Los aspectos técnicos de cada tarea se desarrollan en los documentos asociados indicados en el apartado 2.2.",
   ],
   registros: [],
-  revisiones: [["00", "28/10/2026", "Versión inicial."]],
+  revisiones: [["00", "29/10/2026", "Versión inicial."]],
   firmas: ["Matias Gaviño", "", "", ""],
   referencias: [],
 };
@@ -43,7 +44,7 @@ const etapas = [
     [null, "Vallar el área de trabajo y colocar carteles que indiquen «Ensayo eléctrico en curso».", "—"],
   ], despues: () => [espacio(), nota("Reglas permanentes:", `desenergizar el arrollamiento de excitación durante pausas, descansos y ante cualquier intervención mecánica sobre el sistema. Respetar el esquema de puesta a tierra única definido en ${P1}.`)] },
 
-  { id: "prep", titulo: "PREPARACIÓN TÉCNICA PREVIA", ref: P1, pasos: [
+  { id: "prep", titulo: "PREPARACIÓN TÉCNICA PREVIA", ref: `${ANEXO}, apartado 2.4 / RME-ELC-01`, pasos: [
     [null, "Definir con el Cliente los ensayos a realizar: inspección visual, EL CID y/o WTT.", "Alcance del servicio"],
     [null, "Obtener los datos de la máquina: número de serie, datos de placa, dimensiones principales, número de ranuras, longitud axial del núcleo, diámetro y entrehierro disponibles, y datos para el cálculo de la excitación.", `${ANEXO}, apartado 2.4`],
     [null, "Calcular la excitación del núcleo (tensión por espira, número de espiras, tensión y corriente del autotransformador y sección del conductor) y registrarla en RME-ELC-01, o solicitarla a Ingeniería.", `${ANEXO}, apartado 2.4 / RME-ELC-01`],
@@ -62,8 +63,8 @@ const etapas = [
     espacio(),
     p("**Tabla 2: Convenciones de referencia.** Se acuerdan con el Cliente; cuando no exista una convención previa se aplica el criterio indicado.", { keepNext: true }),
     tabla(["Convención", "Criterio"], [2800, 6838], [
-      ["Ranura 1", "Según la convención previa del Cliente. Si no existe, la ranura ubicada en el punto muerto inferior (PMI); las ranuras se numeran en forma ascendente siguiendo el sentido de rotación de la máquina en operación."],
-      ["Sentido de numeración", "Según la convención previa del Cliente. Si no existe, sentido horario visto desde el lado DE."],
+      ["Ranura 1", "Según la convención previa del Cliente. Si no existe, la ranura ubicada en el punto muerto inferior (PMI)."],
+      ["Sentido de numeración", "Según la convención previa del Cliente. Si no existe, en forma ascendente siguiendo el sentido de rotación de la máquina en operación."],
       ["Sentido de avance angular", "Sentido creciente de la numeración de ranuras (ELCSoft incrementa el número de ranura de a una unidad)."],
       ["Lado de ingreso del robot", "DE o NDE, según la accesibilidad de la máquina."],
       ["Cero axial", "Borde del núcleo del lado de ingreso del robot. Las posiciones axiales crecen hacia el extremo opuesto."],
@@ -71,29 +72,28 @@ const etapas = [
   ] },
 
   { id: "exc", titulo: "MONTAJE DE LA EXCITACIÓN DEL NÚCLEO", ref: P1, pasos: [
-    [null, "Montar el cable de excitación a través del entrehierro y conectar sus extremos a la bornera EXCITATION del tablero de excitación, haciendo coincidir números y colores, de modo que las espiras queden en serie.", `${P1} / Figura 1`],
-    ["variac", "Con el autotransformador desconectado de la red, conectar su ficha al tablero de excitación. Recién entonces conectar el autotransformador a la red. Para desconectar, seguir el orden inverso: primero desconectar el autotransformador de la red y luego la ficha.", "Apartado 2.1 / Figura 1"],
+    [null, "Montar el cable de excitación a través del entrehierro y conectar sus extremos a la bornera EXCITATION del tablero de excitación, haciendo coincidir números y colores, de modo que las espiras queden en serie.", `${P1} / ${ESQUEMA}`],
+    ["variac", "Con el autotransformador desconectado de la red, conectar su ficha al tablero de excitación. Recién entonces conectar el autotransformador a la red. Para desconectar, seguir el orden inverso: primero desconectar el autotransformador de la red y luego la ficha.", `Apartado 2.1 / ${ESQUEMA}`],
     [null, "Ubicar inicialmente el arrollamiento a 120° de la primera ranura a inspeccionar, en sentido opuesto al avance angular previsto.", "—"],
     [null, "Planificar la reubicación del arrollamiento cada 120° de avance angular, de modo que durante el ensayo nunca quede a menos de 120° de la ranura inspeccionada.", "Paso {reubicar}"],
     [null, "Instalar la espira auxiliar en la primera ranura a inspeccionar o en la ranura definida por Ingeniería.", P1],
   ], despues: () => [espacio(), nota("Precaución:", ref("la ficha que viene del autotransformador queda con los contactos macho expuestos: nunca manipularla con el autotransformador conectado a la red (paso {variac})."))] },
 
-  { id: "conf", titulo: "CONFIGURACIÓN Y MONTAJE DEL SISTEMA GRIS", ref: `${P3} / ${MANUAL} / Figura 1`, intro: "Las conexiones se realizan según el esquema general de la Figura 1.", pasos: [
+  { id: "conf", titulo: "CONFIGURACIÓN Y MONTAJE DEL SISTEMA GRIS", ref: `${P3} / ${MANUAL} / ${ESQUEMA}`, intro: `Las conexiones se realizan según el esquema general de conexiones del ${ESQUEMA} (${ESQUEMA_ARCHIVO}).`, pasos: [
     ["sw_config", "Ingresar en el software GRIS los parámetros geométricos medidos y obtener los valores de ajuste del robot y de la rampa.", `${MANUAL}, apartado 4.2`],
     [null, "Cortar los rieles de la rampa a la longitud requerida. Limar los bordes y eliminar rebabas.", "—"],
     ["sw_rampa", "Ajustar la rampa con los valores obtenidos para posicionar tangencialmente el robot sobre la ranura a inspeccionar.", `${MANUAL}, apartado 4.2`],
     [null, "Proteger con cinta (duct tape) las zonas de contacto de la rampa con el cuerpo del rotor y, cuando corresponda, el trinquete.", "—"],
     [null, "Ajustar las cámaras inferiores, las cámaras laterales y el captor según la geometría de la ranura y del entrehierro. Instalar las guías centrales adecuadas, dejando una holgura recomendada de 1 a 2 mm.", "—"],
-    ["conexiones", "Realizar las conexiones de la Figura 1: cable del robot al control box (conector principal) y al tablero EL CID (señal del captor); control box al tablero EL CID (señal de posición); PC GRIS al control box (USB y Ethernet); PC EL CID al tablero EL CID (USB); tablero de excitación (autotransformador, cable de excitación, espira auxiliar y salida al tablero EL CID) y alimentaciones desde la red (regleta de enchufes), respetando el esquema de puesta a tierra.", `${ESQUEMA} / ${P1} / ${MANUAL}, apartado 3.1`],
-    ["cuerdas", "Instalar las cuerdas de seguridad del robot y atarlas al punto de amarre con un nudo ocho reconstruido. Verificar el nudo según la Tabla 3.", "Figura 2 / Tabla 3"],
+    ["conexiones", `Realizar las conexiones del ${ESQUEMA}: cable del robot al control box (conector principal) y al tablero EL CID (señal del captor); control box al tablero EL CID (señal de posición); PC GRIS al control box (USB y Ethernet); PC EL CID al tablero EL CID (USB); tablero de excitación (autotransformador, cable de excitación, espira auxiliar y salida al tablero EL CID) y alimentaciones desde la red (regleta de enchufes), respetando el esquema de puesta a tierra.`, `${ESQUEMA} / ${P1} / ${MANUAL}, apartado 3.1`],
+    ["cuerdas", "Instalar las cuerdas de seguridad del robot y atarlas al punto de amarre con un nudo ocho reconstruido. Verificar el nudo según la Tabla 3.", "Figura 1 / Tabla 3"],
     ["sw_param", "Configurar en ELCSoft los parámetros del ensayo y el paso de registro EL CID (recomendado: 7 mm). Configurar el paso de adquisición automática de fotografías y el paso de muestreo WTT.", `${P3} / ${MANUAL}, apartados 4.4 y 5.3`],
     ["check", "Realizar la verificación pre-ensayo de desprendimiento de piezas del robot y registrarla en el checklist antes de introducir el robot.", `${CHECKLIST} (Pre-Test)`],
     ["montaje", "Montar el robot sobre la rampa y verificar que el conjunto ingresa, se posiciona y se desplaza sin interferencias.", `${MANUAL}, apartado 4.3`],
   ], despues: () => [
-    F.hojaA3("esquema_general.png", 5200, 3000, "Figura 1: Esquema general de conexiones del sistema GRIS"),
     F.h3(`${etapas.find((e) => e.id === "conf").apartado}.1 Amarre de las cuerdas de seguridad`),
-    p(ref("Las cuerdas de seguridad (3 mm) se atan al ojal del robot con un nudo ocho reconstruido (paso {cuerdas}), que no se corre ni se desata con los tirones ni con las vibraciones del ensayo. Se ata según la Figura 2 y se verifica con la Tabla 3."), { keepNext: true }),
-    ...F.figura("nudo_ocho.png", 3200, 3000, "Figura 2: Nudo ocho reconstruido paso a paso en el ojal del robot", 17),
+    p(ref("Las cuerdas de seguridad (3 mm) se atan al ojal del robot con un nudo ocho reconstruido (paso {cuerdas}), que no se corre ni se desata con los tirones ni con las vibraciones del ensayo. Se ata según la Figura 1 y se verifica con la Tabla 3."), { keepNext: true }),
+    ...F.figura("nudo_ocho.png", 3200, 3000, "Figura 1: Nudo ocho reconstruido paso a paso en el ojal del robot", 17),
     p("**Tabla 3: Verificación del nudo ocho reconstruido.** La realiza el operador que lo ató y la repite un segundo operador antes de introducir el robot en el entrehierro:", { keepNext: true }),
     tabla(["Control", "Criterio de aceptación"], [2400, 7238], [
       ["Figura", "Se ve un ocho completo, formado en todo su recorrido por pares de cuerdas paralelas."],
@@ -102,7 +102,7 @@ const etapas = [
       ["Apriete", "El nudo no se deforma ni se corre al tirar con fuerza de la cuerda y del lazo."],
       ["Punta libre", "Entre 3 cm y 5 cm (unas 10 a 15 veces el diámetro de la cuerda). Más corto puede salirse del nudo; más largo puede engancharse o quedar debajo del robot."],
     ], { keepNext: true }),
-    nota("Importante:", "si algún control no se cumple, desatar el nudo y volver a hacerlo desde el paso 1 de la Figura 2. Revisar el nudo al inicio de cada jornada y cada vez que la cuerda haya quedado enganchada o haya soportado un tirón.", F.C.gris),
+    nota("Importante:", "si algún control no se cumple, desatar el nudo y volver a hacerlo desde el paso 1 de la Figura 1. Revisar el nudo al inicio de cada jornada y cada vez que la cuerda haya quedado enganchada o haya soportado un tirón.", F.C.gris),
   ] },
 
   { id: "cal", titulo: "RECONOCIMIENTO Y CALIBRACIÓN", ref: P2, intro: "Se realizan sobre la primera ranura a inspeccionar, antes de iniciar la secuencia completa.", pasos: [
@@ -212,6 +212,7 @@ const cuerpo = [
     [`${MANUAL} – Manual de uso del software GRIS`, "Operación del software GRIS: configuración del robot y de la rampa, movimiento, cámaras, ensayo de ajuste de cuñas (WTT) y almacenamiento de los datos."],
     [`${RIESGO} – Residual Part Detachment Risk Assessment`, "Evaluación del riesgo residual de desprendimiento de 22 posiciones del robot GRIS."],
     [`${CHECKLIST} – Inspection Detachment Checklist`, "Verificación pre y post-ensayo de las 22 posiciones evaluadas."],
+    [`${meta.codigo} ${ESQUEMA} – Esquema general de conexiones`, `Esquema de conexiones del robot, el control box, los tableros, las PC y el circuito de excitación, en hoja A3 aparte (${ESQUEMA_ARCHIVO}).`],
   ]),
 
   h2("2.3 SECUENCIA GENERAL Y EQUIPAMIENTO"),

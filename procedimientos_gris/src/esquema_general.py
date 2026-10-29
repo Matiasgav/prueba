@@ -147,7 +147,7 @@ def tablero_elcid(x, y, w):
     rect(fondo, X(0.814), Y(0.092), w * 0.094, h * 0.134, "#121212", "#404040", 0.6, 3)
     poli(fondo, [(X(0.838), Y(0.135)), (X(0.884), Y(0.135)), (X(0.884), Y(0.19)), (X(0.838), Y(0.19))], "#555", 0.5, True, "#3A3A3A")
     etiqueta(X(0.918), Y(0.115), w * 0.04, h * 0.09, "USB", 90)
-    for fy, nombre in ((0.523, "Señal posición 0-10V"), (0.690, "Captor magnético")):
+    for fy, nombre in ((0.523, "Señal posición 0-10V"), (0.690, "Captor")):
         bnc(X(0.854), Y(fy), w * 0.028)
         etiqueta(X(0.918), Y(fy - 0.075), w * 0.04, h * 0.15, nombre, 90, 5.2)
     # borne de tierra
@@ -449,7 +449,7 @@ def cableado_interno(tx):
 # Hoja A3 apaisada: columnas PC/alimentación · control box y tablero EL CID · tablero de excitación y autotransformador · estator.
 W, H = 2600, 1500
 fondo.append(f'<rect x="20" y="20" width="{W - 40}" height="{H - 40}" fill="none" stroke="{NEG}" stroke-width="1"/>')
-texto(W / 2, 82, "ESQUEMA GENERAL DE CONEXIONES", 42, "middle")
+texto(W / 2, 82, "ANEXO A – ESQUEMA GENERAL DE CONEXIONES", 42, "middle")
 EX_X, EX_Y, EX_W = 1150, 1040, 560
 
 
@@ -585,7 +585,7 @@ p0_ = (bx_ + 40, by_ + bh_)
 poli(frente, [p0_, (cap[0] + 4, cap[1] - 14)], "#C9A100", 3)
 frente.append(f'<path d="M{cap[0] + 4:.1f},{cap[1] - 2:.1f} l-9,-18 l18,0 z" fill="#C9A100"/>')
 
-texto(W - 36, H - 34, "Mecanálisis – 00503-00-EPG001 – 28/10/2026", T, "end")
+texto(W - 36, H - 34, "Mecanálisis – 00503-00-EPG001 – Anexo A – 29/10/2026", T, "end")
 
 vainas = [{"pts": p, "ancho": 6} for p in ([(sup_x, 900), (sup_x, yA)], [(2070, pf[1]), (2070, 900)], [(inf_x, yB), (inf_x, 1420)],
                                          [(2560, pb[1]), (2560, 1420)], [(xa, ry0), (xa, yp)])]
