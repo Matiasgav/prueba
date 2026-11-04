@@ -62,6 +62,8 @@ class Rod:
         gap = int(np.ceil(1.6 * D / ds)) + 1
         n = len(self.t)
         I0, J0 = np.triu_indices(n, k=gap)
+        if getattr(self, 'pairmask', None) is not None:
+            m = self.pairmask(self.t[I0] * L, self.t[J0] * L, L); I0, J0 = I0[m], J0[m]
         c = np.asarray(c0, float).copy()
 
         def eq(c):

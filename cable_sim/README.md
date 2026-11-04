@@ -32,3 +32,9 @@ Cinemática (punta-base de cada lazo w ≈ 9.3 mm, lazo ≈ 31 mm de cable):
 L = 3·31 + 2·b1 + 2·b3 − 2·b2 − 3.5  →  guardado ≈ 194 mm, extraído ≈ 112 mm, carrera ≈ 82 mm,
 con R ≈ 8.8 mm (lazos 1 y 3) y ≈ 9.1 mm (lazo 2, inclinado). Estimación por superposición del lazo simulado,
 no es una simulación 3D.
+
+### Elástica de la Z (`z_elastica.py`, `plot_z_el.py`, `z_el.json`, `z_elastica.png`)
+Proyección frontal, giro neto 540°, contacto solo dentro del mismo piso.
+Guardado L = 192.4 mm -> extraído L = 120.4 mm: **72 mm con R >= 8.7 mm** en los tres lazos.
+Guardando hasta 196.4 mm (R >= 7 en el extremo guardado) la carrera llega a ~76 mm.
+Más allá de L = 120 no hay equilibrio: los lazos derechos chocan con el izquierdo.
