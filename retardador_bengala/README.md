@@ -427,3 +427,23 @@ resina (potting), que es lo que más suma a la robustez mecánica.
 Un CMOS 555 en monoestable también funciona con pocas piezas, pero su salida
 puede pulsar al encender y su precisión inicial es peor: no recomendado como
 única protección contra disparo prematuro.
+
+---
+
+## 12. Costo comparado del núcleo de temporización
+
+Estimación orientativa a volumen (~10 000 u), **a confirmar con cotizaciones**.
+Las piezas comunes a todas las versiones (capacitor de disparo, MOSFET, TVS,
+diodos, PCB) no se cuentan porque son iguales.
+
+| | Analógico (RC + comparador) | Micro de 6–8 patas |
+|---|---|---|
+| Chip | comparador doble CMOS nanopower: 0,15–0,40 USD | MCU: 0,10–0,50 USD |
+| Capacitor de tiempo | 2 × C0G 1 µF 25 V tolerancia ±1 %: 0,30–0,80 USD | — |
+| Resistores de precisión 0,1 % | 4 × 0,01–0,03 USD | — |
+| LDO / referencia | 0,05–0,10 USD | 0,05–0,10 USD (o zener) |
+| **Materiales** | **~0,55–1,40 USD** | **~0,15–0,60 USD** |
+| Ajuste por unidad | medir T, elegir y soldar un resistor (manual) | calibración automática por los 2 cables, en paralelo |
+
+El ensayo final de T al 100 % es necesario en ambos casos; la diferencia es que
+el analógico agrega una operación manual de retrabajo por placa.
