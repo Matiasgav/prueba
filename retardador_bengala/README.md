@@ -292,3 +292,64 @@ VDD 3,3V ─┬─ 74HC4060 ── Q14 ──► CLK 74HC4040 ── Q9..Q12 ─
 ocupan menos. El discreto conviene si se quiere **cero software** (certificación
 más simple, sin riesgo de bug de firmware) y alcanza con tiempos en pasos de
 0,5–1 s.
+
+---
+
+## 10. Versión mínima: un solo chip, sin cristal, sin electrolíticos
+
+Objetivo: menos componentes, menos soldaduras y nada que sea sensible al frío o
+al golpe de lanzamiento/eyección.
+
+### 10.1 Qué se saca y por qué
+
+| Se elimina | Motivo |
+|---|---|
+| Contadores discretos | 3 chips y 46 patas contra 1 chip de 6 patas. |
+| Cristal o resonador | Es la pieza más sensible al choque mecánico y la que más tarda en arrancar. |
+| Electrolíticos | En frío pierden capacidad y su ESR sube; envejecen. |
+| LDO (si el micro tolera la tensión o se usa un zener + R) | Una pieza menos. |
+
+### 10.2 Cómo se mantiene ±100 ms sin cristal
+
+1. **Oscilador interno del micro**, que no tiene piezas móviles y aguanta
+   cualquier choque.
+2. **Calibración individual en fábrica**, por los mismos 2 cables: el equipo de
+   prueba manda una referencia exacta y el micro guarda su factor de corrección.
+   Queda la deriva térmica.
+3. **Compensación de temperatura** con el sensor interno del micro: la curva
+   frecuencia-temperatura se caracteriza por lote en cámara térmica y se guarda
+   en el firmware. Residual esperado bastante por debajo de ±1 %.
+4. Para gastar poco: el micro duerme con el oscilador lento interno y se despierta
+   cada ~0,5 s para medirlo contra el rápido (ya corregido). Consumo medio de
+   decenas de µA en lugar de cientos.
+
+Todo esto **hay que validarlo en cámara térmica** con el micro elegido antes de
+dar por cumplida la precisión.
+
+### 10.3 Energía
+
+- **Lógica:** ~10–30 µA × 9 s ≈ 0,1–0,3 mC → 1 o 2 MLCC de 22 µF 25 V (contando
+  la pérdida por DC bias). Sin electrolítico.
+- **Disparo:** lo fija el iniciador. Para un puente de resistencia R con constante
+  de acción I²t (dato del fabricante), descargando un capacitor cargado a V:
+
+  `C ≥ 2 · R · (I²t) / V²`  (más margen ×2–3)
+
+  Ejemplo: R = 1,5 Ω, I²t = 10 mA²·s, V = 11 V → C ≥ 250 µF → **un tantalio-polímero**
+  de 330–470 µF 16–25 V (7343). Si el iniciador es más sensible, alcanza con
+  MLCC y desaparece el último capacitor “grande”.
+
+### 10.4 Lista de componentes (≈ 10 piezas)
+
+| Ref | Pieza |
+|---|---|
+| U1 | MCU en SOT-23-6 o DFN 2×2 con ADC, sensor de temperatura y EEPROM/Flash (p. ej. PIC10F322 o equivalente; **verificar** el oscilador interno) |
+| Q1/Q2 | MOSFET N doble en un solo SOT-23-6 (dos llaves en serie) |
+| C_F | Tantalio-polímero o banco de MLCC (según §10.3) |
+| C_L | 1–2 MLCC 22 µF 25 V |
+| D1, D2 | Schottky doble en SOT-23 |
+| TVS | SOD-123 |
+| R | Pull-downs de gate, descarga de C_F, divisor de medición, zener/regulación |
+
+Tamaño estimado **~8 × 15 mm**, con todo en una cara para poder encapsular en
+resina (potting), que es lo que más suma a la robustez mecánica.
