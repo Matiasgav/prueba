@@ -217,3 +217,78 @@ corrección. Queda solo la deriva térmica.
 2. Prototipo en placa de desarrollo con carga simulada; medir consumo y T.
 3. Elegir MCU definitivo y hacer esquemático + PCB.
 4. Ensayos térmicos y de lote.
+
+---
+
+## 9. Alternativa sin microcontrolador: lógica discreta (contadores)
+
+### 9.1 Idea
+
+Un cristal de **4,194304 MHz = 2²² Hz** (valor estándar, de “reloj”) alimenta un
+**74HC4060** (oscilador + 14 etapas) en cascada con un **74HC4040** (12 etapas):
+26 bits en total. Con esa frecuencia, cada salida del 4040 corresponde a una
+potencia de 2 en **segundos exactos**:
+
+| Salida | Pasa a 1 por primera vez a los | Peso |
+|---|---|---|
+| 4040 Q8  | 0,5 s | 0,5 s |
+| 4040 Q9  | 1 s   | 1 s |
+| 4040 Q10 | 2 s   | 2 s |
+| 4040 Q11 | 4 s   | 4 s |
+| 4040 Q12 | 8 s   | 8 s |
+
+El disparo es la **AND** de los bits que suman el tiempo deseado. La primera vez
+que todos están en 1 es exactamente T:
+
+- 9 s = 8 + 1 → `FIRE = Q12 · Q9`
+- 7 s = 4 + 2 + 1 → `FIRE = Q11 · Q10 · Q9`
+
+Es libre de glitches aun siendo contador asincrónico: durante el “ripple” los
+estados transitorios solo tienen un subconjunto de los bits del valor anterior,
+así que la AND no puede activarse antes de tiempo.
+
+### 9.2 Esquema
+
+```
+VDD 3,3V ─┬─ 74HC4060 ── Q14 ──► CLK 74HC4040 ── Q9..Q12 ──┐
+          │   (XTAL 4,194304 MHz)                           │
+          │                                               AND (74HC21 / 1G08)
+   POR: RC + Schmitt ──► MR de ambos contadores             │
+                                                     ┌──────┴──────┐
+                                                   Gate Q1       Gate Q2
+```
+
+- **Variante fija:** una 74LVC1G08 (SOT-23-5) con dos bits → 9 s.
+- **Variante “programable” sin micro:** 74HC21 (4 entradas) + DIP o puentes de
+  soldadura. Cada entrada tiene pull-up a VDD y un puente al bit Qk: puente
+  abierto = bit ignorado, cerrado = bit usado. Con Q9..Q12 → 1 a 15 s en pasos
+  de 1 s; sumando Q8, pasos de 0,5 s.
+
+### 9.3 Puntos delicados
+
+1. **Reset al encender (crítico):** si los contadores no arrancan en cero el
+   tiempo es aleatorio y puede disparar enseguida. El reset por RC + Schmitt
+   tiene que funcionar con cualquier forma de pulso de entrada. Es el único punto
+   donde la versión discreta es *menos* segura que el micro, que tiene reset
+   interno con brown-out.
+2. Consumo del 74HC4060 a 4 MHz: ~0,5–1 mA → C_L ≈ 1000 µF.
+3. Dos llaves en serie: Q2 puede manejarse con Q12 (armado a los 8 s) y Q1 con
+   la AND. No es independiente (mismo contador), pero evita disparos antes de 8 s
+   por un solo fallo en la compuerta.
+
+### 9.4 Comparación
+
+| | Micro (p. ej. CH32V003 / PY32F002A + cristal) | Discreto (4060 + 4040 + AND) |
+|---|---|---|
+| Costo de silicio | ~0,10–0,40 USD | ~0,25–0,40 USD |
+| Área | 1 SOP-8 / TSSOP-20 | 2 × TSSOP-16 + SOT-23-5 |
+| Precisión con cristal | ±50 ppm (~0,5 ms en 9 s) | igual |
+| Resolución | 1 ms, cualquier T | potencias de 2 (0,5 s con 5 bits) |
+| Programable | por cables, EEPROM, CRC | solo puentes/DIP |
+| Validación | requiere validar firmware | lógica fija, fácil de auditar |
+| Reset / estado seguro | BOR interno, watchdog, autochequeos | depende del POR externo |
+
+**Conclusión:** los micros modernos cuestan lo mismo o menos que dos contadores y
+ocupan menos. El discreto conviene si se quiere **cero software** (certificación
+más simple, sin riesgo de bug de firmware) y alcanza con tiempos en pasos de
+0,5–1 s.
