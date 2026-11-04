@@ -861,3 +861,22 @@ cotización a un despachante con la factura proforma de JLCPCB.
 
 No incluido: diseño/firmware, barniz o resina y su aplicación, ensayos
 (cámara térmica, vibración), mano de obra local.
+
+### 19.6 Lotes siguientes
+
+El costo de §19.4 ya no incluye costos únicos, así que un segundo lote de 1000
+cuesta prácticamente lo mismo (≈ 2,2 USD/placa). Solo se ahorra el stencil
+(~8 USD; JLC lo guarda por ~5 USD).
+
+Separando fijos por pedido y variables por placa:
+
+| | USD |
+|---|---|
+| Fijos por pedido: setup 25,6 + carga de piezas 24,5 + ingeniería de programación 8 + envío ~70 + despachante ~350 | **≈ 480 por pedido** |
+| Variables por placa: piezas 1,25 + soldaduras 0,11 + PCB 0,06 + programación 0,02 + derechos y tasa (~19 % del CIF) 0,30 | **≈ 1,74 por placa** |
+
+| Tamaño del pedido | Costo por placa |
+|---|---|
+| 1000 | ≈ 2,2 USD |
+| 2000 | ≈ 2,0 USD |
+| 5000 | ≈ 1,8 USD (más descuento por volumen en el micro) |
