@@ -795,3 +795,69 @@ También sirve para **leer** qué tiempo tiene cualquier unidad (control de cali
   ~20 % de la de 11 V, el firmware bloquea el disparo y hay dos MOSFET en serie
   apagados. Igualmente, evaluar con los datos de no-fuego del iniciador.
 - Marcar el tiempo en el exterior de la bengala (etiqueta o color por tiempo).
+
+---
+
+## 19. Costo puesto en Argentina de un lote de 1000 (estimación 11/2026)
+
+### 19.1 Precio en China (FOB)
+
+| Concepto | USD |
+|---|---|
+| Piezas (1,21 × 1000) + ~3 % de merma que cobra JLC | ~1 250 |
+| Ensamblado + programación del firmware (§17.2) | ~210 |
+| PCB panelizado | ~60 |
+| Comisión de pago (tarjeta/PayPal, ~0–4 %) | ~0–60 |
+| **FOB** | **≈ 1 520–1 580** |
+
+### 19.2 Envío
+
+Peso estimado: ~1,4 g por placa + rieles de panel + embalaje → **2,5–3 kg**.
+DHL Express desde JLCPCB a Argentina: **≈ 50–90 USD** (ver el valor exacto en
+la página de cotización de JLCPCB con el peso real). → **CIF ≈ 1 600–1 650 USD**.
+
+### 19.3 Aduana: es importación comercial
+
+1000 unidades iguales **no entran como courier/pequeño envío** (el courier no
+admite uso comercial ni más de 3 unidades de la misma especie). Va por el
+**régimen general con despachante**, a nombre de la empresa (CUIT con alta de
+importador).
+
+Sobre CIF = 1 600 USD (la posición arancelaria la define el despachante; derecho
+de importación supuesto 0–20 %):
+
+| Concepto | Tasa | USD | ¿Se recupera? |
+|---|---|---|---|
+| Derecho de importación | 0–20 % (supuesto) | 0–320 | No |
+| Tasa de estadística | 3 % | ~48 | No |
+| Despachante + gastos de aduana/depósito del courier | — | 250–450 | No |
+| IVA | 21 % | ~340–415 | Sí, crédito fiscal (responsable inscripto) |
+| Percepción IVA adicional | 20 % | ~330–395 | Sí, a cuenta |
+| Percepción Ganancias | 6 % | ~100–120 | Sí, a cuenta |
+| Percepción IIBB | ~2,5 % | ~40–50 | Sí, a cuenta |
+
+### 19.4 Resultado
+
+| | Total USD | Por placa |
+|---|---|---|
+| **Costo real** (lo que no se recupera) | **≈ 1 900–2 420** | **≈ 1,9–2,4 USD** |
+| Desembolso inicial (incluye impuestos recuperables) | ≈ 2 700–3 400 | ≈ 2,7–3,4 USD |
+
+Estimación central (derecho del 16 %, despachante 350): **≈ 2 250 USD → 2,25 USD
+por placa terminada, programada y nacionalizada.**
+
+Lo que más mueve el número: la posición arancelaria (derecho de importación) y
+el honorario mínimo del despachante, que pesa mucho en un envío chico. Pedir
+cotización a un despachante con la factura proforma de JLCPCB.
+
+### 19.5 Costos únicos (no por lote)
+
+| Concepto | USD |
+|---|---|
+| Prototipos (10 placas, ensamblado Economic) | 60–90 + envío |
+| Programador ST-Link | 5–10 |
+| Programador de retardo por 2 cables | 15–30 |
+| Banco de prueba con pogo-pins | 100–300 |
+
+No incluido: diseño/firmware, barniz o resina y su aplicación, ensayos
+(cámara térmica, vibración), mano de obra local.
