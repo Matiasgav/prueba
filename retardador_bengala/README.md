@@ -447,3 +447,33 @@ diodos, PCB) no se cuentan porque son iguales.
 
 El ensayo final de T al 100 % es necesario en ambos casos; la diferencia es que
 el analógico agrega una operación manual de retrabajo por placa.
+
+---
+
+## 13. Recomendación para una serie corta (~10 unidades)
+
+Con 10 placas el costo de piezas es irrelevante; lo que pesa es el esfuerzo de
+desarrollo y de ajuste. Por eso cambia la recomendación respecto de §10:
+
+**Micro de 8 patas + cristal, sin calibración ni compensación térmica.**
+
+- El cristal (p. ej. 4 u 8 MHz, ±50 ppm) da la precisión de sobra en todo el
+  rango térmico: no hay que calibrar cada placa ni caracterizar en cámara.
+- Micro sugerido: **ATtiny85** (SOIC-8, se programa con un Arduino como
+  programador) o **PIC12F1822** (SOIC-8, PICkit). Ambos admiten cristal externo,
+  tienen brown-out, watchdog y EEPROM.
+- Pines (ATtiny85): PB3/PB4 cristal · PB0 FIRE_A · PB1 FIRE_B · PB2 (ADC1)
+  medición de C_F y línea de programación · PB5 reset.
+- Mismo hardware para tiempo fijo y programable (el tiempo va en EEPROM).
+- Capacitor de disparo: polímero o tantalio-polímero según §10.3.
+- Ensayo de cada placa: osciloscopio + resistor de 1,5 Ω como iniciador simulado.
+
+Alternativa sin software: contadores 74HC4060 + 74HC4040 + AND con cristal de
+4,194304 MHz (§9). Tampoco requiere calibración, pero es más grande, solo da
+tiempos en pasos de 0,5–1 s y depende de un reset externo al encender.
+
+El analógico (§11) no conviene en ninguna escala para este requisito: exige
+ajustar cada placa a mano y es sensible a la humedad.
+
+Costo orientativo para 10 unidades: piezas ~3–6 USD por placa a precio
+minorista, PCB de fabricante en lote ~10–30 USD, programador 5–60 USD una vez.
