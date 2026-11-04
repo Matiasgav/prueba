@@ -353,3 +353,77 @@ dar por cumplida la precisión.
 
 Tamaño estimado **~8 × 15 mm**, con todo en una cara para poder encapsular en
 resina (potting), que es lo que más suma a la robustez mecánica.
+
+---
+
+## 11. Alternativa analógica: RC de precisión + comparador
+
+### 11.1 Esquema
+
+```
+ C_L ── LDO 2,5 V (Vref, Iq < 1 µA) ──┬──────────────┬──────────────┐
+                                      │              │              │
+                                     R_T 2,80 MΩ    R_a 1 MΩ        (alimenta comparadores)
+                                      │ 0,1 %        │
+                                      ├── V_C        ├── 0,8·Vref (umbral de disparo)
+                                      │              R_b 1 MΩ
+                                     C_T 2 µF C0G    ├── 0,6·Vref (umbral de armado)
+                                      │              R_c 3 MΩ
+                                     GND             GND
+
+ Comparador A: (+) V_C, (−) 0,8·Vref → gate Q1   (dispara a T)
+ Comparador B: (+) V_C, (−) 0,6·Vref → gate Q2   (arma a ~0,57·T)
+```
+
+- Tiempo: `T = R_T · C_T · ln(1/(1−k))`, con k = 0,8 → `T = 1,609 · R_T · C_T`.
+  Con C_T = 2 µF y R_T = 2,80 MΩ → **T ≈ 9,01 s**.
+- Es **ratiométrico**: el umbral y la carga salen de la misma Vref, así que su
+  valor absoluto no importa; solo tiene que mantenerse constante 9 s.
+- Consumo total ~2–3 µA → la lógica se alimenta con 1–2 MLCC.
+- Comparador doble nanopower con salida push-pull e histéresis interna
+  (p. ej. familia TLV70xx; verificar corriente de entrada en caliente).
+
+### 11.2 Presupuesto de error (estimado)
+
+| Fuente | Error en T |
+|---|---|
+| C_T C0G ±1 % (o ±5 % sin trimar) | ±1 % (±5 %) |
+| R_T 0,1 % | ±0,1 % |
+| Divisor de umbral 0,1 % (sensibilidad ×2,7 con k = 0,8) | ±0,3 % |
+| Temperatura: C0G ±30 ppm/°C, R ±25 ppm/°C, ±40 °C | ±0,2 % |
+| Offset del comparador (mV sobre 2 V, ×2,7) | ±0,1–0,3 % |
+| Fugas (bias del comparador, superficie de la placa) a ~1 µA de carga | ±0,1–0,5 % (crece con humedad y calor) |
+
+- **Sin ajuste:** ~±1,5–2 % → **no garantiza** ±100 ms.
+- **Con ajuste en fábrica** (medir T y elegir R_T de la serie E192 o un resistor
+  serie de corrección): ~±0,5–0,8 % → **cumple**.
+
+### 11.3 Riesgos propios
+
+1. **Fugas a varios MΩ:** humedad o condensación (que en nube es lo normal) bajan
+   la resistencia superficial y adelantan o atrasan el disparo. Exige anillo de
+   guarda, barniz o resina de baja fuga y lavado de flux.
+2. **C_T tiene que arrancar en 0 V:** si quedó carga de un pulso anterior, el
+   tiempo se acorta. Hace falta un camino de descarga cuando no hay tensión.
+3. **Arranque del comparador:** por debajo de su tensión mínima la salida no está
+   definida. Usar MOSFET con Vgs(th) > 1,5 V y el segundo comparador como llave
+   de armado.
+4. **Solo tiempo fijo:** cambiar T implica cambiar R_T (o poner puentes que
+   seleccionen resistores). No hay versión programable razonable.
+5. Encontrar C0G de 1 µF a 25 V: existe en 1210/1812, verificar disponibilidad;
+   la alternativa es film PPS, más grande.
+
+### 11.4 Veredicto
+
+| | Analógico (RC + comparador) | Micro de 6 patas |
+|---|---|---|
+| Software | ninguno | sí |
+| Piezas | ~12 (2 chips) | ~10 (1 chip) |
+| Precisión | cumple solo con ajuste por unidad | cumple con calibración por cables |
+| Sensibilidad a humedad | alta (nodos de MΩ) | baja |
+| Tiempo programable | no (solo cambiando resistor) | sí |
+| Calibración en línea | cambiar/soldar un resistor | automática por los 2 cables |
+
+Un CMOS 555 en monoestable también funciona con pocas piezas, pero su salida
+puede pulsar al encender y su precisión inicial es peor: no recomendado como
+única protección contra disparo prematuro.
