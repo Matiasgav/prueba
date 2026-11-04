@@ -22,3 +22,13 @@ Salida arriba a la izquierda **hacia -x**; se exige poder extraer 60 mm, aceptan
 
 Lazo rodante: rama inferior soldada, rama superior hacia la salida, la curva de 180° rueda de x≈40 a x≈11.
 Límite: con ramas en y=1.75 e y=22.82 el radio geométrico máximo es 10.5 mm; la elástica da ~8.8.
+
+## Revisión 3 — 70 mm: cable plegado en Z en dos capas (`dibujo_z.py`, `dibujo_Z_70mm.png`)
+
+Con 8.75 mm de profundidad (2.5 Ø) entran dos capas de cable. Tres lazos rodantes de altura completa:
+soldadura (capa A, hacia la derecha) → lazo 1 (der.) → rama superior A → lazo 2 (izq., cambia de capa)
+→ rama inferior B → lazo 3 (der.) → rama superior B → salida (capa B).
+Cinemática (punta-base de cada lazo w ≈ 9.3 mm, lazo ≈ 31 mm de cable):
+L = 3·31 + 2·b1 + 2·b3 − 2·b2 − 3.5  →  guardado ≈ 194 mm, extraído ≈ 112 mm, carrera ≈ 82 mm,
+con R ≈ 8.8 mm (lazos 1 y 3) y ≈ 9.1 mm (lazo 2, inclinado). Estimación por superposición del lazo simulado,
+no es una simulación 3D.
