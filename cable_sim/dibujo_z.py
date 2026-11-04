@@ -8,7 +8,7 @@ from rod import W, H, r, D
 d = json.load(open('rl_a.json'))
 X = np.array(min((s for s in d['extract'] if s['ok']), key=lambda s: abs(s['L'] - 61))['X'])
 tip = X[:, 0].max()
-T = X[X[:, 0] > tip - 13] - [tip, 0]           # lazo relativo a su punta (abre a la izquierda)
+T = X[X[:, 0] > tip - 9.3] - [tip, 0]          # lazo relativo a su punta (abre a la izquierda)
 WL = -T[:, 0].min()                              # largo del tramo tomado
 Y0, Y1 = r, H - r; XL = r; XR = W - r
 
