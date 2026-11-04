@@ -880,3 +880,20 @@ Separando fijos por pedido y variables por placa:
 | 1000 | ≈ 2,2 USD |
 | 2000 | ≈ 2,0 USD |
 | 5000 | ≈ 1,8 USD (más descuento por volumen en el micro) |
+
+---
+
+## 20. ¿Hay algo comercial que haga lo mismo?
+
+| Opción | Qué es | Por qué sirve o no |
+|---|---|---|
+| Igniters electrónicos con retardo para fuegos artificiales (p. ej. MJG E-tek, EE. UU.; también fabricantes chinos de “electronic igniters” para shows) | E-match con chip de retardo integrado | Es lo más parecido. Pero funcionan con el sistema de disparo/programador propio de cada marca (no con un pulso de 12 V genérico), el E-tek cuesta ~5 USD c/u + programador de ~1 600 USD y no se vende online; al ser artículo pirotécnico, importarlo implica ANMaC y transporte de mercancía peligrosa. |
+| Elemento de retardo pirotécnico (columna de composición) | Lo tradicional en bengalas eyectables | Barato y sin electrónica, pero la precisión típica es de varios % y varía con la temperatura: no asegura ±100 ms en 9 s. |
+| Detonadores electrónicos de minería | Retardo electrónico autoalimentado | Son explosivos (detonadores), régimen legal distinto: no aplica. |
+| Timers de cohetería / módulos de retardo con relé | Temporizadores genéricos | Necesitan batería o alimentación continua. |
+
+Recomendación: consultar al proveedor de las bengalas si ofrece versión con
+retardo integrado, y pedir cotización a fabricantes de igniters electrónicos
+para fuegos artificiales indicando la interfaz (pulso de 12 V de 1–10 ms) y la
+precisión requerida. Si no hay nada que acepte el pulso de 12 V y cumpla ±100 ms,
+el diseño propio a ~2,2 USD/unidad sigue siendo competitivo.
