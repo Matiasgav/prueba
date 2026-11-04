@@ -688,3 +688,110 @@ pogo-pins: programa, graba T, aplica el pulso y mide el retardo en una sola
 operación.
 
 Tamaño estimado de la placa: **~10 × 15 mm**, definido sobre todo por C_F.
+
+---
+
+## 17. Precios LCSC/JLCPCB y costo de fabricación (consulta 04/11/2026)
+
+Precios tomados del buscador de piezas de JLCPCB (mismos que LCSC), en USD por
+unidad comprando 1000. Cambian a diario: **re-cotizar al hacer el pedido**.
+"base" = pieza básica de JLC (sin cargo de carga); "ext" = extendida.
+
+### 17.1 Lista de materiales
+
+| Ref | Pieza | Código LCSC | Tipo | Cant. | USD c/u @1000 | Subtotal |
+|---|---|---|---|---|---|---|
+| U1 | STM32L010F4P6 (TSSOP-20) | C529415 | ext | 1 | 0,697 | 0,697 |
+| (U1 alt.) | STM32L011F4U6TR (QFN-20 3×3) | C329283 | ext | (1) | (0,951) | — |
+| Y1 | Cristal 32,768 kHz 7 pF ±20 ppm, 3215 (SC-32S) | C97604 | ext | 1 | 0,111 | 0,111 |
+| C1, C2 | 10 pF C0G 0402 (carga del cristal) | C32949 | base | 2 | ~0,0015 | 0,003 |
+| U2 | LDO HT7525S 2,5 V, 36 V máx., 2 µA (SOT-23) | C22466410 | ext | 1 | 0,029 | 0,029 |
+| Q1, Q2 | AO3400A (SOT-23) | C20917 | base | 2 | 0,056 | 0,111 |
+| Q3 | 2N7002 (respuesta al programador) | C8545 | base | 1 | 0,013 | 0,013 |
+| D1 | SS34 (SMA) | C8678 | base | 1 | 0,025 | 0,025 |
+| D2 | BAT54WS (SOD-323) | C191198 | ext | 1 | 0,010 | 0,010 |
+| TVS | SMAJ15A (SMA) | C86819 | ext | 1 | 0,030 | 0,030 |
+| C_F | Aluminio-polímero 330 µF 25 V, SMD 6,3 × 9 mm, 25 mΩ | C54321572 | ext | 1 | 0,125 | 0,125 |
+| C_loc | 10 µF 25 V X5R 0805 | C15850 | base | 1 | 0,030 | 0,030 |
+| C | 1 µF 25 V 0402 | C52923 | base | 2 | 0,005 | 0,010 |
+| C | 100 nF 0402 | C1525 | base | 1 | 0,002 | 0,002 |
+| R | 0402 varios (10 MΩ, 4,7 MΩ, 100 k, 22 k, 1 k) | C26082, C26091, C25741, … | base/ext | ~9 | ~0,0012 | 0,011 |
+| | **Total materiales** | | | | | **≈ 1,21 USD** (con QFN: ≈ 1,46) |
+
+Notas:
+- C_F de aluminio-polímero: barato y bueno en frío; **medir su fuga** a 11 V
+  durante 60 s. Alternativa de tantalio-polímero: KEMET T521D107M025 (100 µF
+  25 V, C212710, 0,90 USD) si el iniciador es sensible.
+- Con cristal de 7 pF el STM32L0 trabaja con su nivel de excitación bajo; los
+  cristales de 12,5 pF piden más corriente.
+
+### 17.2 Ensamblado y programación en JLCPCB (pedido de 1000 placas)
+
+La programación del firmware la ofrece JLCPCB **solo en PCBA "Standard"**:
+~8 USD de ingeniería + ~8 USD/hora de operario, después del montaje, con una
+interfaz de programación en la placa (pads SWD).
+
+| Concepto | Cálculo | USD |
+|---|---|---|
+| Setup Standard (una cara) | fijo | 25,6 |
+| Stencil | fijo | 8,2 |
+| Carga de alimentadores | ~16 piezas distintas × 1,53 | 24,5 |
+| Soldaduras SMT | ~70 juntas × 1000 = 70 000 juntas | ~106 |
+| Fixtures, embalaje, varios | estimado | ~15 |
+| Programación | 8 + ~2–3 h × 8 | ~30 |
+| **Subtotal ensamblado + programación** | | **≈ 210 → 0,21 USD/placa** |
+| PCB 2 capas, ~10 × 15 mm, panelizado | estimado, cotizar en la web | 40–80 → 0,04–0,08/placa |
+
+**Costo por placa terminada y programada: ≈ 1,5 USD** (≈ 1,75 con el micro QFN).
+No incluye envío a Argentina ni impuestos de importación.
+
+Prototipos (10 placas): conviene PCBA "Economic" (setup 8,2 + stencil 1,5 +
+3,07 por pieza extendida) y programar uno mismo con un ST-Link (~5–10 USD):
+**≈ 60–90 USD el lote** con piezas y PCB.
+
+---
+
+## 18. Cómo se programa el tiempo de cada retardador (después de armado)
+
+Separación clara:
+
+- **Firmware**: uno solo, igual para todas las placas, lo graba JLCPCB (o uno
+  mismo por SWD). No contiene el tiempo.
+- **Tiempo T**: es un dato que se guarda en la EEPROM interna, con CRC, **por los
+  mismos 2 cables del iniciador**, en cualquier momento después del armado, aun
+  con la placa encapsulada en resina. Se puede leer y reprogramar.
+
+### 18.1 Programador de retardo (equipo de banco o de mano)
+
+Cajita con pinzas a los 2 cables, perilla o teclado y pantalla (o conectada a
+una PC). Basado en un Arduino/STM32 de desarrollo + 2 transistores: ~15–30 USD.
+
+Operación (≈ 1 s por unidad):
+
+1. Conectar las 2 pinzas.
+2. Elegir el tiempo (p. ej. 9,0 s) — queda fijo para toda la tanda.
+3. Apretar el botón: escribe, lee de vuelta y verifica.
+4. LED verde "9,00 s OK" (o rojo si falla). Opcional: imprime etiqueta o
+   registra número de serie.
+
+También sirve para **leer** qué tiempo tiene cualquier unidad (control de calidad).
+
+### 18.2 Cómo funciona por 2 cables
+
+- El programador alimenta la línea con **5 V** (no 12 V). El firmware, al
+  arrancar, mide la línea: si está por debajo de ~6 V entra en **modo
+  programación, en el que los pines de disparo quedan bloqueados**. Solo con
+  ≥ 9 V entra en modo retardo.
+- Programador → placa: modula la línea entre 5 V y 3,5 V (C_F sigue cargado
+  gracias a D1). La placa lo lee con un divisor 100 k / 22 k a una entrada ADC.
+- Placa → programador: el micro prende Q3 (2N7002 + 1 kΩ) y consume ~5 mA en
+  pulsos; el programador los detecta midiendo corriente.
+- Se transmite T + CRC; la placa responde con lo que grabó; el programador compara.
+
+### 18.3 Seguridad del proceso
+
+- Flujo normal: **programar antes de conectar el iniciador**.
+- Si hubiera que programar con el iniciador conectado: a 5 V la energía en C_F es
+  ~20 % de la de 11 V, el firmware bloquea el disparo y hay dos MOSFET en serie
+  apagados. Igualmente, evaluar con los datos de no-fuego del iniciador.
+- Marcar el tiempo en el exterior de la bengala (etiqueta o color por tiempo).
