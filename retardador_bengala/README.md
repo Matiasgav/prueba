@@ -524,3 +524,123 @@ Costo estimado del banco: 100–300 USD en materiales.
 - Muestra por lote: ciclado térmico (−40/+70 °C), vibración/choque, y disparo de
   iniciadores reales.
 - Trazabilidad: número de serie en cada placa vinculado al registro de ensayo.
+
+---
+
+## 15. Diseño elegido: micro simple + cristal de 32 kHz, retención hasta 60 s
+
+### 15.1 Micro: PIC12LF1822 (Microchip)
+
+Barato por simple, no por calidad:
+
+- 8 patas, núcleo de 8 bits, sin periféricos innecesarios. Fabricante de primera
+  línea, familia madura (en producción desde hace más de 10 años), grado de
+  temperatura extendido (−40 a +125 °C), EEPROM de datos, brown-out, watchdog.
+- **Versión “LF” (bajo consumo, 1,8–3,6 V)**: duerme con ~1 µA mientras el
+  Timer1 cuenta un cristal de reloj de 32,768 kHz.
+- Precio orientativo a 1000 u: ~0,7–0,9 USD (confirmar con distribuidor).
+
+**Por qué cristal de 32 kHz y no de MHz:** con un cristal de 4 MHz el micro gasta
+~0,3–0,5 mA; en 60 s eso son ~25 mC, imposibles de juntar en un pulso de 1 ms
+(serían ~25 A). Con 32 kHz el promedio baja a unos pocos µA.
+
+**El problema del cristal de 32 kHz** es que tarda 0,5–3 s en arrancar. Solución
+por firmware, sin perder precisión:
+
+1. Al encender, el micro corre con su oscilador interno lento (LFINTOSC, 31 kHz)
+   y cuenta sus ciclos mientras espera que el cristal arranque.
+2. Cuando el cristal está estable, mide el oscilador interno contra el cristal
+   durante ~0,25 s y corrige retroactivamente el tiempo transcurrido.
+3. A partir de ahí cuenta con el cristal, durmiendo entre interrupciones.
+
+Error resultante: cristal ±20 ppm + deriva térmica (≈ −100 ppm a −30 °C) +
+corrección del arranque (~0,1 %·3 s) → **< 10 ms en 60 s**.
+
+A verificar: resistencia a choque del cristal de diapasón de 32 kHz (son más
+frágiles que los de MHz). Si no alcanza, existe la alternativa de oscilador
+MEMS de 32 kHz de bajo consumo.
+
+### 15.2 Asignación de patas
+
+| Pata | Función |
+|---|---|
+| 1 VDD / 8 VSS | Alimentación 2,5–3,0 V |
+| 2 RA5/T1OSI, 3 RA4/T1OSO | Cristal 32,768 kHz |
+| 4 RA3 (solo entrada) | Detección de la línea (programación por los 2 cables) |
+| 5 RA2 | FIRE_A → gate Q1 |
+| 6 RA1/ICSPCLK | FIRE_B → gate Q2 (pull-down 100 k) |
+| 7 RA0/ICSPDAT/AN0 | Medición de V(C_F) por divisor de 10 MΩ |
+
+Programación por pogo-pins (ICSP) se hace con C_F descargado y sin iniciador:
+el pulso de programación no puede disparar porque no hay energía en C_F.
+
+### 15.3 Esquema de energía (un solo reservorio)
+
+```
+ Línea 12 V ─TVS─R_s─┬─D1─►─┬───────────── C_F (reservorio único) ── E-MATCH ── Q1 ── Q2 ── GND
+                     │      │                │
+                     │      R_bleed 4,7 MΩ   └─D2─►─ C_loc 10 µF MLCC ── LDO 2,5 V ── C 1 µF ── PIC
+                     └── divisor ── RA3
+```
+
+- **C_F alimenta todo**: el disparo y, a través de D2 y el LDO, al micro. El consumo
+  del micro es tan bajo que casi no le resta energía al disparo.
+- **D2 + C_loc** aíslan al micro: durante los ~20 ms de disparo C_F cae, pero el
+  micro sigue alimentado por C_loc (10 µF a 100 µA → caída < 0,2 V).
+- **LDO** de entrada hasta 16–30 V y consumo propio ~1 µA (p. ej. TPS70925 o
+  MCP1703A-2502).
+
+### 15.4 Presupuesto de carga para 60 s
+
+| Consumo | Corriente | Carga en 60 s |
+|---|---|---|
+| Arranque del cristal (micro despierto a 31 kHz, hasta 3 s) | ~15 µA | 45 µC |
+| Sueño con Timer1 + cristal | ~1–2 µA | 120 µC |
+| LDO | ~1 µA | 60 µC |
+| Divisor de medición (10 MΩ) | ~1 µA | 60 µC |
+| R_bleed 4,7 MΩ | ~2,4 µA | 140 µC |
+| Fuga de C_F (polímero/tantalio a ≤ 50 % de su tensión) | ~2–5 µA | 120–300 µC |
+| **Total** |  | **~0,6–0,7 mC** |
+
+Con C_F = 330 µF eso es una caída de **~2 V en 60 s** (de 11,3 V a ~9,3 V).
+El disparo se calcula con la tensión al final del tiempo.
+
+### 15.5 Tamaño de C_F
+
+`C_F ≥ 2 · R_puente · (I²t)_todo-fuego / V_final²`, con margen ×1,5–2.
+
+| Iniciador (ejemplo) | C_F mínimo a 9 V | Recomendado |
+|---|---|---|
+| R = 1,5 Ω, I²t = 2 mA²·s (sensible) | 75 µF | 150 µF |
+| R = 1,5 Ω, I²t = 10 mA²·s | 370 µF | 560 µF |
+
+**Este dato del iniciador define todo el resto.**
+
+### 15.6 ¿Alcanza un pulso de 1 ms o de 10 ms?
+
+Para cargar C_F al ~95 % hace falta τ = R_total · C_F ≤ t_pulso / 3, donde
+R_total es la resistencia de la fuente + cables + R_s + diodo.
+
+| C_F | Pulso 1 ms: R_total máx | Corriente pico aprox. | Pulso 10 ms: R_total máx | Corriente pico aprox. |
+|---|---|---|---|---|
+| 150 µF | 2,2 Ω | ~5 A | 22 Ω | ~0,5 A |
+| 330 µF | 1,0 Ω | ~11 A | 10 Ω | ~1,1 A |
+| 560 µF | 0,6 Ω | ~19 A | 6 Ω | ~1,9 A |
+
+- **Con 10 ms** cualquier fuente de 12 V decente y cableado normal alcanza.
+- **Con 1 ms** hace falta una fuente muy rígida (batería, cables cortos y gruesos)
+  y un iniciador sensible; si no, conviene un pulso de al menos 5–10 ms.
+- D1 Schottky con corriente de pico alta (p. ej. SS34, I_FSM ≥ 80 A); R_s de
+  0,1–0,5 Ω tipo pulso, o ninguna si el cable ya limita.
+- Si la carga quedó incompleta, el micro lo detecta midiendo V(C_F) y aplica la
+  política definida (abortar o disparar igual).
+
+### 15.7 Elección de C_F
+
+- **Tantalio-polímero o aluminio-polímero híbrido, 25 V** (trabajando a ≤ 50 %
+  de su tensión): ESR bajo para cargar rápido, buen comportamiento en frío y
+  fuga baja a tensión reducida.
+- Fuga especificada ≤ 0,01·C·V; la real a la mitad de la tensión nominal es
+  bastante menor, pero hay que **medirla** en el modelo elegido.
+- Evitar electrolítico común (frío) y, si el C_F necesario es chico (≤ 100 µF),
+  un banco de MLCC X7R es la opción más robusta (fuga despreciable).
