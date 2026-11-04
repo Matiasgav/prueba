@@ -644,3 +644,47 @@ R_total es la resistencia de la fuente + cables + R_s + diodo.
   bastante menor, pero hay que **medirla** en el modelo elegido.
 - Evitar electrolítico común (frío) y, si el C_F necesario es chico (≤ 100 µF),
   un banco de MLCC X7R es la opción más robusta (fuga despreciable).
+
+---
+
+## 16. Micro chico para ensamblado SMD en China (JLCPCB / LCSC)
+
+Requisitos: fabricante de primera línea, encapsulado chico, **oscilador de
+32,768 kHz con cristal externo (LSE / T1OSC)** que siga contando en bajo consumo,
+ADC para medir C_F, brown-out, watchdog y memoria no volátil para T. Muchos
+micros chinos muy baratos (CH32V003, PY32F002A) **no tienen oscilador de 32 kHz
+con cristal**, así que no sirven para este diseño.
+
+| Micro | Encapsulado más chico | Ventajas | A tener en cuenta |
+|---|---|---|---|
+| **STM32L011D4P6 / F4U6** (ST) | TSSOP-14 (5 × 6,4 mm) / UFQFPN-20 (3 × 3 mm) | Muy común en LCSC/JLC; LSE + LPTIM que cuenta en Stop (~1 µA); ADC 12 bits con sensor de temperatura; EEPROM de datos; programador ST-Link barato | Núcleo de 32 bits (no agrega riesgo, pero hay más configuración) |
+| **PIC12LF1822** (Microchip) | DFN-8 (3 × 3 mm) / SOIC-8 | Lo más simple; Timer1 con cristal de 32 kHz en sueño (~1 µA); EEPROM | Menos stock en LCSC; programador PICkit |
+
+**Recomendado: STM32L011** por disponibilidad en el ensamblador chino, herramientas
+baratas y bajo consumo. Elegir TSSOP-14 si se quiere inspección visual simple;
+UFQFPN-20 si se busca el mínimo tamaño. Precio orientativo ~0,7–1,0 USD.
+**Verificar stock y asignación de patas (LSE en PC14/PC15) en LCSC y en la hoja
+de datos antes de cerrar el esquemático.**
+
+### 16.1 BOM SMD sugerida (todas piezas habituales en LCSC)
+
+| Función | Pieza | Encapsulado |
+|---|---|---|
+| MCU | STM32L011D4P6 | TSSOP-14 |
+| Cristal 32,768 kHz | 12,5 pF o 7 pF, ±20 ppm (verificar choque) | 2012 (2,0 × 1,2 mm) o 3215 |
+| LDO 2,5 V, ≥ 16 V entrada, Iq ~1 µA | TPS70925 / MCP1703A | SOT-23-5 / SOT-23-3 |
+| Q1, Q2 | AO3400A | SOT-23 |
+| D1, D2 | SS34 (pico alto) / BAT54 (lógica) | SMA / SOD-323 |
+| TVS | SMAJ15A | SMA |
+| C_F | Tantalio-polímero 25 V (valor según iniciador) | Caja B/D |
+| C_loc, desacople | MLCC 10 µF 25 V, 100 nF | 0805 / 0402 |
+| Resistores | divisores 10 MΩ, pull-downs 100 k, bleed 4,7 MΩ | 0402 / 0603 |
+
+### 16.2 Programación y prueba
+
+El ensamblador entrega las placas sin programar. Se programan en el banco de
+prueba (§14.3) por **pads de prueba SWD** (VDD, GND, SWDIO, SWCLK, NRST) con
+pogo-pins: programa, graba T, aplica el pulso y mide el retardo en una sola
+operación.
+
+Tamaño estimado de la placa: **~10 × 15 mm**, definido sobre todo por C_F.
