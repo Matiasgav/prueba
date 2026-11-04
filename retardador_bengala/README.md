@@ -477,3 +477,50 @@ ajustar cada placa a mano y es sensible a la humedad.
 
 Costo orientativo para 10 unidades: piezas ~3–6 USD por placa a precio
 minorista, PCB de fabricante en lote ~10–30 USD, programador 5–60 USD una vez.
+
+---
+
+## 14. Producción de ~1000 unidades por año
+
+### 14.1 La recomendación no cambia: micro + cristal
+
+A 1000 u/año la diferencia de materiales entre opciones es de ~0,1–0,8 USD por
+placa, es decir **100–800 USD por año**. No justifica:
+
+- la versión sin cristal (§10): exige caracterización térmica, calibración por
+  unidad y firmware más complejo, a cambio de ahorrar ~0,1–0,3 USD por placa;
+- el analógico (§11): ajuste manual de cada placa;
+- el discreto (§9): más grande y sin tiempo programable.
+
+Sí conviene revisar el micro: ATtiny85 (~1 USD) o PIC12F1822 (~0,6–0,8 USD) están
+bien. Si hay presión de costo, evaluar un micro de 0,10–0,20 USD con soporte de
+cristal externo (CH32V003, PY32F002A; verificar pinout, disponibilidad y que se
+pueda calificar el proveedor).
+
+### 14.2 Fabricación
+
+- PCB **ensamblado por el fabricante** (SMT) en paneles, 1 o 2 lotes por año, con
+  piezas elegidas del catálogo del ensamblador para evitar faltantes.
+- Todas las piezas en una cara; pads de pogo-pin para programar y probar.
+- Costo orientativo por placa ensamblada: **~3–5 USD** (materiales 1,5–3 USD +
+  PCB y montaje 1–2 USD). Costos únicos por lote: stencil y puesta a punto
+  ~20–50 USD.
+
+### 14.3 Banco de prueba (vale la pena a este volumen)
+
+Una base con pogo-pins y un microcontrolador con cristal que, en una sola
+operación de ~15 s por placa:
+
+1. programa el firmware y el tiempo T;
+2. aplica el pulso de 12 V real;
+3. mide T sobre un resistor de 1,5 Ω (iniciador simulado) y la corriente de disparo;
+4. marca aprobado/rechazado y registra número de serie, T medido y fecha.
+
+Costo estimado del banco: 100–300 USD en materiales.
+
+### 14.4 Calidad por lote
+
+- 100 % de placas: ensayo del banco y barniz o resina.
+- Muestra por lote: ciclado térmico (−40/+70 °C), vibración/choque, y disparo de
+  iniciadores reales.
+- Trazabilidad: número de serie en cada placa vinculado al registro de ensayo.
