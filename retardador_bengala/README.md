@@ -941,3 +941,51 @@ el diseño propio a ~2,2 USD/unidad sigue siendo competitivo.
 programador de retardo vendido aparte (~150–300 USD) o incluido en la primera
 compra. Es un componente de seguridad en un artículo pirotécnico: el precio debe
 cubrir seguro de responsabilidad civil y ensayos de lote.
+
+---
+
+## 22. Mercado Mendoza: datos públicos (relevados 05/11/2026)
+
+### 22.1 Consumo por temporada
+
+| Temporada | Material usado | Fuente |
+|---|---|---|
+| 2022–23 (hasta enero) | 7 233 bengalas, 5 433 cartuchos, 566 h de vuelo | Contingencias Climáticas |
+| 2024–25 (Sur, ADSAH) | 3 262 bengalas eyectables + 584 de quema directa, 61 vuelos | Municipalidad de Gral. Alvear |
+| 2025–26 (Sur) | 4 889 bengalas + 4 414 cartuchos, 141 vuelos en 47 días, 3 aviones | MinutoYA |
+| Año “normal” (declaración oficial) | ~10 000 bengalas + ~10 000 cartuchos | El Sol |
+
+### 22.2 Compras y precios
+
+| Fecha | Compra | Precio |
+|---|---|---|
+| 2008 (Decreto 3203/08) | 16 000 bengalas + 5 000 cartuchos, Stroyproject | $141,12 / $92,40 → ≈ 35 / 23 USD |
+| 01/2023 | 3 000 bengalas | $50 M → $16 700 c/u (≈ 90 USD oficial) |
+| 09/2023 (Decreto 1976/23) | 10 000 bengalas UVA-150, Stroyproject (única oferta) | $456,25 M → $45 625 c/u (≈ 130 USD oficial) |
+| 2026–27 (licitación en curso) | 16 000 bengalas + 13 000 cartuchos | ofertas US$ 1,395–1,75 M → **≈ 48–60 USD promedio por unidad** |
+
+Si en 2026–27 las bengalas valen 60–85 USD, los cartuchos quedarían en ≈ 20–40
+USD (reparto no publicado: estimación).
+
+### 22.3 Situación del programa
+
+- La Provincia dejó de operar el sistema en 2024; lo operan **San Rafael y
+  General Alvear** con aviones cedidos por la Provincia (Aviación San Rafael) y
+  material de siembra comprado por la Provincia.
+- Costo 2024–25 del sistema Sur: ~$1 500 M (San Rafael 70 %, Alvear 30 %).
+- Para 2026–27 se discute un esquema plurianual; la cantidad de aviones (2 o 3)
+  seguía sin definir en septiembre de 2026.
+- Riesgo de contrato: en 2026 la Provincia rechazó el reclamo del proveedor por
+  la devaluación de 2023 (contrato en pesos). → Cotizar en USD o con cláusula
+  de ajuste.
+
+### 22.4 Implicancias para el retardador
+
+- Volumen potencial: **~10 000–16 000 unidades/año** solo en Mendoza, no 1000.
+  A ese volumen el costo baja a ≈ 1,8 USD/placa (§19.6).
+- Si va en el cartucho/bengala eyectable de ~20–40 USD, **10 USD es caro**:
+  apuntar a **4–6 USD** por unidad (10–20 % del cartucho), que con 10 000+
+  unidades deja buen margen y paga el desarrollo en la primera temporada.
+- Calendario: la temporada arranca en noviembre y la licitación de material se
+  define antes; un retardador nuevo tendría que estar ensayado y aceptado por
+  el fabricante de la bengala con meses de anticipación.
