@@ -897,3 +897,47 @@ retardo integrado, y pedir cotización a fabricantes de igniters electrónicos
 para fuegos artificiales indicando la interfaz (pulso de 12 V de 1–10 ms) y la
 precisión requerida. Si no hay nada que acepte el pulso de 12 V y cumpla ±100 ms,
 el diseño propio a ~2,2 USD/unidad sigue siendo competitivo.
+
+---
+
+## 21. Precio de venta sugerido
+
+### 21.1 Referencia: cuánto cuesta una bengala
+
+- Mendoza, licitación 2023–2024: **10 000 bengalas BIP** (burn-in-place, se
+  queman en el ala del avión) por $456 250 000 → **$45 625 c/u**, ≈ **130 USD**
+  al tipo de cambio oficial de octubre de 2023 (~350 $/USD). Proveedor:
+  Stroyproject (Bulgaria).
+- Mendoza 2008–2011 (expediente judicial): $141,12 por bengala y $92,40 por
+  “cartucho de siembra” (probablemente eyectable) → ≈ 35 y 23 USD al cambio de
+  entonces (~4 $/USD).
+- Las eyectables (las que llevarían este retardador) son más chicas que las BIP:
+  estimación **≈ 25–80 USD** hoy. No encontré precios publicados recientes:
+  confirmar con proveedores.
+- Ojo con el mercado: en junio de 2024 Mendoza anunció el fin de la siembra con
+  aviones. Hay que identificar quién compra hoy (otras provincias, privados,
+  exportación).
+
+### 21.2 Costo completo por unidad (1000/año)
+
+| Concepto | USD |
+|---|---|
+| Placa puesta en Argentina (§19) | 2,2 |
+| Barniz/resina, etiqueta, ensayo y programación local | 0,3–0,6 |
+| Rechazos y garantía (~5 %) | 0,15 |
+| **Costo directo** | **≈ 2,7–3,0** |
+| Amortización del desarrollo (p. ej. 10 000–20 000 USD en 3 años) | 3,3–6,7 |
+| **Costo total** | **≈ 6–10** |
+
+### 21.3 Precio
+
+| Criterio | Precio por unidad |
+|---|---|
+| Costo directo × 2,5–3 (margen típico de electrónica B2B de bajo volumen) | 7–9 USD |
+| Recuperar desarrollo + margen | 9–12 USD |
+| Valor para el cliente: ≤ 10–15 % del precio de la bengala eyectable | 3–12 USD |
+
+**Sugerido: lista ≈ 10 USD/unidad, 7–8 USD por volumen o contrato anual**, con el
+programador de retardo vendido aparte (~150–300 USD) o incluido en la primera
+compra. Es un componente de seguridad en un artículo pirotécnico: el precio debe
+cubrir seguro de responsabilidad civil y ensayos de lote.
