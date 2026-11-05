@@ -1049,3 +1049,35 @@ Ahorros posibles:
 A un precio de venta de 4–6 USD, el margen bruto es ≈ 2–4 USD por unidad
 (≈ 20 000–40 000 USD por lote de 10 000), antes de desarrollo, seguro y
 estructura.
+
+---
+
+## 24. Verificación con otros proveedores (05/11/2026)
+
+### 24.1 Piezas principales (precio a 1000 u; EUR convertido a ~1,15 USD/EUR)
+
+| Pieza | LCSC/JLC | DigiKey | Farnell | Comentario |
+|---|---|---|---|---|
+| STM32L010F4P6 | 0,69 USD (20 000 en stock) | ≈ €0,56 ≈ 0,65 USD | €0,72 ≈ 0,83 USD (≈ 20 000 en stock) | **Confirmado**: precio coherente en los tres |
+| Cristal Seiko SC-32S 7 pF ±20 ppm (misma pieza) | 0,11 USD | ≈ 0,26 USD | — | LCSC más barato |
+| AO3400A | 0,056 USD | ≈ 0,12 USD | — | LCSC más barato |
+| C_F 330 µF 25 V polímero | 0,12 USD (marca china) | Panasonic 25SVF330M ≈ €0,87–0,93 ≈ 1,0 USD | — | Diferencia de marca, no de distribuidor |
+
+Conclusión: los precios de LCSC/JLC son reales y son los más bajos; comprando
+todo en distribuidores occidentales la placa subiría ≈ 0,3 USD (sin cambiar
+C_F) o ≈ 1,2 USD (con C_F Panasonic).
+
+**Decisión de calidad pendiente:** C_F es la pieza que guarda la energía del
+disparo. Vale la pena calificar la marca china contra una de primera línea
+(Panasonic OS-CON, Nichicon, KEMET): medir capacidad y ESR en frío y fuga a
+60 s. Si la china no pasa, usar la de marca suma ≈ 0,9 USD por placa
+(≈ 9 000 USD por lote de 10 000).
+
+### 24.2 Ensamblado en otros fabricantes
+
+PCBWay, Seeed Fusion, NextPCB y similares **no publican tarifas por soldadura
+ni de programación**: cotizan con los archivos (Gerber, BOM, posiciones). Cuando
+esté el diseño, pedir cotización a 2–3 de ellos para 10 000 u con programación
+incluida y comparar contra el cálculo de JLC (§23: ≈ 1 400 USD de ensamblado +
+programación + PCB). El ensamblado es < 10 % del costo: el peso está en las
+piezas y la importación.
