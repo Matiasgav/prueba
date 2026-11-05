@@ -955,17 +955,23 @@ cubrir seguro de responsabilidad civil y ensayos de lote.
 | 2025–26 (Sur) | 4 889 bengalas + 4 414 cartuchos, 141 vuelos en 47 días, 3 aviones | MinutoYA |
 | Año “normal” (declaración oficial) | ~10 000 bengalas + ~10 000 cartuchos | El Sol |
 
-### 22.2 Compras y precios
+### 22.2 Compras y precios (precio del lote ÷ cantidad, al dólar de la fecha)
 
-| Fecha | Compra | Precio |
-|---|---|---|
-| 2008 (Decreto 3203/08) | 16 000 bengalas + 5 000 cartuchos, Stroyproject | $141,12 / $92,40 → ≈ 35 / 23 USD |
-| 01/2023 | 3 000 bengalas | $50 M → $16 700 c/u (≈ 90 USD oficial) |
-| 09/2023 (Decreto 1976/23) | 10 000 bengalas UVA-150, Stroyproject (única oferta) | $456,25 M → $45 625 c/u (≈ 130 USD oficial) |
-| 2026–27 (licitación en curso) | 16 000 bengalas + 13 000 cartuchos | ofertas US$ 1,395–1,75 M → **≈ 48–60 USD promedio por unidad** |
+| Fecha | Compra | Lote | Por unidad ($) | Dólar usado | Por unidad (USD) |
+|---|---|---|---|---|---|
+| 2008 (Decreto 3203/08) | 16 000 bengalas, Stroyproject | — | $141,12 | oficial 2008: 3,15–3,45 | **41–45** |
+| 2008 (Decreto 3203/08) | 5 000 cartuchos, Stroyproject | — | $92,40 | oficial 2008: 3,15–3,45 | **27–29** |
+| 01/2023 | 3 000 bengalas | $50 000 000 | $16 667 | oficial ene-23 ≈ 182 (blue ≈ 380) | **≈ 92** (44 al blue) |
+| 29/09/2023 (Decreto 1976/23) | 10 000 bengalas UVA-150, Stroyproject | $456 250 000 | $45 625 | oficial 350 / BNA 365,5 (blue ≈ 800) | **≈ 125–130** (57 al blue) |
+| 2026–27 (licitación en curso) | 16 000 bengalas + 13 000 cartuchos | US$ 1 395 000–1 750 000 | — | ya en USD | **≈ 48–60 promedio** (mezcla) |
 
-Si en 2026–27 las bengalas valen 60–85 USD, los cartuchos quedarían en ≈ 20–40
-USD (reparto no publicado: estimación).
+Notas:
+- En 2008 cambio oficial y paralelo eran prácticamente iguales.
+- En 2023 había cepo: el precio en pesos se fijó al oficial (el proveedor reclamó
+  luego por la devaluación de diciembre de 2023), así que el valor “real” para el
+  proveedor quedó entre el dato oficial y el del blue.
+- La licitación 2026–27 no publica el precio por tipo: el promedio mezcla
+  bengalas y cartuchos.
 
 ### 22.3 Situación del programa
 
