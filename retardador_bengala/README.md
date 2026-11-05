@@ -995,3 +995,57 @@ Notas:
 - Calendario: la temporada arranca en noviembre y la licitación de material se
   define antes; un retardador nuevo tendría que estar ensayado y aceptado por
   el fabricante de la bengala con meses de anticipación.
+
+---
+
+## 23. Costo de fabricar un lote de 10 000
+
+Con los mismos precios de §17 (tramo de 1000+ de JLC/LCSC; a 10 000 puede
+haber algo de descuento adicional, no incluido).
+
+### 23.1 En China (FOB)
+
+| Concepto | Cálculo | USD |
+|---|---|---|
+| Piezas | 1,206 × 10 000 + ~3 % de merma | ~12 400 |
+| Soldaduras SMT | ~70 juntas × 10 000 = 700 000 (50k@0,0016 + 50k@0,0013 + 600k@0,0012) | ~865 |
+| Setup + stencil + carga de piezas | 25,6 + 8,2 + 24,5 | ~60 |
+| PCB panelizado (~250 paneles) | estimado | ~250 |
+| Programación del firmware | 8 + ~17 h × 8 | ~140 |
+| Embalaje, varios, comisión de pago | estimado | ~100–400 |
+| **FOB** | | **≈ 13 800–14 100** |
+
+### 23.2 Envío e importación
+
+| Concepto | USD |
+|---|---|
+| DHL, ~20–25 kg | ~300–450 |
+| **CIF** | **≈ 14 300** |
+| Derecho de importación (0–20 %, central 16 %) | 0–2 860 (central ~2 290) |
+| Tasa de estadística 3 % | ~430 |
+| Despachante + gastos de aduana/depósito | ~500–700 |
+| **Costo puesto en Argentina (no recuperable)** | **≈ 15 300–18 300 (central ≈ 17 600)** |
+| IVA + percepciones (recuperables, a adelantar) | ≈ 7 600–9 100 |
+
+### 23.3 Por unidad
+
+| Concepto | USD/placa |
+|---|---|
+| Puesta en Argentina | 1,53–1,83 (central 1,76) |
+| Local: resina/barniz, etiqueta, ensayo y programación del tiempo (~15 s c/u) | ~0,3 |
+| Rechazos y garantía (~3 %) | ~0,05 |
+| **Costo directo total** | **≈ 1,9–2,2 (central ≈ 2,1)** |
+
+Desembolso total del lote: ≈ 21 000 USD de costo + ≈ 8 000 USD de impuestos
+recuperables → **≈ 29 000 USD de caja** hasta recuperar IVA y percepciones.
+
+Ahorros posibles:
+- Comprar el micro directo a distribuidor de ST a 10 000 unidades
+  (≈ 0,45–0,55 USD en lugar de 0,70) y enviarlo a JLC como pieza consignada:
+  −1 500 a −2 500 USD.
+- Asegurar stock: reservar las piezas en la biblioteca de JLC antes del pedido
+  (hoy hay ~20 000 STM32L010F4P6).
+
+A un precio de venta de 4–6 USD, el margen bruto es ≈ 2–4 USD por unidad
+(≈ 20 000–40 000 USD por lote de 10 000), antes de desarrollo, seguro y
+estructura.
