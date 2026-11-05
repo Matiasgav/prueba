@@ -1081,3 +1081,42 @@ esté el diseño, pedir cotización a 2–3 de ellos para 10 000 u con programac
 incluida y comparar contra el cálculo de JLC (§23: ≈ 1 400 USD de ensamblado +
 programación + PCB). El ensamblado es < 10 % del costo: el peso está en las
 piezas y la importación.
+
+---
+
+## 25. Alternativas a JLCPCB
+
+### 25.1 Fabricantes en China
+
+| Fabricante | Perfil | Programación del firmware | Comentario |
+|---|---|---|---|
+| **JLCPCB** | Lo más barato y automático para placas simples | Sí, solo PCBA Standard: ~8 USD + ~8 USD/h | Precios publicados; base de §17–§23 |
+| **PCBWay** | El equivalente más directo; más procesos especiales | Sí, se cotiza aparte con el .hex | Flujo por cotización; para 2 capas suele ser algo más caro |
+| **NextPCB** | Enfoque en trazabilidad y confiabilidad (ISO 13485 según su propio material), DFM gratis | Sí, servicio estándar (precio a cotizar) | Buena opción si se pide trazabilidad por lote |
+| **PCBONLINE** | Ensamblado llave en mano | Declara programación gratis con el pedido | Verificar condiciones |
+| Seeed Fusion, Elecrow, ALLPCB | Orientados a makers / IoT | Variable | Menos indicados para un producto de seguridad |
+
+### 25.2 Ensamblado en Argentina
+
+| Empresa | Qué ofrece (según su sitio) |
+|---|---|
+| **ELTECH** (Buenos Aires, desde 2003) | SMT/THT, provisión de componentes, **prueba funcional y programación**, inspección 100 % IPC-A-610 Clase 2, trazabilidad por lote. Placa mínima 50 × 50 mm → panelizar. |
+| **Asembli S.A.** (desde 1996) | Montaje SMD para terceros, puede conseguir PCB y componentes. |
+| **Dydelec** (desde 2002) | Montaje SMD y convencional, provisión de componentes, testeo. |
+
+Ventajas de ensamblar en Argentina:
+- Se importan solo componentes (o los consigue el ensamblador), no placas armadas.
+- Visitas, auditoría del proceso y trazabilidad local; respuesta rápida ante problemas.
+- Puede pesar a favor en compras públicas (regímenes de “compre argentino” /
+  compre local): consultar si aplica a un componente de la bengala.
+
+Desventajas: mano de obra y setup más caros, componentes por distribuidor local
+o importados igual, y menos automatización en lotes chicos.
+
+### 25.3 Recomendación
+
+1. Pedir cotización con los mismos archivos (Gerber, BOM, posiciones, .hex) a
+   **JLCPCB, PCBWay, NextPCB** y a **ELTECH**, para 1000 y 10 000 unidades,
+   con programación y prueba funcional incluidas.
+2. Para el primer lote de producción, valorar la trazabilidad y la posibilidad
+   de auditar el proceso tanto como el precio: es un componente de seguridad.
