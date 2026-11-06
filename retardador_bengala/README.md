@@ -11,6 +11,25 @@ Dos variantes sobre **el mismo hardware**:
 | **A – Fija de diseño** | Constante en el firmware (o un resistor de código leído por ADC). |
 | **B – Programable** | T guardado en EEPROM/Flash, programado por los mismos 2 cables o por pads de pogo-pin. |
 
+## Estado del proyecto y guía de lectura (06/11/2026)
+
+**Estado:** diseño conceptual. Todavía no hay prototipo, firmware escrito ni
+ensayos. El documento fue creciendo por etapas, así que las secciones más
+nuevas corrigen a algunas anteriores; cuando hay diferencia, vale la más nueva.
+
+| Tema | Secciones | Conclusión vigente |
+|---|---|---|
+| Por qué electrónico y no RC o pirotécnico | §1, §9–§12 | Micro + cristal de 32 kHz: es lo único que asegura ±100 ms en frío |
+| **Diseño elegido** | §15, §16, §18 | STM32L010 + cristal de 32 kHz, un solo capacitor de reserva, programación del tiempo por los 2 cables |
+| Capacitor de reserva (60 s) | §15.4–§15.7 | Depende del iniciador (falta su I²t). La fuga y la absorción del capacitor se califican midiendo; tantalio-polímero descartado (§26.9) |
+| Fabricación y precios de piezas | §17, §23–§25 | JLCPCB/LCSC, armado SMD de una cara |
+| **Costos verificados de punta a punta** | **§26** | ≈ 2,1 USD por unidad puesta en Argentina y lista para entregar (lote de ~4 400) |
+| Mercado y tipos de bengala | §21, §22, §27 | El retardador va solo en el cartucho eyectable (~35–50 USD hoy). Mendoza usa ~3 000–5 500 por año |
+| Competencia | §20 | No hay un producto que acepte el pulso de 12 V y dé ±100 ms |
+
+La estrategia comercial (precios de venta, negociación) se lleva en un
+documento privado aparte, no en este repositorio.
+
 ---
 
 ## 1. Por qué no un RC analógico
@@ -818,10 +837,17 @@ la página de cotización de JLCPCB con el peso real). → **CIF ≈ 1 600–1 6
 
 ### 19.3 Aduana: es importación comercial
 
-1000 unidades iguales **no entran como courier/pequeño envío** (el courier no
-admite uso comercial ni más de 3 unidades de la misma especie). Va por el
-**régimen general con despachante**, a nombre de la empresa (CUIT con alta de
-importador).
+> **Corregido el 06/11/2026 (ver §26.3):** el límite de 3 unidades iguales es
+> del régimen de *pequeños envíos* (uso personal). El régimen de **courier**
+> está abierto a empresas, sin límite de unidades ni de envíos por año, hasta
+> **3 000 USD FOB y 50 kg por bulto** (ARCA, RG 5631/2025). Un lote de 1000
+> (~1 500 USD FOB) puede entrar por courier pagando los tributos generales,
+> sin honorario de despachante. Por encima de 3 000 USD FOB, régimen general
+> con despachante.
+
+Texto original de esta sección: 1000 unidades iguales no entran como
+courier; van por el régimen general con despachante, a nombre de la empresa
+(CUIT con alta de importador).
 
 Sobre CIF = 1 600 USD (la posición arancelaria la define el despachante; derecho
 de importación supuesto 0–20 %):
@@ -913,7 +939,7 @@ el diseño propio a ~2,2 USD/unidad sigue siendo competitivo.
   entonces (~4 $/USD).
 - Las eyectables (las que llevarían este retardador) son más chicas que las BIP:
   estimación **≈ 25–80 USD** hoy. No encontré precios publicados recientes:
-  confirmar con proveedores.
+  confirmar con proveedores. **Actualizado en §27: ≈ 35–50 USD.**
 - Ojo con el mercado: en junio de 2024 Mendoza anunció el fin de la siembra con
   aviones. Hay que identificar quién compra hoy (otras provincias, privados,
   exportación).
@@ -963,15 +989,15 @@ cubrir seguro de responsabilidad civil y ensayos de lote.
 | 2008 (Decreto 3203/08) | 5 000 cartuchos, Stroyproject | — | $92,40 | oficial 2008: 3,15–3,45 | **27–29** |
 | 01/2023 | 3 000 bengalas | $50 000 000 | $16 667 | oficial ene-23 ≈ 182 (blue ≈ 380) | **≈ 92** (44 al blue) |
 | 29/09/2023 (Decreto 1976/23) | 10 000 bengalas UVA-150, Stroyproject | $456 250 000 | $45 625 | oficial 350 / BNA 365,5 (blue ≈ 800) | **≈ 125–130** (57 al blue) |
-| 2026–27 (licitación en curso) | 16 000 bengalas + 13 000 cartuchos | US$ 1 395 000–1 750 000 | — | ya en USD | **≈ 48–60 promedio** (mezcla) |
+| **2016** (licitación; antes figuraba por error como 2026–27) | 16 000 bengalas + 13 000 cartuchos; ofertaron Ice Crystal Engineering, Stroyproject y Texas Weather Modification | US$ 1 395 000–1 750 000 | — | ya en USD | **≈ 48–60 promedio** (mezcla) |
 
 Notas:
 - En 2008 cambio oficial y paralelo eran prácticamente iguales.
 - En 2023 había cepo: el precio en pesos se fijó al oficial (el proveedor reclamó
   luego por la devaluación de diciembre de 2023), así que el valor “real” para el
   proveedor quedó entre el dato oficial y el del blue.
-- La licitación 2026–27 no publica el precio por tipo: el promedio mezcla
-  bengalas y cartuchos.
+- La licitación de 2016 (comunicado del Gobierno de Mendoza del 12/07/2016) no
+  publica el precio por tipo: el promedio mezcla bengalas y cartuchos.
 
 ### 22.3 Situación del programa
 
@@ -989,6 +1015,10 @@ Notas:
 
 - Volumen potencial: **~10 000–16 000 unidades/año** solo en Mendoza, no 1000.
   A ese volumen el costo baja a ≈ 1,8 USD/placa (§19.6).
+  **Corregido el 06/11/2026:** solo cuentan los cartuchos eyectables (las
+  bengalas de quema en el ala no llevan retardo). Recientes: ~3 300 (2024–25),
+  ~4 400 (2025–26), ~5 400 (2022–23); ~10 000 en un año "normal" con toda la
+  provincia operando. Ver §26.8.
 - Si va en el cartucho/bengala eyectable de ~20–40 USD, **10 USD es caro**:
   apuntar a **4–6 USD** por unidad (10–20 % del cartucho), que con 10 000+
   unidades deja buen margen y paga el desarrollo en la primera temporada.
@@ -1120,3 +1150,256 @@ o importados igual, y menos automatización en lotes chicos.
    con programación y prueba funcional incluidas.
 2. Para el primer lote de producción, valorar la trazabilidad y la posibilidad
    de auditar el proceso tanto como el precio: es un componente de seguridad.
+
+---
+
+## 26. Costos verificados de punta a punta (06/11/2026)
+
+Desde el diseño hasta la unidad entregada al cliente en Argentina. Reemplaza a
+§17, §19 y §23 donde haya diferencias.
+
+### 26.0 Qué se verificó y qué es estimado
+
+| Dato | Fuente | Estado |
+|---|---|---|
+| Precio y stock de cada pieza | API de LCSC (`wmsc.lcsc.com`), consulta del 06/11/2026 | **Verificado** |
+| Tarifas de armado SMD | Página oficial de JLCPCB, actualizada el 22/10/2026 | **Verificado** |
+| Régimen de courier para empresas | ARCA, novedad 4509 / RG 5631/2025 | **Verificado** |
+| Tasa de estadística 3 %, IVA 21 %, percepciones | Régimen general vigente | Verificado (alícuotas generales) |
+| Derecho de importación | Depende de la posición arancelaria, que define el despachante | **Supuesto 16 %** (rango 0–20 %) |
+| PCB panelizado, flete DHL | JLCPCB solo los da cotizando con archivos y peso reales | **Estimado** |
+| Costos locales, gastos fijos, IIBB | — | **Estimado** |
+
+El cálculo es reproducible con `retardador_bengala/costos.py`.
+
+### 26.1 Lista de materiales con precios de hoy (LCSC)
+
+| Ref | Pieza | Código LCSC | Stock | USD @1000 u | USD @5000 u |
+|---|---|---|---|---|---|
+| U1 | STM32L010F4P6 | C529415 | 20 000 | 0,697 | 0,697 |
+| Y1 | Cristal 32,768 kHz 7 pF ±20 ppm (SC-32S) | C97604 | 129 040 | 0,111 | 0,106 |
+| C1, C2 | 10 pF C0G 0402 | C32949 | 910 000 | 2 × 0,005 | 2 × 0,004 |
+| U2 | LDO HT7525S | C22466410 | 13 100 | 0,029 | 0,025 |
+| Q1, Q2 | AO3400A | C20917 | 547 080 | 2 × 0,056 | 2 × 0,054 |
+| Q3 | 2N7002 | C8545 | 3 836 700 | 0,013 | 0,012 |
+| D1 | SS34 | C8678 | 2 278 160 | 0,025 | 0,017 |
+| D2 | BAT54WS | C191198 | **300** | 0,010 | 0,009 |
+| TVS | SMAJ15A | C86819 | 57 760 | 0,030 | 0,027 |
+| C_F | Aluminio-polímero 330 µF 25 V | C54321572 | **4 110** | 0,125 | 0,120 |
+| C_loc | 10 µF 25 V 0805 | C15850 | 1 587 900 | 0,024 | 0,021 |
+| C | 1 µF 0402 | C52923 | 3 481 400 | 2 × 0,004 | 2 × 0,003 |
+| C | 100 nF 0402 | C1525 | 5 066 900 | 0,002 | 0,002 |
+| R | 0402 varios | C26082, C25741, … | — | 9 × 0,001 | 9 × 0,001 |
+| | **Total por placa** | | | **1,20** | **1,16** |
+
+Alertas de stock y alternativas:
+
+- **D2 (BAT54WS):** solo 300 en stock. Elegir un equivalente con stock antes de
+  pedir (hay muchos BAT54 en SOD-323).
+- **C_F:** 4 110 en stock, justo para un lote. Reservarlo en la biblioteca de
+  JLC o calificar un segundo proveedor.
+- **PIC16LF15313** (alternativa de micro más barata, C635341): 0,34 USD @1000
+  pero **sin stock en LCSC hoy**. Si se elige, comprarlo a Microchip o DigiKey y
+  enviarlo a JLC como pieza consignada.
+- **Capacitor de tantalio-polímero** KEMET T521D107M025 (C212710): 0,90 USD
+  @1000. Descartado por las corrientes anómalas de carga en frío (§26.9).
+- **Aluminio-polímero híbrido** (Panasonic EEH-ZA/ZK): no se pudo consultar
+  su precio en LCSC. Estimado +0,3–0,8 USD por placa si los ensayos lo exigen.
+
+### 26.2 Armado en JLCPCB (PCBA Standard, tarifas del 22/10/2026)
+
+| Concepto | Tarifa |
+|---|---|
+| Setup (una cara) | 25,56 USD por pedido |
+| Stencil (una cara) | 8,21 USD por pedido |
+| Carga de alimentadores (básicas y extendidas) | 1,53 USD por pieza distinta → 15 piezas = 22,95 USD |
+| Soldaduras SMT | 0,0016 USD/junta hasta 50 000; 0,0013 hasta 100 000; 0,0012 hasta 1 000 000 |
+| Confirmación de posiciones | 0,45 USD |
+
+Con ~70 juntas por placa: lote de 1000 ≈ 163 USD; de 4 400 ≈ 452 USD; de
+10 000 ≈ 922 USD.
+
+JLCPCB **no publica precio de programación de firmware**. Se programa
+localmente, en el mismo paso que se graba el tiempo T y se ensaya cada unidad
+(§18, §26.5). Así no depende de una tarifa a cotizar.
+
+### 26.3 Envío e importación
+
+| Lote | Régimen | Por qué |
+|---|---|---|
+| Hasta ~2 000 placas (≤ 3 000 USD FOB) | **Courier** a nombre de la empresa | Abierto a personas jurídicas, sin límite de unidades ni de envíos por año, hasta 3 000 USD FOB y 50 kg por bulto. Sin honorario de despachante (se estima ~60 USD de gestión del courier). |
+| Más de 3 000 USD FOB | Régimen general con despachante (~450 USD), o varios envíos courier de ≤ 3 000 USD | El courier tiene tope por envío |
+
+Tributos sobre el CIF (FOB + flete + seguro de 1 %):
+
+| Concepto | Alícuota | ¿Se recupera? |
+|---|---|---|
+| Derecho de importación | 16 % supuesto (0–20 % según posición) | No |
+| Tasa de estadística | 3 % | No |
+| IVA | 21 % | Sí, crédito fiscal |
+| Percepción IVA adicional | 20 % | Sí, a cuenta |
+| Percepción Ganancias | 6 % | Sí, a cuenta |
+| Percepción IIBB | ~2,5 % | Sí, a cuenta |
+
+Peso estimado: 0,5 kg de embalaje + ~2,5 g por placa. Flete DHL estimado:
+40 USD + 8 USD/kg.
+
+### 26.4 Costo por lote, puesto en Argentina
+
+| | 1 000 u | 3 300 u | 4 400 u | 5 400 u | 10 000 u |
+|---|---|---|---|---|---|
+| Piezas (+3 % de merma) | 1 239 | 3 990 | 5 321 | 6 429 | 11 775 |
+| Armado JLC | 163 | 359 | 452 | 536 | 922 |
+| PCB (estimado 0,06 USD/placa) | 60 | 198 | 264 | 324 | 600 |
+| Embalaje, comisión de pago | 30 | 33 | 44 | 54 | 100 |
+| **FOB** | **1 492** | **4 581** | **6 080** | **7 343** | **13 397** |
+| Flete DHL (estimado) | 64 | 110 | 132 | 152 | 244 |
+| **CIF** | **1 572** | **4 738** | **6 274** | **7 570** | **13 778** |
+| Derecho 16 % | 252 | 758 | 1 004 | 1 211 | 2 204 |
+| Tasa de estadística 3 % | 47 | 142 | 188 | 227 | 413 |
+| Courier o despachante | 60 (courier) | 450 | 450 | 450 | 450 |
+| **Puesto en Argentina (no recuperable)** | **1 931** | **6 088** | **7 917** | **9 458** | **16 845** |
+| **Por placa** | **1,93** | **1,84** | **1,80** | **1,75** | **1,69** |
+| IVA y percepciones a adelantar (se recuperan) | 926 | 2 791 | 3 696 | 4 459 | 8 116 |
+| **Caja necesaria por lote** | **2 857** | **8 879** | **11 613** | **13 917** | **24 961** |
+
+Desglose por placa del lote de 4 400: piezas 1,21 · armado 0,10 · PCB 0,06 ·
+embalaje 0,01 · flete y seguro 0,04 · derecho 0,23 · tasa 0,04 · despachante
+0,10 → **1,80 USD**.
+
+### 26.5 Costos locales por unidad
+
+| Concepto | USD/u |
+|---|---|
+| Programación del firmware y del tiempo T + ensayo funcional (~15 s por unidad en el banco de §14.3) | ~0,10 |
+| Barniz o resina, etiqueta con tiempo y lote, bolsa antiestática | ~0,15 |
+| **Subtotal** | **~0,25** |
+| Rechazos y reposiciones en garantía | +3 % |
+
+**Costo por unidad lista para entregar:** 2,16 USD (3 300 u) · **2,11 USD
+(4 400 u)** · 2,06 USD (5 400 u) · 1,99 USD (10 000 u).
+
+### 26.6 Costos únicos (una sola vez)
+
+| Concepto | USD |
+|---|---|
+| 3 rondas de 10 prototipos armados (PCBA Economic) + envíos | 300–400 |
+| ST-Link, placa de desarrollo para el programador de retardo, pogo-pins | 50–100 |
+| Muestras de capacitores (3 tecnologías) para calificar | 50–100 |
+| Banco de prueba (§14.3) | 100–300 |
+| Osciloscopio básico (si no se tiene) | 0–450 |
+| Frío para ensayos (hielo seco o freezer) y horno para envejecer | 0–300 |
+| Alta de la empresa (SAS) y alta de importador | 500–1 000 |
+| Programadores de retardo para el cliente (1–2) | 150–400 |
+| **Total** | **≈ 1 150–3 050** |
+
+No incluye horas propias de diseño, firmware ni ensayos.
+
+### 26.7 Gastos fijos anuales (estimado)
+
+| Concepto | USD/año |
+|---|---|
+| Contador y obligaciones de la sociedad | 1 500–2 400 |
+| Seguro de responsabilidad civil por producto | 1 000–2 500 (a cotizar) |
+| Banco, dominio, viajes al cliente, varios | 500–1 000 |
+| **Total (supuesto del cálculo)** | **≈ 4 500** |
+
+### 26.8 Venta al cliente: resultado anual a 6,7 USD por unidad
+
+Un lote por año del tamaño de la temporada. Impuestos sobre las ventas:
+ingresos brutos ~3 % (a confirmar según provincia y actividad) e impuesto a
+los débitos y créditos bancarios ~1,2 %. El IVA de la venta (21 %) se factura
+aparte y es neutro.
+
+| Escenario | Unidades | Ventas | Costo de las unidades | Imp. sobre ventas | Gastos fijos | **Antes de Ganancias** | **Neto (Ganancias 30 %)** |
+|---|---|---|---|---|---|---|---|
+| Año flojo (como 2024–25) | 3 300 | 22 110 | 7 120 | 929 | 4 500 | **9 561** | **6 693** |
+| Año actual (como 2025–26) | 4 400 | 29 480 | 9 287 | 1 238 | 4 500 | **14 455** | **10 118** |
+| Año bueno (como 2022–23) | 5 400 | 36 180 | 11 132 | 1 520 | 4 500 | **19 028** | **13 320** |
+| Provincia entera | 10 000 | 67 000 | 19 926 | 2 814 | 4 500 | **39 760** | **27 832** |
+
+El primer año hay que restar los costos únicos de §26.6 (≈ 1 150–3 050 USD).
+
+Sensibilidad con 4 400 unidades (antes de Ganancias):
+
+| Precio de venta | 5,0 | 6,0 | 6,7 | 8,0 |
+|---|---|---|---|---|
+| Resultado | 7 289 | 11 504 | 14 455 | 19 934 |
+
+| Derecho de importación | 0 % | 16 % | 20 % |
+|---|---|---|---|
+| Resultado | 15 489 | 14 455 | 14 196 |
+
+Lo que más mueve el resultado es el **volumen** (depende de la temporada y de
+que Mendoza siga con aviones) y el **precio de venta**. El derecho de
+importación pesa poco.
+
+### 26.9 Lo que falta confirmar antes del primer pedido
+
+1. **Posición arancelaria y derecho de importación** con un despachante, con la
+   proforma de JLCPCB.
+2. **Cotización real en JLCPCB** con los Gerber, la lista de materiales y las
+   posiciones: PCB panelizado y flete con el peso real.
+3. **Capacitor de reserva**, después de los ensayos de fuga y absorción
+   (a −30, 25 y 70 °C, con piezas soldadas y envejecidas sin tensión). Los
+   ensayos publicados por la NASA (Teverovsky, NTRS 20220011323) muestran que
+   el tantalio-polímero seco puede consumir más de 1 A durante los primeros ms
+   de carga, peor en frío: descartado para un pulso de pocos ms. Las corrientes
+   de absorción de los electrolíticos caen como 1/t y son proporcionales a C·V
+   (Teverovsky, NEPP): restan un porcentaje fijo de tensión en el primer
+   minuto, que más capacidad no corrige.
+4. **Seguro de responsabilidad civil**: cotizarlo, puede cambiar los gastos fijos.
+5. **Ingresos brutos**: alícuota según la actividad inscripta y la provincia.
+6. **Stock de D2 y C_F** (§26.1): reservar o elegir equivalentes.
+
+### 26.10 Diferencias con las secciones anteriores
+
+- El costo por unidad coincide con lo estimado antes (§19: ≈ 2,2 USD con 1000;
+  aquí 1,93 + 0,25 locales + rechazos ≈ 2,25 USD).
+- §19.3 decía que el courier no admite uso comercial: corregido. Para lotes de
+  hasta ~2 000 placas, el courier ahorra el despachante.
+- La programación del firmware pasa a hacerse localmente en vez de en JLC.
+
+---
+
+## 27. Tipos de bengala y dónde va el retardador
+
+| Tipo | Cómo funciona | Carga | ¿Lleva retardo? | Precio por unidad |
+|---|---|---|---|---|
+| Bengala de quema en el ala (BIP) | Arde enganchada al ala mientras el avión atraviesa la nube | 75–150 g de yoduro de plata | **No** | ~77–130 USD |
+| **Cartucho eyectable** | Se suelta desde arriba de la nube y cae ardiendo ~30–40 s | ~20 g | **Sí: este es el producto** | **≈ 35–50 USD hoy** |
+| Higroscópica (sal) | Aumento de lluvia, no granizo | — | No | — |
+| Cohete antigranizo terrestre | Se lanza desde tierra (Europa del Este, Asia) | — | Tiene retardo pirotécnico: mercado posible a futuro | — |
+
+Precio del cartucho eyectable:
+
+| Año | Dato | Por unidad | Confianza |
+|---|---|---|---|
+| 2008 | Mendoza, Decreto 3203/08: 5 000 cartuchos a $92,40 (Stroyproject, mínimo 20 g de AgI) | 27–29 USD | Alta (expediente judicial) |
+| ~2016 | 13 000 cartuchos por US$ 455 000 | ~35 USD | Media: fuente original no encontrada, pero coherente con las ofertas de 2016 (§22.2) |
+| 2026 | Ajuste por inflación en dólares | 35–50 USD | Estimado: los fabricantes no publican precios |
+
+Fabricantes de referencia: Ice Crystal Engineering (EE. UU., ICE-EJ de 20 g y
+~37 s de quemado), Stroyproject (Bulgaria, proveedor histórico de Mendoza),
+Weather Modification Inc.
+
+Volumen de referencia fuera de Argentina: Dakota del Norte usa ~800–1 400
+eyectables por año; Alberta usó ~3 800 en 1996. Mendoza, con 3 000–5 500 por
+temporada reciente, es un mercado grande en comparación.
+
+**Pregunta abierta clave:** quién arma el cartucho con el retardador. Si los
+cartuchos llegan armados del exterior, el cliente es el fabricante extranjero
+o el retardador se instala en el rack del avión; si se arman o modifican
+localmente, el cliente es local.
+
+Fuentes de §26 y §27:
+
+- LCSC, API de producto (consulta del 06/11/2026): <https://www.lcsc.com/product-detail/C529415.html> y códigos de §26.1
+- JLCPCB, precios de armado: <https://jlcpcb.com/help/article/pcb-assembly-price>
+- ARCA, simplificación de envíos por courier: <https://servicioscf.afip.gob.ar/publico/sitio/contenido/novedad/ver.aspx?id=4509>
+- Expediente judicial Mendoza (Decreto 3203/08): <https://www2.jus.mendoza.gov.ar/listas/proveidos/vertexto.php?ide=6057204562>
+- Gobierno de Mendoza, ofertas de 2016: <https://www.mendoza.gov.ar/prensa/tres-empresas-presentaron-ofertas-para-la-lucha-antigranizo/>
+- Ice Crystal Engineering, productos: <https://iceflares.com/products/>
+- Dakota del Norte, actas de la junta (2012): <https://www.dwr.nd.gov/arb/board/minutes/pdfs/2012-11-08.pdf>
+- Teverovsky, NASA 2022 (tantalio-polímero): <https://ntrs.nasa.gov/api/citations/20220011323/downloads/Teverovsky-2022-NASA-TP-PST-SPCD.pdf>
+- Teverovsky, NEPP (absorción): <https://nepp.nasa.gov/files/26713/2015-562-Teverovsky-Final-Paper-NEPPweb-TN27957.pdf>
