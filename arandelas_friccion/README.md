@@ -163,3 +163,6 @@ Par según Shigley, ec. 8-26: T = Fi·[dm/2·(l+πf·dm·secα)/(πdm−f·l·se
 Llave hexagonal de 3 mm: par de prueba mínimo ≈ 7,6 N·m (ISO 2351-3:2002 / ISO 2936). El hexágono de un tornillo de 304 suele redondearse antes que la llave.
 Rosca del eslabón de Al 7075 (6 mm de encastre, 7,5 hilos): cizalla τ ≈ 3F/(π·d·n·p) → aguanta más de 8000 N. No limita.
 Fuerza axial: F = T/(K·d) ≈ **690 N por cada N·m** en seco (870 N/N·m con f = 0,15).
+
+**Peor caso, A2-50.** El cuello de Ø3,9 empieza a fluir durante el apriete con unos 1640 N (2,4 N·m con K = 0,29). En seco, K varía entre 0,23 y 0,35. Con **1,8 N·m** en la Allen, la precarga queda entre 1030 y 1570 N, siempre por debajo de la fluencia. **Apriete máximo recomendado: 1,8 N·m (≈ 1500 N como máximo).**
+Con ese apriete, el diseño de dos orejas (A 301 duro de 0,5 mm, B C5210 de 1,0 mm) da una demanda máxima de 4,5 N·m por arandela (μ 0,35), frente a 5,4 N·m de capacidad de A, así que desliza antes de deformar. Traba: entre 4,2 y 11,2 N·m.
