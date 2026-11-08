@@ -114,3 +114,12 @@ Dimensionado en seco: oreja de 2 mm, nivel 2 / 1,25, 6 arandelas, K ≈ 0,3 en s
 | 420 templado | inox / inox (no recomendado) | 0,30–0,60 | 540 N | ≈ 0,8 N·m | 3,3–6,6 N·m al inicio, después impredecible |
 
 La traba máxima la fija la capacidad de A, no μ. μ solo abre o cierra el rango. Para subir la traba mínima garantizada, la palanca es **agregar pares de arandelas**: cada par A+B suma unos 1,2–1,5 N·m. Los valores de μ en seco son bibliográficos y conviene medirlos con un ensayo simple (par de deslizamiento frente a apriete) antes de fijar la precarga.
+
+### Especificación para el pedido (RapidDirect u otro proveedor)
+| | Arandela A | Arandela B |
+|---|---|---|
+| Material | **SUS301-CSP H** (AISI 301 duro, HV ≥ 430, Rp0,2 ≥ 965 MPa), con certificado de material | **C5210-H/EH** (CuSn8 duro, JIS) o C5191-H (CuSn6), con certificado de material |
+| Espesor | 0,50 ± 0,02 mm, planitud ≤ 0,05 mm | igual |
+| Proceso | **Electroerosión por hilo** apilando chapas, o láser de fibra con N₂ y potencia baja. Sin temple posterior, porque el material ya viene duro | Electroerosión por hilo (el cobre refleja el láser y los bordes quedan peores) |
+| Detalles críticos | Oreja de 8,5 mm, ancho 5 −0/+0,02, **radio R0,4 en la raíz** | Caras de 11 −0,02/−0,05 |
+| Rebaba | ≤ 0,03 mm, sin rebaba en las caras de fricción. Sin tamboreo agresivo, que redondea el canto de la oreja | igual |
