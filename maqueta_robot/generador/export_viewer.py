@@ -13,6 +13,6 @@ for j in D['joints']:
     hw.append(dict(part=j['hs'], kind='screw', m=enc(screw_mesh(O,sd,j['s_head'],j['L']))))
     hw.append(dict(part=j['ns'], kind='nut',   m=enc(nut_mesh(O,sd,j['nut_s']+0.15,j['slot_ang']))))
     joints.append(dict(n=j['n'],parent=j['parent'],child=j['child'],O=list(map(float,O)),a=list(map(float,j['a'])),
-        L=int(j['L']),head=j['hs'],nut=j['ns'],rng=RNG[j['n']]))
+        L=int(j['L']),rs=float(j['rs']),hsp=float(j['hsp']),head=j['hs'],nut=j['ns'],rng=([-360,360] if RNG[j['n']]==[-360,360] else [max(-180,RNG[j['n']][0]),min(180,RNG[j['n']][1])])))
 json.dump(dict(parts=parts,joints=joints,hw=hw),open(sys.argv[3],'w'))
 print('ok', os.path.getsize(sys.argv[3]))

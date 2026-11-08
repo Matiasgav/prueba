@@ -48,6 +48,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .tog input{accent-color:var(--accent);width:16px;height:16px}
 .slider2{display:grid;grid-template-columns:auto minmax(0,1fr) 46px;gap:10px;align-items:center;font-size:13px}
 .slider2 input{accent-color:var(--accent)}
+.slider2 select{grid-column:2 / 4;font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:5px;min-width:0}
 table{width:100%;border-collapse:collapse;font-size:12.5px}
 th,td{text-align:left;padding:5px 4px;border-bottom:1px solid var(--line);vertical-align:top}
 th{font-weight:600;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
@@ -86,16 +87,18 @@ td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:now
       <label class="tog"><input type="checkbox" id="hwv" checked> Mostrar tornillos y tuercas</label>
       <label class="tog"><input type="checkbox" id="axes"> Mostrar ejes de giro</label>
       <label class="tog"><input type="checkbox" id="nolim"> Ignorar límites de choque</label>
+      <div class="slider2" style="margin-top:6px"><span>Corte</span><select id="cutax" aria-label="Plano de corte"><option value="">Sin corte</option><option value="y">Plano XZ (corta J1, J4, J6 por el eje)</option><option value="z">Plano XY (horizontal)</option><option value="x">Plano YZ</option></select><span></span></div>
+      <div class="slider2"><span>Posición</span><input type="range" id="cutpos" min="-150" max="300" step="0.5" value="0"><span class="val" id="cutv">0 mm</span></div>
       <div class="slider2" style="margin-top:6px"><span>Despiece</span><input type="range" id="explode" min="0" max="25" step="0.5" value="0"><span class="val" id="exv">0 mm</span></div>
     </section>
     <section class="sec">
       <h2>Tornillería por eje</h2>
-      <div style="overflow-x:auto"><table id="bom"><thead><tr><th>Eje</th><th>Tornillo</th><th>Cabeza en</th><th>Tuerca en</th></tr></thead><tbody></tbody></table></div>
-      <p class="note" style="margin-top:8px">Cada eje lleva 1 tornillo M3 cabeza avellanada (ISO 10642 / DIN 7991) y 1 tuerca autoblocante M3 (DIN 985) que entra por una ranura lateral. Agujero pasante 3,4 mm, avellanado a 90° de Ø6,7 y holgura entre caras de 0,4 mm.</p>
+      <div style="overflow-x:auto"><table id="bom"><thead><tr><th>Eje</th><th>Encastre</th><th>Tornillo</th><th>Cabeza / embocadura</th><th>Tuerca / saliente</th></tr></thead><tbody></tbody></table></div>
+      <p class="note" style="margin-top:8px">Cada eje gira sobre un encastre: un saliente cilíndrico en una pieza entra en una embocadura de la otra (holgura radial 0,2 mm, 0,3 mm al fondo, 0,4 mm entre caras). El tornillo M3 cabeza avellanada (ISO 10642) solo aprieta en sentido axial: en la pieza que gira pasa por un agujero de Ø4,0, sin tocar, y se rosca en una tuerca autoblocante M3 (DIN 985) que entra por una ranura lateral en la pieza del saliente.</p>
     </section>
     <section class="sec">
       <h2>Qué cambió respecto del CAD</h2>
-      <p class="note">Escala 1:6 sobre la cinemática DH (d1 450, a1 75, a2 640, a3 195, d4 700, d6 75). Se quitaron los cables, soportes de cable y textos en relieve. Cada eslabón es un único sólido; los huecos internos se rellenaron. En cada eje se agregó un buje macizo, caras planas de apoyo y despeje cilíndrico. El cabezal RayTools BT220 y su placa quedan fundidos con la brida J6.</p>
+      <p class="note">Escala 1:6 sobre la cinemática DH (d1 450, a1 75, a2 640, a3 195, d4 700, d6 75). Se quitaron los cables, soportes de cable y textos en relieve. Cada eslabón es un único sólido; los huecos internos se rellenaron. En cada eje se agregó un buje macizo, caras planas de apoyo, el encastre saliente/embocadura y despeje cilíndrico. El cabezal RayTools BT220 queda a 90°, con la boquilla hacia abajo: su brida lateral se apoya sobre la planchuela de la brida J6, y todo el conjunto se imprime como una sola pieza.</p>
     </section>
   </aside>
 </div>
@@ -111,6 +114,8 @@ const ORDER=['base','j1','j2','j3','j4','j5','j6'];
 
 const stage=document.getElementById('stage');
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+renderer.localClippingEnabled=true;
+const cutPlane=new THREE.Plane(new THREE.Vector3(0,-1,0),0); const clip=[];
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 stage.prepend(renderer.domElement);
 const scene=new THREE.Scene();
@@ -147,12 +152,12 @@ for(const n of ORDER){
     host=off;
   }
   containers[n]=host;
-  const mat=new THREE.MeshStandardMaterial({color:COL[n],roughness:0.55,metalness:n==='j6'?0.35:0.05,flatShading:false,side:THREE.DoubleSide});
+  const mat=new THREE.MeshStandardMaterial({clippingPlanes:clip,color:COL[n],roughness:0.55,metalness:n==='j6'?0.35:0.05,flatShading:false,side:THREE.DoubleSide});
   partMats[n]=mat;
   const me=new THREE.Mesh(geo(D.parts[n]),mat); host.add(me); meshes[n]=me;
 }
-const screwMat=new THREE.MeshStandardMaterial({color:0xc9ced3,metalness:0.85,roughness:0.3});
-const nutMat=new THREE.MeshStandardMaterial({color:0x2b6cb0,metalness:0.5,roughness:0.4});
+const screwMat=new THREE.MeshStandardMaterial({clippingPlanes:clip,color:0xc9ced3,metalness:0.85,roughness:0.3});
+const nutMat=new THREE.MeshStandardMaterial({clippingPlanes:clip,color:0x2b6cb0,metalness:0.5,roughness:0.4});
 for(const h of D.hw){const m=new THREE.Mesh(geo(h.m),h.kind==='screw'?screwMat:nutMat); m.renderOrder=2; containers[h.part].add(m); hwMeshes.push(m);}
 document.getElementById('loading').remove();
 
@@ -179,10 +184,17 @@ for(const j of D.joints){
 }
 nolim.addEventListener('change',()=>{for(const j of D.joints){const s=document.getElementById('s_'+j.n); s.min=nolim.checked?-180:j.rng[0]; s.max=nolim.checked?180:j.rng[1];} update();});
 const bom=document.querySelector('#bom tbody');
-bom.innerHTML=D.joints.map(j=>`<tr><td><b>${j.n}</b></td><td class="n">M3×${j.L}</td><td>${NAMES[j.head].replace(/ \(.*/,'')}</td><td>${NAMES[j.nut].replace(/ \(.*/,'')}</td></tr>`).join('')+
- `<tr><td colspan="4" class="n">Total: ${D.joints.length} tornillos (${Object.entries(D.joints.reduce((a,j)=>(a[j.L]=(a[j.L]||0)+1,a),{})).map(([l,c])=>`${c}× M3×${l}`).join(', ')}) + ${D.joints.length} tuercas DIN 985</td></tr>`;
+bom.innerHTML=D.joints.map(j=>`<tr><td><b>${j.n}</b></td><td class="n">Ø${(2*j.rs).toFixed(0)}×${j.hsp}</td><td class="n">M3×${j.L}</td><td>${NAMES[j.head].replace(/ \(.*/,'')}</td><td>${NAMES[j.nut].replace(/ \(.*/,'')}</td></tr>`).join('')+
+ `<tr><td colspan="5" class="n">Total: ${D.joints.length} tornillos (${Object.entries(D.joints.reduce((a,j)=>(a[j.L]=(a[j.L]||0)+1,a),{})).map(([l,c])=>`${c}× M3×${l}`).join(', ')}) + ${D.joints.length} tuercas DIN 985</td></tr>`;
 
 let explode=0;
+const cutax=document.getElementById('cutax'), cutpos=document.getElementById('cutpos');
+function setCut(){const a=cutax.value; clip.length=0;
+  if(a){const nrm={x:[-1,0,0],y:[0,1,0],z:[0,0,-1]}[a]; cutPlane.normal.set(...nrm); cutPlane.constant=(a==='y'?-1:1)*(+cutpos.value); clip.push(cutPlane);}
+  document.getElementById('cutv').textContent=cutpos.value+' mm';
+  for(const m of [...Object.values(partMats),screwMat,nutMat]){m.clippingPlanes=clip.length?clip:null;m.needsUpdate=true;}}
+cutax.addEventListener('change',()=>{ if(cutax.value==='y'){cutpos.value=0;} setCut();});
+cutpos.addEventListener('input',setCut);
 const status=document.getElementById('status');
 function update(){
   let out=[];
