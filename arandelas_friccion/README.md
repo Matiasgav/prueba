@@ -166,3 +166,14 @@ Fuerza axial: F = T/(K·d) ≈ **690 N por cada N·m** en seco (870 N/N·m con f
 
 **Peor caso, A2-50.** El cuello de Ø3,9 empieza a fluir durante el apriete con unos 1640 N (2,4 N·m con K = 0,29). En seco, K varía entre 0,23 y 0,35. Con **1,8 N·m** en la Allen, la precarga queda entre 1030 y 1570 N, siempre por debajo de la fluencia. **Apriete máximo recomendado: 1,8 N·m (≈ 1500 N como máximo).**
 Con ese apriete, el diseño de dos orejas (A 301 duro de 0,5 mm, B C5210 de 1,0 mm) da una demanda máxima de 4,5 N·m por arandela (μ 0,35), frente a 5,4 N·m de capacidad de A, así que desliza antes de deformar. Traba: entre 4,2 y 11,2 N·m.
+
+### Alternativa: inox/inox, menos arandelas y más gruesas (F 1030–1570 N, μ seco 0,3–0,6)
+La traba vale n_interfaces·μ·F·r_eff. Como F está limitada por el tornillo, **el espesor no aumenta la traba: solo permite soportar un μ más alto.** Sacar arandelas reduce la traba en la misma proporción.
+
+| Paquete | Interfaces | Traba [N·m] | Demanda máx. por arandela | Capacidad (1,0 mm, 301 duro) |
+|---|---|---|---|---|
+| Bronce: 3 A de 0,5 + 3 B de 1,0 (4,5 mm) | 5 | 4,2–11,2 | 4,5 N·m | – |
+| Inox 1,0 mm, A-B-A-B (4 mm) | 3 | 3,8–11,5 | 7,7 N·m | A 10,8 / B 10,2 ✔ |
+| Inox 1,0 mm, A-B-A-B-A (5 mm) | 4 | 5,0–15,4 | 7,7 N·m | ✔ |
+
+Estructuralmente funciona con 1,0 mm. El riesgo es el **gripado**: μ puede pasar de 0,6 con el uso y la articulación desliza a saltos. Para mitigarlo, usar durezas distintas (A en 301 duro, B en 420 templado o 17-4PH H900), granallar las caras y validar con un ensayo de ciclos.
