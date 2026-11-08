@@ -211,3 +211,5 @@ Con la altura fija, la traba máxima que desliza antes de deformar es n_caras·C
 (inox/inox, μ 0,3–0,6, factor de seguridad 1,25 sobre el nivel 2). Con B de bronce, μ máx más bajo permite más F, pero B debería tener unos 0,85 mm y A bajar a 1,05 mm; la traba máxima queda igual, unos 9 N·m.
 
 **Elegida:** horquilla, A-B-A. A: SUS301-CSP H de 1,2 mm, una oreja. B: 420 templado o 17-4PH de 0,6 mm. Apriete de 1,1 N·m con dinamométrico, o Belleville a 950 N. El tornillo queda holgado: 950 N frente a 1640 N.
+
+**Sin Belleville** (no entra o no aporta): el apriete se controla solo por par, **1,1 N·m con destornillador dinamométrico** → F 630–950 N → traba **3,1–9,3 N·m**. Para reducir la dispersión de K sin lubricar las arandelas: fijador de roscas de media resistencia **solo en la rosca**. Da un K más repetible y además evita que el tornillo se afloje.
