@@ -177,3 +177,13 @@ La traba vale n_interfaces·μ·F·r_eff. Como F está limitada por el tornillo,
 | Inox 1,0 mm, A-B-A-B-A (5 mm) | 4 | 5,0–15,4 | 7,7 N·m | ✔ |
 
 Estructuralmente funciona con 1,0 mm. El riesgo es el **gripado**: μ puede pasar de 0,6 con el uso y la articulación desliza a saltos. Para mitigarlo, usar durezas distintas (A en 301 duro, B en 420 templado o 17-4PH H900), granallar las caras y validar con un ensayo de ciclos.
+
+## Configuración adoptada (confirmada)
+- Paquete **eslabón | A-B-A-B | eslabón**, con **5 caras que deslizan**: 3 entre arandelas y 2 contra las caras de los eslabones. La cabeza del tornillo apoya sobre una pieza que gira con el eslabón en el que va roscado.
+- A: dos orejas opuestas, encastre de 2 mm (punta en 8,5 mm, pared en r ≥ 6,5), raíz con R0,4. **SUS301-CSP H, 1,0 mm.**
+- B: caras de 11 mm. **Inox de 1,0 mm con dureza distinta de la de A** (420 templado o 17-4PH H900). Caras granalladas.
+- Caras de Al 7075 en contacto: **anodizado duro tipo III**, apoyo de Ø6 a Ø10 como mínimo.
+- Tornillo Accu SSHE-M5-6 A2 (peor caso A2-50): **1,8 N·m** → F = 1030–1570 N.
+- μ seco 0,3–0,6. Demanda máxima por arandela: 7,7 N·m. Capacidad: A 10,8 N·m y B 10,2 N·m, **desliza antes de deformar**.
+- **Traba de la articulación: 6,3–19,2 N·m.**
+- Pendiente: ensayo de ~100 ciclos a 1,8 N·m para medir μ real y comprobar que no gripa.
