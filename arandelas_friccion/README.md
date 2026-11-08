@@ -137,3 +137,12 @@ Seco, μ 0,20–0,35, K = 0,3, nivel 2 / 1,25:
 | 2 orejas, 301 duro, 0,5 mm | 5,4 | 1500 N | 2,3 N·m | 6,1–10,8 N·m |
 | 2 orejas, 420, 0,5 mm (limita el Al) | 6,6 | 1850 N | 2,8 N·m | 7,6–13,2 N·m |
 | 2 orejas, 420, 0,8 mm | 10,5 | limita el tornillo, ≈ 2300 N | 3,5 N·m | 9,5–16,6 N·m |
+
+### Materiales para la versión de dos orejas (apriete ≈ 2,3 N·m, F ≈ 1500 N, seco)
+Con F = 1500 N y μ = 0,35, cada arandela intermedia tiene que transmitir **4,3 N·m**. Eso vale también para las **B**. Con este apriete, la B de bronce de 0,5 mm pasa a ser la débil: el cuerpo está a 190 MPa por N·m, lo que da unos 3,2 N·m de capacidad con CuSn8 (Rp0,2 ≈ 600 MPa).
+
+| Arandela | Opción recomendada | Capacidad (nivel 2) | Admisible / 1,25 |
+|---|---|---|---|
+| A (2 orejas) | SUS301-CSP H, 0,5 mm | 5,4 N·m | 4,3 N·m ✔ (justo) |
+| B | **CuBe2 (C17200) envejecido**, Rp0,2 ≈ 1000 MPa, 0,5 mm | ≈ 5,3 N·m (limita el Al) | 4,2 N·m ✔ (justo) |
+| B (alternativa) | **CuSn8 C5210-H de 1,0 mm** | ≈ 6,3 N·m | 5,0 N·m ✔ |
