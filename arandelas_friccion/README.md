@@ -221,3 +221,15 @@ Con 3 mm de altura: **A 1,0 mm + B 0,5 mm + A 1,0 mm + B 0,5 mm**.
 - Capacidad por arandela: A 4,8 N·m, B 5,1 N·m. Con factor de seguridad 1,25 y μ máx 0,6, la precarga máxima es 790 N.
 - Apriete: **0,9 N·m con dinamométrico** (520–790 N). Traba: **3,2–9,7 N·m**.
 - La cabeza roza contra el brazo y le aplica al tornillo 1,0–1,9 N·m al girar la articulación. Para evitar que se afloje o se sobreapriete: arandela de bronce o PTFE bajo la cabeza (dentro del avellanado) y fijador de roscas de alta resistencia.
+
+### Fabricación de las arandelas (configuración final: A 1,0 mm SUS301-CSP H, B 0,5 mm 17-4PH H900)
+| Etapa | A (1,0 mm, una oreja) | B (0,5 mm) |
+|---|---|---|
+| Material | Fleje o chapa SUS301-CSP H, ya duro | Chapa 17-4PH en condición A (solubilizada) |
+| Corte | **Electroerosión por hilo** apilando 10–20 chapas entre placas de sacrificio, sin calentar el canto de la oreja. Alternativa: láser de fibra con N₂ + desbarbado | Electroerosión por hilo, o **fotograbado químico** para series (sin rebaba ni tensiones) |
+| Tratamiento | Ninguno | Envejecido H900 (482 °C, 1 h, aire) después de cortar: distorsión mínima, llega a ~40 HRC |
+| Planitud | ≤ 0,05 mm. Si no se cumple, lapeado o rectificado de doble disco | igual |
+| Caras | Desbarbado sin redondear el canto de la oreja | Granallado fino de ambas caras |
+| Final | **Pasivado** (cítrico o nítrico) después del corte y el granallado | igual |
+| Cotas críticas | Agujero Ø6,05 +0,03/0 · oreja 5,00 −0,02/−0,05 · punta 8,0 · R0,4 en la raíz | Agujero Ø6,05 +0,03/0 · caras 11,00 −0,02/−0,05 |
+Ranuras del Al 7075: ranura de la oreja de 5,00 +0,02/0; alojamiento de la B de 11,00 +0,02/0.
