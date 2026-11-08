@@ -213,3 +213,11 @@ Con la altura fija, la traba máxima que desliza antes de deformar es n_caras·C
 **Elegida:** horquilla, A-B-A. A: SUS301-CSP H de 1,2 mm, una oreja. B: 420 templado o 17-4PH de 0,6 mm. Apriete de 1,1 N·m con dinamométrico, o Belleville a 950 N. El tornillo queda holgado: 950 N frente a 1640 N.
 
 **Sin Belleville** (no entra o no aporta): el apriete se controla solo por par, **1,1 N·m con destornillador dinamométrico** → F 630–950 N → traba **3,1–9,3 N·m**. Para reducir la dispersión de K sin lubricar las arandelas: fijador de roscas de media resistencia **solo en la rosca**. Da un K más repetible y además evita que el tornillo se afloje.
+
+## Configuración real (según el CAD): brazo | A-B-A-B | carcasa
+Cabeza del tornillo en un avellanado del brazo (que arrastra las B por las caras de 11 mm), rosca en la carcasa (que arrastra las A por la oreja). No hay horquilla. Hay **5 caras que deslizan**: brazo/A, A/B, B/A, A/B y B/carcasa.
+
+Con 3 mm de altura: **A 1,0 mm + B 0,5 mm + A 1,0 mm + B 0,5 mm**.
+- Capacidad por arandela: A 4,8 N·m, B 5,1 N·m. Con factor de seguridad 1,25 y μ máx 0,6, la precarga máxima es 790 N.
+- Apriete: **0,9 N·m con dinamométrico** (520–790 N). Traba: **3,2–9,7 N·m**.
+- La cabeza roza contra el brazo y le aplica al tornillo 1,0–1,9 N·m al girar la articulación. Para evitar que se afloje o se sobreapriete: arandela de bronce o PTFE bajo la cabeza (dentro del avellanado) y fijador de roscas de alta resistencia.
