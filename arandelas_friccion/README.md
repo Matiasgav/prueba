@@ -233,3 +233,25 @@ Con 3 mm de altura: **A 1,0 mm + B 0,5 mm + A 1,0 mm + B 0,5 mm**.
 | Final | **Pasivado** (cítrico o nítrico) después del corte y el granallado | igual |
 | Cotas críticas | Agujero Ø6,05 +0,03/0 · oreja 5,00 −0,02/−0,05 · punta 8,0 · R0,4 en la raíz | Agujero Ø6,05 +0,03/0 · caras 11,00 −0,02/−0,05 |
 Ranuras del Al 7075: ranura de la oreja de 5,00 +0,02/0; alojamiento de la B de 11,00 +0,02/0.
+
+## Verificación con el modelo real (STEP 02489-00-M40000, una articulación)
+Geometría leída del STEP:
+- Paquete apoyado en el fondo del alojamiento (y = 79,75): A1 · B1 · A2 · B2 · A3 · B3 (A 1,0 mm, M40006; B 0,5 mm, M40005) + arandela redonda M40007 de 0,5 mm.
+- Las **B** van retenidas por el **alojamiento de este eslabón**: caras z = ±5,5 con paredes de Al de **1,0 mm**, perfil del fondo con chaflanes y R5,5 de **0,5–0,75 mm**. El alojamiento está **abierto** del lado de la oreja en los 4,5 mm del paquete.
+- Las **A** (oreja de 2,5 mm, punta a 8,0) se enganchan al otro eslabón.
+- 7 caras que deslizan: fondo/A1, cinco A/B y B3/M40007/otro eslabón.
+
+FEA 2D con los contornos exactos (`fea/fea_real.py`), por N·m con t = 0,5:
+- A: σ del cuerpo 361 MPa, aplastamiento medio en la pared del otro eslabón 191 MPa. Con 1,0 mm, unos 4,8 N·m.
+- B, apoyada en el perfil real del alojamiento: σ del cuerpo 213 MPa, unos 4,5 N·m (301 duro).
+
+FEA 3D del extremo del eslabón (`fea/fea_eslabon_3d.py`, tetraedros P2, Al 7075). Carga: las 3 B con 1 N·m cada una, con las fuerzas de contacto del FEA 2D repartidas en 0,4 mm. Resultado en `fea/post_eslabon.py`:
+
+| Variante | σ máx. lejos del contacto | Apertura del alojamiento | Par adm. por B (460 MPa) |
+|---|---|---|---|
+| Actual | 1510 MPa | 0,22 mm | **0,31 N·m** |
+| Paredes de 2 mm | 1110 MPa | 0,11 mm | 0,42 N·m |
+| Puentes en el lado abierto, a la altura de cada B | 1165 MPa | 0,18 mm | 0,39 N·m |
+| Paredes de 2 mm + puentes | 1000 MPa | 0,09 mm | 0,46 N·m |
+
+**Conclusión:** el alojamiento de pared delgada aguanta unas 15 veces menos que las arandelas. Con la geometría actual, la traba máxima que desliza antes de deformar es de unos 0,85 N·m. Engrosar o cerrar las paredes da como mucho un factor 1,5, y el punto débil pasa al fondo de 0,5–0,75 mm. **Hay que sacar el arrastre de las B de las paredes**: B con agujero doble D sobre un buje con planos anclado en el cuerpo macizo del eslabón, como en un embrague multidisco. Así la traba vuelve a quedar limitada por las arandelas, unos 12 N·m (estimación, falta verificar).
