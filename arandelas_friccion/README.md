@@ -123,3 +123,17 @@ La traba máxima la fija la capacidad de A, no μ. μ solo abre o cierra el rang
 | Proceso | **Electroerosión por hilo** apilando chapas, o láser de fibra con N₂ y potencia baja. Sin temple posterior, porque el material ya viene duro | Electroerosión por hilo (el cobre refleja el láser y los bordes quedan peores) |
 | Detalles críticos | Oreja de 8,5 mm, ancho 5 −0/+0,02, **radio R0,4 en la raíz** | Caras de 11 −0,02/−0,05 |
 | Rebaba | ≤ 0,03 mm, sin rebaba en las caras de fricción. Sin tamboreo agresivo, que redondea el canto de la oreja | igual |
+
+### ¿Se puede apretar más? Variante A con dos orejas opuestas (`fea/fea_dos_orejas.py`)
+El par que tiene que aguantar cada arandela es 2·μ·F·r_eff y crece con el apriete. Agregar arandelas no lo reduce. Para apretar más hay que subir la capacidad de A.
+- **Dos orejas opuestas** (encastre 2 mm cada una) forman un par de fuerzas. Por N·m: 70 N por oreja (antes 139), vástago casi descargado, σvM del cuerpo 178 MPa y aplastamiento medio en el Al de 70 MPa. **La capacidad se duplica.**
+- **Espesor:** en tensión plana todas las tensiones escalan con 1/t, así que 0,8 mm da ×1,6.
+
+Seco, μ 0,20–0,35, K = 0,3, nivel 2 / 1,25:
+
+| A | Cap. [N·m] | F máx | Apriete Allen | Traba (6 arandelas) |
+|---|---|---|---|---|
+| 1 oreja, 420, 0,5 mm | 3,3 | 920 N | 1,4 N·m | 3,8–6,6 N·m |
+| 2 orejas, 301 duro, 0,5 mm | 5,4 | 1500 N | 2,3 N·m | 6,1–10,8 N·m |
+| 2 orejas, 420, 0,5 mm (limita el Al) | 6,6 | 1850 N | 2,8 N·m | 7,6–13,2 N·m |
+| 2 orejas, 420, 0,8 mm | 10,5 | limita el tornillo, ≈ 2300 N | 3,5 N·m | 9,5–16,6 N·m |
