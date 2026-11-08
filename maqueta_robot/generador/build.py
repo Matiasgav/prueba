@@ -32,6 +32,9 @@ plate = xf(to_mf(trimesh.load(SRC+'planchuela_BT220.stl')), SC @ POSE['tool'])
 HEAD90 = np.array([[1,0,0,d6+15+40.7-0.3],[0,-1,0,4.3],[0,0,-1,195],[0,0,0,1]],float)
 tool = xf(tool, SC @ POSE['j6'] @ HEAD90) + plate
 parts['j6'] = parts['j6'] + tool
+# eslabones macizos: sin cavidades ni bolsillos encerrados
+for n in parts:
+    v0=parts[n].volume(); parts[n]=solidify(parts[n]); parts[n],vc=close_cavities(parts[n]); print('  macizado',n,'+%.0f mm3'%(parts[n].volume()-v0))
 
 # ---------- primitivas ----------
 def frame(a):
