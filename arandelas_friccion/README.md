@@ -96,3 +96,21 @@ Aun así, A sigue siendo la arandela débil: B aguanta aproximadamente el doble.
 - **En seco, μ de 0,2 a 0,4:** F ≤ 640 N. La traba queda entre solo 1,3 y 2,6 N·m.
 
 Una banda de μ estrecha (lubricado) asegura **más** traba que en seco. La precarga de unos 1400 N se da mejor con una Belleville calibrada y el tornillo de hombro haciendo tope. Con llave dinamométrica serían unos 1,3 N·m, con K = 0,18 lubricado.
+
+### Variante sin lubricar (pares de materiales distintos)
+En seco, el inox contra inox **gripa**: μ sube con los ciclos (de 0,3 hasta más de 0,6), arranca material y termina superando la capacidad de las orejas. La alternativa sin grasa es un **par disímil**:
+
+| Arandela | Material propuesto | Por qué |
+|---|---|---|
+| A (la débil, limita la oreja) | **AISI 301 duro** o **420 templado** | Resistencia de 965 a 1350 MPa, por encima de la cual manda el Al 7075 |
+| B (le sobra capacidad) | **Bronce fosforoso CuSn8 duro** (Rp0,2 ≈ 600 MPa) o **CuBe2 templado** (≈ 1000 MPa, más caro) | No gripa contra inox, μ en seco más estable (≈ 0,20–0,35). B en CuSn8 aguanta 3,2 N·m en nivel 2, más que A |
+
+Dimensionado en seco: oreja de 2 mm, nivel 2 / 1,25, 6 arandelas, K ≈ 0,3 en seco.
+
+| A | Par | μ | F máx | Apriete | Traba |
+|---|---|---|---|---|---|
+| 301 duro | inox / CuSn8 | 0,20–0,35 | 740 N | ≈ 1,1 N·m | 3,0–5,3 N·m |
+| 420 templado | inox / CuSn8 | 0,20–0,35 | 920 N | ≈ 1,4 N·m | 3,8–6,6 N·m |
+| 420 templado | inox / inox (no recomendado) | 0,30–0,60 | 540 N | ≈ 0,8 N·m | 3,3–6,6 N·m al inicio, después impredecible |
+
+La traba máxima la fija la capacidad de A, no μ. μ solo abre o cierra el rango. Para subir la traba mínima garantizada, la palanca es **agregar pares de arandelas**: cada par A+B suma unos 1,2–1,5 N·m. Los valores de μ en seco son bibliográficos y conviene medirlos con un ensayo simple (par de deslizamiento frente a apriete) antes de fijar la precarga.
