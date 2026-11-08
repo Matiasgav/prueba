@@ -146,3 +146,20 @@ Con F = 1500 N y μ = 0,35, cada arandela intermedia tiene que transmitir **4,3 
 | A (2 orejas) | SUS301-CSP H, 0,5 mm | 5,4 N·m | 4,3 N·m ✔ (justo) |
 | B | **CuBe2 (C17200) envejecido**, Rp0,2 ≈ 1000 MPa, 0,5 mm | ≈ 5,3 N·m (limita el Al) | 4,2 N·m ✔ (justo) |
 | B (alternativa) | **CuSn8 C5210-H de 1,0 mm** | ≈ 6,3 N·m | 5,0 N·m ✔ |
+
+### Tornillo: Accu SSHE-M5-6-xx-A2 (método Shigley, cap. 8)
+Datos del fabricante: hombro Ø6 (+0/−0,025), M5×0,8, rosca de 6 mm, cabeza Ø10×5, **hexágono 3 mm**, acero A2 (304), "no estandarizado". **No declara la clase resistente.** Mecanizado desde barra, puede estar entre A2-50 y A2-70.
+
+Par según Shigley, ec. 8-26: T = Fi·[dm/2·(l+πf·dm·secα)/(πdm−f·l·secα) + fc·dc/2]. Valores: dm = 4,48, dc = 8,1, α = 30°.
+- f = 0,15 → K = 0,23. f = 0,20 (inox en seco) → **K = 0,29**. El 45 % del par va a la rosca y produce torsión en el vástago.
+- Tensión combinada en el apriete (von Mises): σ = Fi/A, τ = 16·T_rosca/(π·d³).
+- A = At = 14,2 mm². El cuello bajo el hombro (supuesto Ø3,9, no publicado) da 11,9 mm².
+
+| Clase | Precarga Shigley 0,75·At·Sp | Par (K 0,29) | Fluencia en el cuello | Rotura aprox. (cuello) |
+|---|---|---|---|---|
+| A2-70 (Rp 450 / Rm 700) | 4070 N | 6,0 N·m | 5,1 N·m (3500 N) | ≈ 8 N·m |
+| A2-50 (Rp 210 / Rm 500) | 1900 N | 2,8 N·m | 2,4 N·m (1640 N) | ≈ 5,7 N·m |
+
+Llave hexagonal de 3 mm: par de prueba mínimo ≈ 7,6 N·m (ISO 2351-3:2002 / ISO 2936). El hexágono de un tornillo de 304 suele redondearse antes que la llave.
+Rosca del eslabón de Al 7075 (6 mm de encastre, 7,5 hilos): cizalla τ ≈ 3F/(π·d·n·p) → aguanta más de 8000 N. No limita.
+Fuerza axial: F = T/(K·d) ≈ **690 N por cada N·m** en seco (870 N/N·m con f = 0,15).
