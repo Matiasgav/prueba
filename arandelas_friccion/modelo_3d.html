@@ -1,0 +1,221 @@
+<title>Articulación de fricción</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: plano técnico — visor 3D a la izquierda, ficha de especificación a la derecha (apilado en móvil) */
+:root{
+  --bg:#eef0f2; --panel:#ffffff; --fg:#1b2026; --muted:#5d6670; --line:#d3d8de;
+  --accent:#c2410c; --a:#7d8fa6; --b:#b59a62; --al:#4b5563;
+  --display:"Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --scene:#e3e7eb;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14181d; --panel:#1c2229; --fg:#e6e9ec; --muted:#9aa4ae; --line:#2e3640;
+  --accent:#fb923c; --scene:#1a1f25; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14181d; --panel:#1c2229; --fg:#e6e9ec; --muted:#9aa4ae; --line:#2e3640;
+  --accent:#fb923c; --scene:#1a1f25; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:14px;line-height:1.5}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px;max-width:1280px;margin:0 auto;display:grid;gap:16px}
+header h1{font-family:var(--display);font-weight:700;font-size:1.6rem;margin:0;letter-spacing:-.01em;text-wrap:balance}
+header p{margin:.25rem 0 0;color:var(--muted);max-width:70ch}
+.grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.viewer{align-self:start;background:var(--scene);border:1px solid var(--line);border-radius:6px;position:relative;min-width:0;overflow:hidden}
+#c{display:block;width:100%;height:min(68vh,620px);min-height:340px;touch-action:none}
+.controls{display:flex;flex-wrap:wrap;gap:12px 20px;padding:12px 14px;border-top:1px solid var(--line);background:var(--panel)}
+.controls label{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+.controls input[type=range]{width:140px;accent-color:var(--accent)}
+.controls input[type=checkbox]{accent-color:var(--accent)}
+.hint{position:absolute;left:12px;top:10px;font:500 .72rem var(--mono);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.spec{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px 18px;min-width:0;display:grid;gap:14px;align-content:start}
+.spec h2{font-family:var(--display);font-size:1rem;margin:0;letter-spacing:.02em;text-transform:uppercase}
+dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px}
+dt{font:500 .78rem var(--mono);color:var(--muted);white-space:nowrap}
+dd{margin:0;font-size:.88rem}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.big{font:500 1.5rem var(--mono);font-variant-numeric:tabular-nums}
+.check{border-top:1px solid var(--line);padding-top:12px}
+.check table{width:100%;border-collapse:collapse;font-size:.84rem;font-variant-numeric:tabular-nums}
+.check td{padding:4px 0;border-bottom:1px dashed var(--line)}
+.check td:last-child{text-align:right;font-family:var(--mono)}
+.ok{color:#15803d}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ok{color:#4ade80}}
+:root[data-theme="dark"] .ok{color:#4ade80}
+.note{font-size:.82rem;color:var(--muted);border-left:3px solid var(--accent);padding-left:10px}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Articulación de fricción</h1>
+    <p>Paquete A-B-A-B-A de inox de 1,0 mm en una horquilla de Al 7075, con 6 caras que deslizan. Arrastrá el modelo para girarlo y usá los controles para separar las piezas o girar la articulación.</p>
+  </header>
+  <div class="grid">
+    <div class="viewer">
+      <canvas id="c" aria-label="Modelo 3D de la articulación"></canvas>
+      <div class="hint">arrastrar: girar · rueda: zoom</div>
+      <div class="controls">
+        <label for="explode">Separar <input id="explode" type="range" min="0" max="1" step="0.01" value="0.35"></label>
+        <label for="rot">Giro articulación <input id="rot" type="range" min="-20" max="20" step="1" value="0"></label>
+        <label for="showA"><input id="showA" type="checkbox" checked> Eslabón A</label>
+        <label for="showB"><input id="showB" type="checkbox" checked> Eslabón B</label>
+        <label for="showBolt"><input id="showBolt" type="checkbox" checked> Tornillo</label>
+      </div>
+    </div>
+    <aside class="spec">
+      <h2>Mejor solución</h2>
+      <dl>
+        <dt><span class="sw" style="background:var(--a)"></span>A ×3</dt><dd>Dos orejas opuestas, 5 mm de ancho, 2 mm de encastre (punta a 8,5 mm, pared a 6,5 mm o más), radio de 0,4 mm en la raíz. SUS301-CSP H, 1,0 mm.</dd>
+        <dt><span class="sw" style="background:var(--b)"></span>B ×2</dt><dd>Caras paralelas de 11 mm. Inox de dureza distinta de A (420 templado o 17-4PH H900), 1,0 mm, caras granalladas.</dd>
+        <dt><span class="sw" style="background:var(--al)"></span>Eslabón B</dt><dd>Horquilla de Al 7075: brazo inferior roscado M5, brazo superior que recibe la cabeza y paredes a ±5,5 mm que arrastran las B. Caras de contacto con anodizado duro.</dd>
+        <dt><span class="sw" style="background:#9aa3ad"></span>Eslabón A</dt><dd>Al 7075 entre los brazos de la horquilla, con dos paredes ranuradas para las orejas.</dd>
+        <dt>Tornillo</dt><dd>Accu SSHE-M5-6 A2, Allen de 3 mm, apriete de 1,8 N·m, que da 1030–1570 N.</dd>
+      </dl>
+      <div>
+        <div style="color:var(--muted);font-size:.8rem">Traba de la articulación (6 caras, μ seco 0,3–0,6)</div>
+        <div class="big">7,6 – 23 N·m</div>
+      </div>
+      <div class="check">
+        <table>
+          <tr><td>Par máx. por arandela</td><td>7,7 N·m</td></tr>
+          <tr><td>Capacidad A (2 orejas, 1 mm)</td><td class="ok">10,8 N·m</td></tr>
+          <tr><td>Capacidad B (1 mm)</td><td class="ok">10,2 N·m</td></tr>
+          <tr><td>Tornillo A2-50: fluencia del cuello</td><td class="ok">1640 N &gt; 1570 N</td></tr>
+          <tr><td>Resultado</td><td class="ok">desliza antes de deformar</td></tr>
+        </table>
+      </div>
+      <p class="note">La cabeza del tornillo apoya en el brazo superior de la horquilla, que es del mismo eslabón en el que rosca el tornillo. Así el giro de la articulación no afloja ni sobreaprieta el tornillo.</p>
+    </aside>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35,1,0.5,500);
+camera.up.set(0,0,1);
+camera.position.set(78,-90,62);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.target.set(0,0,2); controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff,0x667080,0.75));
+const dl = new THREE.DirectionalLight(0xffffff,0.8); dl.position.set(30,-20,60); scene.add(dl);
+const dl2 = new THREE.DirectionalLight(0xffffff,0.35); dl2.position.set(-40,30,-20); scene.add(dl2);
+
+const T = 1.0, NW = 5;                     // espesor y número de arandelas (A-B-A-B-A)
+const mat = (c,o={}) => new THREE.MeshStandardMaterial(Object.assign({color:c,metalness:.55,roughness:.38},o));
+const MA = mat(0x7d8fa6), MB = mat(0xb59a62), MBolt = mat(0x9aa3ad,{metalness:.7,roughness:.3});
+const MAlB = mat(0x4b5563,{metalness:.2,roughness:.6,transparent:true,opacity:.55});
+const MAlA = mat(0x9aa3ad,{metalness:.2,roughness:.6,transparent:true,opacity:.45});
+const MFace = new THREE.MeshBasicMaterial({color:0xc2410c,transparent:true,opacity:.55,side:THREE.DoubleSide});
+
+function holeShape(r){const h=new THREE.Path();h.absarc(0,0,r,0,Math.PI*2,true);return h;}
+function extrude(shape,depth,m){return new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:false,curveSegments:48}),m);}
+
+// Arandela B: caras de 11 mm, chaflanes a 20° tangentes a R6
+function shapeB(){
+  const s=new THREE.Shape(), d=Math.PI/180, xf=(6-5.5*Math.sin(20*d))/Math.cos(20*d);
+  const pts=[];
+  for(let a=-20;a<=20;a+=2) pts.push([6*Math.cos(a*d),6*Math.sin(a*d)]);
+  pts.push([xf,5.5],[-xf,5.5]);
+  for(let a=160;a<=200;a+=2) pts.push([6*Math.cos(a*d),6*Math.sin(a*d)]);
+  pts.push([-xf,-5.5],[xf,-5.5]);
+  s.moveTo(...pts[0]); pts.slice(1).forEach(p=>s.lineTo(...p)); s.closePath();
+  s.holes.push(holeShape(3)); return s;
+}
+// Arandela A: dos orejas opuestas, punta 8,5 mm, raíz con R0,4
+function shapeA(){
+  const s=new THREE.Shape(), r=0.4;
+  const sup=[[8.5,2.5],[5.5+r,2.5]];
+  s.moveTo(8.5,-2.5); s.lineTo(8.5,2.5); s.lineTo(5.5+r,2.5);
+  s.quadraticCurveTo(5.5,2.5,5.45,2.5+r);
+  [[5.0,4.07],[1.87,5.31],[0,5.56],[-1.66,5.31],[-5.0,4.07],[-5.45,2.5+r]].forEach(p=>s.lineTo(...p));
+  s.quadraticCurveTo(-5.5,2.5,-5.5-r,2.5);
+  s.lineTo(-8.5,2.5); s.lineTo(-8.5,-2.5); s.lineTo(-5.5-r,-2.5);
+  s.quadraticCurveTo(-5.5,-2.5,-5.45,-2.5-r);
+  [[-5.0,-4.07],[-1.66,-5.31],[0,-5.56],[1.87,-5.31],[5.0,-4.07],[5.45,-2.5-r]].forEach(p=>s.lineTo(...p));
+  s.quadraticCurveTo(5.5,-2.5,5.5+r,-2.5); s.closePath();
+  s.holes.push(holeShape(3)); return s;
+}
+function box(x0,x1,y0,y1,z0,z1,m){const g=new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0);const o=new THREE.Mesh(g,m);o.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);return o;}
+function plateWithHole(R,hole,len,thick,m){
+  const s=new THREE.Shape(); s.moveTo(-R,0); s.absarc(0,0,R,Math.PI,0,true); s.lineTo(R,-len); s.lineTo(-R,-len); s.closePath();
+  if(hole) s.holes.push(holeShape(hole)); return extrude(s,thick,m);
+}
+
+// Grupos que se separan
+const linkA=new THREE.Group(), washersA=new THREE.Group(), washersB=new THREE.Group();
+const linkB=new THREE.Group(), boltG=new THREE.Group(), faces=new THREE.Group();
+scene.add(linkA,washersA,washersB,linkB,boltG,faces);
+const rotA=new THREE.Group(); rotA.add(linkA,washersA); scene.add(rotA);
+
+const H = NW*T; // 5 mm de paquete
+const wA=[], wB=[];
+for(let i=0;i<NW;i++){
+  const isA = i%2===0;
+  const m = extrude(isA?shapeA():shapeB(),T,isA?MA:MB); m.userData.base=i*T; m.userData.i=i;
+  (isA?washersA:washersB).add(m); (isA?wA:wB).push(m);
+}
+// Eslabón B (horquilla, rosca abajo)
+const lower=plateWithHole(10,2.5,24,6,MAlB); lower.position.z=-6; lower.userData.base=-6;
+const upper=plateWithHole(10,3.1,24,4,MAlB); upper.position.z=H; upper.userData.base=H;
+const web=box(-10,10,-26,-22,-6,H+4,MAlB);
+const wall1=box(-4.4,4.4,5.6,7.6,0,H,MAlB), wall2=box(-4.4,4.4,-7.6,-5.6,0,H,MAlB);
+linkB.add(lower,upper,web,wall1,wall2);
+// Eslabón A: paredes ranuradas + anillo + brazo
+const ring=(()=>{const s=new THREE.Shape();s.absarc(0,0,13.5,0,Math.PI*2,false);s.holes.push(holeShape(11.2));return extrude(s,H,MAlA);})();
+const blkR=box(6.5,11.5,-3.6,3.6,0,H,MAlA), blkL=box(-11.5,-6.5,-3.6,3.6,0,H,MAlA);
+const arm=box(13,34,-5,5,0,H,MAlA);
+linkA.add(ring,blkR,blkL,arm);
+// Tornillo de hombro
+const head=new THREE.Mesh(new THREE.CylinderGeometry(5,5,5,48),MBolt); head.rotation.x=Math.PI/2;
+const hex=new THREE.Mesh(new THREE.CylinderGeometry(1.73,1.73,0.6,6),new THREE.MeshStandardMaterial({color:0x111418})); hex.rotation.x=Math.PI/2;
+const shoulder=new THREE.Mesh(new THREE.CylinderGeometry(3,3,H+4+0,48),MBolt); shoulder.rotation.x=Math.PI/2;
+const thread=new THREE.Mesh(new THREE.CylinderGeometry(2.5,2.5,6,24),mat(0x8b939c,{roughness:.6})); thread.rotation.x=Math.PI/2;
+boltG.add(head,hex,shoulder,thread);
+// Caras que deslizan (6): entre brazos de la horquilla y el paquete, y entre arandelas
+const faceZ=[0,1,2,3,4,5];
+faceZ.forEach(z=>{const r=new THREE.Mesh(new THREE.RingGeometry(3.05,5,48),MFace);r.userData.base=z;faces.add(r);});
+
+function layout(){
+  const e=+document.getElementById('explode').value, g=e*5;
+  // cada arandela i se separa g*(i+1); caras entre ellas a mitad del hueco
+  [...wA,...wB].forEach(m=>{const i=m.userData.i;m.position.z=i*T+g*(i+1);});
+  lower.position.z=-6; web.scale.z=1;
+  upper.position.z=H+g*(NW+1);
+  wall1.position.z=wall2.position.z=H/2; wall1.scale.z=wall2.scale.z=1;
+  faces.children.forEach((f,k)=>{f.position.z=k*T+g*(k+0.5)+0.01;});
+  const top=H+g*(NW+1)+4;
+  head.position.z=top+2.5+g*1.2; hex.position.z=top+5.05+g*1.2;
+  const shTop=head.position.z-2.5, shBot=0.1;
+  shoulder.scale.z=(shTop-shBot)/(H+4); shoulder.position.z=(shTop+shBot)/2;
+  thread.position.z=-6+3-g*0.8;
+  const span=top-(-6); web.scale.z=span/(H+10); web.position.z=(-6+top)/2;
+  [blkR,blkL,ring,arm].forEach(o=>{o.scale.z=(H+g*(NW+1))/H;o.position.z=(H+g*(NW+1))/2;});
+  [wall1,wall2].forEach(o=>{o.scale.z=(H+g*(NW+1))/H;o.position.z=(H+g*(NW+1))/2;});
+  rotA.rotation.z=(+document.getElementById('rot').value)*Math.PI/180;
+  linkA.visible=document.getElementById('showA').checked;
+  linkB.visible=document.getElementById('showB').checked;
+  boltG.visible=document.getElementById('showBolt').checked;
+}
+['explode','rot','showA','showB','showBolt'].forEach(id=>document.getElementById(id).addEventListener('input',layout));
+// las arandelas A giran con el eslabón A; las B quedan con el eslabón B
+washersA.parent.remove(washersA); rotA.add(washersA);
+
+function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+function bg(){scene.background=new THREE.Color(css('--scene')||'#e3e7eb');}
+new ResizeObserver(resize).observe(canvas);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',bg);
+new MutationObserver(bg).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+bg(); resize(); layout();
+(function loop(){controls.update();renderer.render(scene,camera);requestAnimationFrame(loop);})();
+})();
+</script>

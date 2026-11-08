@@ -187,3 +187,10 @@ Estructuralmente funciona con 1,0 mm. El riesgo es el **gripado**: μ puede pasa
 - μ seco 0,3–0,6. Demanda máxima por arandela: 7,7 N·m. Capacidad: A 10,8 N·m y B 10,2 N·m, **desliza antes de deformar**.
 - **Traba de la articulación: 6,3–19,2 N·m.**
 - Pendiente: ensayo de ~100 ciclos a 1,8 N·m para medir μ real y comprobar que no gripa.
+
+## Mejor solución (revisada al dibujarla) – `modelo_3d.html`
+Si el paquete queda apretado entre dos eslabones distintos (eslabón | A-B-A-B | eslabón, 5 caras), el tornillo está roscado en uno y la **cabeza apoya en el otro**. Ese apoyo desliza: es una sexta cara que le aplica par al tornillo, del orden de 0,2–0,6 × 1500 N × 4 mm ≈ 1,2–3,7 N·m, mientras que la rosca resiste al aflojado unos 0,6 N·m. En un sentido de giro **se afloja** y en el otro **se sobreaprieta** y puede romper el cuello del A2-50.
+
+Solución: el **eslabón B como horquilla**. Brazo inferior roscado, brazo superior donde apoya la cabeza, paredes a ±5,5 mm que arrastran las B. El **eslabón A** va entre los brazos con dos paredes ranuradas para las orejas. Paquete **A-B-A-B-A** (5 × 1,0 mm), con **6 caras que deslizan** y ninguna de ellas bajo la cabeza.
+- Traba: 6·μ·F·r_eff = **7,6–23 N·m** (F 1030–1570 N, μ 0,3–0,6).
+- Demanda máxima por arandela: 7,7 N·m, frente a 10,8 N·m de A y 10,2 N·m de B: desliza antes de deformar.
