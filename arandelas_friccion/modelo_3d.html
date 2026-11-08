@@ -51,7 +51,7 @@ dd{margin:0;font-size:.88rem}
 <div class="wrap">
   <header>
     <h1>Articulación de fricción</h1>
-    <p>Paquete A-B-A-B-A de inox de 1,0 mm en una horquilla de Al 7075, con 6 caras que deslizan. Arrastrá el modelo para girarlo y usá los controles para separar las piezas o girar la articulación.</p>
+    <p>Paquete A-B-A de 3 mm (1,2 + 0,6 + 1,2) en una horquilla de Al 7075, con 4 caras que deslizan. Una oreja con 1,5 mm de encastre; eslabones alineados a 0°. Arrastrá el modelo para girarlo y usá los controles para separar las piezas o girar la articulación.</p>
   </header>
   <div class="grid">
     <div class="viewer">
@@ -68,22 +68,23 @@ dd{margin:0;font-size:.88rem}
     <aside class="spec">
       <h2>Mejor solución</h2>
       <dl>
-        <dt><span class="sw" style="background:var(--a)"></span>A ×3</dt><dd>Dos orejas opuestas, 5 mm de ancho, 2 mm de encastre (punta a 8,5 mm, pared a 6,5 mm o más), radio de 0,4 mm en la raíz. SUS301-CSP H, 1,0 mm.</dd>
-        <dt><span class="sw" style="background:var(--b)"></span>B ×2</dt><dd>Caras paralelas de 11 mm. Inox de dureza distinta de A (420 templado o 17-4PH H900), 1,0 mm, caras granalladas.</dd>
+        <dt><span class="sw" style="background:var(--a)"></span>A ×2</dt><dd>Una oreja de 5 mm de ancho, 1,5 mm de encastre (punta a 8,0 mm, pared a 6,5 mm), radio de 0,4 mm en la raíz. SUS301-CSP H, 1,2 mm.</dd>
+        <dt><span class="sw" style="background:var(--b)"></span>B ×1</dt><dd>Caras paralelas de 11 mm. Inox de dureza distinta de A (420 templado o 17-4PH H900), 0,6 mm, caras granalladas.</dd>
         <dt><span class="sw" style="background:var(--al)"></span>Eslabón B</dt><dd>Horquilla de Al 7075: brazo inferior roscado M5, brazo superior que recibe la cabeza y paredes a ±5,5 mm que arrastran las B. Caras de contacto con anodizado duro.</dd>
         <dt><span class="sw" style="background:#9aa3ad"></span>Eslabón A</dt><dd>Al 7075 entre los brazos de la horquilla, con dos paredes ranuradas para las orejas.</dd>
-        <dt>Tornillo</dt><dd>Accu SSHE-M5-6 A2, Allen de 3 mm, apriete de 1,8 N·m, que da 1030–1570 N.</dd>
+        <dt>Tornillo</dt><dd>Accu SSHE-M5-6 A2, Allen de 3 mm. Apriete de 1,1 N·m con destornillador dinamométrico (630–950 N), o Belleville calibrada a 950 N.</dd>
       </dl>
       <div>
-        <div style="color:var(--muted);font-size:.8rem">Traba de la articulación (6 caras, μ seco 0,3–0,6)</div>
-        <div class="big">7,6 – 23 N·m</div>
+        <div style="color:var(--muted);font-size:.8rem">Traba de la articulación (4 caras, μ seco 0,3–0,6)</div>
+        <div class="big">3,1 – 9,3 N·m</div>
+        <div style="color:var(--muted);font-size:.8rem">con Belleville a 950 N: 4,6 – 9,3 N·m</div>
       </div>
       <div class="check">
         <table>
-          <tr><td>Par máx. por arandela</td><td>7,7 N·m</td></tr>
-          <tr><td>Capacidad A (2 orejas, 1 mm)</td><td class="ok">10,8 N·m</td></tr>
-          <tr><td>Capacidad B (1 mm)</td><td class="ok">10,2 N·m</td></tr>
-          <tr><td>Tornillo A2-50: fluencia del cuello</td><td class="ok">1640 N &gt; 1570 N</td></tr>
+          <tr><td>Par máx. por arandela</td><td>4,6 N·m</td></tr>
+          <tr><td>Capacidad A (1 oreja 1,5 mm, 1,2 mm)</td><td class="ok">5,8 N·m</td></tr>
+          <tr><td>Capacidad B (0,6 mm)</td><td class="ok">6,1 N·m</td></tr>
+          <tr><td>Tornillo A2-50: fluencia del cuello</td><td class="ok">1640 N &gt; 950 N</td></tr>
           <tr><td>Resultado</td><td class="ok">desliza antes de deformar</td></tr>
         </table>
       </div>
@@ -103,14 +104,15 @@ renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(35,1,0.5,500);
 camera.up.set(0,0,1);
-camera.position.set(78,-90,62);
+camera.position.set(52,-60,42);
 const controls = new THREE.OrbitControls(camera, canvas);
 controls.target.set(0,0,2); controls.enableDamping = true;
 scene.add(new THREE.HemisphereLight(0xffffff,0x667080,0.75));
 const dl = new THREE.DirectionalLight(0xffffff,0.8); dl.position.set(30,-20,60); scene.add(dl);
 const dl2 = new THREE.DirectionalLight(0xffffff,0.35); dl2.position.set(-40,30,-20); scene.add(dl2);
 
-const T = 1.0, NW = 5;                     // espesor y número de arandelas (A-B-A-B-A)
+const TH = [1.2, 0.6, 1.2], NW = TH.length;   // A-B-A, paquete de 3 mm
+const Z0 = TH.map((t,i)=>TH.slice(0,i).reduce((a,b)=>a+b,0));
 const mat = (c,o={}) => new THREE.MeshStandardMaterial(Object.assign({color:c,metalness:.55,roughness:.38},o));
 const MA = mat(0x7d8fa6), MB = mat(0xb59a62), MBolt = mat(0x9aa3ad,{metalness:.7,roughness:.3});
 const MAlB = mat(0x4b5563,{metalness:.2,roughness:.6,transparent:true,opacity:.55});
@@ -131,19 +133,18 @@ function shapeB(){
   s.moveTo(...pts[0]); pts.slice(1).forEach(p=>s.lineTo(...p)); s.closePath();
   s.holes.push(holeShape(3)); return s;
 }
-// Arandela A: dos orejas opuestas, punta 8,5 mm, raíz con R0,4
+// Arandela A: una oreja (lado −x), punta 8,0 mm (encastre 1,5 mm), raíz con R0,4
 function shapeA(){
-  const s=new THREE.Shape(), r=0.4;
-  const sup=[[8.5,2.5],[5.5+r,2.5]];
-  s.moveTo(8.5,-2.5); s.lineTo(8.5,2.5); s.lineTo(5.5+r,2.5);
-  s.quadraticCurveTo(5.5,2.5,5.45,2.5+r);
-  [[5.0,4.07],[1.87,5.31],[0,5.56],[-1.66,5.31],[-5.0,4.07],[-5.45,2.5+r]].forEach(p=>s.lineTo(...p));
+  const s=new THREE.Shape(), r=0.4, d=Math.PI/180, x1=(6-4.07*Math.sin(20*d))/Math.cos(20*d);
+  s.moveTo(6,0);
+  for(let a=2;a<=20;a+=2) s.lineTo(6*Math.cos(a*d),6*Math.sin(a*d));
+  [[x1,4.07],[1.87,5.31],[0,5.56],[-1.66,5.31],[-5.0,4.07],[-5.45,2.5+r]].forEach(p=>s.lineTo(...p));
   s.quadraticCurveTo(-5.5,2.5,-5.5-r,2.5);
-  s.lineTo(-8.5,2.5); s.lineTo(-8.5,-2.5); s.lineTo(-5.5-r,-2.5);
+  s.lineTo(-8.0,2.5); s.lineTo(-8.0,-2.5); s.lineTo(-5.5-r,-2.5);
   s.quadraticCurveTo(-5.5,-2.5,-5.45,-2.5-r);
-  [[-5.0,-4.07],[-1.66,-5.31],[0,-5.56],[1.87,-5.31],[5.0,-4.07],[5.45,-2.5-r]].forEach(p=>s.lineTo(...p));
-  s.quadraticCurveTo(5.5,-2.5,5.5+r,-2.5); s.closePath();
-  s.holes.push(holeShape(3)); return s;
+  [[-5.0,-4.07],[-1.66,-5.31],[0,-5.56],[1.87,-5.31],[x1,-4.07]].forEach(p=>s.lineTo(...p));
+  for(let a=-20;a<0;a+=2) s.lineTo(6*Math.cos(a*d),6*Math.sin(a*d));
+  s.closePath(); s.holes.push(holeShape(3)); return s;
 }
 function box(x0,x1,y0,y1,z0,z1,m){const g=new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0);const o=new THREE.Mesh(g,m);o.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);return o;}
 function plateWithHole(R,hole,len,thick,m){
@@ -157,11 +158,11 @@ const linkB=new THREE.Group(), boltG=new THREE.Group(), faces=new THREE.Group();
 scene.add(linkA,washersA,washersB,linkB,boltG,faces);
 const rotA=new THREE.Group(); rotA.add(linkA,washersA); scene.add(rotA);
 
-const H = NW*T; // 5 mm de paquete
+const H = TH.reduce((a,b)=>a+b,0); // 3 mm de paquete
 const wA=[], wB=[];
 for(let i=0;i<NW;i++){
   const isA = i%2===0;
-  const m = extrude(isA?shapeA():shapeB(),T,isA?MA:MB); m.userData.base=i*T; m.userData.i=i;
+  const m = extrude(isA?shapeA():shapeB(),TH[i],isA?MA:MB); m.userData.i=i;
   (isA?washersA:washersB).add(m); (isA?wA:wB).push(m);
 }
 // Eslabón B (horquilla, rosca abajo)
@@ -172,34 +173,34 @@ const wall1=box(-4.4,4.4,5.6,7.6,0,H,MAlB), wall2=box(-4.4,4.4,-7.6,-5.6,0,H,MAl
 linkB.add(lower,upper,web,wall1,wall2);
 // Eslabón A: paredes ranuradas + anillo + brazo
 const ring=(()=>{const s=new THREE.Shape();s.absarc(0,0,13.5,0,Math.PI*2,false);s.holes.push(holeShape(11.2));return extrude(s,H,MAlA);})();
-const blkR=box(6.5,11.5,-3.6,3.6,0,H,MAlA), blkL=box(-11.5,-6.5,-3.6,3.6,0,H,MAlA);
+const blkL=box(-11.5,-6.5,-3.6,3.6,0,H,MAlA);
 const arm=box(13,34,-5,5,0,H,MAlA);
-linkA.add(ring,blkR,blkL,arm);
+linkA.add(ring,blkL,arm);
 // Tornillo de hombro
 const head=new THREE.Mesh(new THREE.CylinderGeometry(5,5,5,48),MBolt); head.rotation.x=Math.PI/2;
 const hex=new THREE.Mesh(new THREE.CylinderGeometry(1.73,1.73,0.6,6),new THREE.MeshStandardMaterial({color:0x111418})); hex.rotation.x=Math.PI/2;
 const shoulder=new THREE.Mesh(new THREE.CylinderGeometry(3,3,H+4+0,48),MBolt); shoulder.rotation.x=Math.PI/2;
 const thread=new THREE.Mesh(new THREE.CylinderGeometry(2.5,2.5,6,24),mat(0x8b939c,{roughness:.6})); thread.rotation.x=Math.PI/2;
 boltG.add(head,hex,shoulder,thread);
-// Caras que deslizan (6): entre brazos de la horquilla y el paquete, y entre arandelas
-const faceZ=[0,1,2,3,4,5];
+// Caras que deslizan (4): brazos de la horquilla contra el paquete y entre arandelas
+const faceZ=[0,...Z0.slice(1),H];
 faceZ.forEach(z=>{const r=new THREE.Mesh(new THREE.RingGeometry(3.05,5,48),MFace);r.userData.base=z;faces.add(r);});
 
 function layout(){
   const e=+document.getElementById('explode').value, g=e*5;
   // cada arandela i se separa g*(i+1); caras entre ellas a mitad del hueco
-  [...wA,...wB].forEach(m=>{const i=m.userData.i;m.position.z=i*T+g*(i+1);});
+  [...wA,...wB].forEach(m=>{const i=m.userData.i;m.position.z=Z0[i]+g*(i+1);});
   lower.position.z=-6; web.scale.z=1;
   upper.position.z=H+g*(NW+1);
   wall1.position.z=wall2.position.z=H/2; wall1.scale.z=wall2.scale.z=1;
-  faces.children.forEach((f,k)=>{f.position.z=k*T+g*(k+0.5)+0.01;});
+  faces.children.forEach((f,k)=>{f.position.z=faceZ[k]+g*(k+0.5)+0.01;});
   const top=H+g*(NW+1)+4;
   head.position.z=top+2.5+g*1.2; hex.position.z=top+5.05+g*1.2;
   const shTop=head.position.z-2.5, shBot=0.1;
   shoulder.scale.z=(shTop-shBot)/(H+4); shoulder.position.z=(shTop+shBot)/2;
   thread.position.z=-6+3-g*0.8;
   const span=top-(-6); web.scale.z=span/(H+10); web.position.z=(-6+top)/2;
-  [blkR,blkL,ring,arm].forEach(o=>{o.scale.z=(H+g*(NW+1))/H;o.position.z=(H+g*(NW+1))/2;});
+  [blkL,ring,arm].forEach(o=>{o.scale.z=(H+g*(NW+1))/H;o.position.z=(H+g*(NW+1))/2;});
   [wall1,wall2].forEach(o=>{o.scale.z=(H+g*(NW+1))/H;o.position.z=(H+g*(NW+1))/2;});
   rotA.rotation.z=(+document.getElementById('rot').value)*Math.PI/180;
   linkA.visible=document.getElementById('showA').checked;

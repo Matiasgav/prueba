@@ -194,3 +194,20 @@ Si el paquete queda apretado entre dos eslabones distintos (eslabón | A-B-A-B |
 Solución: el **eslabón B como horquilla**. Brazo inferior roscado, brazo superior donde apoya la cabeza, paredes a ±5,5 mm que arrastran las B. El **eslabón A** va entre los brazos con dos paredes ranuradas para las orejas. Paquete **A-B-A-B-A** (5 × 1,0 mm), con **6 caras que deslizan** y ninguna de ellas bajo la cabeza.
 - Traba: 6·μ·F·r_eff = **7,6–23 N·m** (F 1030–1570 N, μ 0,3–0,6).
 - Demanda máxima por arandela: 7,7 N·m, frente a 10,8 N·m de A y 10,2 N·m de B: desliza antes de deformar.
+
+## Restricciones finales: paquete de 3 mm, una sola oreja, encastre 1,5 mm, eslabones a 0°
+FEA de A con una oreja y 1,5 mm de encastre (punta 8,0 mm, `fea/fea_oreja_15.py`), por N·m con t = 0,5:
+- Fuerza en la pared 142 N, aplastamiento medio 190 MPa, σvM del cuerpo 363 MPa.
+- Capacidad nivel 2 por mm de espesor: **A 4,84 N·m/mm**, limitada por el Al 7075 (antes que el 301). **B 10,2 N·m/mm.**
+
+Con la altura fija, la traba máxima que desliza antes de deformar es n_caras·C/2, que crece con la altura del paquete y casi no depende del número de arandelas. Conviene que A sea el doble de gruesa que B.
+
+| Paquete (horquilla) | Caras | C [N·m] | F máx | Traba con dinamométrico | Traba con Belleville |
+|---|---|---|---|---|---|
+| A-B-A 1,0/1,0/1,0 | 4 | 4,8 | 790 N | 2,6–7,7 | 3,9–7,7 |
+| **A-B-A 1,2/0,6/1,2** | **4** | **5,8** | **950 N** | **3,1–9,3** | **4,6–9,3** |
+| A-B-A-B-A 0,6 | 6 | 2,9 | 475 N | 2,3–7,0 | 3,5–7,0 |
+
+(inox/inox, μ 0,3–0,6, factor de seguridad 1,25 sobre el nivel 2). Con B de bronce, μ máx más bajo permite más F, pero B debería tener unos 0,85 mm y A bajar a 1,05 mm; la traba máxima queda igual, unos 9 N·m.
+
+**Elegida:** horquilla, A-B-A. A: SUS301-CSP H de 1,2 mm, una oreja. B: 420 templado o 17-4PH de 0,6 mm. Apriete de 1,1 N·m con dinamométrico, o Belleville a 950 N. El tornillo queda holgado: 950 N frente a 1640 N.
