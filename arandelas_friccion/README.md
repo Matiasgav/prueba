@@ -260,3 +260,22 @@ FEA 3D del extremo del eslabón (`fea/fea_eslabon_3d.py`, tetraedros P2, Al 7075
 FEA 3D con solo B1 y B2 cargando el alojamiento: σ máx. de 787 MPa con 1 N·m en cada B (antes 1508 con las 3 B). Hay 5 caras que deslizan y cada B lleva 2/5 de la traba.
 - A-B-A-B-A-B actual: 431 MPa por N·m de traba → traba máx. 1,07 N·m (0,85 con factor de seguridad 1,25).
 - **A-B-A-B: 315 MPa por N·m de traba → traba máx. 1,46 N·m (1,17 con factor de seguridad 1,25).** Mejora un 37 %, pero sigue lejos de lo que aguantan las arandelas (~12 N·m).
+
+## Optimización del paquete (`fea/fea_bandas.py`, `fea/optimizacion.py`)
+**Modos de falla**, verificados en el peor caso (μ máx., F máx., factor de seguridad 1,25):
+1. Pared del alojamiento de Al 7075. FEA 3D de la geometría real: 9 bandas unitarias a distintas alturas, combinadas por superposición de tensores.
+2. Oreja de A contra el otro eslabón (Al): 4,8 N·m por mm de espesor.
+3. Cuerpo de B: 9,1 N·m/mm en 301 duro, 5,6 N·m/mm en CuSn8.
+4. Cuello del tornillo A2-50: 1640 N.
+
+**Variables:** número de B, terminación (A o B arriba), tA y tB (0,3–1,0 mm), par de materiales (inox/inox con μ 0,3–0,6, inox/bronce con 0,2–0,35), pared actual o de 2 mm, y retención de las B por las paredes o por un buje doble D. 976 combinaciones por variante.
+**Objetivo:** traba garantizada máxima, con μ mín. y F mín. (dispersión del apriete con dinamométrico de 0,66).
+
+| Solución | Paquete | Apriete | Traba garantizada–máx. | Limita (utilización) |
+|---|---|---|---|---|
+| Actual | A-B-A-B-A-B, 1,0/0,5 | 0,05 N·m (!) | 0,25–0,77 | pared 1,0 · resto ≤ 0,06 |
+| Óptimo con las paredes actuales | A-B, 0,4/0,3 inox/CuSn8 + suplemento | 0,54 N·m | 0,76–2,0 | pared 0,99 · B 1,0 · oreja 0,88 |
+| Óptimo con paredes de 2 mm | A-B-A-B, 0,3/0,4 inox/CuSn8 | 0,41 N·m | 0,96–2,6 | pared 1,0 · oreja 0,88 |
+| **B arrastradas por un buje doble D** | **A-B-A-B-A-B, 1,0/0,5 inox/inox** | **0,85 N·m** | **4,2–12,7** | **B 1,0 · oreja 0,94 · tornillo 0,56** |
+
+Mientras las B se apoyen en las paredes delgadas, la traba no supera unos 2–2,6 N·m, por más que se optimice el paquete: conviene una sola B pegada al fondo. Con el buje doble D, el paquete actual (que ya es el óptimo) queda balanceado entre B, oreja y tornillo, y la traba sube unas 16 veces. Falta verificar el buje y la B con agujero doble D.
