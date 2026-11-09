@@ -122,6 +122,11 @@ for j in JOINTS:
     sub[ns].append(hx); sub[ns].append(xf(slot, Mn))
     j['nut_s']=float(s_nut0); j['slot_ang']=float(ang)
 
+# pedestal cilindrico para apoyo estable (CdM en la peor pose a ~49 mm del eje J1)
+PED_D=130.0; PED_H=8.0; CH=1.5
+ped = mf.Manifold.cylinder(PED_H-CH, PED_D/2, PED_D/2, 160).translate([0,0,-PED_H]) + \
+      mf.Manifold.cylinder(CH+0.3, PED_D/2, PED_D/2-CH-0.3, 160).translate([0,0,-CH])
+add['base'].append(ped)
 final={}
 for n in parts:
     m=parts[n]

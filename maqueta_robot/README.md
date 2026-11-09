@@ -3,6 +3,7 @@
 Maqueta articulada (6 ejes) generada a partir del CAD original (`Robot mel/*.stl`) y la tabla DH
 (d1 450, a1 75, a2 640, a3 195, d4 700, d6 75 mm).
 
+- Pedestal cilíndrico Ø130 × 8 mm integrado en la base (el centro de masa en la peor pose queda a ~49 mm del eje J1).
 - Escala 1:6, sin cables ni abrazaderas de cable (imprimible en FDM). Las tapas de chapa de la base y la torreta se conservan macizas.
 - Eslabones macizos: sin cavidades cerradas ni bolsillos con boca < 3 mm (relleno por capas + cierre morfologico).
 - Cada articulación gira sobre un encastre: saliente cilíndrico en una pieza + embocadura en la otra

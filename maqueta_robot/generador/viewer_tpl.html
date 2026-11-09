@@ -176,7 +176,8 @@ document.getElementById('legend').innerHTML=ORDER.map(n=>`<span><i style="backgr
  `<span><i style="background:#c9ced3"></i>Tornillo M3</span><span><i style="background:#2b6cb0"></i>Tuerca M3</span>`;
 // size
 const box=new THREE.Box3().setFromObject(root); const sz=box.getSize(new THREE.Vector3());
-document.getElementById('dims').textContent=`6 ejes · ${sz.x.toFixed(0)} × ${sz.y.toFixed(0)} × ${sz.z.toFixed(0)} mm en pose cero · M3 avellanado ISO 10642`;
+document.getElementById('dims').textContent=`6 ejes · ${sz.x.toFixed(0)} × ${sz.y.toFixed(0)} × ${sz.z.toFixed(0)} mm en pose cero · pedestal Ø130 · M3 avellanado ISO 10642`;
+grid.position.z=box.min.z-0.05;
 const ctr=box.getCenter(new THREE.Vector3());
 controls.target.copy(ctr); cam.position.set(ctr.x+260,ctr.y-330,ctr.z+130);
 
@@ -245,7 +246,7 @@ function tickNut(now){
 }
 document.getElementById('steps').innerHTML=[
  '<b>Tuercas J1 y J2</b> en la torreta, antes de apoyarla en la base. La ranura de J2 sale por abajo y la base la tapa: la tuerca no se puede caer.',
- '<b>J1:</b> torreta sobre la base, con el saliente dentro de la embocadura. Tornillo desde abajo de la base.',
+ '<b>J1:</b> torreta sobre la base, con el saliente dentro de la embocadura. Tornillo desde abajo del pedestal, por un agujero de Ø7 de 27 mm de profundidad: usá un destornillador largo.',
  '<b>J2:</b> brazo contra la torreta. Tornillo desde la cara exterior del brazo.',
  '<b>Tuerca J3</b> en el codo y <b>J3:</b> codo contra el brazo. Tornillo desde la cara exterior del brazo.',
  '<b>Tuerca J4</b> en el antebrazo y <b>J4:</b> antebrazo contra el codo. Tornillo desde atrás del codo.',
