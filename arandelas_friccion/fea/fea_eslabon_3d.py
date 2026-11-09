@@ -16,7 +16,7 @@ from skfem import LinearForm
 
 STEP = sys.argv[1]
 C = np.array([-15.288, -110.875])            # centro de la articulación (x, z)
-BANDAS = [(80.75, 81.25), (82.25, 82.75), (83.75, 84.25)]
+BANDAS = [(80.75, 81.25), (82.25, 82.75), (83.75, 84.25)][:int(sys.argv[5]) if len(sys.argv) > 5 else 3]
 H_FINO, H_GRUESO = float(sys.argv[2]) if len(sys.argv) > 2 else 0.22, 1.2
 
 gmsh.initialize(); gmsh.option.setNumber("General.Terminal", 0)
@@ -27,7 +27,7 @@ others = [(3, t) for d, t in gmsh.model.getEntities(3) if t != vol]
 gmsh.model.occ.remove(others, recursive=True)
 box = gmsh.model.occ.addBox(-22.5, 70, -118.5, 15.5, 14.3, 15)
 res_i, _ = gmsh.model.occ.intersect([(3, vol)], [(3, box)])
-VAR = sys.argv[3] if len(sys.argv) > 3 else "real"
+VAR = (sys.argv[3] if len(sys.argv) > 3 else "real") + (f"_{sys.argv[5]}B" if len(sys.argv) > 5 else "")
 extra = []
 if "pared2" in VAR:      # paredes de 1 -> 2 mm (engrosadas hacia afuera)
     extra += [gmsh.model.occ.addBox(-19.67, 79.75, -104.45, 7.9, 4.5, 1.075),
@@ -106,8 +106,8 @@ X = ib.doflocs
 comp = np.zeros(len(fload), int); comp[ib.nodal_dofs[1]] = 1; comp[ib.edge_dofs[1]] = 1
 comp[ib.nodal_dofs[2]] = 2; comp[ib.edge_dofs[2]] = 2
 Mz = np.sum(np.where(comp == 0, (X[2] - C[1]) * fload, 0) - np.where(comp == 2, (X[0] - C[0]) * fload, 0))
-print("momento aplicado sobre la pared (3 arandelas) N·mm:", round(float(Mz), 1), "-> normalizado a 3000", flush=True)
-fload *= 3000.0 / abs(Mz)
+print("momento aplicado sobre la pared (3 arandelas) N·mm:", round(float(Mz), 1), "-> normalizado a 1000 por banda", flush=True)
+fload *= 1000.0 * len(BANDAS) / abs(Mz)
 print("fuerza neta aplicada", Ftot.round(2), " suma |f| esperada por banda", round(np.abs(B[:, 2]).sum(), 1), flush=True)
 
 fix = mesh.facets_satisfying(lambda x: (np.abs(x[1] - 70) < 1e-6) | (np.abs(x[0] + 7) < 1e-6))

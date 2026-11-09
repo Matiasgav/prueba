@@ -255,3 +255,8 @@ FEA 3D del extremo del eslabón (`fea/fea_eslabon_3d.py`, tetraedros P2, Al 7075
 | Paredes de 2 mm + puentes | 1000 MPa | 0,09 mm | 0,46 N·m |
 
 **Conclusión:** el alojamiento de pared delgada aguanta unas 15 veces menos que las arandelas. Con la geometría actual, la traba máxima que desliza antes de deformar es de unos 0,85 N·m. Engrosar o cerrar las paredes da como mucho un factor 1,5, y el punto débil pasa al fondo de 0,5–0,75 mm. **Hay que sacar el arrastre de las B de las paredes**: B con agujero doble D sobre un buje con planos anclado en el cuerpo macizo del eslabón, como en un embrague multidisco. Así la traba vuelve a quedar limitada por las arandelas, unos 12 N·m (estimación, falta verificar).
+
+### Variante A-B-A-B (4 arandelas, sin A3 ni B3)
+FEA 3D con solo B1 y B2 cargando el alojamiento: σ máx. de 787 MPa con 1 N·m en cada B (antes 1508 con las 3 B). Hay 5 caras que deslizan y cada B lleva 2/5 de la traba.
+- A-B-A-B-A-B actual: 431 MPa por N·m de traba → traba máx. 1,07 N·m (0,85 con factor de seguridad 1,25).
+- **A-B-A-B: 315 MPa por N·m de traba → traba máx. 1,46 N·m (1,17 con factor de seguridad 1,25).** Mejora un 37 %, pero sigue lejos de lo que aguantan las arandelas (~12 N·m).
