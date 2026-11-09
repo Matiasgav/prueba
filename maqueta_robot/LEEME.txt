@@ -1,0 +1,62 @@
+MAQUETA ROBOT MEL - ESCALA 1:6
+================================
+
+Contenido
+---------
+  STL/   7 piezas para imprimir (mm). Estan en coordenadas de ensamble:
+         el origen es el eje J1 sobre la cara superior del pedestal. Orientalas en el slicer.
+  STEP/  las mismas 7 piezas como solidos STEP (AP214, mm) y
+         00_ensamble_maqueta_robot.step con las 7 piezas + 6 tornillos + 6 tuercas en posicion.
+         Nota: los STEP son solidos facetados (caras planas) generados desde la malla, con las
+         caras coplanares fusionadas. Son validos para medir, ensamblar o hacer cortes en CAD,
+         pero no son modelos parametricos con historial.
+  simulacion_maqueta_robot.html
+         Simulacion 3D: abrila con doble clic en cualquier navegador; funciona sin internet.
+         Mueve las 6 articulaciones, rayos X, cortes de seccion, despiece y animacion de montaje de tuercas.
+
+Cinematica (DH, escala real): d1 450, a1 75, a2 640, a3 195, d4 700, d6 75 mm. Pose cero FANUC.
+Tamano en pose cero: 223 x 130 x 269 mm (pedestal Ø130 x 8 mm).
+
+Lista de materiales
+-------------------
+  Tornillos M3 cabeza avellanada ISO 10642 / DIN 7991 (allen):
+    1 x M3x12
+    3 x M3x25
+    2 x M3x30
+  6 x tuerca autoblocante M3 DIN 985 (5,5 mm entre caras, 4 mm de alto)
+
+Articulaciones
+--------------
+  J1  encastre Ø16x3.0  M3x30  cabeza en base       tuerca en torreta       giro libre 360°
+  J2  encastre Ø12x3.0  M3x25  cabeza en brazo      tuerca en torreta       giro libre -138°/+92°
+  J3  encastre Ø12x3.0  M3x25  cabeza en brazo      tuerca en codo          giro libre -180°/+86°
+  J4  encastre Ø12x3.0  M3x30  cabeza en codo       tuerca en antebrazo     giro libre 360°
+  J5  encastre Ø10x2.5  M3x12  cabeza en antebrazo  tuerca en muñeca        giro libre -180°/+132°
+  J6  encastre Ø8x2.5  M3x25  cabeza en muñeca     tuerca en brida+cabezal giro libre 360°
+  (rango libre calculado moviendo un eje por vez, con los demas en cero)
+
+  Cada eje gira sobre un encastre de plastico: saliente cilindrico en una pieza que entra en
+  una embocadura de la otra. Holguras: 0,2 mm radial, 0,3 mm al fondo, 0,4 mm entre caras.
+  El tornillo solo aprieta axialmente: en la pieza que gira pasa por un agujero de Ø4,0 sin tocar.
+  Avellanado 90° Ø6,7; agujero en la pieza de la tuerca Ø3,4.
+  Ranura de tuerca 5,75 x 4,3 mm.
+
+Orden de montaje
+----------------
+  1. Tuercas J1 y J2 en la torreta (la ranura de J2 sale por abajo y la tapa la base).
+  2. J1: torreta sobre la base. Tornillo desde abajo del pedestal, por un agujero de Ø7 de
+     27 mm de profundidad (destornillador allen largo de 2 mm).
+  3. J2: brazo contra la torreta, tornillo desde la cara exterior del brazo.
+  4. Tuerca J3 en el codo; J3: codo contra el brazo, tornillo desde la cara exterior del brazo.
+  5. Tuerca J4 en el antebrazo; J4: antebrazo contra el codo, tornillo desde atras del codo.
+  6. Tuerca J5 en la muneca; J5: muneca contra la mejilla del antebrazo, tornillo desde afuera.
+  7. Tuerca J6 en la brida del cabezal ANTES de unirla (el collar de la muneca tapa la ranura);
+     J6: tornillo desde atras de la muneca.
+  8. Ajusta cada tornillo hasta que la articulacion gire con algo de friccion y mantenga la pose.
+
+Impresion FDM (sugerido)
+------------------------
+  Capa 0,15-0,2 mm, 3-4 perimetros, relleno 15-20 %. Las piezas son macizas, sin cavidades.
+  Volumen por pieza (cm3): base 243, torreta 42, brazo 38, codo 48, antebrazo 23, muñeca 3, brida+cabezal 5.
+  Si la tuerca entra justa, pasa una lima por la ranura o pedi la version con ranura de 6,0 mm.
+  Recomendado: imprimir antes un cubo de prueba con una ranura y un encastre para calibrar holguras.
