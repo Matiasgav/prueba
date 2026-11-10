@@ -301,3 +301,8 @@ Con F fija (≈ 1310 N), el par que lleva cada arandela es 2·μ·F·r y no depe
 - Par por arandela con μ 0,35: 4,2 N·m, igual para cualquier cantidad de discos.
 - Traba (F 865–1310 N, μ 0,2–0,35): 1 par 2,3–6,3 · **2 pares 3,9–10,5 (entra en los 4,5 mm actuales)** · 3 pares 5,5–14,6 (alojamiento de 6,5 mm) · 4 pares 7,1–18,8 N·m (8,5 mm).
 - Falta verificar con FEA el aplastamiento del hexágono en la B y en el anclaje de Al, y el aro de la A con agujero de Ø8,2.
+
+### Anclaje del buje sin agujero hexagonal
+El buje se hace de barra redonda de Ø8 (17-4PH). Abajo queda redondo, de Ø8 × 5 mm, y entra en un agujero de **Ø8 H7** bajo el fondo del alojamiento. Arriba se fresa el hexágono de 7 mm entre caras que arrastra las B. El giro se traba con **2 pasadores cilíndricos de Ø2 × 5** (ISO 8734), en agujeros de Ø2 hechos con mecha sobre la línea de unión buje/eslabón, a 180°. En el eslabón solo hay agujeros redondos.
+- Con 2 pares A+B (8,4 N·m sobre el buje): 1050 N por pasador, aplastamiento en el Al de unos 210 MPa (límite 460), corte de unos 105 MPa. Con 3 o más pares, pasadores de 8 mm.
+- Queda por verificar el aplastamiento del hexágono sobre la B: con CuSn8 de 0,9 mm da unos 570 MPa, cerca del límite.

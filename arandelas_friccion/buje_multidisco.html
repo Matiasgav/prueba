@@ -1,4 +1,4 @@
-<title>Buje hexagonal multidisco</title>
+<title>Buje multidisco con pasadores</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -51,8 +51,8 @@ td.n{text-align:right;font-family:var(--mono);white-space:nowrap;padding-left:8p
 
 <div class="wrap">
   <header>
-    <h1>Buje hexagonal multidisco</h1>
-    <p>Para que cada disco extra sume traba, el par de las B no puede ir a las paredes del alojamiento. Las B se enganchan por un agujero hexagonal a un buje de acero anclado en la parte maciza del eslabón, como en un embrague multidisco. Las A siguen arrastradas por la oreja hacia el otro eslabón. El apriete es el de siempre con la Allen.</p>
+    <h1>Buje multidisco con pasadores</h1>
+    <p>Para que cada disco extra sume traba, el par de las B no puede ir a las paredes del alojamiento. Las B se enganchan por un agujero hexagonal a un buje de acero. El buje entra en un agujero redondo de Ø8 en la parte maciza del eslabón y se traba con dos pasadores de Ø2 agujereados sobre la línea de unión: en el eslabón solo hay agujeros redondos, todos hechos con mecha. Las A siguen arrastradas por la oreja hacia el otro eslabón. El apriete es el de siempre con la Allen.</p>
   </header>
   <div class="grid">
     <div class="viewer">
@@ -71,9 +71,10 @@ td.n{text-align:right;font-family:var(--mono);white-space:nowrap;padding-left:8p
       <h2>Cómo suma discos</h2>
       <div class="tw"><table>
         <tr><th>Pieza</th><th>Definición</th></tr>
-        <tr><td><span class="sw" style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#c58b3c;margin-right:6px"></span>Buje</td><td>17-4PH H900. Hexágono de 7 mm entre caras y agujero Ø6,1 para el hombro del tornillo. Anclado 5 mm en un agujero hexagonal del cuerpo macizo, bajo el fondo del alojamiento. Es 0,1 mm más corto que el paquete, así no toma el apriete.</td></tr>
+        <tr><td><span class="sw" style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#c58b3c;margin-right:6px"></span>Buje</td><td>17-4PH H900, de barra redonda de Ø8. Abajo queda redondo, de Ø8 × 5 mm, y entra en un agujero de Ø8 H7 bajo el fondo del alojamiento. Arriba se fresa un hexágono de 7 mm entre caras. Agujero Ø6,1 para el hombro del tornillo. Es 0,1 mm más corto que el paquete, así no toma el apriete.</td></tr>
         <tr><td>A</td><td>La actual, con el agujero agrandado a Ø8,2 para que gire sobre el buje. 301 duro, 1,1 mm.</td></tr>
         <tr><td>B</td><td>Agujero hexagonal de 7,05 mm y contorno con 0,2 mm de juego contra las paredes, que ya no la sostienen. CuSn8, 0,9 mm.</td></tr>
+        <tr><td>Pasadores</td><td>2 pasadores cilíndricos de Ø2 × 5 mm, de acero templado (ISO 8734), en agujeros de Ø2 hechos con mecha sobre la línea de unión buje/eslabón, a 180° uno del otro. Cada uno queda mitad en el buje y mitad en el Al. Con 2 pares A+B (8,4 N·m sobre el buje), cada pasador recibe unos 1050 N: aplastamiento en el Al de unos 210 MPa (el límite es 460) y corte de unos 105 MPa.</td></tr>
         <tr><td>Suplemento</td><td>Redondo, completa la altura hasta el extremo del eslabón.</td></tr>
       </table></div>
       <div>
@@ -88,7 +89,7 @@ td.n{text-align:right;font-family:var(--mono);white-space:nowrap;padding-left:8p
         <tr><td>3 (alojamiento de 6,5 mm)</td><td class="n">7</td><td class="n">6,0 mm</td><td class="n">5,5–14,6 N·m</td></tr>
         <tr><td>4 (alojamiento de 8,5 mm)</td><td class="n">9</td><td class="n">8,0 mm</td><td class="n">7,1–18,8 N·m</td></tr>
       </table></div>
-      <p class="note">Cada par A+B suma 2 caras, unos 1,6–4,2 N·m, y 2 mm de altura. El par que soporta cada arandela no depende de cuántas haya (4,2 N·m con μ 0,35), así que agregar discos no sobrecarga ninguna pieza. Lo que cambia es el par total sobre el buje y su anclaje: unos 4,2 N·m por cada B. Estos valores son una estimación y hay que verificarlos con FEA: aplastamiento del hexágono sobre la B de bronce y sobre el anclaje en Al, y el aro de la A con agujero de Ø8,2.</p>
+      <p class="note">Cada par A+B suma 2 caras, unos 1,6–4,2 N·m, y 2 mm de altura. El par que soporta cada arandela no depende de cuántas haya (4,2 N·m con μ 0,35), así que agregar discos no sobrecarga ninguna pieza. Lo que cambia es el par total sobre el buje y los pasadores: unos 4,2 N·m por cada B. Con 3 o más pares conviene alargar los pasadores a 8 mm. Estos valores son una estimación y hay que verificarlos con FEA: el aplastamiento del hexágono sobre la B (con bronce de 0,9 mm queda cerca del límite, unos 570 MPa), los pasadores y el aro de la A con agujero de Ø8,2.</p>
     </aside>
   </div>
 </div>
@@ -144,7 +145,10 @@ function build(){
   const hx=new THREE.Shape(); const r=7/Math.sqrt(3);
   for(let j=0;j<=6;j++){const a=Math.PI/6+j*Math.PI/3;j?hx.lineTo(r*Math.cos(a),r*Math.sin(a)):hx.moveTo(r*Math.cos(a),r*Math.sin(a));}
   hx.holes.push(circ(3.05));
-  const bl=(y-Y0)-0.1+5; const bu=prism(hx,bl,mBuje); bu.position.y=Y0-5; fixed.add(bu);
+  const bl=(y-Y0)-0.1; const bu=prism(hx,bl,mBuje); bu.position.y=Y0; fixed.add(bu);
+  const an=new THREE.Shape(); an.absarc(0,0,4,0,Math.PI*2,false); an.holes.push(circ(3.05));
+  const ba=prism(an,5,mBuje); ba.position.y=Y0-5; fixed.add(ba);
+  [[0,4],[0,-4]].forEach(([px,pz])=>{const pin=new THREE.Mesh(new THREE.CylinderGeometry(1,1,5,24),M(0x2f343a,{metalness:.8}));pin.position.set(px,Y0-2.5,pz);fixed.add(pin);});
   // tornillo de hombro (cabeza del lado del otro eslabón)
   const cyl=(r,y0,y1,mat)=>{const c=new THREE.Mesh(new THREE.CylinderGeometry(r,r,y1-y0,40),mat);c.position.y=(y0+y1)/2;return c;};
   const yh=top+0.5+e*(k+1)+3;
