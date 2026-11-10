@@ -61,6 +61,7 @@ for nombre, cont, ap in [x for x in (("A_real", cA, ap_A()), ("B_real", cB, ap_B
         largo = c[pared, 0].max() - c[pared, 0].min()
         r["p_media_1Nm"] = float(fz[pared].sum() / (largo * F.T))
     res[nombre] = r
+    np.savez(f"{nombre}_d{D}.npz", p=mesh.p, t=mesh.t, vm_avg=vm_avg)
     print(D, nombre, {k: v for k, v in r.items() if k != "contacto"}, flush=True)
 import os
 fn = f"resultados_real_d{D}_1Nm.json"

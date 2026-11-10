@@ -31,7 +31,7 @@ header p{margin:.25rem 0 0;color:var(--muted);max-width:75ch}
 .controls input[type=checkbox],.controls input[type=radio]{accent-color:var(--accent)}
 .hint{position:absolute;left:12px;top:10px;font:500 .72rem var(--mono);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
 #legend{position:absolute;right:12px;top:10px;display:grid;gap:4px;font:500 .72rem var(--mono);color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
-#legend .bar{width:150px;height:10px;border-radius:2px;background:linear-gradient(90deg,#2b4c9b,#3aa0c8,#6cc58f,#e8d24a,#e8782a,#c0262d)}
+#legend .bar{width:170px;height:10px;border-radius:2px;background:linear-gradient(90deg,#2b4c9b,#3aa0c8,#6cc58f,#e8d24a,#e8782a,#c0262d)}
 #legend .ticks{display:flex;justify-content:space-between;font-variant-numeric:tabular-nums}
 [hidden]{display:none!important}
 #status{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font:500 .9rem var(--mono)}
@@ -52,49 +52,47 @@ td.n{text-align:right;font-family:var(--mono);white-space:nowrap;padding-left:8p
 <div class="wrap">
   <header>
     <h1>Articulación de fricción</h1>
-    <p>Una articulación del eslabón 02489-00-M40000, con la geometría real del STEP: 3 arandelas A de 1,0 mm, 3 arandelas B de 0,5 mm y la arandela redonda M40007. El otro eslabón y el tornillo se omiten. El color muestra la tensión del eslabón cuando cada arandela B transmite 1 N·m (FEA 3D).</p>
+    <p>Solución recomendada sobre una articulación del eslabón 02489-00-M40000: paredes superior e inferior engrosadas 1 mm hacia adentro (de 1 a 2 mm) y paquete A-B. A es de inox 301 duro de 1,0 mm y B de bronce CuSn8 de 0,8 mm; un suplemento redondo completa la altura. El color indica qué tan cerca de fluir está cada punto en el peor caso: rozamiento 0,35 y 1050 N de apriete, con lo que cada arandela transmite 2,77 N·m.</p>
   </header>
   <div class="grid">
     <div class="viewer">
-      <canvas id="c" aria-label="Modelo 3D de una articulación"></canvas>
-      <div id="status">cargando geometría…</div>
+      <canvas id="c" aria-label="Simulación 3D de una articulación"></canvas>
+      <div id="status">cargando simulación…</div>
       <div class="hint">arrastrar: girar · rueda: zoom</div>
-      <div id="legend"><div>σ von Mises, MPa · 1 N·m por B</div><div class="bar"></div><div class="ticks"><span>0</span><span>230</span><span>460 = Rp0,2</span></div></div>
+      <div id="legend"><div>σ / Rp0,2 en el peor caso</div><div class="bar"></div><div class="ticks"><span>0</span><span>0,5</span><span>1</span></div><div>límite de diseño (FS 1,25): 0,8</div></div>
       <div class="controls">
-        <label for="mStress"><input type="radio" name="mode" id="mStress" checked> Tensión</label>
+        <label for="mStress"><input type="radio" name="mode" id="mStress" checked> Utilización</label>
         <label for="mGeo"><input type="radio" name="mode" id="mGeo"> Geometría</label>
-        <label for="explode">Separar <input id="explode" type="range" min="0" max="1" step="0.01" value="0"></label>
-        <label for="defo">Deformada ×<input id="defo" type="range" min="0" max="20" step="1" value="0"></label>
-        <label for="rot">Giro de las A <input id="rot" type="range" min="-20" max="20" step="1" value="0"></label>
+        <label for="explode">Separar <input id="explode" type="range" min="0" max="1" step="0.01" value="0.6"></label>
+        <label for="rot">Giro de la A <input id="rot" type="range" min="-20" max="20" step="1" value="0"></label>
         <label for="showW"><input id="showW" type="checkbox" checked> Arandelas</label>
         <label for="showL"><input id="showL" type="checkbox" checked> Eslabón</label>
       </div>
     </div>
     <aside class="spec">
-      <h2>Verificación con el modelo real</h2>
-      <div class="verdict"><b class="bad">El punto débil es el eslabón, no las arandelas</b>
-        <span>El alojamiento de las B tiene paredes de Al de 1,0 mm y está abierto del lado de la oreja. Las paredes quedan en voladizo y se doblan.</span></div>
+      <h2>Resultado de la simulación</h2>
+      <div class="verdict" style="border-left-color:var(--ok)"><b class="ok">Desliza antes de deformarse</b>
+        <span>Con el factor de seguridad de 1,25 aplicado, la utilización máxima es de 0,80. La oreja, la pared y el tornillo llegan casi al mismo tiempo a su límite.</span></div>
       <div class="tw"><table>
-        <tr><th>Elemento</th><th style="text-align:right">Par adm. por arandela</th></tr>
-        <tr><td>Paredes del alojamiento (Al 7075, 1 mm)</td><td class="n bad">0,31 N·m</td></tr>
-        <tr><td>Arandela A (1,0 mm, oreja 1,5 mm en el otro eslabón)</td><td class="n ok">4,8 N·m</td></tr>
-        <tr><td>Arandela B (0,5 mm, 301 duro)</td><td class="n ok">4,5 N·m</td></tr>
+        <tr><th>Punto de falla</th><th style="text-align:right">σ / Rp0,2</th><th style="text-align:right">utilización</th></tr>
+        <tr><td>Oreja de A contra el otro eslabón (Al)</td><td class="n">0,80</td><td class="n">1,00</td></tr>
+        <tr><td>Pared del alojamiento (Al 7075, 2 mm)</td><td class="n">0,78</td><td class="n">0,97</td></tr>
+        <tr><td>Cuello del tornillo A2-50 (1050 / 1310 N)</td><td class="n">–</td><td class="n">0,80</td></tr>
+        <tr><td>Cuerpo de A (301 duro)</td><td class="n">0,80</td><td class="n">1,00</td></tr>
+        <tr><td>Cuerpo de B (CuSn8)</td><td class="n">0,45</td><td class="n">0,56</td></tr>
       </table></div>
+      <div>
+        <div style="color:var(--muted);font-size:.8rem">Traba de la articulación (3 caras: fondo/A, A/B, B/suplemento)</div>
+        <div class="big" style="font:500 1.5rem var(--mono)">1,6 – 4,2 N·m</div>
+        <div class="note">Apriete de 1,2 N·m con destornillador dinamométrico. Antes era de 0,25 a 0,77 N·m.</div>
+      </div>
       <div class="tw"><table>
-        <tr><th>Paredes, por cada N·m en cada B</th><th style="text-align:right">valor</th></tr>
-        <tr><td>σ máx. en la pared, lejos del contacto</td><td class="n">1510 MPa</td></tr>
-        <tr><td>Apertura del alojamiento (centro, extremo libre)</td><td class="n">0,22 mm</td></tr>
-        <tr><td>Rp0,2 del Al 7075-T6</td><td class="n">460 MPa</td></tr>
+        <tr><th>Pieza</th><th>Cambio</th></tr>
+        <tr><td>Alojamiento</td><td>Caras planas a ±4,5 mm (9 mm entre caras), paredes de 2 mm</td></tr>
+        <tr><td>Arandela A</td><td>Cuerpo R4,45, oreja con punta a 8,0 mm y radio de 0,4 mm en la raíz, 1,0 mm</td></tr>
+        <tr><td>Arandela B</td><td>Caras de 9 mm, 0,8 mm, bronce CuSn8</td></tr>
       </table></div>
-      <p class="note">Hay 7 caras que deslizan: fondo/A, cinco A/B y B/M40007/eslabón. Para que deslice antes de deformar las paredes, la traba máxima es de unos 0,85 N·m, con apenas ~50 N de apriete. Ese apriete no se puede controlar con la llave.</p>
-      <div class="tw"><table>
-        <tr><th>Refuerzo del alojamiento (FEA 3D)</th><th style="text-align:right">σ / N·m</th><th style="text-align:right">adm. por B</th></tr>
-        <tr><td>Actual</td><td class="n">1510 MPa</td><td class="n bad">0,31 N·m</td></tr>
-        <tr><td>Paredes de 2 mm</td><td class="n">1110 MPa</td><td class="n bad">0,42 N·m</td></tr>
-        <tr><td>Puentes que cierran el lado abierto</td><td class="n">1165 MPa</td><td class="n bad">0,39 N·m</td></tr>
-        <tr><td>Paredes de 2 mm + puentes</td><td class="n">1000 MPa</td><td class="n bad">0,46 N·m</td></tr>
-      </table></div>
-      <p class="note">Ningún refuerzo de las paredes alcanza: el mejor llega a una décima parte de lo que aguantan las arandelas, y el punto débil pasa al fondo del alojamiento, que tiene 0,5 a 0,75 mm. La salida es sacar el arrastre de las B de las paredes: B con agujero doble D sobre un buje con planos fijado al cuerpo macizo del eslabón, como en los embragues multidisco. Así la traba vuelve a quedar limitada por las arandelas, unos 12 N·m (estimación, falta verificar).</p>
+      <p class="note">Modelo: FEA 2D de las arandelas y FEA 3D del eslabón con elementos P2, elástico lineal. Las tensiones están promediadas en 0,1–0,15 mm y se excluyen los cantos vivos de contacto, donde el material se asienta localmente.</p>
     </aside>
   </div>
 </div>
@@ -110,60 +108,45 @@ const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 const scene=new THREE.Scene();
 const camera=new THREE.PerspectiveCamera(32,1,0.5,800);
-camera.up.set(0,0,1); camera.position.set(-38,40,26);
-const controls=new THREE.OrbitControls(camera,canvas); controls.target.set(0,-2,0); controls.enableDamping=true;
-scene.add(new THREE.HemisphereLight(0xffffff,0x606a78,0.8));
-const d1=new THREE.DirectionalLight(0xffffff,0.75); d1.position.set(-30,40,50); scene.add(d1);
+camera.up.set(0,0,1); camera.position.set(-44,26,24);
+const controls=new THREE.OrbitControls(camera,canvas); controls.target.set(0,-1,0); controls.enableDamping=true;
+scene.add(new THREE.HemisphereLight(0xffffff,0x606a78,0.85));
+const d1=new THREE.DirectionalLight(0xffffff,0.7); d1.position.set(-30,40,50); scene.add(d1);
 const d2=new THREE.DirectionalLight(0xffffff,0.3); d2.position.set(30,-20,-30); scene.add(d2);
-
 const b64f=s=>{const b=atob(s),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return new Float32Array(u.buffer);};
-// mapa de color: azul -> rojo hasta 460 MPa, rojo oscuro por encima
-const stops=[[0,[43,76,155]],[.2,[58,160,200]],[.4,[108,197,143]],[.6,[232,210,74]],[.8,[232,120,42]],[1,[192,38,45]]];
-function cmap(v){const t=Math.min(v/460,1);for(let i=1;i<stops.length;i++){if(t<=stops[i][0]){const a=stops[i-1],b=stops[i],f=(t-a[0])/(b[0]-a[0]);return a[1].map((c,k)=>(c+(b[1][k]-c)*f)/255);}}return v>460?[0.45,0.05,0.08]:[0.75,0.15,0.18];}
-
-const mats={A:new THREE.MeshStandardMaterial({color:0x7d8fa6,metalness:.55,roughness:.35,side:THREE.DoubleSide}),
-  B:new THREE.MeshStandardMaterial({color:0xb59a62,metalness:.55,roughness:.35,side:THREE.DoubleSide}),
-  C:new THREE.MeshStandardMaterial({color:0x8a8f96,metalness:.55,roughness:.4,side:THREE.DoubleSide}),
-  link:new THREE.MeshStandardMaterial({color:0xb8c0c8,metalness:.15,roughness:.6,side:THREE.DoubleSide}),
-  linkS:new THREE.MeshStandardMaterial({vertexColors:true,metalness:0,roughness:.75,side:THREE.DoubleSide})};
-let link, base, disp, washers=[];
+const stops=[[0,[43,76,155]],[.25,[58,160,200]],[.5,[108,197,143]],[.7,[232,210,74]],[.8,[232,120,42]],[1,[192,38,45]]];
+function cmap(v){if(v<0)return[0.74,0.77,0.8];const t=Math.min(v,1);for(let i=1;i<stops.length;i++){if(t<=stops[i][0]){const a=stops[i-1],b=stops[i],f=(t-a[0])/(b[0]-a[0]);return a[1].map((c,k)=>(c+(b[1][k]-c)*f)/255);}}return[0.75,0.15,0.18];}
+const base={A:0x7d8fa6,B:0xb59a62,suplemento:0x9aa0a8,M40007:0x8a8f96,eslabon:0xb8c0c8};
+const parts={};
 const rotA=new THREE.Group(); scene.add(rotA);
-
+function mk(g,key,ukey,y){
+  const pos=b64f(g[key]); const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  if(ukey){const u=b64f(g[ukey]),col=new Float32Array(pos.length);for(let i=0;i<u.length;i++)col.set(cmap(u[i]),i*3);geo.setAttribute('color',new THREE.BufferAttribute(col,3));}
+  geo.computeVertexNormals();
+  const plain=new THREE.MeshStandardMaterial({color:base[key],metalness:.45,roughness:.45,side:THREE.DoubleSide});
+  const stress=ukey?new THREE.MeshStandardMaterial({vertexColors:true,metalness:0,roughness:.7,side:THREE.DoubleSide}):plain;
+  const m=new THREE.Mesh(geo,stress); m.userData={plain,stress,ord:y}; parts[key]=m; return m;
+}
 fetch('modelo_3d_geom.json').then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(g=>{
   $('status').hidden=true;
-  // eslabón
-  base=b64f(g.eslabon); disp=b64f(g.eslabon_u);
-  const vm=b64f(g.eslabon_vm), col=new Float32Array(base.length);
-  for(let i=0;i<vm.length;i++){const c=vm[i]>0?cmap(vm[i]):[0.72,0.75,0.78];col.set(c,i*3);}
-  const geo=new THREE.BufferGeometry();
-  geo.setAttribute('position',new THREE.BufferAttribute(base.slice(),3));
-  geo.setAttribute('color',new THREE.BufferAttribute(col,3));
-  geo.computeVertexNormals();
-  link=new THREE.Mesh(geo,mats.linkS); scene.add(link);
-  // arandelas (A = M40006 gira con el otro eslabón; B = M40005; C = M40007)
-  Object.keys(g).filter(k=>k.startsWith('02489')).sort((a,b)=>parseFloat(a.split('_')[1])-parseFloat(b.split('_')[1])).forEach((k,i)=>{
-    const t=k.includes('M40006')?'A':k.includes('M40005')?'B':'C';
-    const gg=new THREE.BufferGeometry(); gg.setAttribute('position',new THREE.BufferAttribute(b64f(g[k]),3)); gg.computeVertexNormals();
-    const m=new THREE.Mesh(gg,mats[t]); m.userData={t,i};
-    (t==='A'?rotA:scene).add(m); washers.push(m);
-  });
+  scene.add(mk(g,'eslabon','eslabon_u',0));
+  rotA.add(mk(g,'A','A_u',3.5));
+  scene.add(mk(g,'B','B_u',5.5));
+  scene.add(mk(g,'suplemento',null,8));
+  scene.add(mk(g,'M40007',null,11));
   update();
-}).catch(e=>{$('status').textContent='No se pudo cargar la geometría ('+e.message+').';});
-
+}).catch(e=>{$('status').textContent='No se pudo cargar la simulación ('+e.message+').';});
 function update(){
-  if(!link)return;
-  const e=+$('explode').value*2.2, k=+$('defo').value;
-  washers.forEach(m=>{m.position.y=e*(m.userData.i+1);});
+  if(!parts.eslabon)return;
+  const e=+$('explode').value*3, st=$('mStress').checked;
+  ['A','B','suplemento','M40007'].forEach(k=>{const m=parts[k];m.position.y=e*m.userData.ord;m.visible=$('showW').checked;});
+  Object.values(parts).forEach(m=>m.material=st?m.userData.stress:m.userData.plain);
   rotA.rotation.y=(+$('rot').value)*Math.PI/180;
-  const p=link.geometry.attributes.position;
-  for(let i=0;i<p.count*3;i++)p.array[i]=base[i]+k*disp[i];
-  p.needsUpdate=true; link.geometry.computeVertexNormals();
-  link.material=$('mStress').checked?mats.linkS:mats.link;
-  $('legend').hidden=!$('mStress').checked;
-  washers.forEach(m=>m.visible=$('showW').checked);
-  link.visible=$('showL').checked;
+  parts.eslabon.visible=$('showL').checked;
+  $('legend').hidden=!st;
 }
-['explode','defo','rot','showW','showL','mStress','mGeo'].forEach(id=>$(id).addEventListener('input',update));
+['explode','rot','showW','showL','mStress','mGeo'].forEach(id=>$(id).addEventListener('input',update));
 function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
 function bg(){scene.background=new THREE.Color(css('--scene')||'#e3e7eb');}
 new ResizeObserver(resize).observe(canvas);
