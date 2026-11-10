@@ -294,3 +294,10 @@ Mientras las B se apoyen en las paredes delgadas, la traba no supera unos 2–2,
 - **Opción de máxima traba:** A-B-A-B, A 1,0 + B 0,4 (CuSn8). Apriete 0,74 N·m (F máx. 650 N). Traba 1,61–4,27 N·m. Limita la pared (1,0); B 0,69 y oreja 0,62.
 
 Engrosar más (Δ = 1,5) deja el aro de A en menos de 1 mm alrededor del agujero de Ø6 y baja el r_eff: la ganancia sería marginal.
+
+## Más discos con el apriete fijo de la Allen: buje hexagonal (`buje_multidisco.html`)
+Con F fija (≈ 1310 N), el par que lleva cada arandela es 2·μ·F·r y no depende de cuántas haya. Cada B que se apoya en las paredes agrega carga a la pared, así que con las paredes actuales el par máximo sin dañar queda en ~5 N·m con 1, 2, 3 o 4 B. La solución es que las B arrastren contra un **buje hexagonal de 17-4PH**: 7 mm entre caras, agujero Ø6,1 para el hombro, anclado 5 mm en un hexágono del cuerpo macizo y 0,1 mm más corto que el paquete.
+- A: agujero Ø8,2, 301 duro, 1,1 mm. B: agujero hexagonal de 7,05 mm, contorno con 0,2 mm de juego, CuSn8, 0,9 mm. r_eff = 4,56 mm.
+- Par por arandela con μ 0,35: 4,2 N·m, igual para cualquier cantidad de discos.
+- Traba (F 865–1310 N, μ 0,2–0,35): 1 par 2,3–6,3 · **2 pares 3,9–10,5 (entra en los 4,5 mm actuales)** · 3 pares 5,5–14,6 (alojamiento de 6,5 mm) · 4 pares 7,1–18,8 N·m (8,5 mm).
+- Falta verificar con FEA el aplastamiento del hexágono en la B y en el anclaje de Al, y el aro de la A con agujero de Ø8,2.

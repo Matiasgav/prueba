@@ -1,0 +1,168 @@
+<title>Buje hexagonal multidisco</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: plano técnico — visor 3D a la izquierda, ficha de verificación a la derecha (apilado en móvil) */
+:root{
+  --bg:#eef0f2; --panel:#ffffff; --fg:#1b2026; --muted:#5d6670; --line:#d3d8de;
+  --accent:#c2410c; --bad:#b91c1c; --ok:#15803d; --scene:#e3e7eb;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14181d; --panel:#1c2229; --fg:#e6e9ec; --muted:#9aa4ae; --line:#2e3640;
+  --accent:#fb923c; --bad:#f87171; --ok:#4ade80; --scene:#1a1f25; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14181d; --panel:#1c2229; --fg:#e6e9ec; --muted:#9aa4ae; --line:#2e3640;
+  --accent:#fb923c; --bad:#f87171; --ok:#4ade80; --scene:#1a1f25; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:14px;line-height:1.5}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px;max-width:1320px;margin:0 auto;display:grid;gap:16px}
+header h1{font-family:var(--display);font-weight:700;font-size:1.6rem;margin:0;letter-spacing:-.01em;text-wrap:balance}
+header p{margin:.25rem 0 0;color:var(--muted);max-width:75ch}
+.grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.viewer{align-self:start;background:var(--scene);border:1px solid var(--line);border-radius:6px;position:relative;min-width:0;overflow:hidden}
+#c{display:block;width:100%;height:min(66vh,600px);min-height:340px;touch-action:none}
+.controls{display:flex;flex-wrap:wrap;gap:10px 18px;padding:12px 14px;border-top:1px solid var(--line);background:var(--panel)}
+.controls label{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+.controls input[type=range]{width:130px;accent-color:var(--accent)}
+.controls input[type=checkbox],.controls input[type=radio]{accent-color:var(--accent)}
+.hint{position:absolute;left:12px;top:10px;font:500 .72rem var(--mono);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+#legend{position:absolute;right:12px;top:10px;display:grid;gap:4px;font:500 .72rem var(--mono);color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+#legend .bar{width:170px;height:10px;border-radius:2px;background:linear-gradient(90deg,#2b4c9b,#3aa0c8,#6cc58f,#e8d24a,#e8782a,#c0262d)}
+#legend .ticks{display:flex;justify-content:space-between;font-variant-numeric:tabular-nums}
+[hidden]{display:none!important}
+#status{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font:500 .9rem var(--mono)}
+.spec{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px 18px;min-width:0;display:grid;gap:14px;align-content:start}
+.spec h2{font-family:var(--display);font-size:.95rem;margin:0;letter-spacing:.03em;text-transform:uppercase}
+.verdict{border-left:4px solid var(--bad);padding:4px 0 4px 12px}
+.verdict b{display:block;font-family:var(--display);font-size:1.05rem}
+.verdict span{color:var(--muted);font-size:.86rem}
+table{width:100%;border-collapse:collapse;font-size:.84rem;font-variant-numeric:tabular-nums}
+th{font:500 .72rem var(--mono);color:var(--muted);text-align:left;text-transform:uppercase;letter-spacing:.04em;padding:4px 0;border-bottom:1px solid var(--line)}
+td{padding:5px 0;border-bottom:1px dashed var(--line);vertical-align:top}
+td.n{text-align:right;font-family:var(--mono);white-space:nowrap;padding-left:8px}
+.bad{color:var(--bad)} .ok{color:var(--ok)}
+.note{font-size:.82rem;color:var(--muted)}
+.tw{overflow-x:auto}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Buje hexagonal multidisco</h1>
+    <p>Para que cada disco extra sume traba, el par de las B no puede ir a las paredes del alojamiento. Las B se enganchan por un agujero hexagonal a un buje de acero anclado en la parte maciza del eslabón, como en un embrague multidisco. Las A siguen arrastradas por la oreja hacia el otro eslabón. El apriete es el de siempre con la Allen.</p>
+  </header>
+  <div class="grid">
+    <div class="viewer">
+      <canvas id="c" aria-label="Concepto del buje hexagonal en 3D"></canvas>
+      <div id="status">cargando…</div>
+      <div class="hint">arrastrar: girar · rueda: zoom</div>
+      <div class="controls">
+        <label for="explode">Separar <input id="explode" type="range" min="0" max="1" step="0.01" value="0.5"></label>
+        <label for="rot">Giro del otro eslabón <input id="rot" type="range" min="-20" max="20" step="1" value="0"></label>
+        <label for="pares">Pares A+B <input id="pares" type="range" min="1" max="4" step="1" value="2"> <output id="paresOut">2</output></label>
+        <label for="showL"><input id="showL" type="checkbox" checked> Eslabón</label>
+        <label for="showBolt"><input id="showBolt" type="checkbox" checked> Tornillo</label>
+      </div>
+    </div>
+    <aside class="spec">
+      <h2>Cómo suma discos</h2>
+      <div class="tw"><table>
+        <tr><th>Pieza</th><th>Definición</th></tr>
+        <tr><td><span class="sw" style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#c58b3c;margin-right:6px"></span>Buje</td><td>17-4PH H900. Hexágono de 7 mm entre caras y agujero Ø6,1 para el hombro del tornillo. Anclado 5 mm en un agujero hexagonal del cuerpo macizo, bajo el fondo del alojamiento. Es 0,1 mm más corto que el paquete, así no toma el apriete.</td></tr>
+        <tr><td>A</td><td>La actual, con el agujero agrandado a Ø8,2 para que gire sobre el buje. 301 duro, 1,1 mm.</td></tr>
+        <tr><td>B</td><td>Agujero hexagonal de 7,05 mm y contorno con 0,2 mm de juego contra las paredes, que ya no la sostienen. CuSn8, 0,9 mm.</td></tr>
+        <tr><td>Suplemento</td><td>Redondo, completa la altura hasta el extremo del eslabón.</td></tr>
+      </table></div>
+      <div>
+        <div style="color:var(--muted);font-size:.8rem">Traba de la articulación (apriete con la Allen, F = 865–1310 N, μ 0,2–0,35)</div>
+        <div class="big" id="traba" style="font:500 1.5rem var(--mono)">–</div>
+        <div class="note" id="trabaNote"></div>
+      </div>
+      <div class="tw"><table>
+        <tr><th>Pares A+B</th><th style="text-align:right">Caras</th><th style="text-align:right">Altura</th><th style="text-align:right">Traba</th></tr>
+        <tr><td>1</td><td class="n">3</td><td class="n">2,0 mm</td><td class="n">2,3–6,3 N·m</td></tr>
+        <tr><td>2 (entra en los 4,5 mm actuales)</td><td class="n">5</td><td class="n">4,0 mm</td><td class="n">3,9–10,5 N·m</td></tr>
+        <tr><td>3 (alojamiento de 6,5 mm)</td><td class="n">7</td><td class="n">6,0 mm</td><td class="n">5,5–14,6 N·m</td></tr>
+        <tr><td>4 (alojamiento de 8,5 mm)</td><td class="n">9</td><td class="n">8,0 mm</td><td class="n">7,1–18,8 N·m</td></tr>
+      </table></div>
+      <p class="note">Cada par A+B suma 2 caras, unos 1,6–4,2 N·m, y 2 mm de altura. El par que soporta cada arandela no depende de cuántas haya (4,2 N·m con μ 0,35), así que agregar discos no sobrecarga ninguna pieza. Lo que cambia es el par total sobre el buje y su anclaje: unos 4,2 N·m por cada B. Estos valores son una estimación y hay que verificarlos con FEA: aplastamiento del hexágono sobre la B de bronce y sobre el anclaje en Al, y el aro de la A con agujero de Ø8,2.</p>
+    </aside>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const canvas=$('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(32,1,0.5,800);
+camera.up.set(0,0,1); camera.position.set(-40,34,24);
+const controls=new THREE.OrbitControls(camera,canvas); controls.target.set(0,0,0); controls.enableDamping=true;
+scene.add(new THREE.HemisphereLight(0xffffff,0x606a78,0.85));
+const d1=new THREE.DirectionalLight(0xffffff,0.7); d1.position.set(-30,40,50); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xffffff,0.3); d2.position.set(30,-20,-30); scene.add(d2);
+const b64f=s=>{const b=atob(s),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return new Float32Array(u.buffer);};
+const M=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,metalness:.5,roughness:.4,side:THREE.DoubleSide},o));
+const mA=M(0x7d8fa6), mB=M(0xb58a52), mBuje=M(0xc58b3c,{metalness:.7}), mSp=M(0x9aa0a8), mBolt=M(0x8d949c,{metalness:.7,roughness:.3});
+const mLink=M(0xb8c0c8,{metalness:.15,roughness:.65,transparent:true,opacity:.35,depthWrite:false});
+const Y0=-2.25;                                     // fondo del alojamiento (local)
+const TA=1.1, TB=0.9;
+function hexPath(af,cw){const r=af/Math.sqrt(3),p=new THREE.Path();for(let k=0;k<=6;k++){const a=Math.PI/6+k*Math.PI/3;const x=r*Math.cos(a),y=r*Math.sin(a);k?p.lineTo(x,y):p.moveTo(x,y);}return p;}
+function circ(r){const p=new THREE.Path();p.absarc(0,0,r,0,Math.PI*2,true);return p;}
+function shapeFrom(pts,hole){const s=new THREE.Shape();s.moveTo(pts[0][0],pts[0][1]);pts.slice(1).forEach(p=>s.lineTo(p[0],p[1]));s.closePath();s.holes.push(hole);return s;}
+function prism(shape,t,mat){const g=new THREE.ExtrudeGeometry(shape,{depth:t,bevelEnabled:false,curveSegments:40});g.rotateX(Math.PI/2);g.translate(0,t,0);return new THREE.Mesh(g,mat);} // ocupa y∈[0,t]
+let data, link, stackA=new THREE.Group(), stackB=new THREE.Group(), fixed=new THREE.Group(), bolt=new THREE.Group();
+const rotG=new THREE.Group(); rotG.add(stackA); scene.add(rotG,stackB,fixed,bolt);
+fetch('buje_geom.json').then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(g=>{
+  data=g; $('status').hidden=true;
+  const geo=new THREE.BufferGeometry(); geo.setAttribute('position',new THREE.BufferAttribute(b64f(g.eslabon),3)); geo.computeVertexNormals();
+  link=new THREE.Mesh(geo,mLink); scene.add(link);
+  build();
+}).catch(e=>{$('status').textContent='No se pudo cargar ('+e.message+').';});
+function clear(gr){while(gr.children.length){const c=gr.children.pop();c.geometry&&c.geometry.dispose();}}
+function build(){
+  if(!data)return;
+  [stackA,stackB,fixed,bolt].forEach(clear);
+  const n=+$('pares').value; $('paresOut').textContent=n;
+  const e=+$('explode').value*2.4;
+  let y=Y0, k=0;
+  for(let i=0;i<n;i++){
+    const a=prism(shapeFrom(data.A,circ(4.1)),TA,mA); a.position.y=y+e*(++k); stackA.add(a); y+=TA;
+    const b=prism(shapeFrom(data.B,hexPath(7.05)),TB,mB); b.position.y=y+e*(++k); stackB.add(b); y+=TB;
+  }
+  const top=Math.max(y, 2.25);
+  if(top-y>0.05){const sp=new THREE.Shape();sp.absarc(0,0,4.9,0,Math.PI*2,false);sp.holes.push(circ(4.1));const m=prism(sp,top-y,mSp);m.position.y=y+e*(++k);fixed.add(m);}
+  // buje hexagonal: anclaje 5 mm bajo el fondo + tramo en el paquete
+  const hx=new THREE.Shape(); const r=7/Math.sqrt(3);
+  for(let j=0;j<=6;j++){const a=Math.PI/6+j*Math.PI/3;j?hx.lineTo(r*Math.cos(a),r*Math.sin(a)):hx.moveTo(r*Math.cos(a),r*Math.sin(a));}
+  hx.holes.push(circ(3.05));
+  const bl=(y-Y0)-0.1+5; const bu=prism(hx,bl,mBuje); bu.position.y=Y0-5; fixed.add(bu);
+  // tornillo de hombro (cabeza del lado del otro eslabón)
+  const cyl=(r,y0,y1,mat)=>{const c=new THREE.Mesh(new THREE.CylinderGeometry(r,r,y1-y0,40),mat);c.position.y=(y0+y1)/2;return c;};
+  const yh=top+0.5+e*(k+1)+3;
+  bolt.add(cyl(3,Y0-6,yh,mBolt), cyl(2.5,Y0-12,Y0-6,M(0x7a8088,{roughness:.7})), cyl(5,yh,yh+5,mBolt));
+  link.visible=$('showL').checked; bolt.visible=$('showBolt').checked;
+  rotG.rotation.y=(+$('rot').value)*Math.PI/180;
+  const caras=2*n+1, Fmax=1310, Fmin=Fmax*0.66, re=4.56;
+  const t0=caras*0.2*Fmin*re/1000, t1=caras*0.35*Fmax*re/1000;
+  $('traba').textContent=t0.toFixed(1).replace('.',',')+' – '+t1.toFixed(1).replace('.',',')+' N·m';
+  $('trabaNote').textContent=caras+' caras · altura del paquete '+(y-Y0).toFixed(1).replace('.',',')+' mm'+((y-Y0)>4.5?' (necesita un alojamiento más profundo que los 4,5 mm actuales)':' (entra en el alojamiento actual)');
+}
+['explode','rot','pares','showL','showBolt'].forEach(id=>$(id).addEventListener('input',build));
+function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+function bg(){scene.background=new THREE.Color(css('--scene')||'#e3e7eb');}
+new ResizeObserver(resize).observe(canvas);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',bg);
+new MutationObserver(bg).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+bg(); resize();
+(function loop(){controls.update();renderer.render(scene,camera);requestAnimationFrame(loop);})();
+})();
+</script>
