@@ -306,3 +306,9 @@ Con F fija (≈ 1310 N), el par que lleva cada arandela es 2·μ·F·r y no depe
 El buje se hace de barra redonda de Ø8 (17-4PH). Abajo queda redondo, de Ø8 × 5 mm, y entra en un agujero de **Ø8 H7** bajo el fondo del alojamiento. Arriba se fresa el hexágono de 7 mm entre caras que arrastra las B. El giro se traba con **2 pasadores cilíndricos de Ø2 × 5** (ISO 8734), en agujeros de Ø2 hechos con mecha sobre la línea de unión buje/eslabón, a 180°. En el eslabón solo hay agujeros redondos.
 - Con 2 pares A+B (8,4 N·m sobre el buje): 1050 N por pasador, aplastamiento en el Al de unos 210 MPa (límite 460), corte de unos 105 MPa. Con 3 o más pares, pasadores de 8 mm.
 - Queda por verificar el aplastamiento del hexágono sobre la B: con CuSn8 de 0,9 mm da unos 570 MPa, cerca del límite.
+
+### Verificación manual de las paredes (viga en voladizo)
+Cara inferior: 145 N por N·m en cada B (FEA 2D). Pared de 7,2 mm de ancho × 1,0 mm, empotrada en el fondo. σ = 6·F·y/(b·h²):
+- B1 a 1,25 mm: 151 MPa/N·m · B2 a 2,75 mm: 332 · B3 a 4,25 mm: 514 → **total ~1000 MPa por N·m** (FEA 3D: 1510; la diferencia viene de que la carga se concentra en la mitad de la cara, cerca del canto libre).
+- La reserva plástica de una sección rectangular es 1,5 veces, y la fluencia local se redistribuye. El límite real de deformación permanente puede estar entre 1,5 y 2 veces por encima del de primera fluencia, pero sigue un orden de magnitud por debajo de lo que aguantan las arandelas.
+- **Supuesto que puede cambiar el resultado:** no se modeló el otro eslabón. Si envuelve el extremo del alojamiento con poco juego, las paredes se apoyan en él después de deformarse ese juego y la capacidad sube mucho.
