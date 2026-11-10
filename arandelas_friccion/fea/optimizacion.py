@@ -33,6 +33,21 @@ def vm(s):
     return np.sqrt(0.5 * ((sxx - syy) ** 2 + (syy - szz) ** 2 + (szz - sxx) ** 2) + 3 * (sxy ** 2 + syz ** 2 + sxz ** 2))
 
 
+def capacidades(var):
+    """cA, cB(301), cB(CuSn8) en N·m/mm y radio eficaz para cada variante de alojamiento."""
+    if "_d" in var:
+        d = float(var.split("_d")[1])
+        r = json.load(open(f"resultados_real_d{d}_1Nm.json"))
+        ro = min(5.0, r["r_ext_A"])
+    else:
+        r = json.load(open("resultados_real_1Nm.json")); ro = 5.0
+    a, b = r["A_real"], r["B_real"]
+    cA = min(965 / a["vm_lejos_1Nm"], SY_AL / a["p_media_1Nm"]) * 2   # resultados con t = 0,5 -> por mm
+    cB = {"inox/inox": 965 / b["vm_lejos_1Nm"] * 2, "inox/bronce CuSn8": 600 / b["vm_lejos_1Nm"] * 2}
+    reff = 2 / 3 * (ro**3 - 27) / (ro**2 - 9)
+    return cA, cB, reff
+
+
 class Pared:
     def __init__(self, var):
         self.p, self.S, src, self.yc = cargar(var)
@@ -57,7 +72,8 @@ class Pared:
         return val
 
 
-def evaluar(pared, nB, fin_B, tA, tB, par):
+def evaluar(pared, nB, fin_B, tA, tB, par, caps=None):
+    cA_, cB_, R_ = caps if caps else (cA, {k: v["cB"] for k, v in PARES.items()}, R)
     nA = nB if fin_B else nB + 1
     altura = nA * tA + nB * tB
     if altura > H_MAX + 1e-9: return None
@@ -71,23 +87,23 @@ def evaluar(pared, nB, fin_B, tA, tB, par):
         if s == "B": centrosB.append(y + t / 2)
         y += t
     caras = 1 + (len(seq) - 1) + (1 if fin_B else 0)
-    mu0, mu1 = PARES[par]["mu"]; cB = PARES[par]["cB"]
+    mu0, mu1 = PARES[par]["mu"]; cB = cB_[par]
     s_unit = pared.sigma_unit(centrosB, tB)              # MPa por N·m en cada B
     # par por arandela con μ máx: Tw = 2·μ1·F·R  -> límites de F
     lim = {
         "pared Al": SY_AL / SF / s_unit,                  # N·m por B
-        "oreja A": cA * tA / SF,
+        "oreja A": cA_ * tA / SF,
         "cuerpo B": cB * tB / SF,
     }
     Tw_adm = min(lim.values())
-    F_max = min(Tw_adm * 1000 / (2 * mu1 * R), F_TORN / SF)
-    Tw = 2 * mu1 * F_max * R / 1000
+    F_max = min(Tw_adm * 1000 / (2 * mu1 * R_), F_TORN / SF)
+    Tw = 2 * mu1 * F_max * R_ / 1000
     util = {k: Tw / v for k, v in lim.items()}
     util["tornillo"] = F_max / (F_TORN / SF)
-    T_max = caras * mu1 * F_max * R / 1000
-    T_min = caras * mu0 * F_max * DISP_F * R / 1000
+    T_max = caras * mu1 * F_max * R_ / 1000
+    T_min = caras * mu0 * F_max * DISP_F * R_ / 1000
     return dict(nB=nB, nA=nA, seq="-".join(seq), tA=tA, tB=tB, par=par, altura=round(altura, 2),
-                caras=caras, F_max=round(F_max), T_apriete=round(F_max * 0.23 * 5 / 1000, 2),
+                caras=caras, F_max=round(F_max), T_apriete=round(F_max * 0.23 * 5 / 1000, 2), r_eff=round(R_, 2),
                 T_min=round(T_min, 2), T_max=round(T_max, 2), limita=max(util, key=util.get),
                 util={k: round(v, 2) for k, v in util.items()}, sigma_unit=round(s_unit))
 
@@ -96,9 +112,10 @@ def main():
     variantes = sys.argv[1:] or ["real"]
     todos = []
     for var in variantes:
-        pared = Pared(var)
+        pared = Pared(var); caps = capacidades(var)
+        print(var, "cA=%.2f N·m/mm, cB=%s, r_eff=%.2f mm" % (caps[0], {k: round(v, 2) for k, v in caps[1].items()}, caps[2]))
         for nB, fin_B, tA, tB, par in itertools.product(range(1, 7), (True, False), ESP, ESP, PARES):
-            r = evaluar(pared, nB, fin_B, tA, tB, par)
+            r = evaluar(pared, nB, fin_B, tA, tB, par, caps)
             if r: r["eslabon"] = var; todos.append(r)
     todos.sort(key=lambda r: -r["T_min"])
     json.dump(todos, open("optimizacion.json", "w"), indent=1)

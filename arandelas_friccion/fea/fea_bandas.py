@@ -29,7 +29,7 @@ others = [(3, t) for d, t in gmsh.model.getEntities(3) if t != vol]
 gmsh.model.occ.remove(others, recursive=True)
 box = gmsh.model.occ.addBox(-22.5, 70, -118.5, 15.5, 14.3, 15)
 res_i, _ = gmsh.model.occ.intersect([(3, vol)], [(3, box)])
-VAR = (sys.argv[3] if len(sys.argv) > 3 else "real") + (f"_{sys.argv[5]}B" if len(sys.argv) > 5 else "")
+VAR = (sys.argv[3] if len(sys.argv) > 3 else "real") + (f"_d{sys.argv[5]}" if len(sys.argv) > 5 else "")
 extra = []
 if "pared2" in VAR:      # paredes de 1 -> 2 mm (engrosadas hacia afuera)
     extra += [gmsh.model.occ.addBox(-19.67, 79.75, -104.45, 7.9, 4.5, 1.075),
@@ -40,6 +40,10 @@ if "puente" in VAR:      # cierre del lado abierto con puentes de 0,5 mm a la al
         # unión puente-pared: rellenar entre el canto libre (x=-19.67) y el puente
         extra.append(gmsh.model.occ.addBox(C[0] - 7.0, a, C[1] - 6.5, 2.85, bb - a, 1.05))
         extra.append(gmsh.model.occ.addBox(C[0] - 7.0, a, C[1] + 5.45, 2.85, bb - a, 1.05))
+DELTA_G = float(sys.argv[5]) if len(sys.argv) > 5 else 0.0
+if DELTA_G:              # paredes superior e inferior engrosadas hacia adentro
+    extra += [gmsh.model.occ.addBox(-19.67, 79.75, -105.375 - DELTA_G, 8.67, 4.5, DELTA_G + 0.05),
+              gmsh.model.occ.addBox(-19.67, 79.75, -116.425, 8.67, 4.5, DELTA_G + 0.05)]
 if extra:
     out_f, _ = gmsh.model.occ.fuse(res_i, [(3, e) for e in extra])
     print("volúmenes tras fusionar:", out_f, flush=True)
@@ -68,7 +72,8 @@ K = asm(linear_elasticity(*lame_parameters(E, NU)), ib)
 print("gdl", K.shape[0], flush=True)
 
 # ---- carga: fuerzas de contacto de B sobre la pared
-B = json.load(open("resultados_real_1Nm.json"))["B_real"]["contacto"]
+DELTA = float(sys.argv[5]) if len(sys.argv) > 5 else 0.0
+B = json.load(open(f"resultados_real_d{DELTA}_1Nm.json" if DELTA else "resultados_real_1Nm.json"))["B_real"]["contacto"]
 B = np.array(B)                                       # x, z, f, mx, mz  (local)
 B = B[B[:, 2] > 1e-6]
 src = B[:, :2]; fvec = -B[:, 2:3] * B[:, 3:5]         # fuerza sobre la pared, dirección -m

@@ -43,27 +43,28 @@ def caso_B():
     return P, ap
 
 
-res = {}
-for nombre, (cont, ap) in {"A_real": caso_A(), "B_real": caso_B()}.items():
-    mesh = F.malla(cont)
-    ib, u, cands, fz, q = F.resolver(mesh, ap)
-    vm = F.von_mises(ib, u, mesh); vm_avg = F.promedio(mesh, vm)
-    c = np.array([[k[4], k[5]] for k in cands]); tags = np.array([k[3] for k in cands])
-    act = fz > 1e-3 * fz.max()
-    d, _ = cKDTree(c[act]).query(mesh.p.T)
-    pared = act & (tags != "vastago")
-    r = dict(vm_prom_1Nm=float(vm_avg.max()), vm_lejos_1Nm=float(vm_avg[d > 0.3].max()),
-             pos_max=mesh.p[:, int(np.argmax(vm_avg))].round(2).tolist(),
-             F_pared_total_1Nm=float(fz[pared].sum()))
-    # fuerzas de contacto sobre la pared (para cargar el modelo 3D del eslabón)
-    r["contacto"] = [[float(c[i, 0]), float(c[i, 1]), float(fz[i]), *map(float, cands[i][2])]
-                     for i in np.where(pared)[0]]
-    if nombre == "A_real":
-        o = pared; largo = c[o, 0].max() - c[o, 0].min()
-        r["p_media_1Nm"] = float(fz[o].sum() / (largo * F.T))
-        _, r["p_pared_1Nm"] = F.presion_pared(cands, fz, ["oreja"], 0)
-    res[nombre] = r
-    print(nombre, {k: v for k, v in r.items() if k != "contacto"}, flush=True)
-    np.savez(f"{nombre}.npz", p=mesh.p, t=mesh.t, vm_avg=vm_avg,
-             cx=c[:, 0], cy=c[:, 1], cf=fz)
-json.dump(res, open("resultados_real_1Nm.json", "w"), indent=1)
+if __name__ == "__main__":
+    res = {}
+    for nombre, (cont, ap) in {"A_real": caso_A(), "B_real": caso_B()}.items():
+        mesh = F.malla(cont)
+        ib, u, cands, fz, q = F.resolver(mesh, ap)
+        vm = F.von_mises(ib, u, mesh); vm_avg = F.promedio(mesh, vm)
+        c = np.array([[k[4], k[5]] for k in cands]); tags = np.array([k[3] for k in cands])
+        act = fz > 1e-3 * fz.max()
+        d, _ = cKDTree(c[act]).query(mesh.p.T)
+        pared = act & (tags != "vastago")
+        r = dict(vm_prom_1Nm=float(vm_avg.max()), vm_lejos_1Nm=float(vm_avg[d > 0.3].max()),
+                 pos_max=mesh.p[:, int(np.argmax(vm_avg))].round(2).tolist(),
+                 F_pared_total_1Nm=float(fz[pared].sum()))
+        # fuerzas de contacto sobre la pared (para cargar el modelo 3D del eslabón)
+        r["contacto"] = [[float(c[i, 0]), float(c[i, 1]), float(fz[i]), *map(float, cands[i][2])]
+                         for i in np.where(pared)[0]]
+        if nombre == "A_real":
+            o = pared; largo = c[o, 0].max() - c[o, 0].min()
+            r["p_media_1Nm"] = float(fz[o].sum() / (largo * F.T))
+            _, r["p_pared_1Nm"] = F.presion_pared(cands, fz, ["oreja"], 0)
+        res[nombre] = r
+        print(nombre, {k: v for k, v in r.items() if k != "contacto"}, flush=True)
+        np.savez(f"{nombre}.npz", p=mesh.p, t=mesh.t, vm_avg=vm_avg,
+                 cx=c[:, 0], cy=c[:, 1], cf=fz)
+    json.dump(res, open("resultados_real_1Nm.json", "w"), indent=1)
