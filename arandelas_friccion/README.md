@@ -279,3 +279,18 @@ FEA 3D con solo B1 y B2 cargando el alojamiento: σ máx. de 787 MPa con 1 N·m 
 | **B arrastradas por un buje doble D** | **A-B-A-B-A-B, 1,0/0,5 inox/inox** | **0,85 N·m** | **4,2–12,7** | **B 1,0 · oreja 0,94 · tornillo 0,56** |
 
 Mientras las B se apoyen en las paredes delgadas, la traba no supera unos 2–2,6 N·m, por más que se optimice el paquete: conviene una sola B pegada al fondo. Con el buje doble D, el paquete actual (que ya es el óptimo) queda balanceado entre B, oreja y tornillo, y la traba sube unas 16 veces. Falta verificar el buje y la B con agujero doble D.
+
+## Paredes superior e inferior engrosadas hacia adentro (arandelas achicadas)
+`fea/fea_real_delta.py` (FEA 2D de A y B recortadas, con R0,4 en la raíz de la oreja) y `fea/fea_bandas.py ... <Δ>` (FEA 3D con las paredes engrosadas Δ hacia adentro). Las caras planas pasan de ±5,5 a ±(5,5 − Δ). B se recorta a esa altura. A queda con radio 5,45 − Δ para poder girar, más la oreja con la punta a 8,0.
+
+| Δ (pared) | Caras de B | Radio de A | cA [N·m/mm] | cB 301 / CuSn8 | r_eff | Mejor traba (garantizada–máx.) |
+|---|---|---|---|---|---|---|
+| 0 (1,0 mm) | 11 mm | 5,5 | 4,8 | 9,1 / 5,6 | 4,08 | 0,76–2,0 N·m |
+| 0,5 (1,5 mm) | 10 mm | 4,95 | 3,9 | 11,1 / 6,9 | 4,05 | 1,38–3,67 N·m |
+| **1,0 (2,0 mm)** | **9 mm** | **4,45** | 3,5 | 12,5 / 7,8 | 3,77 | **1,61–4,27 N·m** |
+
+**Recomendado (Δ = 1,0, pared de 2 mm):**
+- **Opción balanceada:** **A-B, A 1,0 mm (301 duro) + B 0,8 mm (CuSn8)**. Apriete 1,2 N·m (F máx. 1050 N). Traba 1,57–4,15 N·m. Utilización: oreja 1,0 · pared 0,97 · tornillo 0,80 · B 0,56. Son solo 2 arandelas de friccion más un suplemento redondo para completar la altura.
+- **Opción de máxima traba:** A-B-A-B, A 1,0 + B 0,4 (CuSn8). Apriete 0,74 N·m (F máx. 650 N). Traba 1,61–4,27 N·m. Limita la pared (1,0); B 0,69 y oreja 0,62.
+
+Engrosar más (Δ = 1,5) deja el aro de A en menos de 1 mm alrededor del agujero de Ø6 y baja el r_eff: la ganancia sería marginal.
