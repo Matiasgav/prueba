@@ -199,7 +199,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     <p class="lead">Estimación de la probabilidad de cada modo de fallo P1–P4 del núcleo (almacenamiento, contador, driver, iniciador), con la justificación de cada número, el esquemático analizado y un esquemático propuesto que corrige los caminos de falla encontrados.</p>
     <div class="meta"><span>Base: sistema-retardo-autoalimentado.md y Core del retardo autoalimentado</span><span>Fecha: 22/11/2026</span><span>Unidad: probabilidad por unidad y por uso</span></div>
     <nav class="toc" aria-label="Índice">
-      <a href="#s1"><span>1</span>Resumen</a><a href="#s2"><span>2</span>Esquemático analizado</a><a href="#s3"><span>3</span>Método</a><a href="#s4"><span>4</span>Datos de entrada</a><a href="#s5"><span>5</span>P1</a><a href="#s6"><span>6</span>P2 y P4</a><a href="#s7"><span>7</span>P3</a><a href="#s8"><span>8</span>Esquemático propuesto</a><a href="#s9"><span>9</span>Sensibilidad</a><a href="#s10"><span>10</span>Anexo</a><a href="#s11"><span>11</span>Límites y fuentes</a>
+      <a href="#s1"><span>1</span>Resumen</a><a href="#s2"><span>2</span>Esquemático analizado</a><a href="#s3"><span>3</span>Método</a><a href="#s4"><span>4</span>Datos de entrada</a><a href="#s4r"><span>4.1</span>Revisión de datos</a><a href="#s5"><span>5</span>P1</a><a href="#s6"><span>6</span>P2 y P4</a><a href="#s7"><span>7</span>P3</a><a href="#s8"><span>8</span>Esquemático propuesto</a><a href="#s9"><span>9</span>Sensibilidad</a><a href="#s10"><span>10</span>Anexo</a><a href="#s11"><span>11</span>Límites y fuentes</a>
     </nav>
   </header>
 
@@ -210,12 +210,13 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     <p class="small">Valor central con las tasas de falla de la media geométrica entre el dato bajo y el alto; el rango usa todas las tasas bajas o todas las altas. “Propuesto” es el esquemático de la sección 8. No incluye la confiabilidad propia del iniciador ni las fallas sin tasa (firmware, choque, RF), que se cierran con ensayo.</p>
     <h3>Hallazgos</h3>
     <ol class="findings">
-      <li><div><strong>El diseño falla hacia “no activa”.</strong> P3 es el modo más probable y lo dominan fallas que aparecen durante el almacenamiento (cristal, MCU, LDO) y defectos de soldadura que pasan la prueba. Es la consecuencia buscada de “ante la duda, abortar” y de las dos llaves en serie.</div></li>
+      <li><div><strong>El diseño falla hacia “no activa”.</strong> P3 es el modo más probable y lo dominan fallas que aparecen durante el almacenamiento (micro, cristal, conector) y defectos de soldadura que pasan la prueba. Es la consecuencia buscada de “ante la duda, abortar” y de las dos llaves en serie.</div></li>
       <li><div><strong>P1 tiene fallas simples, no solo dobles.</strong> Las dos llaves están del lado bajo: si el cable del iniciador o la pista del drain de Q1 hace corto a masa, el puente queda directo sobre C_F y dispara apenas carga. Una sobretensión en VDD (LDO en corto, R1 o R3 en corto) puede dañar el MCU y dejar las dos salidas en alto.</div></li>
-      <li><div><strong>El acople del flanco de carga en las gates no pasa</strong> con pull-downs de 100 kΩ y R_s de 0,1 Ω: la gate llega a ~0,9 V con V_th mínima de 0,52 V a 70 °C. No es una probabilidad: es un defecto de diseño que hay que corregir y medir.</div></li>
+      <li><div><strong>El acople del flanco de carga en las gates no pasa</strong> con pull-downs de 100 kΩ y R_s de 0,1 Ω: con C_rss = 50 pF (hoja de datos) la gate llega a ~0,57 V, apenas por encima de la V_th mínima estimada a 70 °C (~0,52 V); con fuente rígida (R_s = 0) llega a ~0,86 V. No es una probabilidad: es un margen de diseño que hay que corregir y medir.</div></li>
       <li><div><strong>P2 y P4 no los produce la electrónica.</strong> El error de tiempo máximo es 0,32 % contra ±5 %. Lo que queda es el error humano al cargar T; con T fija en firmware desaparece.</div></li>
       <li><div><strong>P3 depende del I²t del iniciador.</strong> Con C_F = 330 µF el peor caso entrega ~3 A²·ms a 40 s. Si el iniciador pide 5 A²·ms, P3 sube a ~4 %. Es el dato pendiente que más mueve el resultado.</div></li>
-      <li><div><strong>El esquemático propuesto baja P1 unas 100 veces</strong> con una llave del lado alto, clamp de VDD, pull-downs de 10 kΩ con C_GS y un enclavamiento de t1 por hardware. Agrega ≈ 0,20 USD por placa armada en JLCPCB (≈ 0,24 USD puesta en Argentina) a 1000 unidades.</div></li>
+      <li><div><strong>El esquemático propuesto baja P1 unas 120 veces</strong> con una llave del lado alto, clamp de VDD, pull-downs de 10 kΩ con C_GS y un enclavamiento de t1 por hardware. Agrega ≈ 0,20 USD por placa armada en JLCPCB (≈ 0,24 USD puesta en Argentina) a 1000 unidades. El supervisor TPS3808 elegido no alcanza: su retardo varía ±40 % y no garantiza t1 (sección 8).</div></li>
+      <li><div><strong>La revisión de datos (sección 4.1) cambió tres cosas:</strong> el extremo alto de las tasas ahora sale de MIL-HDBK-217F; el factor de reposo pasó de 0,1 a 1/30; y la fuga de C_F quedó marcada como no garantizada por la hoja de datos. Con eso P3 bajó de 3,5 × 10⁻⁴ a 2,2 × 10⁻⁴ y P1 quedó casi igual.</div></li>
     </ol>
   </section>
 
@@ -356,17 +357,17 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     <div class="formula">
       <div class="eq">P = λ · 10⁻⁹ · f · (k<sub>d</sub> · t<sub>alm</sub> + t<sub>uso</sub>) · c · m</div>
       <div class="ex">λ: tasa de falla de la pieza en FIT (fallas cada 10⁹ h) · f: fracción de las fallas que son de ese modo</div>
-      <div class="ex">k<sub>d</sub>: factor de reposo = 0,1 · t<sub>alm</sub>: horas de almacenamiento = 2 × 8760 · t<sub>uso</sub>: 40 s = 0,011 h</div>
+      <div class="ex">k<sub>d</sub>: factor de reposo = 1/30 (Harris: relación operación/reposo 30:1 a 60:1) · t<sub>alm</sub>: horas de almacenamiento = 2 × 8760 · t<sub>uso</sub>: 40 s = 0,011 h</div>
       <div class="ex">c: probabilidad condicional de que ese modo produzca el efecto · m: factor de la mejora de diseño (1 sin mejora)</div>
     </div>
     <div class="callout" style="--cc:var(--c-count)">
       <h3>Ejemplo resuelto: C_F abierto</h3>
-      <p class="mono" style="font-size:13.5px">λ = √(0,13 × 8,2) = 1,03 FIT · f = 0,5 · horas = 0,1 × 17 520 + 0,011 = 1752 h · c = 1</p>
-      <p class="mono" style="font-size:13.5px">P = 1,03 × 10⁻⁹ × 0,5 × 1752 = <b>9,0 × 10⁻⁷</b> → aporta a P3</p>
-      <p class="small">El término de uso (0,011 h) es 160 000 veces menor que el de almacenamiento: por eso P crece linealmente con los años de almacenamiento.</p>
+      <p class="mono" style="font-size:13.5px">λ = √(0,13 × 13) = 1,30 FIT · f = 0,5 · horas = (1/30) × 17 520 + 0,011 = 584 h · c = 1</p>
+      <p class="mono" style="font-size:13.5px">P = 1,30 × 10⁻⁹ × 0,5 × 584 = <b>3,8 × 10⁻⁷</b> → aporta a P3</p>
+      <p class="small">El término de uso (0,011 h) es 53 000 veces menor que el de almacenamiento: por eso P crece linealmente con los años de almacenamiento.</p>
     </div>
     <div class="prose">
-      <p><strong>Valor central y rango.</strong> Para cada familia de piezas hay un λ bajo (dato del fabricante o tecnología moderna) y uno alto (manuales de confiabilidad con datos de campo viejos, conservadores). Las dos fuentes difieren hasta 40 veces, así que el valor central es la media geométrica √(λ<sub>bajo</sub> · λ<sub>alto</sub>), que es el centro en escala logarítmica. El rango del resumen se calcula con todas las tasas bajas y con todas las altas.</p>
+      <p><strong>Valor central y rango.</strong> Para cada familia de piezas hay un λ bajo (dato del fabricante, de la misma pieza o de una equivalente) y uno alto (MIL-HDBK-217F Notice 2, método de conteo de piezas en ambiente G_B, con el factor de calidad de piezas comerciales). Las dos fuentes difieren entre 7 y más de 1000 veces: el manual es de 1991–1995 y sobreestima mucho a los componentes actuales. Por eso el valor central es la media geométrica √(λ<sub>bajo</sub> · λ<sub>alto</sub>), que es el centro en escala logarítmica. El rango del resumen se calcula con todas las tasas bajas y con todas las altas.</p>
       <p><strong>Combinaciones de dos fallas.</strong> Las filas latentes se agrupan por lo que habilitan (Q1 encendido, Q2 encendido, FIRE_A en alto, FIRE_B en alto, gate flotante) y se multiplican de a pares, suponiendo independencia.</p>
       <p><strong>Lo paramétrico</strong> (energía y tiempo) se calcula por Monte Carlo con las tolerancias de los componentes. <strong>Lo sistemático</strong> (errores de firmware) y lo que depende del ambiente (choque, RF, ESD) no tiene tasa: queda en el listado pero no se suma.</p>
       <p><strong>Tipo de dato.</strong> Cada término de las memorias de cálculo indica si viene de un <span class="t-dato">dato</span> publicado, de un <span class="t-sup">supuesto</span>, de una <span class="t-mix">mezcla</span> (λ alto publicado, λ bajo supuesto) o de un <span class="t-calc">cálculo</span> de este análisis.</p>
@@ -376,23 +377,48 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
   <!-- 4 DATOS -->
   <section id="s4" aria-labelledby="h4s">
     <div class="sec-head"><h2 id="h4s"><span class="num">4</span>Datos de entrada</h2><span class="tag">tasas de falla y reparto de modos</span></div>
-    <h3>Tasas de falla por familia (FIT)</h3>
-    <div class="scroll"><table style="min-width:860px"><thead><tr><th>Familia</th><th>Piezas</th><th>λ bajo</th><th>λ alto</th><th>Central</th><th>De dónde sale</th></tr></thead><tbody id="lam-table"></tbody></table></div>
-    <h3>Reparto de modos de falla</h3>
-    <div class="scroll"><table style="min-width:760px"><thead><tr><th>Tipo de pieza</th><th>Reparto usado</th><th>Fuente</th></tr></thead><tbody>
-      <tr><td>MOSFET de silicio</td><td class="n">corto 51 % · no conduce 22 % · deriva 17 % · abierto 5 % · conduce 5 %</td><td class="src" data-src="ptc"></td></tr>
-      <tr><td>Diodo rectificador (D1)</td><td class="n">abierto 60 % · corto 40 %</td><td class="src" data-src="ptc"></td></tr>
-      <tr><td>Diodo de señal (D2)</td><td class="n">abierto 24 % · corto 16 % · deriva 58 %</td><td class="src" data-src="ptc"></td></tr>
-      <tr><td>Supresor / zener (D3)</td><td class="n">abierto 45 % · corto 20 % · deriva 35 %</td><td class="src" data-src="ptc"></td></tr>
-      <tr><td>Resistor de film</td><td class="n">abierto 59 % · deriva 36 % · corto 5 %</td><td class="src" data-src="dsiac"></td></tr>
-      <tr><td>Capacitor cerámico</td><td class="n">corto 49 % · abierto 22 % · deriva 29 %</td><td class="src" data-src="dsiac"></td></tr>
-      <tr><td>Capacitor de polímero (C_F)</td><td class="n">abierto 50 % · corto 30 % · pérdida de capacidad / ESR 20 %</td><td class="src"><span data-src="vish"></span> <span data-src="mur"></span> <span data-src="sup"></span></td></tr>
-      <tr><td>Cristal de cuarzo</td><td class="n">no oscila / abierto 80 % · corrimiento 20 %</td><td class="src" data-src="ptc"></td></tr>
-      <tr><td>Circuito impreso</td><td class="n">abierto 76 % · corto 24 %</td><td class="src" data-src="ptc"></td></tr>
-      <tr><td>LDO</td><td class="n">sin salida 50 % · salida alta 20 % · salida baja 20 % · Iq alta 10 %</td><td class="src" data-src="sup"></td></tr>
-      <tr><td>Microcontrolador</td><td class="n">muerto 60 % · salida trabada 2 % por pin · ambas salidas 0,2 % · otros</td><td class="src" data-src="sup"></td></tr>
+    <h3 id="s4r">4.1 Revisión de los datos</h3>
+    <p>Cada dato del modelo se revisó contra una fuente primaria (norma, hoja de datos o informe del fabricante). El respaldo indica qué tan firme es: <span class="t-dato">A</span> dato publicado de la misma pieza o familia; <span class="t-mix">B</span> norma, manual o pieza equivalente; <span class="t-sup">C</span> supuesto razonado; <span class="t-sup" style="background:color-mix(in srgb, var(--c-init) 18%, transparent);color:var(--c-init)">D</span> sin base: hay que medirlo.</p>
+    <div class="scroll"><table style="min-width:980px"><thead><tr><th>Dato</th><th>Antes</th><th>Revisado</th><th>Fuente</th><th>Respaldo</th></tr></thead><tbody>
+      <tr><td>Tasas de falla, extremo alto</td><td>Tabla A-1 de PTC (no nombra la norma de origen)</td><td>MIL-HDBK-217F N2, Apéndice A, G_B, π_Q comercial (tabla de la sección 4.2)</td><td class="src" data-src="mil217"></td><td><span class="t-mix">B</span></td></tr>
+      <tr><td>Tasas de falla, extremo bajo</td><td>Mayormente supuestos (“10 veces menos”)</td><td>Fabricantes: AOS, Panasonic, Vishay, Nexperia, TI; SN 29500-2 para el MCU</td><td class="src"><span data-src="aos"></span> <span data-src="vmlcc"></span> <span data-src="panares"></span> <span data-src="nexp"></span> <span data-src="ti7a16"></span></td><td><span class="t-dato">A</span> / <span class="t-mix">B</span></td></tr>
+      <tr><td>Factor de reposo k_d</td><td>0,1 (supuesto)</td><td>1/30, rango 1/60–1/10. Regla general para electrónica, no por familia</td><td class="src" data-src="harris"></td><td><span class="t-mix">B</span></td></tr>
+      <tr><td>C_rss del AO3400A</td><td>77 pF</td><td><strong>50 pF</strong>; el acople baja de ~0,88 V a ~0,57 V</td><td class="src" data-src="aods"></td><td><span class="t-dato">A</span></td></tr>
+      <tr><td>Coeficiente térmico de V_th</td><td>−3 mV/°C</td><td>Sin cambio: valor típico, la hoja de datos no lo da</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
+      <tr><td>Reparto de modos del LDO</td><td>Supuesto: salida alta 20 %</td><td><strong>Salida alta 35 %</strong>, sin salida 35 %, fuera de especificación 15 %, power-good 10 %, corto 5 % (LDO de TI equivalente)</td><td class="src" data-src="ti7a16"></td><td><span class="t-mix">B</span></td></tr>
+      <tr><td>Reparto de modos del supervisor</td><td>Supuesto 30/30/20</td><td>Disparo falso 40 %, no se activa 22 %, umbral 22 %, retardo 16 %</td><td class="src" data-src="ti3808"></td><td><span class="t-dato">A</span></td></tr>
+      <tr><td>Retardo del TPS3808</td><td>5,7 s ±30 % (4–7,8 s)</td><td><strong>±40 % del CI</strong> (0,62–1,44 s con 180 nF) → 3,1–8,8 s: no garantiza t1</td><td class="src" data-src="tps3808ds"></td><td><span class="t-dato">A</span></td></tr>
+      <tr><td>Fuga de C_F (presupuesto de energía)</td><td>2–5 µA</td><td>La hoja de datos solo garantiza ≈ 0,2·C·V (≈ 1,6 mA para 330 µF 25 V). La fuga real a 50 % de tensión suele ser de µA, pero no está garantizada y sube con humedad. <strong>Hay que medirla y seleccionar</strong></td><td class="src"><span data-src="leak"></span> <span data-src="tev"></span></td><td><span class="t-sup" style="background:color-mix(in srgb, var(--c-init) 18%, transparent);color:var(--c-init)">D</span></td></tr>
+      <tr><td>Norma del iniciador</td><td>“All-fire 0,999 a 95 %”</td><td>MIL-DTL-23659 pide confiabilidad ≥ 0,99 a 95 % y define el all-fire a 0,999 con 95 %. Su no-fire es 1 A / 1 W durante 5 min: este iniciador (no-fire 0,2–0,25 A) es bastante más sensible que lo que pide esa norma</td><td class="src" data-src="mil23659"></td><td><span class="t-dato">A</span></td></tr>
+      <tr><td>Precisión del HSI16 (opción sin cristal)</td><td>±3 %</td><td>ST da ±1 % típico a 25 °C y dice que empeora en temperatura, sin número en la nota. Leer la tabla de la hoja de datos del STM32L010</td><td class="src" data-src="an4631"></td><td><span class="t-sup">C</span></td></tr>
+      <tr><td>Coeficiente térmico del cristal</td><td>−0,034 ppm/°C²</td><td>Sin cambio: valor típico de diapasón; confirmar en la hoja de datos de Y1</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
+      <tr><td>Error humano al cargar T</td><td>3 × 10⁻³, verificación 0,1</td><td>Sin cambio: orden de magnitud de THERP; las tablas originales no se verificaron</td><td class="src" data-src="therp"></td><td><span class="t-sup">C</span></td></tr>
+      <tr><td>Defectos de soldadura</td><td>200–600 DPMO</td><td>Sin cambio</td><td class="src" data-src="ipc"></td><td><span class="t-mix">B</span></td></tr>
+      <tr><td>Cobertura de la prueba funcional</td><td>99,5–99,9 %</td><td>Sin cambio</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
+      <tr><td>Reparto de modos de MOSFET, diodos, cristal y PCB</td><td>Tabla PTC</td><td>Sin cambio; para resistores y cerámicos coincide con MIL-HDBK-338B (vía DSIAC)</td><td class="src"><span data-src="ptc"></span> <span data-src="dsiac"></span></td><td><span class="t-mix">B</span></td></tr>
+      <tr><td>Reparto de modos del MCU</td><td>Supuesto</td><td>Sin cambio: ST no publica FMEDA del STM32L0</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
+      <tr><td>Probabilidades condicionales (MCU dañado sube ambas salidas, corto de PCB en el par crítico, etc.)</td><td>0,05–0,5</td><td>Sin cambio: razonamiento en la sección 4.4</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
+      <tr><td>Corto a masa del cable del iniciador</td><td>10⁻⁷–10⁻⁵</td><td>Sin cambio: no hay dato publicado</td><td class="src" data-src="sup"></td><td><span class="t-sup" style="background:color-mix(in srgb, var(--c-init) 18%, transparent);color:var(--c-init)">D</span></td></tr>
     </tbody></table></div>
-    <h3>Probabilidades condicionales usadas</h3>
+    <p class="small">Efecto en el caso base: P1 pasó de 1,5 × 10⁻⁶ a 1,6 × 10⁻⁶ (la salida alta del LDO pesa más y el reposo pesa menos); P3 bajó de 3,5 × 10⁻⁴ a 2,2 × 10⁻⁴, pero su rango se abrió (4,9 × 10⁻⁵ – 1,4 × 10⁻³) porque las dos fuentes difieren mucho; P2 y P4 no cambiaron.</p>
+    <h3>4.2 Tasas de falla por familia (FIT)</h3>
+    <div class="scroll"><table style="min-width:860px"><thead><tr><th>Familia</th><th>Piezas</th><th>λ bajo</th><th>λ alto</th><th>Central</th><th>De dónde sale</th></tr></thead><tbody id="lam-table"></tbody></table></div>
+    <h3>4.3 Reparto de modos de falla</h3>
+    <div class="scroll"><table style="min-width:760px"><thead><tr><th>Tipo de pieza</th><th>Reparto usado</th><th>Fuente</th></tr></thead><tbody>
+      <tr><td>MOSFET de silicio</td><td class="n" style="white-space:normal">corto 51 % · no conduce 22 % · deriva 17 % · abierto 5 % · conduce 5 %</td><td class="src" data-src="ptc"></td></tr>
+      <tr><td>Diodo rectificador (D1)</td><td class="n" style="white-space:normal">abierto 60 % · corto 40 %</td><td class="src" data-src="ptc"></td></tr>
+      <tr><td>Diodo de señal (D2)</td><td class="n" style="white-space:normal">abierto 24 % · corto 16 % · deriva 58 %</td><td class="src" data-src="ptc"></td></tr>
+      <tr><td>Supresor / zener (D3)</td><td class="n" style="white-space:normal">abierto 45 % · corto 20 % · deriva 35 %</td><td class="src" data-src="ptc"></td></tr>
+      <tr><td>Resistor de film</td><td class="n" style="white-space:normal">abierto 59 % · deriva 36 % · corto 5 %</td><td class="src" data-src="dsiac"></td></tr>
+      <tr><td>Capacitor cerámico</td><td class="n" style="white-space:normal">corto 49 % · abierto 22 % · deriva 29 %</td><td class="src" data-src="dsiac"></td></tr>
+      <tr><td>Capacitor de polímero (C_F)</td><td class="n" style="white-space:normal">abierto 50 % · corto 30 % · pérdida de capacidad / ESR 20 %</td><td class="src"><span data-src="vish"></span> <span data-src="mur"></span> <span data-src="sup"></span></td></tr>
+      <tr><td>Cristal de cuarzo</td><td class="n" style="white-space:normal">no oscila / abierto 80 % · corrimiento 20 %</td><td class="src" data-src="ptc"></td></tr>
+      <tr><td>Circuito impreso</td><td class="n" style="white-space:normal">abierto 76 % · corto 24 %</td><td class="src" data-src="ptc"></td></tr>
+      <tr><td>LDO (TI TPS7A16-Q1 como equivalente)</td><td class="n" style="white-space:normal">salida alta (sigue a la entrada) 35 % · sin salida 35 % · fuera de especificación 15 % · power-good 10 % · corto entre pines 5 %</td><td class="src" data-src="ti7a16"></td></tr>
+      <tr><td>Supervisor (TI TPS3808E)</td><td class="n" style="white-space:normal">disparo falso 40 % · no se activa 22 % · umbral fuera de especificación 22 % · retardo fuera de especificación 16 %</td><td class="src" data-src="ti3808"></td></tr>
+      <tr><td>Microcontrolador</td><td class="n" style="white-space:normal">muerto 60 % · salida trabada 2 % por pin · ambas salidas 0,2 % · otros</td><td class="src" data-src="sup"></td></tr>
+    </tbody></table></div>
+    <h3>4.4 Probabilidades condicionales usadas</h3>
     <div class="scroll"><table style="min-width:760px"><thead><tr><th>Factor</th><th>Valor</th><th>Razonamiento</th></tr></thead><tbody>
       <tr><td>MCU dañado por sobretensión deja las dos salidas en alto</td><td class="n">0,05</td><td>Cada salida puede quedar baja, alta o en alta impedancia: 1 de 9 combinaciones tiene las dos altas. Se multiplica por ~0,5 de que el daño deje las salidas activas.</td></tr>
       <tr><td>Corto de PCB que une el drain de Q1 con GND</td><td class="n">0,05</td><td>El drain de Q1 es una de ~20 redes de la placa; se supone que el corto cae en un par de redes vecinas al azar.</td></tr>
@@ -400,7 +426,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <tr><td>Deriva que se come el margen (C_F, Q, D3, LDO)</td><td class="n">0,1–0,3</td><td>Solo una parte de las derivas es lo bastante grande como para pasar el margen de energía o de tensión de gate.</td></tr>
       <tr><td>Ambos pull-downs abiertos encienden las dos gates al arrancar</td><td class="n">0,1</td><td>Gate flotante con acople del flanco; supuesto.</td></tr>
     </tbody></table></div>
-    <h3>Probabilidades por unidad (no vienen de una tasa)</h3>
+    <h3>4.5 Probabilidades por unidad (no vienen de una tasa)</h3>
     <div class="scroll"><table style="min-width:760px"><thead><tr><th>Evento</th><th>Rango</th><th>Cómo se obtiene</th></tr></thead><tbody>
       <tr><td>Defecto de soldadura que pasa AOI y prueba funcional</td><td class="n">1,4 × 10⁻⁵ – 2,1 × 10⁻⁴</td><td>200–600 defectos por millón de juntas (IPC) × ~70 juntas = 1,4–4,2 % de placas con algún defecto antes de probar; la prueba funcional deja pasar el 0,1–0,5 % (supuesto de cobertura 99,5–99,9 %). <span data-src="ipc"></span></td></tr>
       <tr><td>MOSFET dañado por ESD en el armado (corto latente)</td><td class="n">10⁻⁶ – 10⁻⁵</td><td>Supuesto. La prueba funcional no lo ve porque la otra llave sigue abriendo.</td></tr>
@@ -419,7 +445,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     <div class="scroll"><table class="calc" id="calc-P1"></table></div>
     <div class="callout" style="--cc:var(--c-init)">
       <p><strong>Por qué domina el cable a masa:</strong> es la única falla simple que dispara sin pasar por el MCU ni por las llaves. Su valor (10⁻⁶ central) es un supuesto con dos órdenes de incertidumbre, pero la conclusión no depende de él: con el valor más bajo del rango sigue siendo del mismo orden que la sobretensión de VDD, y una llave del lado alto lo elimina sin necesidad de estimarlo mejor.</p>
-      <p><strong>Por qué las dos fallas independientes no pesan:</strong> la probabilidad de cada MOSFET en corto latente es ~2 × 10⁻⁵ (13–40 FIT × 51 % × 1752 h, más el daño por ESD en el armado); el producto de dos de ellas queda en ~10⁻¹⁰.</p>
+      <p><strong>Por qué las dos fallas independientes no pesan:</strong> la probabilidad de cada MOSFET en corto latente es ~1,6 × 10⁻⁵ (λ central 38 FIT × 56 % × 584 h, más el daño por ESD en el armado); el producto de dos de ellas queda en ~2 × 10⁻¹⁰.</p>
     </div>
     <h3>5.3 Chequeos de diseño de P1</h3>
     <div class="grid2" id="p1-checks"></div>
@@ -472,6 +498,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
         <p class="small">Entradas: pulso de 10,8–13,2 V; caída de D1 de 0,35–0,5 V; C_F ±20 % (3σ) por −0–12 % en frío; consumo más fuga de 5–25 µA durante 40 s; puente de 1–2 Ω; dos R_DS(on) de 35–60 mΩ; ESR de 25–100 mΩ; trazas 20 mΩ.</p>
         <p class="small">I²t entregado = V<sub>f</sub>² · C / (2 · R<sub>total</sub>), donde V<sub>f</sub> es la tensión de C_F al momento del disparo. La descarga tiene τ ≈ 0,7 ms, así que los 20 ms de disparo la completan.</p>
         <p class="small">Con 330 µF la mediana entregada es 8,6 A²·ms y el 0,1 % peor es 3,4 A²·ms. Si el iniciador pide 2 A²·ms la probabilidad es &lt; 10⁻⁶; con 3 A²·ms ya es 1,4 × 10⁻⁴ y con 5 A²·ms, 3,9 %.</p>
+        <p class="small"><strong>Límite de este cálculo:</strong> usa una fuga de C_F de 5–25 µA en total. La hoja de datos de un capacitor de polímero solo garantiza ≈ 0,2·C·V (del orden de mA), que vaciaría C_F en segundos. Hasta medir la fuga real del modelo elegido, a 11 V, a −30 °C y después de humedad, esta curva vale solo para capacitores seleccionados por fuga.</p>
         <p class="small">Nota: la tabla del §5.2 del documento de diseño escribe “mA²·s”, pero sus valores de C_F corresponden a A²·ms. Conviene corregirlo antes de pedirle el dato al fabricante.</p>
       </div>
     </div>
@@ -613,12 +640,17 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <tr><td>Q1 pasa al lado alto (P-MOS) con desplazador de nivel</td><td class="n">Q1 AO3401A, Q4 2N7002, R7, R8 47 kΩ, R10 10 kΩ</td><td>Un corto a masa de cualquier cable del iniciador o de la pista del drain deja siempre una llave abierta en serie. R7/R8 fijan V_GS ≈ −V_CF/2 (≈ −5,6 V), dentro de los ±12 V del AO3401A.</td><td>Marca 1: el corto a masa pasa a requerir dos fallas (× 0,01).</td><td class="n">≈ 0 USD (el AO3401A cuesta menos que el AO3400A que reemplaza)</td></tr>
       <tr><td>Clamp de VDD</td><td class="n">D5 TVS 3,3 V</td><td>Si el LDO, R1 o R3 se ponen en corto, la TVS fija VDD por debajo del máximo del MCU. El MCU no se daña y no queda con salidas indefinidas; la TVS descarga C_F y la falla termina en P3.</td><td>Marcas 2 y 3: causa común × 0,01 en P1; se agrega como P3.</td><td class="n">≈ 0,02 USD</td></tr>
       <tr><td>Pull-down de 10 kΩ y C_GS de 4,7 nF en cada gate</td><td class="n">R6, R10 10 kΩ; C8, C9 4,7 nF; R9 1 kΩ serie</td><td>El acople del flanco baja de ~0,9 V a ~0,1 V en la gate (sección 5.3). R9 limita la corriente si U3 mantiene la gate a masa mientras FIRE_B está alto.</td><td>Marca 5: chequeo dV/dt pasa.</td><td class="n">≈ 0,005 USD</td></tr>
-      <tr><td>Enclavamiento de t1 por hardware</td><td class="n">U3 supervisor con retardo, C7 1 µF</td><td>La salida de drenador abierto de U3 mantiene la gate de Q2 a masa durante ~6 s desde el arranque (la hoja de datos del TPS3808 da ≈ 5,7 s con C_T = 1 µF; ±30 % con tolerancias: 4–7,8 s). Independiente del firmware: ninguna falla del MCU puede disparar antes de t1, y nunca bloquea un disparo legítimo (t2 ≥ 10 s).</td><td>Marca 4: fallas del MCU que llevan a P1 × 0,01. Agrega sus propios modos (anexo).</td><td class="n">≈ 0,12 USD</td></tr>
+      <tr><td>Enclavamiento de t1 por hardware</td><td class="n">U3 supervisor con retardo, C7 1 µF</td><td>La salida de drenador abierto de U3 mantiene la gate de Q2 a masa durante ~6 s desde el arranque (retardo = C_T/175 nF + 0,5 ms: ≈ 5,7 s con C_T = 1 µF). Independiente del firmware: ninguna falla del MCU puede disparar antes de t1. <strong>Corrección:</strong> la hoja de datos da 0,62–1,44 s para el valor típico de 1,03 s (±40 %); con ±10 % de C_T el retardo queda entre ~3,1 y ~8,8 s y el mínimo cae debajo de t1. Hace falta un temporizador más preciso (ver chequeo abajo).</td><td>Marca 4: fallas del MCU que llevan a P1 × 0,01. Agrega sus propios modos (anexo).</td><td class="n">≈ 0,12 USD</td></tr>
       <tr><td>Filtro en VCF_SENSE y LINE_SENSE con ADC</td><td class="n">C6 100 nF; LINE_SENSE a PA1</td><td>El ADC muestrea bien un divisor de 1,5 MΩ; el modo programación se decide midiendo la tensión y no con un pin digital.</td><td>Reduce abortos en falso (no modelado aparte).</td><td class="n">≈ 0,002 USD</td></tr>
       <tr><td>Prueba de cada llave por separado en el banco</td><td class="n">Comando de prueba + pads</td><td>Detecta un MOSFET en corto de fábrica que la prueba funcional normal no ve.</td><td>Corto latente de armado × 0.</td><td class="n">sin costo de BOM</td></tr>
       <tr><td>Armado en JLCPCB</td><td class="n">+10 piezas, +25 soldaduras, ~6 referencias nuevas</td><td>25 × 0,0017 USD por soldadura y carga de alimentadores (1,53–3 USD por referencia y pedido) repartida en 1000 placas.</td><td>—</td><td class="n">≈ 0,06 USD</td></tr>
       <tr class="tot"><td>Total por placa, 1000 u</td><td></td><td>Materiales ≈ 0,14 + armado ≈ 0,06. Con derechos, tasa de estadística y despachante (× ~1,19), ≈ 0,24 USD puesta en Argentina.</td><td></td><td class="n">≈ 0,20 USD FOB</td></tr>
     </tbody></table></div>
+    <div class="grid2">
+      <div class="check"><h3>Ventana del enclavamiento de t1</h3><span class="status st-bad">NO PASA con TPS3808</span>
+        <dl class="kv"><dt>Ventana necesaria</dt><dd>≥ 4,2 s (t1 + 5 %) y ≤ 9,5 s (t2 mín. − 5 %)</dd><dt>Relación máx./mín. admisible</dt><dd>2,26</dd><dt>TPS3808, solo el CI</dt><dd>1,44 / 0,62 = 2,32</dd><dt>TPS3808 + C_T ±10 %</dt><dd>≈ 2,8 → 3,1–8,8 s</dd><dt>TPL5111 (a verificar)</dt><dd>1 % típ. + 100–400 ppm/°C ≈ ±4 % → 5,8–6,2 s para 6 s</dd></dl>
+        <p class="small">El TPS3808 no puede cubrir la ventana ni con un capacitor perfecto. Un temporizador de precisión como el TPL5111 de TI (35 nA) entra con margen, pero hay que verificar la lógica de su salida en modo de un solo pulso y cotizarlo antes de cambiarlo en el esquemático. El modelo sigue usando las tasas de falla del TPS3808.</p></div>
+    </div>
     <h3>Resultado: analizado contra propuesto</h3>
     <div class="scroll"><table id="cmp" style="min-width:720px"></table></div>
     <p class="small">El consumo de U3 (~2,4 µA) suma ~0,1 mC en 40 s al presupuesto de carga de C_F y hay que incluirlo en el dimensionado. Los cambios no tocan P2 ni P4, que dependen de cómo se fija T.</p>
@@ -636,7 +668,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       </div>
       <div class="ctl">
         <label for="kd">Factor de reposo k<sub>d</sub></label>
-        <select id="kd"><option value="0.03">0,03 (almacén controlado)</option><option value="0.1" selected>0,1 (típico)</option><option value="0.3">0,3 (ciclos térmicos y humedad)</option></select>
+        <select id="kd"><option value="0.016667">1/60 (Harris, extremo bajo)</option><option value="0.033333" selected>1/30 (Harris, caso base)</option><option value="0.1">1/10 (conservador)</option><option value="0.3">0,3 (ciclos térmicos y humedad, supuesto)</option></select>
         <span class="help">Supuesto. El valor por familia está en RAC NONOP-1 / RADC-TR-85-91.</span>
       </div>
       <div class="ctl">
@@ -717,9 +749,9 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     <h2 id="h11s"><span class="num">11</span>Límites del análisis y fuentes</h2>
     <h3>Qué tan reales son los números</h3>
     <ul class="list">
-      <li><strong>Datos de fabricante:</strong> MOSFET (AOS, 13 FIT a 55 °C con 60 % de confianza; informe del AO3400 de 2005, no del AO3400A) y capacitor de polímero (Panasonic, 8,2 FIT en ensayo y 0,13 FIT en campo). ST entrega el FIT del STM32L0 solo a pedido: el valor usado es un supuesto.</li>
-      <li><strong>Datos de manual:</strong> tasas base y reparto de modos de la tabla A-1 de PTC Windchill y de MIL-HDBK-338B / NAVSEA vía DSIAC. Son datos de campo viejos y conservadores: por eso son el extremo alto.</li>
-      <li><strong>Supuestos sin dato:</strong> factor de reposo, modos del LDO y del MCU, probabilidades condicionales, cortos de cableado y cobertura de la prueba. Son los primeros que conviene reemplazar por datos propios.</li>
+      <li><strong>Extremo alto de las tasas:</strong> MIL-HDBK-217F Notice 2, Apéndice A, leído de las tablas originales (ambiente G_B, piezas comerciales). Es la referencia pública más usada, pero sus datos son de 1991–1995: para un MCU actual da ~1900 FIT, decenas de veces más que lo que publican los fabricantes.</li>
+      <li><strong>Extremo bajo:</strong> datos de fabricante. De la misma pieza o familia: MOSFET (AOS), C_F (Panasonic), MLCC (Vishay), resistores (Panasonic), supervisor (TI). De una pieza equivalente: LDO (TI TPS7A16), diodos (Nexperia BAS40LS), cristal (TI, osciladores). Para el MCU no hay dato: se usa el valor de referencia de SN 29500-2.</li>
+      <li><strong>Supuestos sin dato:</strong> probabilidades condicionales, cortos de cableado, cobertura de la prueba, fuga de C_F y el reparto de modos del MCU. La tabla de la sección 4.1 los marca con respaldo C o D: son los primeros que conviene reemplazar por mediciones propias.</li>
       <li><strong>Sin cuantificar:</strong> choque y vibración, ambiente electromagnético y errores de firmware. Para P1 y P3 pueden ser mayores que todo lo sumado; los cubre el plan de ensayos.</li>
       <li>Para demostrar por ensayo P &lt; 10⁻³ con 95 % de confianza hacen falta ~3000 unidades sin falla (regla de 3/n). Los valores más chicos salen del análisis, no del ensayo.</li>
     </ul>
@@ -753,25 +785,40 @@ const SRC = {
   rac:   ["RAC Nonoperating Reliability Databook (NONOP-1) y RADC-TR-85-91: tasas en almacenamiento por familia", "https://users.ece.cmu.edu/~koopman/depend/data/nrd87.htm"],
   st:    ["ST Community: el FIT de STM32 se pide por soporte (my.st.com/ols)", "https://community.st.com/t5/stm32-mcus-products/need-reliability-data-for-the-part-stm32l071kzu3/td-p/673911"],
   therp: ["Swain y Guttmann, NUREG/CR-1278 (THERP): probabilidades de error humano", "https://www.nrc.gov/reading-rm/doc-collections/nuregs/contract/cr1278/index.html"],
-  mil23659: ["MIL-DTL-23659: iniciadores eléctricos, all-fire con 0,999 de confiabilidad a 95 % de confianza", "https://quicksearch.dla.mil/"],
+  mil23659: ["MIL-DTL-23659: iniciadores eléctricos; confiabilidad de funcionamiento ≥ 0,99 a 95 %; MAFV definida a 0,999 con 95 %; no-fire 1 A / 1 W durante 5 min", "https://cartridgepropellantactuateddevices.emilspec.com/MIL-DTL-23659/page36.html"],
+  mil217: ["MIL-HDBK-217F Notice 2 (1995), Apéndice A, Parts Count: tasas genéricas λ_g en ambiente G_B y factores de calidad π_Q", "https://www.dinfo.unifi.it/upload/sub/laboratori/labmaq/labme_1/mil_hdbk_217f_2.pdf"],
+  ti3808: ["Texas Instruments SFFS767, TPS3808E: 6 FIT (IEC TR 62380), 25 FIT de referencia SN 29500-2, reparto de modos de falla", "https://www.ti.com/lit/pdf/sffs767"],
+  ti7a16: ["Texas Instruments SFFS504, TPS7A16-Q1 (LDO): 11 FIT (IEC TR 62380), 40 FIT de referencia SN 29500-2, reparto de modos de falla", "https://www.ti.com/lit/pdf/sffs504"],
+  sn29500: ["Siemens SN 29500-2, valores de referencia citados por TI en SFFS767 (CMOS digital/mixto: 25 FIT a 55 °C)", "https://www.ti.com/lit/pdf/sffs767"],
+  vmlcc: ["Vishay, Reliability of Lead-Bearing MLCCs (doc. 45261): 0402 X7R 0,013 FIT a 25 °C y 50 % de tensión", "https://www.vishay.com/docs/45261/relofpbbearingvisagmlccs.pdf"],
+  panares: ["Panasonic, Technical Guide de resistores chip (vía RS): tasa de campo ERJ 0402 1,56 × 10⁻⁵ FIT a 60 %", "https://docs.rs-online.com/9eca/0900766b814e3fbc.pdf"],
+  nexp:  ["Nexperia, Product Reliability BAS40LS-Q y BAT32LS: Schottky 0,46 FIT (HTRB, 55 °C, Ea 0,7 eV, 60 %)", "https://assets.nexperia.com/documents/quality-document/BAS40LS-Q_Nexperia_Product_Reliability.pdf"],
+  harris: ["Koopman (CMU), Non-Operating Reliability, citando a Harris (1980): relación operación/reposo 30:1 a 60:1 para componentes electrónicos", "https://users.ece.cmu.edu/~koopman/des_s99/non_operating/"],
+  aods:  ["AOS, hoja de datos AO3400A: V_GS(th) 0,65–1,45 V; C_iss 630 pF; C_rss 50 pF; R_DS(on) < 48 mΩ a 2,5 V", "https://www.aosmd.com/res/datasheets/AO3400A.pdf"],
+  tps3808ds: ["TI, hoja de datos TPS3808: retardo = C_T(nF)/175 + 0,5 ms; con 180 nF, 0,62–1,03–1,44 s; I_DD 2,4 µA típ., 5 µA máx.", "https://www.ti.com/lit/ds/symlink/tps3808.pdf"],
+  tpl5111: ["TI, hoja de datos TPL5111: temporizador de 35 nA, precisión 1 % típ., deriva ±100–400 ppm/°C", "https://www.ti.com/lit/gpn/TPL5111"],
+  leak:  ["Power Systems Design: fuga de capacitores de polímero ≈ 0,2·C·V; híbridos ≤ 0,01·C·V (Panasonic)", "https://www.powersystemsdesign.com/articles/aluminum-electrolytic-capacitor-performance-and-circuit-impacts/22/19562"],
+  tev:   ["Teverovsky, NASA TM-2024: capacitores de aluminio-polímero, corrientes de fuga operativas y su variación con humedad y temperatura", "https://nepp.nasa.gov/docs/tasks/005a-APC-Aluminum-Polymer-Capacitors/NASA-TM-2024-Teverovsky-Paper-Aluminum-Polymer-Capacitors-20240011830.pdf"],
+  an4631: ["ST AN4631: HSI16 del STM32L0 ±1 % típico a 25 °C, empeora entre −40 y 105 °C", "https://www.st.com/resource/en/application_note/an4631-how-to-calibrate-an-stm32l0xx-internal-rc-oscillator-stmicroelectronics.pdf"],
   sup:   ["Supuesto de este análisis (sin dato publicado)", null],
   mc:    ["Cálculo de este análisis (Monte Carlo o combinación)", null]
 };
 const SO = Object.keys(SRC);
 const BLK = { ent: "Entrada", alm: "Almacenamiento", cnt: "Contador", drv: "Driver", ini: "Iniciador y cableado", fab: "Fabricación", fw: "Firmware", hum: "Operación", amb: "Ambiente", sis: "Sistema", calc: "Calculado" };
 const L = {
-  con:  [4, 40, ["sup", "ptc"], "Conector y cables", "J1", "Alto: conector no hermético 0,04/10⁶ h (PTC). Bajo: supuesto 10 veces menor para conector moderno."],
-  tvs:  [5, 70, ["sup", "ptc"], "Supresor / zener", "D3, D5", "Alto: diodo de referencia/avalancha 0,07/10⁶ h (PTC). Bajo: supuesto."],
-  res:  [0.5, 16, ["sup", "ptc"], "Resistor de film", "R_s, R1–R10, R_bleed", "Alto: film metálico 0,016/10⁶ h (PTC). Bajo: supuesto para resistor de film moderno."],
-  rect: [3, 120, ["sup", "ptc"], "Diodo rectificador", "D1", "Alto: rectificador de baja potencia 0,12/10⁶ h (PTC). Bajo: supuesto."],
-  sig:  [1, 50, ["sup", "ptc"], "Diodo de señal", "D2", "Alto: diodo de señal de silicio 0,05/10⁶ h (PTC). Bajo: supuesto."],
-  cf:   [0.13, 8.2, ["pana"], "Capacitor de polímero", "C_F", "Panasonic: 0,13 FIT en campo y 8,2 FIT en ensayo a 105 °C y tensión nominal. C_F trabaja a ≤50 % de tensión: el valor real está más cerca del bajo."],
-  mlcc: [1, 100, ["sup", "ptc"], "Capacitor cerámico", "C_loc, C1, C2, C4–C9", "Alto: cerámico chip 0,10/10⁶ h (PTC). Bajo: supuesto para MLCC moderno."],
-  ldo:  [5, 50, ["sup"], "Regulador / supervisor", "U2, U3", "Supuesto sin dato publicado para el HT7525S. Pedir al fabricante."],
-  mcu:  [10, 100, ["sup", "st"], "Microcontrolador", "U1", "Supuesto. ST da el FIT del STM32L0 a pedido; el rango cubre MCUs chicos típicos."],
-  xtal: [15, 200, ["ti", "ptc"], "Cristal de cuarzo", "Y1", "Bajo: osciladores de cristal 15–30 FIT (TI). Alto: cristal de cuarzo 0,20/10⁶ h (PTC)."],
-  fet:  [13, 40, ["aos", "sup"], "MOSFET", "Q1, Q2, Q4", "Bajo: AO3400 13 FIT a 55 °C (AOS). Alto: supuesto 3 veces mayor por muestra chica y versión de 2005."],
-  pcb:  [1, 10, ["sup", "ptc"], "Circuito impreso", "PCB", "Alto: doble faz 0,01/10⁶ h (PTC). Bajo: supuesto."]
+  con:  [10, 100, ["sup", "mil217"], "Conector", "J1", "Alto: MIL-HDBK-217F N2, conector rectangular, G_B 0,050/10⁶ h × π_Q 2 (no MIL). Bajo: sin dato de fabricante; supuesto 10 veces menor."],
+  tvs:  [2.3, 23, ["sup", "mil217"], "Supresor / zener", "D3, D5", "Alto: MIL-HDBK-217F N2, supresor de transitorios, G_B 0,0029/10⁶ h × π_Q 8 (plástico). Bajo: sin dato de fabricante; supuesto 10 veces menor."],
+  res:  [0.000016, 37, ["panares", "mil217"], "Resistor de film chip", "R_s, R1–R10, R_bleed", "Bajo: Panasonic ERJ 0402, campo (televisores), 0 fallas en 5,9 × 10¹³ h, 60 % de confianza. Alto: MIL-HDBK-217F N2, film chip RM, G_B 0,0037/10⁶ h × π_Q 10."],
+  rect: [0.46, 22, ["nexp", "mil217"], "Diodo Schottky de potencia", "D1", "Bajo: Nexperia, Schottky (BAS40LS-Q), HTRB, 55 °C, 60 %; es otra pieza. Alto: MIL-HDBK-217F N2, rectificador/Schottky de potencia, G_B 0,0028/10⁶ h × π_Q 8."],
+  sig:  [0.46, 7.5, ["nexp", "mil217"], "Diodo de señal Schottky", "D2", "Bajo: Nexperia BAS40LS-Q, 0,46 FIT (HTRB, 55 °C, 60 %). Alto: MIL-HDBK-217F N2, diodo de conmutación, G_B 0,00094/10⁶ h × π_Q 8."],
+  cf:   [0.13, 13, ["pana", "mil217"], "Capacitor de polímero", "C_F", "Bajo: Panasonic, 0,13 FIT en campo (60 %). Alto: MIL-HDBK-217F N2, aluminio CU, G_B 0,0013/10⁶ h × π_Q 10 (217F no tiene categoría polímero). Panasonic en ensayo a 105 °C: 8,2 FIT."],
+  mlcc: [0.013, 35, ["vmlcc", "mil217"], "Capacitor cerámico", "C_loc, C1, C2, C4–C9", "Bajo: Vishay MLCC 0402 X7R, 0,013 FIT a 25 °C y 50 % de tensión (0805: 0,072). Alto: MIL-HDBK-217F N2, cerámico chip CDR, G_B 0,0035/10⁶ h × π_Q 10."],
+  ldo:  [11, 95, ["ti7a16", "mil217"], "Regulador LDO", "U2", "Bajo: TI TPS7A16-Q1, 11 FIT por IEC TR 62380 (otro LDO; Holtek no publica). Alto: MIL-HDBK-217F N2, lineal MOS 1–100 transistores, G_B 0,0095/10⁶ h × π_Q 10."],
+  svr:  [6, 95, ["ti3808", "mil217"], "Supervisor con retardo", "U3", "Bajo: TI TPS3808E, 6 FIT por IEC TR 62380. Alto: MIL-HDBK-217F N2, lineal MOS, G_B 0,0095/10⁶ h × π_Q 10."],
+  mcu:  [25, 1900, ["sn29500", "mil217", "st"], "Microcontrolador", "U1", "Bajo: SN 29500-2, CMOS digital/mixto, 25 FIT de referencia a 55 °C (citado por TI); ST no publica el FIT del STM32L0. Alto: MIL-HDBK-217F N2, microprocesador MOS hasta 32 bits, G_B 0,19/10⁶ h × π_Q 10. El manual es de 1991 y sobreestima mucho a los MCU actuales."],
+  xtal: [15, 67, ["ti", "mil217"], "Cristal de cuarzo", "Y1", "Bajo: TI, osciladores de cristal 15–30 FIT (no es el cristal solo). Alto: MIL-HDBK-217F N2, cristal de cuarzo, G_B 0,032/10⁶ h × π_Q 2,1 (no MIL)."],
+  fet:  [13, 112, ["aos", "mil217"], "MOSFET", "Q1, Q2, Q4", "Bajo: AOS AO3400, 13 FIT a 55 °C, 60 % (informe de 2005). Alto: MIL-HDBK-217F N2, FET de silicio, G_B 0,014/10⁶ h × π_Q 8 (plástico)."],
+  pcb:  [2.5, 9.1, ["mil217"], "Circuito impreso y soldaduras", "PCB", "MIL-HDBK-217F N2: placa SMT G_B 0,0025/10⁶ h (bajo) y la misma más ~95 juntas por reflujo de 6,9 × 10⁻⁵/10⁶ h cada una (alto)."]
 };
 // req: solo con esa mejora; nreq: solo sin ella
 const R = [
@@ -809,11 +856,12 @@ const R = [
   {blk:"cnt", ref:"C_loc", modo:"Abierto", mec:"Sin reserva: brown-out durante el disparo.", ef:"P3", frac:.22, fsrc:"dsiac", fam:"mlcc", cond:.1},
   {blk:"cnt", ref:"C4, C5", modo:"Corto", mec:"VDD en corto.", ef:"P3", frac:.49, fsrc:"dsiac", fam:"mlcc", n:2},
   {blk:"cnt", ref:"C4, C5", modo:"Abierto", mec:"Ruido en VDD; posibles resets → aborta.", ef:"P3", frac:.22, fsrc:"dsiac", fam:"mlcc", n:2, cond:.05},
-  {blk:"cnt", ref:"U2 LDO", modo:"Sin salida", mec:"El MCU no arranca.", ef:"P3", frac:.5, fsrc:"sup", fam:"ldo"},
-  {blk:"cnt", ref:"U2 LDO", modo:"Salida alta (paso en corto)", mec:"~11 V en VDD; el MCU dañado puede dejar FIRE_A y FIRE_B en alto (causa común).", ef:"P1", frac:.2, fsrc:"sup", fam:"ldo", cond:.05, mit:["vdd","t1"]},
-  {blk:"cnt", ref:"U2 + D5", modo:"Salida alta con clamp", mec:"D5 conduce y descarga C_F: la falla termina en no disparo.", ef:"P3", frac:.2, fsrc:"sup", fam:"ldo", req:"vdd"},
-  {blk:"cnt", ref:"U2 LDO", modo:"Salida baja u oscilación", mec:"BOR o reset → aborta.", ef:"P3", frac:.2, fsrc:"sup", fam:"ldo"},
-  {blk:"cnt", ref:"U2 LDO", modo:"Corriente de reposo alta", mec:"Descarga C_F más rápido; P3 si se come el margen.", ef:"P3", frac:.1, fsrc:"sup", fam:"ldo", cond:.3},
+  {blk:"cnt", ref:"U2 LDO", modo:"Sin salida (VOUT bajo)", mec:"El MCU no arranca.", ef:"P3", frac:.35, fsrc:"ti7a16", fam:"ldo"},
+  {blk:"cnt", ref:"U2 LDO", modo:"Salida alta (sigue a la entrada)", mec:"~11 V en VDD; el MCU dañado puede dejar FIRE_A y FIRE_B en alto (causa común).", ef:"P1", frac:.35, fsrc:"ti7a16", fam:"ldo", cond:.05, mit:["vdd","t1"]},
+  {blk:"cnt", ref:"U2 + D5", modo:"Salida alta con clamp", mec:"D5 conduce y descarga C_F: la falla termina en no disparo.", ef:"P3", frac:.35, fsrc:"ti7a16", fam:"ldo", req:"vdd"},
+  {blk:"cnt", ref:"U2 LDO", modo:"Salida fuera de especificación", mec:"BOR, reset o sobretensión moderada → aborta.", ef:"P3", frac:.15, fsrc:"ti7a16", fam:"ldo"},
+  {blk:"cnt", ref:"U2 LDO", modo:"Corto entre dos pines", mec:"Según los pines: sin salida o salida alta; se toma como no disparo.", ef:"P3", frac:.05, fsrc:"ti7a16", fam:"ldo"},
+  {blk:"cnt", ref:"U2 LDO", modo:"Falla de power-good / habilitación", mec:"El HT7525S no tiene power-good: el 10 % del reparto de TI no aplica.", ef:"N", frac:.10, fsrc:"ti7a16", fam:"ldo"},
   {blk:"cnt", ref:"D5", modo:"Corto", mec:"VDD en corto: el MCU no arranca.", ef:"P3", frac:.20, fsrc:"ptc", fam:"tvs", req:"vdd"},
   {blk:"cnt", ref:"D5", modo:"Abierto", mec:"Se pierde el clamp de VDD.", ef:"L", frac:.45, fsrc:"ptc", fam:"tvs", req:"vdd"},
   {blk:"cnt", ref:"U1 MCU", modo:"No arranca o muerto", mec:"Nunca sube las gates.", ef:"P3", frac:.6, fsrc:"sup", fam:"mcu"},
@@ -828,9 +876,10 @@ const R = [
   {blk:"cnt", ref:"Y1", modo:"Frecuencia corrida", mec:"Corrimientos de ppm; no llegan a 5 %.", ef:"N", frac:.2, fsrc:"sup", fam:"xtal"},
   {blk:"cnt", ref:"C1, C2", modo:"Corto", mec:"El cristal no arranca → aborta.", ef:"P3", frac:.49, fsrc:"dsiac", fam:"mlcc", n:2},
   {blk:"cnt", ref:"C1, C2", modo:"Abierto", mec:"Corrimiento de ~+100 ppm.", ef:"N", frac:.22, fsrc:"dsiac", fam:"mlcc", n:2},
-  {blk:"cnt", ref:"U3", modo:"Salida trabada en bajo", mec:"La gate de Q2 queda a masa para siempre.", ef:"P3", frac:.3, fsrc:"sup", fam:"ldo", req:"t1"},
-  {blk:"cnt", ref:"U3", modo:"Salida liberada desde el arranque", mec:"Se pierde el enclavamiento de t1.", ef:"L", frac:.3, fsrc:"sup", fam:"ldo", req:"t1"},
-  {blk:"cnt", ref:"U3, C7", modo:"Retardo más largo que t2", mec:"Bloquea el disparo programado más allá de t2 + 5 %.", ef:"P4", frac:.2, fsrc:"sup", fam:"ldo", cond:.05, req:"t1"},
+  {blk:"cnt", ref:"U3", modo:"Disparo falso de RESET (40 %)", mec:"RESET se activa sin motivo y mantiene la gate de Q2 a masa; no dispara si coincide con t2.", ef:"P3", frac:.40, fsrc:"ti3808", fam:"svr", cond:.5, req:"t1"},
+  {blk:"cnt", ref:"U3", modo:"RESET no se activa (22 %)", mec:"Libera la gate desde el arranque: se pierde el enclavamiento de t1.", ef:"L", frac:.22, fsrc:"ti3808", fam:"svr", req:"t1"},
+  {blk:"cnt", ref:"U3", modo:"Umbral fuera de especificación (22 %)", mec:"Con VDD estable no cambia el resultado.", ef:"N", frac:.22, fsrc:"ti3808", fam:"svr", req:"t1"},
+  {blk:"cnt", ref:"U3, C7", modo:"Retardo fuera de especificación (16 %)", mec:"La mitad de los casos alarga el retardo más allá de t2 (P4); la otra mitad lo acorta (latente, se pierde el enclavamiento).", ef:"P4", frac:.16, fsrc:"ti3808", fam:"svr", cond:.5, req:"t1"},
   {blk:"cnt", ref:"C7", modo:"Corto", mec:"Sin retardo: U3 libera enseguida.", ef:"L", frac:.49, fsrc:"dsiac", fam:"mlcc", req:"t1"},
   {blk:"cnt", ref:"C7", modo:"Abierto", mec:"Retardo mínimo: se pierde el enclavamiento.", ef:"L", frac:.22, fsrc:"dsiac", fam:"mlcc", req:"t1"},
   {blk:"drv", ref:"Q1", modo:"Corto drain-source", mec:"No dispara solo; combina con Q2 encendido.", ef:"L", frac:.51, fsrc:"ptc", fam:"fet", lat:"Q1"},
@@ -913,7 +962,7 @@ const TLAB = { dato: "dato", sup: "supuesto", mix: "mezcla", calc: "cálculo" };
 
 const M0 = { vdd: false, pd: false, t1: false, key: false, hs: false, init: false };
 const MP = { vdd: true, pd: true, t1: true, key: true, hs: true, init: false };
-const BASE = { years: 2, kd: 0.1, scen: "geo", cf: "330", req: 2, tmode: 3e-4, rs: 0.1, m: M0 };
+const BASE = { years: 2, kd: 1 / 30, scen: "geo", cf: "330", req: 2, tmode: 3e-4, rs: 0.1, m: M0 };
 const PROP = Object.assign({}, BASE, { rs: 0.5, m: MP });
 
 function active(r, s) { if (r.req && !s.m[r.req]) return false; if (r.nreq && s.m[r.nreq]) return false; return true; }
@@ -936,7 +985,7 @@ function rowFormula(r, s) {
 }
 function energyP(s) { const i = MC.reqs.indexOf(s.req); return MC.cf[s.cf].p[i < 0 ? 0 : i]; }
 function dvdt(s) {
-  const Cf = +s.cf * 1e-6, Crss = 77e-12, Ciss = 630e-12, Cgs = s.m.pd ? 4.7e-9 : 0, Rpd = s.m.pd ? 10e3 : 100e3;
+  const Cf = +s.cf * 1e-6, Crss = 50e-12, Ciss = 630e-12, Cgs = s.m.pd ? 4.7e-9 : 0, Rpd = s.m.pd ? 10e3 : 100e3;
   const rate = 11.3 / ((s.rs + 0.2) * Cf);
   const vg = Math.min(Crss * rate * Rpd, 11.3 * Crss / (Ciss + Cgs));
   const vthMin = 0.65 - 0.003 * 45;
@@ -981,7 +1030,7 @@ $("sum-cards").innerHTML = ["P1", "P2", "P3", "P4"].map(k => {
 $("n-rows").textContent = R.length + " modos de falla";
 
 // --- tabla de λ
-$("lam-table").innerHTML = Object.keys(L).map(k => { const f = L[k]; return `<tr><td>${f[3]}</td><td class="n">${f[4]}</td><td class="n">${dec(f[0])}</td><td class="n">${dec(f[1])}</td><td class="n">${dec(Math.sqrt(f[0] * f[1]), 1)}</td><td>${f[5]} <span class="src">${srcLinks(f[2])}</span></td></tr>`; }).join("");
+$("lam-table").innerHTML = Object.keys(L).map(k => { const f = L[k]; return `<tr><td>${f[3]}</td><td class="n">${f[4]}</td><td class="n">${f[0] < 0.001 ? fmt(f[0]) : dec(f[0])}</td><td class="n">${dec(f[1])}</td><td class="n">${dec(+Math.sqrt(f[0] * f[1]).toPrecision(2))}</td><td>${f[5]} <span class="src">${srcLinks(f[2])}</span></td></tr>`; }).join("");
 document.querySelectorAll("[data-src]").forEach(el => el.innerHTML = srcLinks([el.dataset.src]));
 
 // --- memorias de cálculo
@@ -1002,7 +1051,7 @@ $("p3-more-sum").textContent = `Resto de los términos de P3 (${p3rows.length - 
 // grupos de P3
 const grp = { "Fallas de piezas en almacenamiento": x => !!x.r.fam, "Fabricación": x => x.r.blk === "fab", "Cableado del iniciador": x => x.r.blk === "ini" && !x.r.fam, "Energía insuficiente (Monte Carlo)": x => x.r.blk === "calc" };
 $("grp-P3").innerHTML = `<thead><tr><th>Grupo</th><th>P</th><th>% de P3</th><th>Cómo se obtiene</th></tr></thead><tbody>` +
-  Object.keys(grp).map(g => { const p = p3rows.filter(grp[g]).reduce((a, x) => a + x.p, 0); const how = { "Fallas de piezas en almacenamiento": "λ · f · 1752 h · c, por pieza y modo (sección 3)", "Fabricación": "defectos que pasan la prueba (sección 4)", "Cableado del iniciador": "supuesto por unidad (sección 4)", "Energía insuficiente (Monte Carlo)": "C_F = 330 µF, all-fire 2 A²·ms" }[g];
+  Object.keys(grp).map(g => { const p = p3rows.filter(grp[g]).reduce((a, x) => a + x.p, 0); const how = { "Fallas de piezas en almacenamiento": "λ · f · 584 h · c, por pieza y modo (sección 3)", "Fabricación": "defectos que pasan la prueba (sección 4)", "Cableado del iniciador": "supuesto por unidad (sección 4)", "Energía insuficiente (Monte Carlo)": "C_F = 330 µF, all-fire 2 A²·ms" }[g];
     return `<tr><td>${g}</td><td class="n">${fmt(p)}</td><td class="n"><span class="share" style="--cc:${COL.P3};width:${Math.max(1, 100 * p / RB.tot.P3 * 0.6)}px"></span>${dec(100 * p / RB.tot.P3, 0)} %</td><td>${how}</td></tr>`; }).join("") +
   `<tr class="tot"><td>Total P3</td><td class="n">${fmt(RB.tot.P3)}</td><td class="n">100 %</td><td>sin la confiabilidad propia del iniciador</td></tr></tbody>`;
 
@@ -1033,7 +1082,7 @@ function checksHtml(s, label) {
   const dv = dvdt(s), bad = dv.vg > dv.vthMin, mid = !bad && dv.vg > 0.6 * dv.vthMin;
   return `<div class="check"><h3>Acople dV/dt en las gates · ${label}</h3><span class="status ${bad ? "st-bad" : mid ? "st-mid" : "st-ok"}">${bad ? "NO PASA" : mid ? "MARGEN CHICO" : "PASA"}</span>
     <dl class="kv"><dt>R_s</dt><dd>${dec(s.rs)} Ω</dd><dt>dV/dt en el drain</dt><dd>${Math.round(dv.rate / 1000)} V/ms</dd><dt>Pull-down / C_GS</dt><dd>${dv.Rpd / 1000} kΩ / ${dv.Cgs ? "4,7 nF" : "—"}</dd><dt>V_gs inducida</dt><dd>${dec(dv.vg, 2)} V</dd><dt>V_th mínima a 70 °C</dt><dd>${dec(dv.vthMin, 2)} V</dd><dt>Unidades con V_th menor</dt><dd>${dv.frac > 0 ? Math.round(dv.frac * 100) + " % por MOSFET" : "ninguna"}</dd></dl>
-    <p class="small">V_gs ≈ C_rss · dV/dt · R_pd, con C_rss = 77 pF; tope en el divisor C_rss / (C_iss + C_GS). V_th del AO3400A: 0,65–1,45 V a 25 °C, −3 mV/°C. Estimación cuasi estática: medir con osciloscopio y la fuente real.</p></div>`;
+    <p class="small">V_gs ≈ C_rss · dV/dt · R_pd, con C_rss = 50 pF y C_iss = 630 pF (hoja de datos AO3400A); tope en el divisor C_rss / (C_iss + C_GS). V_th: 0,65–1,45 V a 25 °C (hoja de datos); el coeficiente de −3 mV/°C es un valor típico de MOSFET de baja tensión, no figura en la hoja de datos. Estimación cuasi estática: medir con osciloscopio y la fuente real.</p></div>`;
 }
 $("p1-checks").innerHTML = checksHtml(BASE, "analizado") + checksHtml(PROP, "propuesto");
 
