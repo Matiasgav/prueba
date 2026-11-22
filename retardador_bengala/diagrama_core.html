@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Núcleo del retardador</title>
+<style>
+  body { margin:0; background:#f1f5f9; font-family: Inter, "Segoe UI", Helvetica, Arial, sans-serif; color:#0f172a; }
+  main { max-width:1040px; margin:0 auto; padding:24px 16px; }
+  h1 { font-size:20px; margin:0 0 16px; }
+  .card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:12px; box-shadow:0 1px 3px rgba(15,23,42,.08); overflow-x:auto; }
+  svg { display:block; width:100%; min-width:640px; height:auto; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Núcleo del retardador — diagrama conceptual</h1>
+  <div class="card">
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama del núcleo del retardador" viewBox="0 0 980 420" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M20 0H0V20" fill="none" stroke="#eef1f5" stroke-width="1"/>
+    </pattern>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#334155"/>
+    </marker>
+    <filter id="sh" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect width="980" height="420" fill="#ffffff"/>
+  <rect width="980" height="420" fill="url(#grid)"/>
+
+  <!-- t0: línea de entrada -->
+  <text x="34" y="36" font-size="16" font-weight="700" fill="#0f172a" text-anchor="middle">t0</text>
+  <line x1="30" y1="48" x2="30" y2="390" stroke="#0f172a" stroke-width="2"/>
+  <line x1="38" y1="48" x2="38" y2="390" stroke="#0f172a" stroke-width="2"/>
+
+  <!-- Flechas de energía (huecas) -->
+  <g fill="#e0f2fe" stroke="#0369a1" stroke-width="1.6" stroke-linejoin="round">
+    <polygon points="38,154 154,154 154,146 172,160 154,174 154,166 38,166"/>
+    <polygon points="322,154 374,154 374,146 392,160 374,174 374,166 322,166"/>
+    <polygon points="522,154 574,154 574,146 592,160 574,174 574,166 522,166"/>
+    <polygon points="241,202 241,250 233,250 247,268 261,250 253,250 253,202"/>
+  </g>
+
+  <!-- Señales -->
+  <g stroke="#334155" stroke-width="2" fill="none">
+    <line x1="38" y1="310" x2="170" y2="310" marker-end="url(#arr)"/>
+    <polyline points="322,310 457,310 457,203" marker-end="url(#arr)"/>
+  </g>
+
+  <!-- Bloques -->
+  <g filter="url(#sh)" stroke-width="1.8">
+    <rect x="172" y="118" width="150" height="84" rx="10" fill="#f0f9ff" stroke="#0369a1"/>
+    <rect x="392" y="118" width="130" height="84" rx="10" fill="#f8fafc" stroke="#334155"/>
+    <rect x="592" y="118" width="130" height="84" rx="10" fill="#fff7ed" stroke="#c2410c"/>
+    <rect x="172" y="268" width="150" height="84" rx="10" fill="#f0fdf4" stroke="#15803d"/>
+  </g>
+  <g font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle">
+    <text x="247" y="156">ALMACENAMIENTO</text>
+    <text x="247" y="174">DE ENERGÍA</text>
+    <text x="457" y="165">DRIVER</text>
+    <text x="657" y="165">INICIADOR</text>
+    <text x="247" y="315">CONTADOR</text>
+  </g>
+
+  <!-- Leyenda -->
+  <g font-size="11" fill="#475569">
+    <polygon points="60,394 84,394 84,390 94,397 84,404 84,400 60,400" fill="#e0f2fe" stroke="#0369a1" stroke-width="1.2"/>
+    <text x="100" y="401">Energía</text>
+    <line x1="160" y1="397" x2="192" y2="397" stroke="#334155" stroke-width="2" marker-end="url(#arr)"/>
+    <text x="198" y="401">Señal</text>
+  </g>
+
+  <!-- Notas -->
+  <g font-size="13" fill="#0f172a">
+    <rect x="536" y="236" width="432" height="168" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="552" y="260"><tspan font-weight="700">t1</tspan>: tiempo de no activación, ~4 s ±5 %.</text>
+    <text x="552" y="278" fill="#475569">Se consume un combustible (posible mecanismo de seguridad).</text>
+    <text x="552" y="300"><tspan font-weight="700">t2</tspan>: tiempo de activación, programable 10–40 s ±5 %.</text>
+    <line x1="552" y1="312" x2="952" y2="312" stroke="#e2e8f0"/>
+    <text x="552" y="332"><tspan font-weight="700">P1</tspan>: posibilidad de que active antes de t1.</text>
+    <text x="552" y="350"><tspan font-weight="700">P2</tspan>: posibilidad de que active entre t1 y t2.</text>
+    <text x="552" y="368"><tspan font-weight="700">P3</tspan>: posibilidad de que no active después de t2.</text>
+    <text x="552" y="386"><tspan font-weight="700">P4</tspan>: posibilidad de que active después de t2.</text>
+  </g>
+</svg>
+
+  </div>
+</main>
+</body>
+</html>
