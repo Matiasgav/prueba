@@ -1,0 +1,621 @@
+<title>Probabilidad de fallos del retardo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600&display=swap">
+<style>
+/* Layout: hoja técnica de una columna. Arriba supuestos + resultado P1–P4; después contribuciones, chequeos de diseño, listado completo de modos de falla y fuentes */
+:root {
+  --bg: #f3f5f7; --paper: #ffffff; --ink: #1b2430; --muted: #5a6676; --rule: #d5dbe3; --soft: #eef1f5;
+  --c-store: #b8730f; --c-count: #2563a8; --c-drive: #2f7d4f; --c-init: #b8322d; --c-gray: #6b7687;
+  --f-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --f-head: "IBM Plex Sans Condensed", "IBM Plex Sans", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161c; --paper: #1a2029; --ink: #dfe5ec; --muted: #94a0b0; --rule: #303946; --soft: #222a35;
+    --c-store: #e0a245; --c-count: #6ea6e6; --c-drive: #63bb86; --c-init: #ec6f68; --c-gray: #9aa5b5;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12161c; --paper: #1a2029; --ink: #dfe5ec; --muted: #94a0b0; --rule: #303946; --soft: #222a35;
+  --c-store: #e0a245; --c-count: #6ea6e6; --c-drive: #63bb86; --c-init: #ec6f68; --c-gray: #9aa5b5;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--f-sans); font-size: 15px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 56px;
+}
+main { max-width: 1180px; margin: 0 auto; display: grid; gap: 24px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--f-head); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
+h2 { font-family: var(--f-head); font-weight: 600; font-size: 21px; margin: 0; text-wrap: balance; }
+h3 { font-family: var(--f-head); font-weight: 600; font-size: 16px; margin: 0; }
+p { margin: 0; max-width: 72ch; }
+.lead { color: var(--muted); }
+.muted { color: var(--muted); }
+small, .small { font-size: 13px; color: var(--muted); }
+section { background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: 22px; display: grid; gap: 16px; min-width: 0; }
+.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
+.tag { font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+code, .mono { font-family: var(--f-mono); font-size: .92em; }
+a { color: var(--c-count); }
+:focus-visible { outline: 2px solid var(--c-count); outline-offset: 2px; }
+
+/* supuestos */
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px 20px; align-items: start; }
+.ctl { display: grid; gap: 5px; min-width: 0; align-content: start; }
+.ctl label, .ctl .lab { font-family: var(--f-mono); font-size: 12px; letter-spacing: .03em; color: var(--muted); text-transform: uppercase; }
+.ctl .help { font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+select, input[type=number] { font: 14px var(--f-sans); color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 6px 8px; width: 100%; }
+input[type=range] { width: 100%; accent-color: var(--c-count); }
+.rv { font-family: var(--f-mono); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.checks { display: grid; gap: 6px; }
+.checks label { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; text-transform: none; letter-spacing: 0; color: var(--ink); font-family: var(--f-sans); cursor: pointer; }
+.checks input { margin-top: 4px; accent-color: var(--c-drive); }
+
+/* resultados */
+.cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 900px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .cards { grid-template-columns: 1fr; } }
+.card { border: 1px solid var(--rule); border-top: 4px solid var(--cc); border-radius: 4px; padding: 14px; display: grid; gap: 6px; align-content: start; min-width: 0; background: var(--paper); }
+.card .code { font-family: var(--f-mono); font-weight: 600; font-size: 13px; color: var(--cc); }
+.card .name { font-size: 13px; color: var(--muted); }
+.card .big { font-family: var(--f-mono); font-size: 26px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.card .one { font-family: var(--f-mono); font-size: 12.5px; color: var(--muted); }
+.card ul { margin: 4px 0 0; padding-left: 1.1em; font-size: 13px; display: grid; gap: 3px; }
+.card .warn { font-size: 12.5px; color: var(--c-init); font-weight: 500; }
+.k-p1 { --cc: var(--c-init); } .k-p2 { --cc: var(--c-store); } .k-p3 { --cc: var(--c-gray); } .k-p4 { --cc: var(--c-count); }
+
+/* contribuciones */
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tabs button { font: 600 13px var(--f-mono); padding: 5px 12px; border-radius: 4px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); cursor: pointer; }
+.tabs button[aria-pressed=true] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.bars { display: grid; gap: 7px; }
+.bar { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 3fr) 92px; gap: 10px; align-items: center; font-size: 13.5px; }
+@media (max-width: 640px) { .bar { grid-template-columns: minmax(0, 1fr) 84px; } .bar .track { grid-column: 1 / -1; grid-row: 2; } }
+.bar .lbl { min-width: 0; }
+.bar .lbl b { font-weight: 500; }
+.bar .track { height: 12px; background: var(--soft); border-radius: 2px; position: relative; overflow: hidden; }
+.bar .fill { position: absolute; inset: 0 auto 0 0; background: var(--cc); border-radius: 2px; }
+.bar .v { font-family: var(--f-mono); font-size: 12.5px; text-align: right; font-variant-numeric: tabular-nums; }
+.axis-l { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 3fr) 92px; gap: 10px; font-family: var(--f-mono); font-size: 11px; color: var(--muted); }
+.axis-l .ticks { display: flex; justify-content: space-between; }
+@media (max-width: 640px) { .axis-l { display: none; } }
+
+/* chequeos */
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; }
+.check { border: 1px solid var(--rule); border-radius: 4px; padding: 16px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.status { display: inline-block; font: 600 12px var(--f-mono); padding: 2px 8px; border-radius: 3px; }
+.st-bad { background: color-mix(in srgb, var(--c-init) 18%, transparent); color: var(--c-init); }
+.st-ok { background: color-mix(in srgb, var(--c-drive) 18%, transparent); color: var(--c-drive); }
+.st-mid { background: color-mix(in srgb, var(--c-store) 18%, transparent); color: var(--c-store); }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 13.5px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.scroll { overflow-x: auto; min-width: 0; }
+svg text { font-family: var(--f-mono); fill: var(--muted); font-size: 11px; }
+
+/* tabla FMEA */
+.filters { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: end; }
+.filters .ctl { min-width: 170px; flex: 1 1 170px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { font: 600 12px var(--f-mono); padding: 4px 10px; border-radius: 3px; border: 1px solid var(--rule); background: var(--paper); color: var(--muted); cursor: pointer; }
+.chips button[aria-pressed=true] { color: var(--paper); background: var(--cc, var(--ink)); border-color: var(--cc, var(--ink)); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--f-mono); font-size: 11.5px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); position: sticky; top: 0; background: var(--paper); }
+td.n { font-family: var(--f-mono); font-size: 12.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+td.src { font-size: 12px; color: var(--muted); min-width: 150px; }
+.fmea { min-width: 1080px; }
+.pill { display: inline-block; font: 600 11.5px var(--f-mono); padding: 1px 7px; border-radius: 3px; white-space: nowrap; background: color-mix(in srgb, var(--cc) 16%, transparent); color: var(--cc); }
+.e-P1 { --cc: var(--c-init); } .e-P2 { --cc: var(--c-store); } .e-P3 { --cc: var(--c-gray); } .e-P4 { --cc: var(--c-count); }
+.e-L { --cc: var(--c-drive); } .e-N { --cc: var(--muted); } .e-S, .e-T { --cc: var(--ink); }
+.blk { font-family: var(--f-mono); font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+.count { font-family: var(--f-mono); font-size: 12.5px; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); }
+ol.list, ul.list { margin: 0; padding-left: 1.3em; display: grid; gap: 7px; max-width: 90ch; font-size: 14px; }
+.src-list li { font-size: 13.5px; }
+</style>
+
+<main>
+  <header>
+    <div class="eyebrow">Sistema de retardo autoalimentado · análisis de fallos</div>
+    <h1>Probabilidad de fallos del retardo</h1>
+    <p class="lead">Probabilidad por unidad y por uso de cada modo de fallo P1–P4, sumando todos los mecanismos identificados: componentes, fabricación, firmware, operación, ambiente y sistema. Las tasas de falla vienen de datos publicados cuando existen; donde no, el supuesto está marcado. Cambiá los supuestos y los resultados se recalculan.</p>
+  </header>
+
+  <section aria-labelledby="h-sup">
+    <div class="sec-head"><h2 id="h-sup">Supuestos</h2><span class="tag">uso = un pulso t0 y hasta 40 s de cuenta</span></div>
+    <div class="controls">
+      <div class="ctl">
+        <label for="years">Almacenamiento antes del uso</label>
+        <input type="range" id="years" min="0.25" max="15" step="0.25" value="2">
+        <span class="rv" id="years-v">2 años</span>
+        <span class="help">Tiempo entre la prueba en banco y el uso. Las fallas latentes crecen linealmente con él.</span>
+      </div>
+      <div class="ctl">
+        <label for="kd">Factor de reposo k<sub>d</sub></label>
+        <select id="kd">
+          <option value="0.03">0,03 (almacén controlado)</option>
+          <option value="0.1" selected>0,1 (típico)</option>
+          <option value="0.3">0,3 (almacén con ciclos térmicos y humedad)</option>
+        </select>
+        <span class="help">Tasa de falla sin energía ÷ tasa en operación. Supuesto: el valor por familia está en RAC NONOP-1 / RADC-TR-85-91.</span>
+      </div>
+      <div class="ctl">
+        <label for="scen">Tasas de falla λ</label>
+        <select id="scen">
+          <option value="lo">Bajas (fabricante / moderno)</option>
+          <option value="geo" selected>Centrales (media geométrica)</option>
+          <option value="hi">Altas (manual conservador)</option>
+        </select>
+        <span class="help">Cada fila tiene un λ bajo y uno alto con su fuente. El listado los muestra.</span>
+      </div>
+      <div class="ctl">
+        <label for="cf">C_F</label>
+        <select id="cf">
+          <option value="150">150 µF</option>
+          <option value="330" selected>330 µF (diseño actual)</option>
+          <option value="560">560 µF</option>
+          <option value="1000">1000 µF</option>
+        </select>
+        <span class="help">Polímero 25 V, ±20 %, −12 % en frío, t2 = 40 s (peor caso).</span>
+      </div>
+      <div class="ctl">
+        <label for="req">I²t de all-fire del iniciador</label>
+        <input type="range" id="req" min="1" max="15" step="0.5" value="2">
+        <span class="rv" id="req-v">2 A²·ms</span>
+        <span class="help">Dato del fabricante que falta. Es el que más mueve P3.</span>
+      </div>
+      <div class="ctl">
+        <label for="tmode">Cómo se fija T</label>
+        <select id="tmode">
+          <option value="0">Fija en firmware (variante A)</option>
+          <option value="1e-5">Programable, orden legible por máquina + relectura automática</option>
+          <option value="3e-4" selected>Programable, operador + verificación independiente</option>
+          <option value="3e-3">Programable, operador sin verificación</option>
+        </select>
+        <span class="help">Error humano por operación, orden de magnitud de las tablas THERP (NUREG/CR-1278). Se reparte mitad P2 y mitad P4.</span>
+      </div>
+      <div class="ctl">
+        <label for="rs">R_s en serie con la entrada</label>
+        <select id="rs">
+          <option value="0">0 Ω (sin R_s, fuente rígida)</option>
+          <option value="0.1" selected>0,1 Ω</option>
+          <option value="0.25">0,25 Ω</option>
+          <option value="0.5">0,5 Ω</option>
+          <option value="1">1 Ω</option>
+        </select>
+        <span class="help">Fija la velocidad del flanco de carga de C_F (chequeo dV/dt).</span>
+      </div>
+      <div class="ctl">
+        <span class="lab">Mejoras de diseño aplicadas</span>
+        <div class="checks">
+          <label><input type="checkbox" id="m-vdd"> Clamp de VDD + zener en cada gate</label>
+          <label><input type="checkbox" id="m-pd"> Pull-downs de gate de 10 kΩ</label>
+          <label><input type="checkbox" id="m-t1"> Enclavamiento t1 por hardware</label>
+          <label><input type="checkbox" id="m-key"> Banco prueba cada llave por separado</label>
+          <label><input type="checkbox" id="m-hs"> Una llave del lado alto (P-MOS) y otra del lado bajo</label>
+          <label><input type="checkbox" id="m-init"> Incluir la falla propia del iniciador en P3</label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-res">
+    <div class="sec-head"><h2 id="h-res">Resultado por modo de fallo</h2><span class="tag" id="res-tag"></span></div>
+    <div class="cards" id="cards"></div>
+    <p class="small">Suma de las filas cuantificadas del listado. Las fallas sistemáticas (firmware) y las que dependen del ambiente (choque, RF, ESD) no tienen tasa: se cierran con ensayo y no entran en la suma. Están en el listado marcadas como “sistemático” o “a ensayo”.</p>
+  </section>
+
+  <section aria-labelledby="h-con">
+    <div class="sec-head"><h2 id="h-con">Qué aporta a cada modo</h2>
+      <div class="tabs" role="group" aria-label="Modo de fallo">
+        <button type="button" data-p="P1" aria-pressed="true">P1</button>
+        <button type="button" data-p="P2" aria-pressed="false">P2</button>
+        <button type="button" data-p="P3" aria-pressed="false">P3</button>
+        <button type="button" data-p="P4" aria-pressed="false">P4</button>
+      </div>
+    </div>
+    <div class="axis-l" aria-hidden="true"><span></span><span class="ticks"><span>10⁻¹²</span><span>10⁻¹⁰</span><span>10⁻⁸</span><span>10⁻⁶</span><span>10⁻⁴</span><span>10⁻²</span></span><span></span></div>
+    <div class="bars" id="bars"></div>
+    <p class="small">Escala logarítmica. Se muestran las 10 contribuciones mayores.</p>
+  </section>
+
+  <section aria-labelledby="h-chk">
+    <div class="sec-head"><h2 id="h-chk">Chequeos de diseño</h2><span class="tag">no son aleatorios: pasan o no pasan</span></div>
+    <div class="grid2">
+      <div class="check" id="chk-dvdt"></div>
+      <div class="check" id="chk-hs"></div>
+      <div class="check">
+        <h3>Margen de energía (Monte Carlo, 10⁶ casos)</h3>
+        <p class="small">P(I²t entregado &lt; all-fire) en función del I²t que pide el iniciador. t2 = 40 s, pulso 10,8–13,2 V, fuga + consumo 5–25 µA, puente 1–2 Ω, ESR en frío.</p>
+        <div class="scroll"><svg id="echart" viewBox="0 0 520 260" role="img" aria-label="Probabilidad de energía insuficiente según el I²t del iniciador, para cuatro valores de C_F" style="width:100%;min-width:440px;height:auto;display:block"></svg></div>
+        <div class="legend" id="elegend"></div>
+      </div>
+      <div class="check">
+        <h3>Error de tiempo (Monte Carlo, 2 × 10⁶ casos)</h3>
+        <span class="status st-ok">PASA con margen &gt; 15×</span>
+        <dl class="kv">
+          <dt>Error máximo</dt><dd>33 ms</dd>
+          <dt>Error máximo relativo</dt><dd>0,32 % (tolerancia ±5 %)</dd>
+          <dt>P2 / P4 paramétrico</dt><dd>&lt; 10⁻⁹</dd>
+          <dt>Sin cristal (HSI ±3 %, supuesto)</dt><dd>3,3 % máx., pasa</dd>
+        </dl>
+        <p class="small">Cristal ±20 ppm, −0,034 ppm/°C² entre −30 y +70 °C, envejecimiento ±5 ppm, corrección de arranque ±0,1 % de 0,5–3 s, latencia de t0 de 5–50 ms compensando 20 ms. Con ±5 % el cristal no es necesario para la precisión; sacarlo elimina sus modos de falla de P3.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-fmea">
+    <div class="sec-head"><h2 id="h-fmea">Todos los modos de falla</h2><span class="count" id="fcount"></span></div>
+    <div class="filters">
+      <div class="ctl" style="flex:2 1 300px">
+        <span class="lab">Efecto</span>
+        <div class="chips" id="fchips">
+          <button type="button" data-e="all" aria-pressed="true">Todos</button>
+          <button type="button" data-e="P1" class="e-P1" aria-pressed="false">P1</button>
+          <button type="button" data-e="P2" class="e-P2" aria-pressed="false">P2</button>
+          <button type="button" data-e="P3" class="e-P3" aria-pressed="false">P3</button>
+          <button type="button" data-e="P4" class="e-P4" aria-pressed="false">P4</button>
+          <button type="button" data-e="L" class="e-L" aria-pressed="false">Latente</button>
+          <button type="button" data-e="N" class="e-N" aria-pressed="false">Sin efecto</button>
+          <button type="button" data-e="S" class="e-S" aria-pressed="false">Sin tasa</button>
+        </div>
+      </div>
+      <div class="ctl">
+        <label for="fblk">Bloque</label>
+        <select id="fblk"><option value="all">Todos</option></select>
+      </div>
+      <div class="ctl">
+        <label for="fsort">Orden</label>
+        <select id="fsort"><option value="blk">Por bloque</option><option value="p">Por probabilidad</option></select>
+      </div>
+    </div>
+    <div class="legend">
+      <span><span class="pill e-L">Latente</span> no actúa sola; entra en las combinaciones de dos fallas de P1</span>
+      <span><span class="pill e-N">Sin efecto</span> no cambia el resultado de la demanda</span>
+      <span><span class="pill e-S">Sin tasa</span> sistemático o dependiente del ambiente: se cierra con ensayo</span>
+    </div>
+    <div class="scroll" style="max-height: 760px; overflow-y: auto;">
+      <table class="fmea">
+        <thead><tr><th>Bloque</th><th>Ref.</th><th>Modo de falla</th><th>Mecanismo y consecuencia</th><th>Efecto</th><th>Fracción</th><th>λ FIT o P</th><th>P por uso</th><th>Fuente</th></tr></thead>
+        <tbody id="ftbody"></tbody>
+      </table>
+    </div>
+    <p class="small">P por uso = λ · fracción · (k<sub>d</sub> · horas de almacenamiento + 40 s) · probabilidad condicional · factor de mejora. FIT = fallas por 10⁹ h. Las filas de fabricación, cableado y operación ya vienen como probabilidad por unidad.</p>
+  </section>
+
+  <section aria-labelledby="h-lim">
+    <h2 id="h-lim">Qué tan reales son estos números</h2>
+    <ul class="list">
+      <li><strong>Datos del fabricante:</strong> MOSFET (AOS, 13 FIT a 55 °C, 60 % de confianza, informe del AO3400 de 2005, no del AO3400A) y capacitor de polímero (Panasonic, 8,2 FIT en ensayo y 0,13 FIT en campo). ST entrega el FIT del STM32L0 solo a pedido; el valor usado es un supuesto.</li>
+      <li><strong>Datos de manual:</strong> tasas base y reparto de modos de la tabla A-1 de PTC Windchill (diodos, cristal, capacitores cerámicos, PCB, conectores) y de MIL-HDBK-338B / NAVSEA vía DSIAC (resistores de film y cerámicos). Son datos de campo viejos y conservadores: por eso son el extremo alto.</li>
+      <li><strong>Fabricación:</strong> 200–600 defectos por millón de juntas en líneas SMT estables (estudios IPC). La cobertura de la prueba funcional (99,5–99,9 %) es supuesto.</li>
+      <li><strong>Supuestos sin dato publicado:</strong> factor de reposo k<sub>d</sub>, reparto de modos del LDO y del MCU, la probabilidad de que un MCU dañado deje las dos salidas en alto (0,05), y los cortos de cableado. Son los primeros que conviene reemplazar por datos propios.</li>
+      <li><strong>No cuantificado:</strong> choque y vibración del uso, ambiente electromagnético, errores de firmware. Para P1 y P3 pueden ser mayores que todo lo sumado, así que el plan de ensayos los tiene que cubrir.</li>
+      <li>Para validar por ensayo una probabilidad de 10⁻³ con 95 % de confianza hacen falta ~3000 unidades sin falla (regla de 3/n). Los valores menores salen del análisis, no del ensayo.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="h-src">
+    <h2 id="h-src">Fuentes</h2>
+    <ol class="list src-list" id="srclist"></ol>
+  </section>
+</main>
+
+<script>
+(function () {
+const SRC = {
+  aos:   ["Alpha & Omega Semiconductor, informe de confiabilidad AO3400/AO3400L: 13 FIT (Ea 0,7 eV, 55 °C, 60 % UCL, JESD85)", "https://www.aosmd.com/sites/default/files/res/reliability_reports/AO3400.pdf"],
+  ptc:   ["PTC Windchill R&M, Practitioner's Guide, tabla A-1: tasas base y reparto de modos de componentes discretos", "https://support.ptc.com/help/wrr/r12.0.4.0/en/wrr/PractitionersGuide/DiscreteElectronicAndElectromechanicalComponents.html"],
+  dsiac: ["DSIAC, Film Resistor and Capacitor Failure Modes and Distributions (MIL-HDBK-338B, NSWC-Crane, NAVSEA)", "https://dsiac.dtic.mil/technical-inquiries/notable/film-resistor-and-capacitor-failure-modes-and-distributions"],
+  pana:  ["Panasonic, catálogo de capacitores de polímero: 8,2 FIT (105 °C, tensión nominal) y 0,13 FIT en campo (60 %)", "https://www.mouser.com/pdfdocs/Panasonic_Capacitors_WP_final.pdf"],
+  vish:  ["Vishay, Reliability OS-CON: el modo de desgaste es abierto", "https://www.vishay.com/docs/90017/reliabilityoscon.pdf"],
+  mur:   ["Murata, modos de falla de capacitores de polímero: abierto como modo principal en campo", "https://www.murata.com/en-us/products/capacitor/polymer/documents/failure-mode"],
+  ti:    ["Texas Instruments SNAA391: osciladores de cristal típicos 15–30 FIT", "https://ti.com/document-viewer/lit/html/SNAA391/GUID-02D302B1-1262-4F06-A880-178406613194"],
+  ipc:   ["IPC / I-Connect007: 200–600 DPMO por junta en líneas SMT estables", "https://iconnect007.com/article/117848/smt-solver-benchmarking-defect-levels-in-your-products/117851/smt"],
+  nasa:  ["NASA Preferred Practice PD-ED-2207, Designing for Dormant Reliability: los defectos latentes dominan en reposo", "https://extapps.ksc.nasa.gov/Reliability/Documents/Preferred_Practices/2207.pdf"],
+  rac:   ["RAC Nonoperating Reliability Databook (NONOP-1) y RADC-TR-85-91: tasas en almacenamiento por familia", "https://users.ece.cmu.edu/~koopman/depend/data/nrd87.htm"],
+  st:    ["ST Community: el FIT de STM32 se pide por soporte (my.st.com/ols)", "https://community.st.com/t5/stm32-mcus-products/need-reliability-data-for-the-part-stm32l071kzu3/td-p/673911"],
+  therp: ["Swain y Guttmann, NUREG/CR-1278 (THERP): probabilidades de error humano", "https://www.nrc.gov/reading-rm/doc-collections/nuregs/contract/cr1278/index.html"],
+  mil23659: ["MIL-DTL-23659: iniciadores eléctricos, all-fire definido con 0,999 de confiabilidad a 95 % de confianza", "https://quicksearch.dla.mil/"],
+  sup:   ["Supuesto de este análisis (sin dato publicado)", null],
+  mc:    ["Monte Carlo de este análisis", null]
+};
+const SRC_ORDER = Object.keys(SRC);
+
+const BLK = { ent: "Entrada", alm: "Almacenamiento", cnt: "Contador", drv: "Driver", ini: "Iniciador y cableado", fab: "Fabricación", fw: "Firmware", hum: "Operación", amb: "Ambiente", sis: "Sistema", calc: "Calculado" };
+
+// Fuentes de λ por familia [bajo, alto, fuentes]
+const L = {
+  con: [4, 40, ["sup", "ptc"]], tvs: [5, 70, ["sup", "ptc"]], res: [0.5, 16, ["sup", "ptc"]],
+  rect: [3, 120, ["sup", "ptc"]], sig: [1, 50, ["sup", "ptc"]], cf: [0.13, 8.2, ["pana"]],
+  mlcc: [1, 100, ["sup", "ptc"]], ldo: [5, 50, ["sup"]], mcu: [10, 100, ["sup", "st"]],
+  xtal: [15, 200, ["ti", "ptc"]], fet: [13, 40, ["aos", "sup"]], pcb: [1, 10, ["sup", "ptc"]]
+};
+// r: blk, ref, modo, mec, ef, frac, fsrc, fam, n (piezas), cond, mit[], lat; o p:[lo,hi] por unidad; o sys:true
+const R = [
+  {blk:"ent", ref:"J1", modo:"Abierto o contacto intermitente", mec:"El pulso no llega o llega cortado.", ef:"P3", frac:.7, fsrc:"sup", fam:"con"},
+  {blk:"ent", ref:"J1", modo:"Corto +12 V a GND", mec:"El pulso queda en cortocircuito; C_F no carga.", ef:"P3", frac:.3, fsrc:"sup", fam:"con"},
+  {blk:"ent", ref:"D3", modo:"Corto", mec:"La TVS cortocircuita el pulso; C_F no carga y R_s puede quemarse.", ef:"P3", frac:.20, fsrc:"ptc", fam:"tvs"},
+  {blk:"ent", ref:"D3", modo:"Abierto", mec:"Sin protección contra sobretensión. Agrava ESD/EOS (camino de causa común de P1).", ef:"L", frac:.45, fsrc:"ptc", fam:"tvs"},
+  {blk:"ent", ref:"D3", modo:"Deriva: fuga alta o V_BR baja", mec:"Recorta el pulso y C_F carga menos. Solo es P3 si se come el margen.", ef:"P3", frac:.35, fsrc:"ptc", fam:"tvs", cond:.1},
+  {blk:"ent", ref:"R_s", modo:"Abierto", mec:"No carga C_F.", ef:"P3", frac:.59, fsrc:"dsiac", fam:"res"},
+  {blk:"ent", ref:"R_s", modo:"Deriva de valor", mec:"Cambia el tiempo de carga; con 300 ms sobra margen.", ef:"N", frac:.36, fsrc:"dsiac", fam:"res"},
+  {blk:"ent", ref:"R_s", modo:"Corto", mec:"Sin limitación de pico; flanco de carga más rápido (empeora el acople dV/dt).", ef:"N", frac:.05, fsrc:"dsiac", fam:"res"},
+
+  {blk:"alm", ref:"D1", modo:"Abierto", mec:"C_F no carga.", ef:"P3", frac:.60, fsrc:"ptc", fam:"rect"},
+  {blk:"alm", ref:"D1", modo:"Corto", mec:"C_F se descarga hacia la línea si al terminar el pulso la línea queda en baja impedancia.", ef:"P3", frac:.40, fsrc:"ptc", fam:"rect", cond:.5},
+  {blk:"alm", ref:"C_F", modo:"Abierto", mec:"Sin energía para el disparo. Modo de desgaste dominante en polímero.", ef:"P3", frac:.5, fsrc:"vish", fam:"cf"},
+  {blk:"alm", ref:"C_F", modo:"Corto", mec:"Línea y C_F en corto; no carga.", ef:"P3", frac:.3, fsrc:"mur", fam:"cf"},
+  {blk:"alm", ref:"C_F", modo:"Pérdida de capacidad o ESR alta", mec:"Menos I²t. Es P3 solo si se come el margen (ver curva de energía).", ef:"P3", frac:.2, fsrc:"sup", fam:"cf", cond:.3},
+  {blk:"alm", ref:"R_bleed", modo:"Abierto", mec:"Sin efecto en la demanda. Si no hubo disparo, C_F queda cargado (riesgo posterior al uso).", ef:"N", frac:.59, fsrc:"dsiac", fam:"res"},
+  {blk:"alm", ref:"R_bleed", modo:"Corto", mec:"C_F se descarga enseguida.", ef:"P3", frac:.05, fsrc:"dsiac", fam:"res"},
+  {blk:"alm", ref:"R_bleed", modo:"Deriva de valor", mec:"Cambia la pérdida en 40 s; entra en el margen.", ef:"N", frac:.36, fsrc:"dsiac", fam:"res"},
+  {blk:"alm", ref:"R1", modo:"Abierto", mec:"LINE_SENSE en 0 → modo programación → nunca dispara. Falla segura.", ef:"P3", frac:.59, fsrc:"dsiac", fam:"res"},
+  {blk:"alm", ref:"R1", modo:"Corto", mec:"12 V directo al pin. La corriente por el diodo de protección sube VDD y daña el MCU (causa común).", ef:"P1", frac:.05, fsrc:"dsiac", fam:"res", cond:.05, mit:["vdd","t1"]},
+  {blk:"alm", ref:"R1, R2", modo:"Deriva del divisor", mec:"Umbral de modo corrido: 12 V leído como programación.", ef:"P3", frac:.36, fsrc:"dsiac", fam:"res", n:2, cond:.05},
+  {blk:"alm", ref:"R2", modo:"Abierto", mec:"LINE_SENSE alto: modo retardo normal.", ef:"N", frac:.59, fsrc:"dsiac", fam:"res"},
+  {blk:"alm", ref:"R2", modo:"Corto", mec:"LINE_SENSE en 0 → modo programación → no dispara.", ef:"P3", frac:.05, fsrc:"dsiac", fam:"res"},
+  {blk:"alm", ref:"R3", modo:"Abierto", mec:"V_CF leída en 0 → aborta.", ef:"P3", frac:.59, fsrc:"dsiac", fam:"res"},
+  {blk:"alm", ref:"R3", modo:"Corto", mec:"V_CF (11 V) directo al ADC → sobretensión del MCU (causa común).", ef:"P1", frac:.05, fsrc:"dsiac", fam:"res", cond:.05, mit:["vdd","t1"]},
+  {blk:"alm", ref:"R3, R4", modo:"Deriva del divisor", mec:"Lectura de V_CF baja → aborto en falso.", ef:"P3", frac:.36, fsrc:"dsiac", fam:"res", n:2, cond:.1},
+  {blk:"alm", ref:"R4", modo:"Abierto", mec:"Lee tope de escala: dispara sin verificar energía.", ef:"L", frac:.59, fsrc:"dsiac", fam:"res"},
+  {blk:"alm", ref:"R4", modo:"Corto", mec:"Lee 0 → aborta.", ef:"P3", frac:.05, fsrc:"dsiac", fam:"res"},
+
+  {blk:"cnt", ref:"D2", modo:"Abierto", mec:"El MCU no se alimenta.", ef:"P3", frac:.24, fsrc:"ptc", fam:"sig"},
+  {blk:"cnt", ref:"D2", modo:"Corto", mec:"Sin aislamiento: el MCU cae junto con C_F durante el disparo y el pulso puede quedar corto.", ef:"P3", frac:.16, fsrc:"ptc", fam:"sig", cond:.1},
+  {blk:"cnt", ref:"D2", modo:"Deriva (fuga inversa)", mec:"Consumo extra mínimo.", ef:"N", frac:.58, fsrc:"ptc", fam:"sig"},
+  {blk:"cnt", ref:"C_loc", modo:"Corto", mec:"Cortocircuita la alimentación del contador y descarga C_F por D2.", ef:"P3", frac:.49, fsrc:"dsiac", fam:"mlcc"},
+  {blk:"cnt", ref:"C_loc", modo:"Abierto", mec:"Sin reserva: brown-out durante el disparo.", ef:"P3", frac:.22, fsrc:"dsiac", fam:"mlcc", cond:.1},
+  {blk:"cnt", ref:"C4, C5", modo:"Corto", mec:"VDD en corto.", ef:"P3", frac:.49, fsrc:"dsiac", fam:"mlcc", n:2},
+  {blk:"cnt", ref:"C4, C5", modo:"Abierto", mec:"Ruido en VDD; posibles resets → aborta.", ef:"P3", frac:.22, fsrc:"dsiac", fam:"mlcc", n:2, cond:.05},
+  {blk:"cnt", ref:"U2 LDO", modo:"Sin salida", mec:"El MCU no arranca.", ef:"P3", frac:.5, fsrc:"sup", fam:"ldo"},
+  {blk:"cnt", ref:"U2 LDO", modo:"Salida alta (transistor de paso en corto)", mec:"~11 V en VDD. El MCU dañado puede dejar FIRE_A y FIRE_B en alto (causa común).", ef:"P1", frac:.2, fsrc:"sup", fam:"ldo", cond:.05, mit:["vdd","t1"]},
+  {blk:"cnt", ref:"U2 LDO", modo:"Salida baja u oscilación", mec:"BOR o reset → aborta.", ef:"P3", frac:.2, fsrc:"sup", fam:"ldo"},
+  {blk:"cnt", ref:"U2 LDO", modo:"Corriente de reposo alta", mec:"Descarga C_F más rápido; P3 si se come el margen.", ef:"P3", frac:.1, fsrc:"sup", fam:"ldo", cond:.3},
+  {blk:"cnt", ref:"U1 MCU", modo:"No arranca o muerto", mec:"Nunca sube las gates.", ef:"P3", frac:.6, fsrc:"sup", fam:"mcu"},
+  {blk:"cnt", ref:"U1 MCU", modo:"FIRE_A trabado en alto", mec:"Q1 encendido desde t0. No dispara solo; combina con Q2 en corto.", ef:"L", frac:.02, fsrc:"sup", fam:"mcu", lat:"pinA"},
+  {blk:"cnt", ref:"U1 MCU", modo:"FIRE_B trabado en alto", mec:"Q2 encendido desde t0. Combina con Q1 en corto.", ef:"L", frac:.02, fsrc:"sup", fam:"mcu", lat:"pinB"},
+  {blk:"cnt", ref:"U1 MCU", modo:"Falla interna que sube FIRE_A y FIRE_B juntos", mec:"Mismo puerto GPIO. Falla simple que cierra las dos llaves en t0.", ef:"P1", frac:.002, fsrc:"sup", fam:"mcu", mit:["t1"]},
+  {blk:"cnt", ref:"U1 MCU", modo:"ADC o referencia corridos", mec:"Aborto en falso o disparo sin verificar energía.", ef:"P3", frac:.05, fsrc:"sup", fam:"mcu", cond:.5},
+  {blk:"cnt", ref:"U1 MCU", modo:"Flash o EEPROM corrupta", mec:"El CRC o el ECC lo detecta → aborta.", ef:"P3", frac:.05, fsrc:"sup", fam:"mcu"},
+  {blk:"cnt", ref:"U1 MCU", modo:"BOR o watchdog inoperantes", mec:"Pierde una defensa; solo cuenta si además hay otra falla.", ef:"L", frac:.03, fsrc:"sup", fam:"mcu"},
+  {blk:"cnt", ref:"U1 MCU", modo:"Oscilador interno fuera de rango", mec:"La corrección de arranque lo mide contra el cristal y aborta si sale de rango.", ef:"P3", frac:.05, fsrc:"sup", fam:"mcu", cond:.2},
+  {blk:"cnt", ref:"Y1", modo:"No oscila o abierto", mec:"El firmware aborta (cristal no arrancó).", ef:"P3", frac:.8, fsrc:"ptc", fam:"xtal"},
+  {blk:"cnt", ref:"Y1", modo:"Frecuencia corrida", mec:"Corrimientos de ppm; no llegan a 5 %.", ef:"N", frac:.2, fsrc:"sup", fam:"xtal"},
+  {blk:"cnt", ref:"C1, C2", modo:"Corto", mec:"El cristal no arranca → aborta.", ef:"P3", frac:.49, fsrc:"dsiac", fam:"mlcc", n:2},
+  {blk:"cnt", ref:"C1, C2", modo:"Abierto", mec:"Corrimiento de ~+100 ppm.", ef:"N", frac:.22, fsrc:"dsiac", fam:"mlcc", n:2},
+
+  {blk:"drv", ref:"Q1", modo:"Corto drain-source", mec:"No dispara solo. Combina con Q2 encendido.", ef:"L", frac:.51, fsrc:"ptc", fam:"fet", lat:"Q1"},
+  {blk:"drv", ref:"Q1", modo:"Conduce (salida alta)", mec:"Equivalente a corto.", ef:"L", frac:.05, fsrc:"ptc", fam:"fet", lat:"Q1"},
+  {blk:"drv", ref:"Q1", modo:"Abierto o no conduce", mec:"No cierra el circuito.", ef:"P3", frac:.27, fsrc:"ptc", fam:"fet"},
+  {blk:"drv", ref:"Q1", modo:"Deriva: V_th o R_DS(on) altos", mec:"Con 2,5 V de gate puede no conducir lo suficiente.", ef:"P3", frac:.17, fsrc:"ptc", fam:"fet", cond:.2},
+  {blk:"drv", ref:"Q2", modo:"Corto drain-source", mec:"No dispara solo. Combina con Q1 encendido.", ef:"L", frac:.51, fsrc:"ptc", fam:"fet", lat:"Q2"},
+  {blk:"drv", ref:"Q2", modo:"Conduce (salida alta)", mec:"Equivalente a corto.", ef:"L", frac:.05, fsrc:"ptc", fam:"fet", lat:"Q2"},
+  {blk:"drv", ref:"Q2", modo:"Abierto o no conduce", mec:"No cierra el circuito.", ef:"P3", frac:.27, fsrc:"ptc", fam:"fet"},
+  {blk:"drv", ref:"Q2", modo:"Deriva: V_th o R_DS(on) altos", mec:"Con 2,5 V de gate puede no conducir lo suficiente.", ef:"P3", frac:.17, fsrc:"ptc", fam:"fet", cond:.2},
+  {blk:"drv", ref:"R5", modo:"Abierto", mec:"Gate de Q1 flotante: sin defensa contra dV/dt ni contra el pin indefinido al arrancar.", ef:"L", frac:.59, fsrc:"dsiac", fam:"res", lat:"pd5"},
+  {blk:"drv", ref:"R5", modo:"Corto", mec:"FIRE_A no puede subir la gate.", ef:"P3", frac:.05, fsrc:"dsiac", fam:"res"},
+  {blk:"drv", ref:"R6", modo:"Abierto", mec:"Gate de Q2 flotante.", ef:"L", frac:.59, fsrc:"dsiac", fam:"res", lat:"pd6"},
+  {blk:"drv", ref:"R6", modo:"Corto", mec:"FIRE_B no puede subir la gate.", ef:"P3", frac:.05, fsrc:"dsiac", fam:"res"},
+
+  {blk:"ini", ref:"PCB", modo:"Pista abierta", mec:"Circuito interrumpido.", ef:"P3", frac:.76, fsrc:"ptc", fam:"pcb"},
+  {blk:"ini", ref:"PCB", modo:"Corto entre pistas: drain de Q1 a GND", mec:"El puente queda directo sobre C_F y dispara en t0. Supuesto: 5 % de los cortos caen en ese par de redes.", ef:"P1", frac:.24, fsrc:"ptc", fam:"pcb", cond:.05, mit:["hs"]},
+  {blk:"ini", ref:"PCB", modo:"Corto entre pistas: otras redes", mec:"La mayoría termina en aborto o en no carga.", ef:"P3", frac:.24, fsrc:"ptc", fam:"pcb", cond:.5},
+  {blk:"ini", ref:"Cable", modo:"Cable del iniciador (lado Q1) a masa o carcasa", mec:"Las dos llaves están del lado bajo: un corto a masa las saltea. Falla simple que dispara en t0.", ef:"P1", p:[1e-7, 1e-5], psrc:"sup", mit:["hs"]},
+  {blk:"ini", ref:"Cable", modo:"Cable abierto o mal conectado", mec:"El puente no recibe corriente.", ef:"P3", p:[1e-6, 1e-4], psrc:"sup"},
+  {blk:"ini", ref:"Iniciador", modo:"No funciona con estímulo ≥ all-fire", mec:"Confiabilidad propia del iniciador. Solo se suma si se activa la opción.", ef:"P3", p:[1e-6, 1e-3], psrc:"mil23659", init:true},
+  {blk:"ini", ref:"Iniciador", modo:"Más sensible que su especificación (no-fire bajo)", mec:"El acople dV/dt o una corriente RF pueden alcanzar para activarlo.", ef:"S", sys:"P1", note:"a ensayo"},
+
+  {blk:"fab", ref:"Juntas", modo:"Defecto de soldadura que pasa AOI y prueba", mec:"200–600 DPMO × ~70 juntas = 1,4–4,2 % antes de la prueba; cobertura de la prueba 99,5–99,9 % (supuesto).", ef:"P3", p:[1.4e-5, 2.1e-4], psrc:"ipc"},
+  {blk:"fab", ref:"Q1", modo:"Dañado por ESD en el armado (corto latente)", mec:"Pasa la prueba funcional porque Q2 sigue abriendo. Solo se detecta probando cada llave sola.", ef:"L", p:[1e-6, 1e-5], psrc:"sup", lat:"Q1", mit:["key"]},
+  {blk:"fab", ref:"Q2", modo:"Dañado por ESD en el armado (corto latente)", mec:"Igual que Q1.", ef:"L", p:[1e-6, 1e-5], psrc:"sup", lat:"Q2", mit:["key"]},
+  {blk:"fab", ref:"BOM", modo:"Pieza o valor equivocado", mec:"La prueba funcional detecta casi todos (mide T y la corriente).", ef:"P3", p:[1e-6, 1e-5], psrc:"sup"},
+  {blk:"fab", ref:"Firmware", modo:"Versión de firmware equivocada", mec:"El banco tiene que leer y verificar la versión además de T.", ef:"S", sys:"P1–P4", note:"sistemático"},
+
+  {blk:"fw", ref:"Firmware", modo:"Error en el cálculo de T (overflow, prescaler, unidades)", mec:"Disparo en cualquier momento. Lo detecta el banco solo para los T probados.", ef:"S", sys:"P1, P2, P4", note:"sistemático"},
+  {blk:"fw", ref:"Firmware", modo:"Pines de disparo como salida alta antes de inicializar", mec:"Disparo en t0.", ef:"S", sys:"P1", note:"sistemático"},
+  {blk:"fw", ref:"Firmware", modo:"Corrección de arranque mal aplicada", mec:"Error de milisegundos a algunos por ciento.", ef:"S", sys:"P2, P4", note:"sistemático"},
+  {blk:"fw", ref:"Firmware", modo:"Falla de LSE con paso automático al LSI sin abortar", mec:"El LSI del STM32L0 va de 26 a 56 kHz: error de −30 % a +50 %.", ef:"S", sys:"P2, P4", note:"sistemático"},
+  {blk:"fw", ref:"Firmware", modo:"Usa T antes de verificar el CRC", mec:"Un T corrupto se ejecuta.", ef:"S", sys:"P2, P4", note:"sistemático"},
+  {blk:"fw", ref:"Firmware", modo:"Reset por watchdog que reinicia la cuenta", mec:"Disparo tardío en lugar de aborto.", ef:"S", sys:"P4", note:"sistemático"},
+  {blk:"fw", ref:"Firmware", modo:"Umbrales de modo o de V_MIN_ARMADO mal fijados", mec:"Aborto en falso, o modo retardo con 5 V de programación.", ef:"S", sys:"P3, P1", note:"sistemático"},
+
+  {blk:"hum", ref:"T", modo:"T mal elegido o mal cargado (más corto)", mec:"Se ejecuta un T válido pero equivocado; el CRC no lo detecta.", ef:"P2", human:true, psrc:"therp"},
+  {blk:"hum", ref:"T", modo:"T mal elegido o mal cargado (más largo)", mec:"Igual, hacia el lado largo.", ef:"P4", human:true, psrc:"therp"},
+
+  {blk:"amb", ref:"Y1", modo:"Choque o vibración: diapasón fracturado", mec:"El cristal no arranca o se detiene → aborta.", ef:"S", sys:"P3", note:"a ensayo"},
+  {blk:"amb", ref:"Juntas, C_F", modo:"Choque o vibración: fisura de juntas o desprendimiento", mec:"Abierto en el camino de energía o en el contador.", ef:"S", sys:"P3", note:"a ensayo"},
+  {blk:"amb", ref:"Y1", modo:"Frío: el cristal no arranca en el tiempo máximo", mec:"El firmware aborta.", ef:"S", sys:"P3", note:"a ensayo"},
+  {blk:"amb", ref:"R1–R4", modo:"Humedad o contaminación en nodos de MΩ", mec:"Lecturas corridas: aborto en falso o modo equivocado.", ef:"S", sys:"P3", note:"a ensayo"},
+  {blk:"amb", ref:"Cables", modo:"RF inducida en los cables del iniciador", mec:"La corriente RF cierra por las capacidades C_oss de Q1/Q2 aunque estén abiertos.", ef:"S", sys:"P1", note:"a ensayo"},
+  {blk:"amb", ref:"Línea", modo:"ESD o EOS por la línea o por el iniciador", mec:"Daño del MCU (causa común) o de la TVS.", ef:"S", sys:"P1, P3", note:"a ensayo"},
+
+  {blk:"sis", ref:"Pulso", modo:"Pulso ausente, corto o de baja tensión", mec:"Fuera del alcance de esta placa.", ef:"S", sys:"P3", note:"del sistema"},
+  {blk:"sis", ref:"Pulso", modo:"Rebote o segundo pulso con reinicio del micro", mec:"Si el reinicio ocurre más de 5 % de T después de t0, el disparo es tardío.", ef:"S", sys:"P4", note:"del sistema"},
+  {blk:"sis", ref:"Pulso", modo:"Polaridad invertida o sobretensión sostenida", mec:"D1 bloquea; la TVS conduce y puede quemarse en corto.", ef:"S", sys:"P3", note:"del sistema"}
+];
+
+const MC = {"reqs":[1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0,6.5,7.0,7.5,8.0,8.5,9.0,9.5,10.0,10.5,11.0,11.5,12.0,12.5,13.0,13.5,14.0,14.5,15.0],"cf":{"150":{"p":[0.114499,0.26657,0.421561,0.562522,0.688122,0.791374,0.869706,0.923155,0.957155,0.977764,0.989426,0.99532,0.998199,0.999422,0.999851,0.999967,0.999992,0.999999,0.999999,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"med":2.27,"p01":0.25},"330":{"p":[0.0,0.0,0.0,5e-06,0.000142,0.001231,0.005597,0.017019,0.038906,0.073241,0.120931,0.180504,0.249713,0.325491,0.403582,0.480874,0.555138,0.624275,0.686452,0.741616,0.789536,0.83067,0.865355,0.894331,0.917899,0.93704,0.952274,0.964599,0.974153],"med":8.63,"p01":3.44},"560":{"p":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5e-06,2.2e-05,0.00014,0.000509,0.001477,0.003573,0.007721,0.014373,0.02478,0.039462,0.058778,0.082539,0.110923,0.143686,0.180743,0.22057,0.263328,0.307304],"med":17.14,"p01":8.3},"1000":{"p":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,2e-06,6e-06,1.9e-05],"med":33.62,"p01":17.79}}};
+const MITF = 0.01;
+const $ = (id) => document.getElementById(id);
+const SUP = {"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"};
+function fmt(p, floor) {
+  if (p == null) return "—";
+  if (p <= 0) return "0";
+  if (floor && p < floor) return "< 10" + String(Math.log10(floor)).replace(/./g, c => SUP[c] || c);
+  if (p < 1e-15) return "< 10⁻¹⁵";
+  const e = Math.floor(Math.log10(p)); const m = p / Math.pow(10, e);
+  const ms = m.toFixed(1).replace(".", ",");
+  if (e >= -2) return p.toLocaleString("es-AR", { maximumSignificantDigits: 2 });
+  return (ms === "1,0" ? "" : ms + " × ") + "10" + String(e).replace(/./g, c => SUP[c] || c);
+}
+function oneIn(p) { if (!p || p <= 0) return ""; const n = 1 / p; if (n < 1.5) return ""; return "1 en " + Math.round(n).toLocaleString("es-AR", { maximumSignificantDigits: 2 }); }
+function pick(lo, hi, scen) { return scen === "lo" ? lo : scen === "hi" ? hi : Math.sqrt(lo * hi); }
+
+function state() {
+  return {
+    years: +$("years").value, kd: +$("kd").value, scen: $("scen").value, cf: $("cf").value, req: +$("req").value,
+    tmode: +$("tmode").value, rs: +$("rs").value,
+    m: { vdd: $("m-vdd").checked, pd: $("m-pd").checked, t1: $("m-t1").checked, key: $("m-key").checked, hs: $("m-hs").checked, init: $("m-init").checked }
+  };
+}
+function mitFactor(r, s) {
+  let f = 1;
+  (r.mit || []).forEach(k => { if (s.m[k]) f *= (k === "key" ? 0 : MITF); });
+  return f;
+}
+function rowProb(r, s) {
+  if (r.sys) return null;
+  if (r.human) return s.tmode / 2;
+  if (r.p) { if (r.init && !s.m.init) return 0; return pick(r.p[0], r.p[1], s.scen) * mitFactor(r, s); }
+  const fam = L[r.fam]; const lam = pick(fam[0], fam[1], s.scen) * (r.n || 1);
+  const hours = s.kd * s.years * 8760 + 40 / 3600;
+  return lam * 1e-9 * r.frac * hours * (r.cond == null ? 1 : r.cond) * mitFactor(r, s);
+}
+function energyP(s) {
+  const arr = MC.cf[s.cf].p; const i = MC.reqs.indexOf(s.req);
+  return arr[i < 0 ? 0 : i];
+}
+function dvdt(s) {
+  const Cf = +s.cf * 1e-6, Crss = 77e-12, Ciss = 630e-12, Rpd = s.m.pd ? 10e3 : 100e3;
+  const rate = 11.3 / ((s.rs + 0.2) * Cf);
+  let vg = Crss * rate * Rpd; vg = Math.min(vg, 11.3 * Crss / Ciss);
+  const vthMin = 0.65 - 0.003 * 45;
+  const frac = Math.max(0, Math.min(1, (vg - vthMin) / 0.8));
+  return { rate, vg, vthMin, Rpd, frac };
+}
+
+function compute(s) {
+  const rows = R.map(r => ({ r, p: rowProb(r, s) }));
+  const lat = { Q1: 0, Q2: 0, pinA: 0, pinB: 0, pd5: 0, pd6: 0 };
+  rows.forEach(x => { if (x.r.lat && x.p) lat[x.r.lat] += x.p; });
+  const calc = [];
+  calc.push({ r: { blk: "calc", ref: "Q1 + Q2", modo: "Q1 y Q2 encendidos a la vez por fallas independientes", mec: "Corto latente de Q1 (armado o almacenamiento) y de Q2.", ef: "P1", psrc: "mc" }, p: lat.Q1 * lat.Q2 });
+  calc.push({ r: { blk: "calc", ref: "Q1 + U1", modo: "Q1 en corto y FIRE_B trabado en alto", mec: "Combinación de dos latentes.", ef: "P1", psrc: "mc" }, p: lat.Q1 * lat.pinB * (s.m.t1 ? MITF : 1) });
+  calc.push({ r: { blk: "calc", ref: "Q2 + U1", modo: "Q2 en corto y FIRE_A trabado en alto", mec: "Combinación de dos latentes.", ef: "P1", psrc: "mc" }, p: lat.Q2 * lat.pinA });
+  calc.push({ r: { blk: "calc", ref: "R5 + R6", modo: "Las dos gates flotantes", mec: "Ambos pull-downs abiertos; supuesto 10 % de que el arranque las encienda.", ef: "P1", psrc: "mc" }, p: lat.pd5 * lat.pd6 * 0.1 });
+  const fastP1 = rows.filter(x => x.r.ef === "P1" && x.r.fam).reduce((a, x) => a + (x.p || 0), 0);
+  const hrs = s.kd * s.years * 8760 + 40 / 3600;
+  calc.push({ r: { blk: "calc", ref: "Varios", modo: "Falla de causa común que aparece durante la cuenta (4–40 s)", mec: "Los mismos mecanismos de P1, pero ocurridos después de t1.", ef: "P2", psrc: "mc" }, p: fastP1 * (36 / 3600) / hrs });
+  calc.push({ r: { blk: "calc", ref: "C_F", modo: "Energía insuficiente (Monte Carlo)", mec: "I²t entregado menor que el all-fire, con C_F = " + s.cf + " µF y " + String(s.req).replace(".", ",") + " A²·ms.", ef: "P3", psrc: "mc" }, p: energyP(s) });
+  calc.push({ r: { blk: "calc", ref: "Y1, U1", modo: "Error de tiempo paramétrico fuera de ±5 %", mec: "Máx. 0,32 % en el Monte Carlo; más de 15 veces de margen.", ef: "P2", psrc: "mc" }, p: 5e-10 });
+  calc.push({ r: { blk: "calc", ref: "Y1, U1", modo: "Error de tiempo paramétrico fuera de ±5 % (tarde)", mec: "Ídem, hacia el lado lento.", ef: "P4", psrc: "mc" }, p: 5e-10 });
+  const all = rows.concat(calc);
+  const tot = { P1: 0, P2: 0, P3: 0, P4: 0 };
+  all.forEach(x => { if (tot[x.r.ef] != null && x.p) tot[x.r.ef] += x.p; });
+  return { all, tot, lat };
+}
+
+const NAMES = { P1: "Activa antes de t1", P2: "Activa entre t1 y t2", P3: "No activa", P4: "Activa después de t2" };
+let curTab = "P1", fEff = "all";
+
+function render() {
+  const s = state();
+  $("years-v").textContent = s.years.toLocaleString("es-AR") + (s.years === 1 ? " año" : " años");
+  $("req-v").textContent = String(s.req).replace(".", ",") + " A²·ms";
+  const { all, tot } = compute(s);
+  const dv = dvdt(s);
+  $("res-tag").textContent = s.years.toLocaleString("es-AR") + " años · k_d " + String(s.kd).replace(".", ",") + " · λ " + ({ lo: "bajas", geo: "centrales", hi: "altas" })[s.scen];
+
+  // tarjetas
+  $("cards").innerHTML = ["P1", "P2", "P3", "P4"].map(k => {
+    const top = all.filter(x => x.r.ef === k && x.p > 0).sort((a, b) => b.p - a.p).slice(0, 3);
+    const share = top.map(x => `<li>${x.r.modo} <span class="muted">(${Math.round(100 * x.p / tot[k])} %)</span></li>`).join("");
+    const warn = (k === "P1" && dv.vg > dv.vthMin) ? `<div class="warn">El acople dV/dt supera V_th: P1 deja de ser aleatorio. Ver chequeo.</div>` : (k === "P1" && !s.m.hs) ? `<div class="warn">Hay fallas simples que disparan en t0 (cable o pista a masa).</div>` : "";
+    return `<div class="card k-${k.toLowerCase()}"><div class="code">${k}</div><div class="name">${NAMES[k]}</div><div class="big">${fmt(tot[k])}</div><div class="one">${oneIn(tot[k])}</div><ul>${share}</ul>${warn}</div>`;
+  }).join("");
+
+  // barras
+  const list = all.filter(x => x.r.ef === curTab && x.p > 0).sort((a, b) => b.p - a.p).slice(0, 10);
+  const pos = p => Math.max(1, Math.min(100, (Math.log10(p) + 12) / 10 * 100));
+  const col = { P1: "var(--c-init)", P2: "var(--c-store)", P3: "var(--c-gray)", P4: "var(--c-count)" }[curTab];
+  $("bars").innerHTML = list.length ? list.map(x => `<div class="bar" style="--cc:${col}"><div class="lbl"><b>${x.r.ref}</b> · ${x.r.modo}</div><div class="track"><div class="fill" style="width:${pos(x.p)}%"></div></div><div class="v">${fmt(x.p)}</div></div>`).join("") : `<p class="small">Sin contribuciones cuantificadas con estos supuestos.</p>`;
+
+  // chequeo dV/dt
+  const bad = dv.vg > dv.vthMin, mid = !bad && dv.vg > 0.6 * dv.vthMin;
+  $("chk-dvdt").innerHTML = `<h3>Acople dV/dt en las gates al cargar C_F</h3>
+    <span class="status ${bad ? "st-bad" : mid ? "st-mid" : "st-ok"}">${bad ? "NO PASA" : mid ? "MARGEN CHICO" : "PASA"}</span>
+    <dl class="kv"><dt>dV/dt en el drain de Q1</dt><dd>${Math.round(dv.rate / 1000)} V/ms</dd>
+    <dt>V_gs inducida (R_pd ${dv.Rpd / 1000} kΩ)</dt><dd>${dv.vg.toFixed(2).replace(".", ",")} V</dd>
+    <dt>V_th mínima a 70 °C</dt><dd>${dv.vthMin.toFixed(2).replace(".", ",")} V</dd>
+    <dt>Unidades con V_th por debajo</dt><dd>${dv.frac > 0 ? Math.round(dv.frac * 100) + " % (por MOSFET)" : "ninguna"}</dd></dl>
+    <p class="small">V_gs ≈ C_rss · dV/dt · R_pd, con C_rss = 77 pF y V_th = 0,65–1,45 V a 25 °C (−3 mV/°C), tope en el divisor capacitivo C_rss/C_iss. Estimación cuasi estática: medir con osciloscopio y la fuente real. No se suma a P1 porque depende del diseño, no del azar.</p>`;
+  $("chk-hs").innerHTML = `<h3>Fallas simples que disparan en t0</h3>
+    <span class="status ${s.m.hs ? "st-ok" : "st-bad"}">${s.m.hs ? "CUBIERTO" : "EXISTE CAMINO"}</span>
+    <p>${s.m.hs ? "Con una llave del lado alto y otra del lado bajo, un corto a masa de cualquier cable del iniciador deja una llave abierta en serie." : "Q1 y Q2 están los dos entre el puente y GND. Si el cable del iniciador del lado de Q1, o la pista del drain de Q1, hace corto a masa o a la carcasa, el puente queda directo sobre C_F y dispara apenas carga, sin que el MCU intervenga."}</p>
+    <p class="small">El mismo efecto tiene cualquier falla que ponga ~11 V en VDD sin clamp (LDO en corto, R1 o R3 en corto): ${s.m.vdd ? "cubierto por el clamp de VDD y los zener de gate." : "hoy no hay defensa."}</p>`;
+
+  drawEnergy(s);
+  renderTable(s, all);
+}
+
+function drawEnergy(s) {
+  const W = 520, H = 260, l = 56, r = 14, t = 14, b = 40;
+  const x = v => l + (v - 1) / 14 * (W - l - r);
+  const y = p => { const lp = Math.log10(Math.max(p, 1e-6)); return t + (0 - lp) / 6 * (H - t - b); };
+  const cols = { "150": "var(--c-init)", "330": "var(--c-store)", "560": "var(--c-count)", "1000": "var(--c-drive)" };
+  let g = "";
+  for (let e = 0; e >= -6; e--) { const yy = y(Math.pow(10, e)); g += `<line x1="${l}" x2="${W - r}" y1="${yy}" y2="${yy}" stroke="var(--rule)" stroke-width="1"/><text x="${l - 6}" y="${yy + 4}" text-anchor="end">${e === 0 ? "1" : e === -6 ? "≤10⁻⁶" : "10" + String(e).replace(/./g, c => SUP[c] || c)}</text>`; }
+  for (let v = 1; v <= 15; v += 2) g += `<text x="${x(v)}" y="${H - b + 16}" text-anchor="middle">${v}</text>`;
+  g += `<text x="${(l + W - r) / 2}" y="${H - 6}" text-anchor="middle">I²t de all-fire (A²·ms)</text>`;
+  Object.keys(MC.cf).forEach(k => {
+    const pts = MC.reqs.map((v, i) => `${x(v).toFixed(1)},${y(MC.cf[k].p[i]).toFixed(1)}`).join(" ");
+    g += `<polyline points="${pts}" fill="none" stroke="${cols[k]}" stroke-width="${k === s.cf ? 2.8 : 1.4}" stroke-opacity="${k === s.cf ? 1 : .55}"/>`;
+  });
+  const pe = energyP(s);
+  g += `<circle cx="${x(s.req)}" cy="${y(pe)}" r="5" fill="var(--paper)" stroke="var(--ink)" stroke-width="2"/>`;
+  g += `<text x="${Math.min(x(s.req) + 8, W - 120)}" y="${Math.max(y(pe) - 8, 24)}" style="fill:var(--ink);font-weight:600">${fmt(pe, 1e-6)}</text>`;
+  $("echart").innerHTML = g;
+  $("elegend").innerHTML = Object.keys(MC.cf).map(k => `<span><svg width="18" height="8" aria-hidden="true"><line x1="0" x2="18" y1="4" y2="4" stroke="${cols[k]}" stroke-width="3"/></svg> ${k} µF · mediana ${MC.cf[k].med.toFixed(1).replace(".", ",")} A²·ms</span>`).join("");
+}
+
+function srcLinks(keys) {
+  return keys.map(k => { const i = SRC_ORDER.indexOf(k) + 1; return `<a href="#src-${k}">[${i}]</a>`; }).join(" ");
+}
+function renderTable(s, all) {
+  const blkSel = $("fblk").value, sort = $("fsort").value;
+  let rows = all.filter(x => (fEff === "all" || x.r.ef === fEff) && (blkSel === "all" || x.r.blk === blkSel));
+  const order = Object.keys(BLK);
+  if (sort === "p") rows = rows.slice().sort((a, b) => (b.p || 0) - (a.p || 0));
+  else rows = rows.slice().sort((a, b) => order.indexOf(a.r.blk) - order.indexOf(b.r.blk));
+  $("fcount").textContent = rows.length + " de " + all.length + " filas";
+  $("ftbody").innerHTML = rows.map(({ r, p }) => {
+    let fr = r.frac != null ? Math.round(r.frac * 1000) / 10 + " %" : "—";
+    let lam = "—", src = [];
+    if (r.fam) { const f = L[r.fam]; lam = `${String(f[0]).replace(".", ",")}–${String(f[1]).replace(".", ",")}` + (r.n ? ` ×${r.n}` : ""); src = [r.fsrc].concat(f[2]); }
+    else if (r.p) { lam = `P ${fmt(r.p[0])}–${fmt(r.p[1])}`; src = [r.psrc]; }
+    else if (r.human) { lam = "según selector"; src = [r.psrc]; }
+    else if (r.psrc) { src = [r.psrc]; }
+    src = [...new Set(src)];
+    const efLabel = r.ef === "S" ? `<span class="pill e-S">${r.note}</span><br><span class="small">${r.sys}</span>` : `<span class="pill e-${r.ef}">${r.ef === "L" ? "Latente" : r.ef === "N" ? "Sin efecto" : r.ef}</span>`;
+    const extra = [];
+    if (r.cond != null) extra.push("cond. " + String(r.cond).replace(".", ","));
+    if (r.mit) extra.push("mejora: " + r.mit.join(", "));
+    const pv = r.ef === "S" ? "—" : r.ef === "N" ? "—" : (r.init && !s.m.init) ? "no sumado" : fmt(p);
+    return `<tr><td class="blk">${BLK[r.blk]}</td><td class="n">${r.ref}</td><td>${r.modo}</td><td>${r.mec}${extra.length ? `<br><span class="small">${extra.join(" · ")}</span>` : ""}</td><td>${efLabel}</td><td class="n">${fr}</td><td class="n">${lam}</td><td class="n">${pv}</td><td class="src">${srcLinks(src)}</td></tr>`;
+  }).join("");
+}
+
+// fuentes
+$("srclist").innerHTML = SRC_ORDER.map(k => `<li id="src-${k}">${SRC[k][0]}${SRC[k][1] ? ` · <a href="${SRC[k][1]}" target="_blank" rel="noopener">enlace</a>` : ""}</li>`).join("");
+// filtro de bloque
+$("fblk").innerHTML += Object.keys(BLK).map(k => `<option value="${k}">${BLK[k]}</option>`).join("");
+
+document.querySelectorAll("input, select").forEach(el => el.addEventListener("input", render));
+document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
+  curTab = b.dataset.p; document.querySelectorAll(".tabs button").forEach(o => o.setAttribute("aria-pressed", o === b)); render();
+}));
+document.querySelectorAll("#fchips button").forEach(b => b.addEventListener("click", () => {
+  fEff = b.dataset.e; document.querySelectorAll("#fchips button").forEach(o => o.setAttribute("aria-pressed", o === b)); render();
+}));
+render();
+})();
+</script>
