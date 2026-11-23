@@ -224,7 +224,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <li><div><strong>Por qué temporizador y no micro:</strong> sin prueba antes del uso, el micro es la pieza que más falla durante los 2–3 años de almacenamiento. El temporizador falla la mitad de veces por no activar (P3 6,2 × 10⁻⁵ contra 1,2 × 10⁻⁴) y cuesta ~0,26 USD menos. A cambio, activar fuera de la ventana (P2 y P4, ~2–3 × 10⁻⁶) es más probable que con el micro (~10⁻⁹ y ~10⁻⁷), porque nadie controla el oscilador del temporizador.</div></li>
       <li><div><strong>Frente al diseño original</strong>, en las mismas condiciones: P1 baja unas 100 veces (de 4,6 × 10⁻⁷ a 4,7 × 10⁻⁹) y P3 a la mitad. El original tenía fallas simples que disparaban en t0: corto a masa del drain de Q1, sobretensión de VDD y acople del flanco en las gates.</div></li>
       <li><div><strong>La precisión dejó de ser un riesgo:</strong> con ±5 s de ventana el temporizador tiene margen de ~7 veces (error ~2–3 %). Lo que limita P3 es el camino de energía (conector, soldaduras, LDO, C_F, llaves) y el dato del iniciador: si pide 3 A²·ms en vez de 2, P3 se triplica.</div></li>
-      <li><div><strong>Lo que falta para cerrar el diseño</strong> (sección 2.5): verificar con osciloscopio el arranque de la salida del temporizador, medir la deriva de T en temperatura, la fuga de C_F y el I²t del iniciador, y ensayar choque y vibración.</div></li>
+      <li><div><strong>Lo que falta para cerrar el diseño</strong> (sección 2.6): verificar con osciloscopio el arranque de la salida del temporizador, medir la deriva de T en temperatura, la fuga de C_F y el I²t del iniciador, y ensayar choque y vibración.</div></li>
       <li><div><strong>Alternativas guardadas:</strong> el diseño original y el del micro están en las secciones 13.1 y 13.2, y los datos clave de todas las alternativas evaluadas (arquitecturas, integrados, fabricación) en la sección 13.4, para reflotarlas si cambian los requisitos.</div></li>
     </ol>
   </section>
@@ -359,7 +359,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
         <circle cx="1166" cy="740" r="4" fill="var(--paper)" stroke="var(--c-new)" stroke-width="1.6"/><text x="1156" y="744" text-anchor="end" class="sm new-t">TP ARM_T1</text>
       </svg>
     </div>
-    <p class="small">* La conexión de DONE en modo de un solo pulso, el estado de DRV durante el arranque y la duración de la salida activa se toman de la hoja de datos y se verifican con osciloscopio antes de cerrar el diseño (sección 2.5).</p>
+    <p class="small">* La conexión de DONE en modo de un solo pulso, el estado de DRV durante el arranque y la duración de la salida activa se toman de la hoja de datos y se verifican con osciloscopio antes de cerrar el diseño (sección 2.6).</p>
 
     <h3 id="s81">2.1 Configuración recomendada</h3>
     <div class="scroll"><table style="min-width:860px"><thead><tr><th>Bloque</th><th>Piezas</th><th>Función y decisión de diseño</th></tr></thead><tbody>
@@ -386,7 +386,21 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     <div class="scroll"><table id="tmr-res" style="min-width:760px"></table></div>
     <p class="small">T fijo, ventana ±5 s, 3 años de almacenamiento controlado (k_d 1/60), banco al 100 %, sin prueba antes del uso. Las filas del temporizador usan los datos publicados por TI (4 FIT, reparto 50 % sin salida / 50 % precisión degradada); los supuestos que quedan se ven en la sección 9.</p>
 
-    <h3 id="s82">2.4 Alcance y requisitos para el integrador</h3>
+    <h3 id="s86">2.4 Medidas tomadas y diseño sin medidas</h3>
+    <p>Para ver qué aporta cada medida, se parte de un diseño <strong>sin medidas</strong>: el mismo temporizador TPL5110-Q1 con puentes, C_F y alimentación, pero con <strong>una sola llave del lado bajo</strong> manejada por DRV, sin enclavamiento, sin clamp, sin pull-down reforzado ni C_GS, R_s de 0,1 Ω y almacenamiento sin controlar (k_d 1/30). <strong>Las pruebas de banco se hacen en los dos casos</strong> (T medido, fuga de C_F, prueba de cada llave y disparo sobre 2 Ω). Después se suman las medidas de a una, en el orden de la tabla; cada fila muestra el resultado acumulado.</p>
+    <div class="scroll"><table id="meas-sum" style="min-width:760px"></table></div>
+    <div class="scroll" style="margin-top:14px"><table id="meas-tab" style="min-width:1000px"></table></div>
+    <p class="small">Mismo modelo, mismos datos y mismas condiciones (T fijo, ventana ±5 s, 3 años, escenario central; el rango usa las tasas bajas y altas). El costo sale del modelo de precio de la sección 8 (lote de 1000, panel de 30, JLCPCB, importación). El paso de almacenamiento controlado no lo cobra JLCPCB: es una estimación de bolsa barrera y desecante por panel (por eso el recomendado da 2,07 aquí y 2,06 en la sección 8). El acople dV/dt es un chequeo determinista: si no pasa, el disparo en t0 durante el pulso de carga no es una probabilidad baja sino un riesgo de diseño que hay que medir; por eso no se suma a P1.</p>
+    <div class="scroll"><table style="min-width:860px"><thead><tr><th>Medidas que no cambian el número pero sostienen el modelo</th><th>Por qué</th></tr></thead><tbody>
+      <tr><td>Banco al 100 % (T contra la variante, retardo de U3, fuga de C_F, prueba de cada llave, disparo sobre 2 Ω)</td><td>Está en los dos casos, por eso no aparece como paso. Es lo que deja los defectos de armado y las piezas equivocadas en ~10⁻⁶–10⁻⁵ y anula los daños latentes de las llaves (modelo: prueba de cada llave y prueba reforzada).</td></tr>
+      <tr><td>Disparo cuando DRV pasa a alto</td><td>El corto a masa del pin (el más común según TI) queda en el estado seguro. Ya está en la base.</td></tr>
+      <tr><td>Cadena de puentes que alarga T ante una falla</td><td>Un puente abierto o que falta lleva a P4 (tarde) y no a P2. Ya está en la base.</td></tr>
+      <tr><td>C_F dimensionado para ≥ 2 × el I²t de all-fire</td><td>El margen de energía del Monte Carlo da P3 ≈ 0 por energía insuficiente. Depende del dato del iniciador.</td></tr>
+      <tr><td>Selección de C_F por fuga, antes y después de encapsular</td><td>Cubre la fuga no garantizada del polímero, que el modelo no cuantifica.</td></tr>
+    </tbody></table></div>
+    <p class="small"><strong>Posibilidades evaluadas, no incluidas:</strong> almacenamiento redundante con dos capacitores aislados por diodos (+0,37 a +0,61 USD por placa; mejora poco en el modelo porque cubre sobre todo la fuga que crece en el almacenamiento, que no tiene datos), limpieza y barniz de JLCPCB antes de encapsular (~+0,29 USD por placa) y reemplazo de J1 por cables soldados (J1 pesa ~22 % de P3).</p>
+
+    <h3 id="s82">2.5 Alcance y requisitos para el integrador</h3>
     <p>El análisis cubre la placa del retardo hasta sus pads de salida. El cable al iniciador, la carcasa y la instalación son del montaje del cliente y sus fallas no se suman (se pueden incluir desde la sección 10). Igual conviene entregar estos requisitos, porque el diseño decide qué pasa si el cliente se equivoca:</p>
     <ul class="list">
       <li><strong>Cable al iniciador:</strong> lo más corto posible, par trenzado con vaina, alivio de tensión, sin pasar por bordes metálicos, encapsulado o fijado contra vibración.</li>
@@ -396,7 +410,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     <p class="small">Tolerancia del diseño a un error del cliente: con el original, un corto a masa del cable del lado de Q1 dispara en t0. Con el mejorado (una llave del lado alto y otra del lado bajo), cualquier corto de un solo cable a masa deja una llave abierta: hace falta una segunda falla. Por eso la llave del lado alto se mantiene aunque el cable no sea de nuestro alcance; además baja P1 de la propia placa unas 12 veces (corto de pista del drain de Q1).</p>
 
 
-    <h3 id="s85">2.5 Pendiente de verificar antes de cerrar el diseño</h3>
+    <h3 id="s85">2.6 Pendiente de verificar antes de cerrar el diseño</h3>
     <ul class="list">
       <li><strong>Arranque de DRV</strong> con la rampa real de VDD: sin pulso al nivel de disparo durante el encendido y la lectura del resistor (osciloscopio).</li>
       <li><strong>Conexión de DONE y EN/ONE_SHOT</strong> para el modo de un solo pulso y <strong>duración de la salida activa</strong> (≥ 20 ms).</li>
@@ -1284,10 +1298,10 @@ const R = [
   {blk:"cnt", ref:"U4 TPL5110-Q1", modo:"Sin salida (50 %)", mec:"No ordena el disparo.", ef:"P3", frac:.50, fsrc:"ti5110", fam:"tmr", req:"tmr"},
   {blk:"cnt", ref:"U4 TPL5110-Q1", modo:"Precisión de tiempo degradada, hacia corto (25 %)", mec:"La mitad del 50 % de “precisión degradada”; se supone que siempre sale de ±5 %. Dispara antes, después de que U3 libera.", ef:"P2", frac:.25, fsrc:"ti5110", fam:"tmr", req:"tmr"},
   {blk:"cnt", ref:"U4 TPL5110-Q1", modo:"Precisión de tiempo degradada, hacia largo (25 %)", mec:"Ídem hacia el lado lento.", ef:"P4", frac:.25, fsrc:"ti5110", fam:"tmr", req:"tmr"},
-  {blk:"cnt", ref:"U4 TPL5110-Q1", modo:"Pin de salida en corto al nivel activo", mec:"Análisis por pin de TI: un pin en corto fuerza la salida. Diseñando para que el corto a masa (el más común) sea el estado seguro, queda el corto a VDD. U3 lo retiene hasta ~8 s y ahí dispara.", ef:"P2", frac:.05, fsrc:"sup", fam:"tmr", req:"tmr"},
-  {blk:"cnt", ref:"U4 + U3", modo:"Pin de salida en corto y enclavamiento inoperante", mec:"Mismo modo con U3 sin bloquear: dispara en t0.", ef:"P1", frac:.05, fsrc:"sup", fam:"tmr", mit:["t1"], req:"tmr"},
+  {blk:"cnt", ref:"U4 TPL5110-Q1", modo:"Pin de salida en corto al nivel activo", mec:"Análisis por pin de TI: un pin en corto fuerza la salida. Diseñando para que el corto a masa (el más común) sea el estado seguro, queda el corto a VDD. U3 lo retiene hasta ~8 s y ahí dispara.", ef:"P2", noT1:"P1", frac:.05, fsrc:"sup", fam:"tmr", req:"tmr"},
+  {blk:"cnt", ref:"U4 + U3", modo:"Pin de salida en corto y enclavamiento inoperante", mec:"Mismo modo con U3 sin bloquear: dispara en t0.", ef:"P1", frac:.05, fsrc:"sup", fam:"tmr", mit:["t1"], req:"tmr", req2:"t1"},
   {blk:"cnt", ref:"R_T", modo:"Abierto", mec:"Análisis por pin de TI: puede ir al intervalo máximo (7200 s) → no dispara a tiempo.", ef:"P3", frac:.59, fsrc:"dsiac", fam:"res", req:"tmr"},
-  {blk:"cnt", ref:"R_T", modo:"Corto", mec:"Análisis por pin de TI: va al intervalo mínimo (100 ms); dispara cuando U3 libera (~8 s).", ef:"P2", frac:.05, fsrc:"dsiac", fam:"res", req:"tmr"},
+  {blk:"cnt", ref:"R_T", modo:"Corto", mec:"Análisis por pin de TI: va al intervalo mínimo (100 ms); dispara cuando U3 libera (~8 s).", ef:"P2", noT1:"P1", frac:.05, fsrc:"dsiac", fam:"res", req:"tmr"},
   {blk:"cnt", ref:"R_T", modo:"Deriva hacia abajo", mec:"T más corto.", ef:"P2", frac:.18, fsrc:"dsiac", fam:"res", cond:.3, req:"tmr"},
   {blk:"cnt", ref:"R_T", modo:"Deriva hacia arriba", mec:"T más largo.", ef:"P4", frac:.18, fsrc:"dsiac", fam:"res", cond:.3, req:"tmr"},
   {blk:"cnt", ref:"Cadena R_T", modo:"Puente de 0 Ω que se abre", mec:"Suma su segmento: T se alarga un escalón (5 s) y sale de la ventana por arriba.", ef:"P4", frac:.59, fsrc:"dsiac", fam:"res", n:3, cond:.5, req:"tmr"},
@@ -1358,7 +1372,8 @@ function fmt(p, floor) {
   if (floor && p < floor) return "< 10" + sup(Math.log10(floor));
   if (p < 1e-15) return "< 10⁻¹⁵";
   if (p >= 1e-2) return p.toLocaleString("es-AR", { maximumSignificantDigits: 2 });
-  const e = Math.floor(Math.log10(p)); const m = p / Math.pow(10, e);
+  let e = Math.floor(Math.log10(p)); let m = p / Math.pow(10, e);
+  if (m >= 9.95) { e += 1; m = m / 10; }
   const ms = dec(m, 1);
   return (ms === "1,0" ? "" : ms + " × ") + "10" + sup(e);
 }
@@ -1385,7 +1400,7 @@ const MICA = X(REC, { years: 3, tmode: 0, T30: true, W5: true });               
 const MICB = X(MICA, { m: { bit: false } });                                    // micro, solo banco
 const ORI3 = X(BASE, { years: 3, kd: 1 / 60, tmode: 0, W5: true, m: { fab: true } }); // original en las mismas condiciones
 
-function active(r, s) { if (r.ext && !s.m.ext) return false; if (s.m.tmr && (/^U1 MCU/.test(r.ref) || ["R1", "R2", "R3", "R4", "R1, R2", "R3, R4", "C6", "Y1", "C1, C2"].includes(r.ref) || (r.blk === "fw"))) return false; if (r.req && !s.m[r.req]) return false; if (r.nreq && s.m[r.nreq]) return false; if (s.m.noxtal && (r.ref === "Y1" || r.ref === "C1, C2")) return false; return true; }
+function active(r, s) { if (r.ext && !s.m.ext) return false; if (s.m.tmr && (/^U1 MCU/.test(r.ref) || ["R1", "R2", "R3", "R4", "R1, R2", "R3, R4", "C6", "Y1", "C1, C2"].includes(r.ref) || (r.blk === "fw"))) return false; if (r.req && !s.m[r.req]) return false; if (r.req2 && !s.m[r.req2]) return false; if (s.m.one && (r.ref === "Q1" || r.ref === "R5")) return false; if (r.nreq && s.m[r.nreq]) return false; if (s.m.noxtal && (r.ref === "Y1" || r.ref === "C1, C2")) return false; return true; }
 let BIT_COV = 0.9, BIT_H = 168;
 const bitCovers = r => !r.sys && !r.human && !r.init && r.blk !== "calc" && (r.ef === "P3" || r.lat === "Q1" || r.lat === "Q2");
 function hoursRow(r, s) { return (s.m.bit && bitCovers(r)) ? s.kd * (s.years * 8760 * (1 - BIT_COV) + BIT_H) + 40 / 3600 : hoursOf(s); }
@@ -1419,7 +1434,7 @@ function dvdt(s) {
 }
 
 function compute(s) {
-  const rows = R.filter(r => active(r, s)).map(r => ({ r, p: rowProb(r, s), f: r.sys ? "" : rowFormula(r, s) }));
+  const rows = R.filter(r => active(r, s)).map(r => (!s.m.t1 && r.noT1) ? Object.assign({}, r, { ef: r.noT1, mec: r.mec + " Sin enclavamiento: dispara en t0." }) : r).map(r => ({ r, p: rowProb(r, s), f: r.sys ? "" : rowFormula(r, s) }));
   const lat = { Q1: 0, Q2: 0, pinA: 0, pinB: 0, pd5: 0, pd6: 0 };
   rows.forEach(x => { if (x.r.lat && x.p) lat[x.r.lat] += x.p; });
   const C = (ref, modo, mec, ef, p, f) => ({ r: { blk: "calc", ref, modo, mec, ef, psrc: "mc" }, p, f });
@@ -1432,6 +1447,7 @@ function compute(s) {
   ];
   const opRate = rows.filter(x => x.r.ef === "P1" && x.r.fam).reduce((a, x) => a + lamOf(x.r, s) * 1e-9 * x.r.frac * (x.r.cond == null ? 1 : x.r.cond) * mitF(x.r, s), 0);
   calc.push(C("Varios", "Causa común que aparece durante la cuenta (t1 a t2)", "Los mecanismos de P1 de hardware, ocurridos en los 36 s entre t1 y t2.", "P2", opRate * 0.01, `Σ λ·f·c de P1 (${fmt(opRate)} /h) × 0,01 h`));
+  if (s.m.one) calc.push(C("Q2", "Llave única en corto o conduciendo", "Con una sola llave, su corto (o daño latente) cierra el circuito apenas carga C_F.", "P1", lat.Q2, `Σ de los modos latentes de Q2 = ${fmt(lat.Q2)}`));
   calc.push(C("C_F", "Energía insuficiente", `I²t entregado menor que ${dec(s.req)} A²·ms con C_F = ${s.cf} µF.`, "P3", energyP(s), `Monte Carlo 10⁶ casos, sección 7.3`));
   if (!s.m.tmr) { calc.push(C("Y1, U1", "Error de tiempo fuera de ±5 % (antes)", "Error máximo 0,32 %; margen > 15×.", "P2", 5e-10, "cota superior del Monte Carlo"));
   calc.push(C("Y1, U1", "Error de tiempo fuera de ±5 % (después)", "Ídem, hacia el lado lento.", "P4", 5e-10, "cota superior del Monte Carlo")); }
@@ -1638,11 +1654,45 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
     `<tr><td colspan="7"><b>Cambios del mejorado con micro</b></td></tr>` + DM.map(bomRow).join("") + `<tr class="tot"><td></td><td>Total mejorado</td><td></td><td></td><td></td><td class="n">${dec(sum(BOM0) + sum(DM), 3)}</td><td></td></tr>` +
     `<tr><td colspan="7"><b>Cambios de micro + autoprueba</b></td></tr>` + DR.map(bomRow).join("") + `<tr class="tot"><td></td><td>Total micro + autoprueba</td><td></td><td></td><td></td><td class="n">${dec(sum(BOM0) + sum(DM) + sum(DR), 3)}</td><td></td></tr></tbody>`;
   window.PRICES = rowsP.map(r => ({ n: r.c.n, fob: r.fob / N, land: r.land / N }));
+  window.COSTOF = (mat, j, feed) => { const fob = (mat * N * 1.03 + 25.6 + 8.2 + feed * 1.53 + joints(j * N) + 15 + 60) * 1.02; return { mat, fob: fob / N, land: ((fob + 70) * 1.19 + 350) / N }; };
+  window.REC_BOM = { mat: sum(RBOM), j: 80, feed: 26 };
   const ROWS = [["Original (documento de diseño)", RO3, 0], ["Micro, T fijo, solo banco", RMB, 2], ["Micro + autoprueba antes del uso (no aplicable)", RMA, 2], ["Recomendado: temporizador TPL5110-Q1", RT, 3]];
   $("rec-box").innerHTML = `<div class="scroll"><table style="min-width:760px"><thead><tr><th>Configuración</th><th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>FOB por placa</th><th>Puesta en Argentina</th></tr></thead><tbody>` +
     ROWS.map(([n, r, pi], i) => `<tr${i === 3 ? ' style="font-weight:600;color:var(--c-new)"' : ""}><td>${n}</td>${["P1", "P2", "P3", "P4"].map(k => `<td class="n">${fmt(r.tot[k])}</td>`).join("")}<td class="n">${dec(window.PRICES[pi].fob, 2)} USD</td><td class="n">${dec(window.PRICES[pi].land, 2)} USD</td></tr>`).join("") +
     `</tbody></table></div><p class="small">Todas en las mismas condiciones: T fijo (25–40 s), ventana ±5 s, 3 años de almacenamiento controlado, banco de fábrica al 100 %, sin prueba antes del uso salvo donde se indica. Lote de 1000 placas en panel de 30. Cómo se calcula: secciones 3–7 (probabilidad) y 8 (precio); qué tan sólido es: sección 9.</p>`;
   const tr = $("tmr-res"); if (tr) tr.innerHTML = `<thead><tr><th>Modo</th><th>Valor central</th><th>Rango (λ bajas – altas)</th><th>Qué lo domina</th></tr></thead><tbody>` + ["P1", "P2", "P3", "P4"].map(k => { const top = RT.all.filter(x => x.r.ef === k && x.p > 0).sort((a, b) => b.p - a.p).slice(0, 2); return `<tr><td><span class="pill e-${k}">${k}</span></td><td class="n">${fmt(RT.tot[k])}</td><td class="n">${fmt(RTLO.tot[k])} – ${fmt(RTHI.tot[k])}</td><td>${top.map(x => x.r.ref + " · " + x.r.modo + " (" + Math.round(100 * x.p / RT.tot[k]) + " %)").join("<br>")}</td></tr>`; }).join("") + "</tbody>";
+})();
+
+// --- medidas tomadas y diseño sin medidas
+(function () {
+  const S0 = X(TREC, { rs: 0.1, kd: 1 / 30, m: { one: true, hs: false, t1: false, vdd: false, pd: false } });
+  const S1 = X(S0, { m: { one: false } }), S2 = X(S1, { m: { hs: true } }), S3 = X(S2, { m: { t1: true } });
+  const S4 = X(S3, { m: { vdd: true } }), S5 = X(S4, { rs: 0.5, m: { pd: true } }), S6 = X(S5, { kd: 1 / 60 });
+  // [título, qué ataca, estado, Δmateriales USD, Δjuntas, Δtipos de pieza, Δ fuera de JLCPCB (USD/placa), piezas]
+  const MS = [
+    ["Segunda llave en serie", "Una llave en corto (falla simple) dispara apenas carga C_F", S1, 0.056 + 3 * 0.0012, 9, 0, 0, "Q1 AO3400A + pull-down + R11, R12"],
+    ["Llave del lado alto", "Corto de pista o del cable del lado bajo a masa; daño de una llave por la misma causa que la otra", S2, (0.040 - 0.056) + 0.013 + 2 * 0.0012, 7, 2, 0, "Q1 → AO3401A, Q4 2N7002, R7, R8, R10"],
+    ["Enclavamiento de t1 (U3)", "Salida del temporizador trabada en alto, R_T en corto: sin U3 disparan en t0", S3, 0.11 + 0.006, 8, 2, 0, "U3 TPS3808, C7 1,5 µF"],
+    ["Clamp de VDD (D5)", "LDO con salida alta: daña U4/U3 y puede dejar DRV en alto (causa común)", S4, 0.02, 2, 1, 0, "D5 TVS 3,3 V"],
+    ["Pull-down 10 kΩ + C_GS y R_s 0,5 Ω", "Acople dV/dt en las gates durante el pulso de carga (determinista, se ve en el chequeo)", S5, 2 * 0.002, 4, 1, 0, "C8, C9 4,7 nF; cambio de valores"],
+    ["Almacenamiento controlado", "Envejecimiento durante 2–3 años: bolsa barrera, desecante, temperatura moderada (k_d 1/30 → 1/60)", S6, 0, 0, 0, 0.015, "Bolsa y desecante por panel (estimado)"]];
+  const totM = MS.reduce((a, m) => a + m[3], 0), totJ = MS.reduce((a, m) => a + m[4], 0), totF = MS.reduce((a, m) => a + m[5], 0), totO = MS.reduce((a, m) => a + m[6], 0);
+  const R0b = REC_BOM, base = { mat: R0b.mat - totM, j: R0b.j - totJ, feed: R0b.feed - totF };
+  const res = [{ n: "Sin medidas", st: S0, c: base, o: 0 }];
+  let acc = Object.assign({}, base), o = 0;
+  MS.forEach(m => { acc = { mat: acc.mat + m[3], j: acc.j + m[4], feed: acc.feed + m[5] }; o += m[6]; res.push({ n: m[0], st: m[2], c: Object.assign({}, acc), o, m }); });
+  res.forEach(r => { r.t = compute(r.st).tot; r.lo = compute(X(r.st, { scen: "lo" })).tot; r.hi = compute(X(r.st, { scen: "hi" })).tot; const k = COSTOF(r.c.mat, r.c.j, r.c.feed); r.fob = k.fob; r.land = k.land + r.o * 1.0; r.dv = dvdt(r.st); });
+  const ks = ["P1", "P2", "P3", "P4"], first = res[0], last = res[res.length - 1];
+  const dvCell = r => r.dv.vg > r.dv.vthMin ? '<span class="status st-bad">NO PASA</span>' : r.dv.vg > 0.6 * r.dv.vthMin ? '<span class="status st-mid">MARGEN CHICO</span>' : '<span class="status st-ok">PASA</span>';
+  $("meas-tab").innerHTML = `<thead><tr><th>Paso</th><th>Qué ataca</th>${ks.map(k => `<th><span class="pill e-${k}">${k}</span></th>`).join("")}<th>Acople dV/dt</th><th>Δ puesto en Argentina</th></tr></thead><tbody>` +
+    res.map((r, i) => `<tr${i === 0 ? ' style="font-weight:600"' : i === res.length - 1 ? ' style="font-weight:600;color:var(--c-new)"' : ""}><td>${i === 0 ? "<b>Sin medidas</b><br><span class='small'>temporizador, 1 llave, banco al 100 %</span>" : `+ ${r.n}<br><span class="small">${r.m[7]}</span>`}</td><td class="small">${i === 0 ? "Base de comparación" : r.m[1]}</td>` +
+      ks.map(k => `<td class="n">${fmt(r.t[k])}</td>`).join("") + `<td>${dvCell(r)}</td><td class="n">${i === 0 ? "USD " + dec(r.land, 2) + " por placa" : "+" + dec(r.land - res[i - 1].land, 3)}</td></tr>`).join("") +
+    `<tr class="tot"><td>Recomendado (todas las medidas)</td><td class="small">Mejora total, sin medidas → recomendado</td>${ks.map(k => `<td class="n">${first.t[k] > 0 && last.t[k] > 0 ? "÷ " + (first.t[k] / last.t[k]).toLocaleString("es-AR", { maximumSignificantDigits: 2 }) : "—"}</td>`).join("")}<td></td><td class="n">+${dec(last.land - first.land, 2)}</td></tr></tbody>`;
+  $("meas-sum").innerHTML = `<thead><tr><th>Modelo</th>${ks.map(k => `<th><span class="pill e-${k}">${k}</span> central<br><span class="small">rango</span></th>`).join("")}<th>FOB por placa</th><th>Puesta en Argentina</th></tr></thead><tbody>` +
+    [[first, "Sin medidas"], [last, "Recomendado"]].map(([r, n], i) => `<tr${i ? ' style="font-weight:600;color:var(--c-new)"' : ""}><td>${n}</td>${ks.map(k => `<td class="n">${fmt(r.t[k])}<br><span class="small">${fmt(r.lo[k])} – ${fmt(r.hi[k])}</span><br><span class="small">${oneIn(r.t[k])}</span></td>`).join("")}<td class="n">${dec(r.fob, 2)}</td><td class="n">${dec(r.land, 2)}</td></tr>`).join("") + "</tbody>";
+  const chk = Math.abs(last.t.P1 - RT.tot.P1) / RT.tot.P1 + Math.abs(last.t.P3 - RT.tot.P3) / RT.tot.P3;
+  if (chk > 1e-9) console.error("medidas: el último paso no coincide con el recomendado", chk);
+  window.MEAS = res.map(r => ({ n: r.n, t: r.t, land: r.land }));
 })();
 
 // --- opciones con T fijo de 30 s
