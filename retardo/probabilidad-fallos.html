@@ -199,7 +199,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     <p class="lead">Estimación de la probabilidad de cada modo de fallo P1–P4 del núcleo (almacenamiento, contador, driver, iniciador), con la justificación de cada número, el esquemático analizado y un esquemático propuesto que corrige los caminos de falla encontrados.</p>
     <div class="meta"><span>Base: sistema-retardo-autoalimentado.md y Core del retardo autoalimentado</span><span>Fecha: 22/11/2026</span><span>Unidad: probabilidad por unidad y por uso</span></div>
     <nav class="toc" aria-label="Índice">
-      <a href="#s1"><span>1</span>Resumen</a><a href="#s2"><span>2</span>Esquemático analizado</a><a href="#s3"><span>3</span>Método</a><a href="#s4"><span>4</span>Datos de entrada</a><a href="#s4r"><span>4.1</span>Revisión de datos</a><a href="#s5"><span>5</span>P1</a><a href="#s6"><span>6</span>P2 y P4</a><a href="#s7"><span>7</span>P3</a><a href="#s8"><span>8</span>Esquemático propuesto</a><a href="#s9"><span>9</span>Sensibilidad</a><a href="#s10"><span>10</span>Anexo</a><a href="#s11"><span>11</span>Límites y fuentes</a>
+      <a href="#s1"><span>1</span>Resumen</a><a href="#s2"><span>2</span>Esquemático analizado</a><a href="#s3"><span>3</span>Método</a><a href="#s4"><span>4</span>Datos de entrada</a><a href="#s4r"><span>4.1</span>Revisión de datos</a><a href="#s5"><span>5</span>P1</a><a href="#s6"><span>6</span>P2 y P4</a><a href="#s7"><span>7</span>P3</a><a href="#s7b"><span>7.4</span>Bajar P3</a><a href="#s8"><span>8</span>Esquemático propuesto</a><a href="#s9"><span>9</span>Sensibilidad</a><a href="#s10"><span>10</span>Anexo</a><a href="#s11"><span>11</span>Límites y fuentes</a>
     </nav>
   </header>
 
@@ -504,6 +504,43 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     </div>
   </section>
 
+  <section id="s7b" aria-labelledby="h7bs">
+    <div class="sec-head"><h2 id="h7bs"><span class="num">7.4</span>Cómo bajar P3</h2><span class="tag">sobre el esquemático propuesto</span></div>
+    <p>Cinco sextas partes de P3 son piezas que se rompen mientras la placa está guardada, más defectos de fabricación que pasan la prueba. Las medidas que más rinden son las que detectan esas fallas antes del uso o eliminan piezas que fallan.</p>
+    <div class="scroll"><table id="p3-scen" style="min-width:860px"></table></div>
+    <p class="small">Calculado con el mismo modelo (λ centrales, 2 años, k_d 1/30 salvo donde se indica). Lo que queda dominando con las cuatro medidas:</p>
+    <ul class="list small" id="p3-rest"></ul>
+    <div class="grid2">
+      <div class="prose">
+        <h3>1. Autoprueba al programar T</h3>
+        <p>Si T se programa poco antes del uso, ese paso sirve también de prueba. A 5 V el firmware ya está en modo programación con los pines de disparo bloqueados. Puede verificar que responden el micro, el LDO y D2; que arranca el oscilador; el CRC de la EEPROM; la lectura del ADC; la capacidad de C_F (midiendo el tiempo de descarga por R_bleed); y la continuidad del camino de disparo con la red R11–R13 del esquemático propuesto. Una unidad que no pasa se descarta en lugar de fallar en el uso.</p>
+        <p>En el modelo, la autoprueba detecta el 90 % de las fallas de piezas ocurridas antes de la prueba, los defectos de fabricación y los cables abiertos, y deja expuesta una semana entre la prueba y el uso. El 90 % es un supuesto: hay que medir la cobertura real inyectando fallas en placas de prueba.</p>
+        <p>También detecta MOSFET en corto, que son latentes de P1. P1 casi no cambia porque lo domina el corto a masa del cable, que la prueba no puede anticipar.</p>
+      </div>
+      <div class="check">
+        <h3>Secuencia segura de la prueba de continuidad</h3>
+        <ol class="list" style="font-size:13.5px">
+          <li>Las dos llaves abiertas. R13 (1 MΩ a VDD) lleva LOOP a un valor intermedio conocido. Si LOOP ≈ V_CF, Q1 está en corto; si LOOP ≈ 0, Q2 está en corto o el cable del lado bajo toca masa. En los dos casos se rechaza y <strong>no se sigue</strong>.</li>
+          <li>Solo Q2 encendida: LOOP debe ir a 0 V. Verifica que Q2 conduce.</li>
+          <li>Q2 apagada y solo Q1 encendida: LOOP debe subir a V_CF a través del puente. Verifica Q1, el cable y la continuidad del puente.</li>
+          <li>Nunca se encienden las dos llaves a la vez durante la prueba.</li>
+        </ol>
+        <p class="small">La corriente por el puente durante la prueba es la del divisor: 5 V / 1,22 MΩ ≈ 4 µA, unas 50 000 veces menos que la corriente de no-activación (0,2 A). Esta secuencia es una propuesta: hay que revisarla con el análisis de fallas del propio circuito de prueba antes de usarla con el iniciador conectado.</p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="prose">
+        <h3>2. Sacar el cristal</h3>
+        <p>Con ±5 % de tolerancia la precisión no depende del cristal. El oscilador interno calibrado contra el HSI16 cumple si su deriva en temperatura es menor que ~4 %: ST da ±1 % a 25 °C y no publica el número en temperatura en la nota de calibración, así que hay que confirmarlo en la tabla de la hoja de datos del STM32L010. Se eliminan Y1, C1 y C2 y, además, dos riesgos sin tasa: que el cristal no arranque en frío y que se fracture con el choque.</p>
+      </div>
+      <div class="prose">
+        <h3>3. Prueba de fabricación reforzada</h3>
+        <p>Inspección óptica y por rayos X de las juntas de la etapa de disparo, prueba en circuito o con puntas volantes, y un ciclado térmico corto antes de la prueba funcional para que fallen las juntas marginales. Divide los escapes por ~10 (supuesto: depende de lo que ofrezca el ensamblador). <strong>4. Almacenamiento controlado</strong> (temperatura y humedad estables, bolsa barrera) acerca k_d al extremo bajo de Harris (1/60).</p>
+      </div>
+    </div>
+    <p class="small">No recomendado: dos canales de disparo completos en paralelo. P3 bajaría a ~10⁻⁷, pero cada canal puede disparar solo: P1 se duplica y vuelven las fallas simples.</p>
+  </section>
+
   <!-- 8 PROPUESTO -->
   <section id="s8" aria-labelledby="h8s">
     <div class="sec-head"><h2 id="h8s"><span class="num">8</span>Esquemático propuesto</h2><span class="tag">referencia STM32L010F4 · piezas nuevas en violeta</span></div>
@@ -513,7 +550,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <span>Verificar pinout y valores en las hojas de datos antes de cerrar el diseño.</span>
     </div>
     <div class="scroll sch">
-      <svg viewBox="0 0 1180 840" role="img" aria-label="Esquemático propuesto: Q1 pasa a P-MOS del lado alto manejado por Q4, Q2 queda del lado bajo con pull-down de 10 kΩ y capacitor gate-source, un supervisor con retardo U3 mantiene la gate de Q2 a masa hasta t1, TVS de 3,3 V en VDD, capacitor de filtro en VCF_SENSE y LINE_SENSE a un pin con ADC.">
+      <svg viewBox="0 0 1190 840" role="img" aria-label="Esquemático propuesto: Q1 pasa a P-MOS del lado alto manejado por Q4, Q2 queda del lado bajo con pull-down de 10 kΩ y capacitor gate-source, un supervisor con retardo U3 mantiene la gate de Q2 a masa hasta t1, TVS de 3,3 V en VDD, capacitor de filtro en VCF_SENSE y LINE_SENSE a un pin con ADC.">
         <rect x="10" y="40" width="720" height="385" rx="4" class="zone zstore"/>
         <text x="20" y="417" class="ztag tstore">ALMACENAMIENTO DE ENERGÍA</text>
         <rect x="745" y="100" width="425" height="325" rx="4" class="zone zdrive"/>
@@ -575,6 +612,8 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
         <use href="#res" transform="translate(990 310) rotate(90)" class="new"/><use href="#gnd" transform="translate(990 370)"/>
         <text x="998" y="356" class="lbl new-t">R6</text><text x="998" y="370" class="val">10 kΩ</text>
         <g class="net newnet"><rect x="932" y="266" width="72" height="16" rx="2"/><text x="968" y="278">ARM_T1</text></g>
+        <path class="w" d="M1050 272H1110"/><circle cx="1050" cy="272" r="3" class="dot"/>
+        <g class="net newnet"><rect x="1110" y="264" width="50" height="16" rx="2"/><text x="1135" y="276">LOOP</text></g>
         <g class="net"><rect x="760" y="332" width="80" height="16" rx="2"/><text x="800" y="344">FIRE_B</text></g>
         <g class="dot">
           <circle cx="44" cy="90" r="2.6"/><circle cx="44" cy="400" r="2.6"/>
@@ -615,6 +654,19 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
         <g class="net"><rect x="910" y="547" width="90" height="16" rx="2"/><text x="955" y="559">FIRE_B</text></g>
         <g class="net"><rect x="910" y="587" width="90" height="16" rx="2"/><text x="955" y="599">VCF_SENSE</text></g>
         <g class="net newnet"><rect x="910" y="627" width="90" height="16" rx="2"/><text x="955" y="639">LINE_SENSE</text></g>
+        <text x="872" y="659" text-anchor="end" class="sm new-t">PA4 · ADC</text><path class="w" d="M880 655H910"/>
+        <g class="net newnet"><rect x="910" y="647" width="90" height="16" rx="2"/><text x="955" y="659">LOOP_SENSE</text></g>
+        <!-- red de autoprueba -->
+        <g class="net"><rect x="896" y="742" width="50" height="16" rx="2"/><text x="921" y="754">VDD</text></g>
+        <path class="w" d="M946 750H950M1010 750H1030M1090 750H1110M1110 750V760M1110 750V734M1010 750V774"/>
+        <use href="#res" transform="translate(950 750)" class="new"/><use href="#res" transform="translate(1030 750)" class="new"/>
+        <use href="#res" transform="translate(1110 760) rotate(90)" class="new"/><use href="#gnd" transform="translate(1110 820)"/>
+        <text x="980" y="738" text-anchor="middle" class="lbl new-t">R13 1 MΩ</text><text x="1060" y="770" text-anchor="middle" class="lbl new-t">R11 1 MΩ</text>
+        <text x="1120" y="796" class="lbl new-t">R12</text><text x="1120" y="810" class="val">220 kΩ</text>
+        <g class="net newnet"><rect x="980" y="774" width="60" height="16" rx="2"/><text x="1010" y="786">LOOP</text></g>
+        <g class="net newnet"><rect x="1072" y="718" width="76" height="16" rx="2"/><text x="1110" y="730">LOOP_SENSE</text></g>
+        <g class="dot"><circle cx="1010" cy="750" r="3"/><circle cx="1110" cy="750" r="3"/></g>
+        <text x="40" y="812" class="sm new-t">R11–R13: red de autoprueba (continuidad con ≈ 4 µA, sección 7.4)</text>
         <path class="w" d="M690 680V740M690 730H720M780 730H830M830 680V740"/>
         <use href="#xtal" transform="translate(720 730)"/>
         <text x="750" y="714" text-anchor="middle" class="lbl">Y1</text><text x="750" y="758" text-anchor="middle" class="sm">32,768 kHz</text>
@@ -642,6 +694,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <tr><td>Pull-down de 10 kΩ y C_GS de 4,7 nF en cada gate</td><td class="n">R6, R10 10 kΩ; C8, C9 4,7 nF; R9 1 kΩ serie</td><td>El acople del flanco baja de ~0,9 V a ~0,1 V en la gate (sección 5.3). R9 limita la corriente si U3 mantiene la gate a masa mientras FIRE_B está alto.</td><td>Marca 5: chequeo dV/dt pasa.</td><td class="n">≈ 0,005 USD</td></tr>
       <tr><td>Enclavamiento de t1 por hardware</td><td class="n">U3 supervisor con retardo, C7 1 µF</td><td>La salida de drenador abierto de U3 mantiene la gate de Q2 a masa durante ~6 s desde el arranque (retardo = C_T/175 nF + 0,5 ms: ≈ 5,7 s con C_T = 1 µF). Independiente del firmware: ninguna falla del MCU puede disparar antes de t1. <strong>Corrección:</strong> la hoja de datos da 0,62–1,44 s para el valor típico de 1,03 s (±40 %); con ±10 % de C_T el retardo queda entre ~3,1 y ~8,8 s y el mínimo cae debajo de t1. Hace falta un temporizador más preciso (ver chequeo abajo).</td><td>Marca 4: fallas del MCU que llevan a P1 × 0,01. Agrega sus propios modos (anexo).</td><td class="n">≈ 0,12 USD</td></tr>
       <tr><td>Filtro en VCF_SENSE y LINE_SENSE con ADC</td><td class="n">C6 100 nF; LINE_SENSE a PA1</td><td>El ADC muestrea bien un divisor de 1,5 MΩ; el modo programación se decide midiendo la tensión y no con un pin digital.</td><td>Reduce abortos en falso (no modelado aparte).</td><td class="n">≈ 0,002 USD</td></tr>
+      <tr><td>Red de autoprueba (sección 7.4)</td><td class="n">R11, R13 1 MΩ; R12 220 kΩ; LOOP_SENSE a PA4</td><td>Permite verificar Q1, Q2, el cable y el puente con ~4 µA antes del uso, sin encender las dos llaves juntas. Baja P3 y detecta latentes de P1.</td><td>Ver sección 7.4.</td><td class="n">≈ 0,004 USD</td></tr>
       <tr><td>Prueba de cada llave por separado en el banco</td><td class="n">Comando de prueba + pads</td><td>Detecta un MOSFET en corto de fábrica que la prueba funcional normal no ve.</td><td>Corto latente de armado × 0.</td><td class="n">sin costo de BOM</td></tr>
       <tr><td>Armado en JLCPCB</td><td class="n">+10 piezas, +25 soldaduras, ~6 referencias nuevas</td><td>25 × 0,0017 USD por soldadura y carga de alimentadores (1,53–3 USD por referencia y pedido) repartida en 1000 placas.</td><td>—</td><td class="n">≈ 0,06 USD</td></tr>
       <tr class="tot"><td>Total por placa, 1000 u</td><td></td><td>Materiales ≈ 0,14 + armado ≈ 0,06. Con derechos, tasa de estadística y despachante (× ~1,19), ≈ 0,24 USD puesta en Argentina.</td><td></td><td class="n">≈ 0,20 USD FOB</td></tr>
@@ -699,13 +752,16 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       </div>
       <div class="ctl">
         <label for="schem">Esquemático</label>
-        <select id="schem"><option value="act" selected>Analizado (sección 2)</option><option value="prop">Propuesto (sección 8)</option><option value="custom">Personalizado</option></select>
+        <select id="schem"><option value="act" selected>Analizado (sección 2)</option><option value="prop">Propuesto (sección 8)</option><option value="propp3">Propuesto + medidas de P3 (sección 7.4)</option><option value="custom">Personalizado</option></select>
         <div class="checks">
           <label><input type="checkbox" id="m-hs"> Llave del lado alto</label>
           <label><input type="checkbox" id="m-vdd"> Clamp de VDD</label>
           <label><input type="checkbox" id="m-pd"> Pull-down 10 kΩ + C_GS</label>
           <label><input type="checkbox" id="m-t1"> Enclavamiento t1</label>
           <label><input type="checkbox" id="m-key"> Prueba de cada llave</label>
+          <label><input type="checkbox" id="m-bit"> Autoprueba al programar T</label>
+          <label><input type="checkbox" id="m-noxtal"> Sin cristal (oscilador interno)</label>
+          <label><input type="checkbox" id="m-fab"> Prueba de fabricación reforzada</label>
           <label><input type="checkbox" id="m-init"> Sumar el iniciador a P3</label>
         </div>
       </div>
@@ -965,20 +1021,24 @@ const MP = { vdd: true, pd: true, t1: true, key: true, hs: true, init: false };
 const BASE = { years: 2, kd: 1 / 30, scen: "geo", cf: "330", req: 2, tmode: 3e-4, rs: 0.1, m: M0 };
 const PROP = Object.assign({}, BASE, { rs: 0.5, m: MP });
 
-function active(r, s) { if (r.req && !s.m[r.req]) return false; if (r.nreq && s.m[r.nreq]) return false; return true; }
+function active(r, s) { if (r.req && !s.m[r.req]) return false; if (r.nreq && s.m[r.nreq]) return false; if (s.m.noxtal && (r.ref === "Y1" || r.ref === "C1, C2")) return false; return true; }
+const BIT_COV = 0.9, BIT_H = 168;
+const bitCovers = r => !r.sys && !r.human && !r.init && r.blk !== "calc" && (r.ef === "P3" || r.lat === "Q1" || r.lat === "Q2");
+function hoursRow(r, s) { return (s.m.bit && bitCovers(r)) ? s.kd * (s.years * 8760 * (1 - BIT_COV) + BIT_H) + 40 / 3600 : hoursOf(s); }
+function extraF(r, s) { let f = 1; if (r.p && s.m.bit && bitCovers(r)) f *= 1 - BIT_COV; if (s.m.fab && r.blk === "fab" && r.ref === "Juntas") f *= 0.1; return f; }
 function mitF(r, s) { let f = 1; (r.mit || []).forEach(k => { if (s.m[k]) f *= (k === "key" ? 0 : MITF); }); return f; }
 function hoursOf(s) { return s.kd * s.years * 8760 + 40 / 3600; }
 function lamOf(r, s) { const f = L[r.fam]; return pick(f[0], f[1], s.scen) * (r.n || 1); }
 function rowProb(r, s) {
   if (r.sys) return null;
   if (r.human) return s.tmode / 2;
-  if (r.p) { if (r.init && !s.m.init) return 0; return pick(r.p[0], r.p[1], s.scen) * mitF(r, s); }
-  return lamOf(r, s) * 1e-9 * r.frac * hoursOf(s) * (r.cond == null ? 1 : r.cond) * mitF(r, s);
+  if (r.p) { if (r.init && !s.m.init) return 0; return pick(r.p[0], r.p[1], s.scen) * mitF(r, s) * extraF(r, s); }
+  return lamOf(r, s) * 1e-9 * r.frac * hoursRow(r, s) * (r.cond == null ? 1 : r.cond) * mitF(r, s);
 }
 function rowFormula(r, s) {
   if (r.human) return `${fmt(s.tmode)} por operación ÷ 2`;
-  if (r.p) { if (r.init && !s.m.init) return "no sumado"; const f = mitF(r, s); return `P directa ${s.scen === "geo" ? "√(" + fmt(r.p[0]) + " × " + fmt(r.p[1]) + ")" : fmt(pick(r.p[0], r.p[1], s.scen))}` + (f !== 1 ? ` × ${f === 0 ? "0" : "0,01"}` : ""); }
-  const parts = [`${dec(lamOf(r, s), 2)} FIT`, `${dec(r.frac)}`, `${Math.round(hoursOf(s))} h`];
+  if (r.p) { if (r.init && !s.m.init) return "no sumado"; const f = mitF(r, s); return `P directa ${s.scen === "geo" ? "√(" + fmt(r.p[0]) + " × " + fmt(r.p[1]) + ")" : fmt(pick(r.p[0], r.p[1], s.scen))}` + (f !== 1 ? ` × ${f === 0 ? "0" : "0,01"}` : "") + (extraF(r, s) !== 1 ? ` × ${dec(+extraF(r, s).toPrecision(2))}` : ""); }
+  const parts = [`${dec(lamOf(r, s), 2)} FIT`, `${dec(r.frac)}`, `${Math.round(hoursRow(r, s))} h`];
   if (r.cond != null) parts.push(dec(r.cond));
   const f = mitF(r, s); if (f !== 1) parts.push(f === 0 ? "0" : "0,01");
   return parts.join(" × ") + " × 10⁻⁹";
@@ -1092,6 +1152,26 @@ $("cmp").innerHTML = `<thead><tr><th>Modo</th><th>Analizado</th><th>Propuesto</t
     const r = a > 0 && b > 0 ? a / b : 1; const ch = r > 1.15 ? "÷ " + (r >= 10 ? Math.round(r) : dec(r, 1)) : r < 0.87 ? "× " + dec(1 / r, 1) : "≈ igual";
     return `<tr><td><span class="pill e-${k}">${k}</span></td><td class="n">${fmt(a)}</td><td class="n" style="color:var(--c-new);font-weight:600">${fmt(b)}</td><td class="n">${ch}</td><td>${top ? top.r.ref + " · " + top.r.modo : "—"}</td></tr>`; }).join("") + "</tbody>";
 
+// --- escenarios para bajar P3
+(function () {
+  const X = (o) => Object.assign({}, PROP, o, { m: Object.assign({}, PROP.m, o.m || {}) });
+  const sc = [
+    ["Esquemático propuesto (sección 8)", PROP, "—", "—"],
+    ["+ Autoprueba al programar T", X({ m: { bit: true } }), "C (cobertura 90 % supuesta)", "≈ 0,005 USD + firmware"],
+    ["+ Sin cristal (oscilador interno calibrado)", X({ m: { noxtal: true } }), "C (precisión del HSI16 a confirmar)", "ahorra ≈ 0,11 USD"],
+    ["+ Prueba de fabricación reforzada (escapes ÷ 10)", X({ m: { fab: true } }), "C", "tiempo de banco"],
+    ["+ Almacenamiento controlado (k_d 1/60)", X({ kd: 1 / 60 }), "B (Harris)", "logística"],
+    ["Las cuatro juntas", X({ kd: 1 / 60, m: { bit: true, noxtal: true, fab: true } }), "", "≈ −0,10 USD"]
+  ];
+  const p0 = compute(PROP).tot.P3;
+  let last;
+  $("p3-scen").innerHTML = `<thead><tr><th>Escenario</th><th>P3</th><th>1 en</th><th>Cambio</th><th>P1</th><th>Respaldo de la medida</th><th>Costo por placa</th></tr></thead><tbody>` +
+    sc.map(([n, st, q, c], i) => { const r = compute(st); last = r; const d = p0 / r.tot.P3;
+      return `<tr${i === sc.length - 1 ? ' class="tot"' : ""}><td>${n}</td><td class="n">${fmt(r.tot.P3)}</td><td class="n">${oneIn(r.tot.P3).replace("1 en ", "")}</td><td class="n">${i === 0 ? "—" : "÷ " + dec(+d.toPrecision(2))}</td><td class="n">${fmt(r.tot.P1)}</td><td>${q}</td><td class="n">${c}</td></tr>`; }).join("") + "</tbody>";
+  const top = last.all.filter(x => x.r.ef === "P3" && x.p > 0).sort((a, b) => b.p - a.p).slice(0, 4);
+  $("p3-rest").innerHTML = top.map(x => `<li>${x.r.ref} · ${x.r.modo}: ${fmt(x.p)} (${Math.round(100 * x.p / last.tot.P3)} %)</li>`).join("");
+})();
+
 // --- gráfico de energía (caso base)
 (function () {
   const W = 520, H = 260, l = 56, r = 14, t = 14, b = 40;
@@ -1109,13 +1189,13 @@ $("cmp").innerHTML = `<thead><tr><th>Modo</th><th>Analizado</th><th>Propuesto</t
 })();
 
 // --- sensibilidad y anexo
-const MKEYS = ["hs", "vdd", "pd", "t1", "key"];
+const MKEYS = ["hs", "vdd", "pd", "t1", "key"], P3KEYS = ["bit", "noxtal", "fab"];
 function state() {
   return { years: +$("years").value, kd: +$("kd").value, scen: $("scen").value, cf: $("cf").value, req: +$("req").value, tmode: +$("tmode").value, rs: +$("rs").value,
-    m: { hs: $("m-hs").checked, vdd: $("m-vdd").checked, pd: $("m-pd").checked, t1: $("m-t1").checked, key: $("m-key").checked, init: $("m-init").checked } };
+    m: { hs: $("m-hs").checked, vdd: $("m-vdd").checked, pd: $("m-pd").checked, t1: $("m-t1").checked, key: $("m-key").checked, init: $("m-init").checked, bit: $("m-bit").checked, noxtal: $("m-noxtal").checked, fab: $("m-fab").checked } };
 }
-$("schem").addEventListener("change", () => { const v = $("schem").value; if (v !== "custom") MKEYS.forEach(k => $("m-" + k).checked = v === "prop"); if (v === "prop") $("rs").value = "0.5"; });
-MKEYS.forEach(k => $("m-" + k).addEventListener("change", () => { $("schem").value = "custom"; }));
+$("schem").addEventListener("change", () => { const v = $("schem").value; if (v !== "custom") { MKEYS.forEach(k => $("m-" + k).checked = v !== "act"); P3KEYS.forEach(k => $("m-" + k).checked = v === "propp3"); } if (v !== "act" && v !== "custom") $("rs").value = "0.5"; });
+MKEYS.concat(P3KEYS).forEach(k => $("m-" + k).addEventListener("change", () => { $("schem").value = "custom"; }));
 let fEff = "all";
 function render() {
   const s = state();
