@@ -220,13 +220,13 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     <p class="small">Las tarjetas muestran la <strong>configuración recomendada</strong> (sección 8.1) y, abajo, el original y el mejorado para comparar. Valor central con las tasas de falla de la media geométrica entre el dato bajo y el alto; el rango usa todas las tasas bajas o todas las altas. “Propuesto” es el esquemático de la sección 8. No incluye la confiabilidad propia del iniciador ni las fallas sin tasa (firmware, choque, RF), que se cierran con ensayo.</p>
     <h3>Hallazgos</h3>
     <ol class="findings">
-      <li><div><strong>Configuración recomendada</strong> (sección 8.1): el esquemático mejorado sin cristal, con autoprueba, banco de prueba propio y almacenamiento controlado. Frente al original baja P1 unas 140 veces, P3 unas 22 veces y P2 y P4 unas 30 veces, por un precio casi igual. Las probabilidades absolutas tienen alrededor de un orden de magnitud de incertidumbre (sección 12).</div></li>
+      <li><div><strong>Configuración recomendada</strong> (sección 8.1): el esquemático mejorado sin cristal, con autoprueba, banco de prueba propio y almacenamiento controlado. Frente al original baja P1 unas 400 veces, P3 unas 23 veces y P2 y P4 unas 30 veces, por un precio casi igual. El cableado entre la placa y el iniciador es del montaje del cliente y queda fuera del cálculo (sección 8.2). Las probabilidades absolutas tienen alrededor de un orden de magnitud de incertidumbre (sección 12).</div></li>
       <li><div><strong>El diseño falla hacia “no activa”.</strong> P3 es el modo más probable y lo dominan fallas que aparecen durante el almacenamiento (micro, cristal, conector) y defectos de soldadura que pasan la prueba. Es la consecuencia buscada de “ante la duda, abortar” y de las dos llaves en serie.</div></li>
-      <li><div><strong>P1 tiene fallas simples, no solo dobles.</strong> Las dos llaves están del lado bajo: si el cable del iniciador o la pista del drain de Q1 hace corto a masa, el puente queda directo sobre C_F y dispara apenas carga. Una sobretensión en VDD (LDO en corto, R1 o R3 en corto) puede dañar el MCU y dejar las dos salidas en alto.</div></li>
+      <li><div><strong>P1 tiene fallas simples, no solo dobles.</strong> Las dos llaves están del lado bajo: si la pista del drain de Q1 hace corto a masa, el puente queda directo sobre C_F y dispara apenas carga. El mismo corto en el cable del iniciador tiene igual efecto; es del montaje del cliente, pero el diseño decide si lo tolera. Una sobretensión en VDD (LDO en corto, R1 o R3 en corto) puede dañar el MCU y dejar las dos salidas en alto.</div></li>
       <li><div><strong>El acople del flanco de carga en las gates no pasa</strong> con pull-downs de 100 kΩ y R_s de 0,1 Ω: con C_rss = 50 pF (hoja de datos) la gate llega a ~0,57 V, apenas por encima de la V_th mínima estimada a 70 °C (~0,52 V); con fuente rígida (R_s = 0) llega a ~0,86 V. No es una probabilidad: es un margen de diseño que hay que corregir y medir.</div></li>
       <li><div><strong>P2 y P4 no los produce la electrónica.</strong> El error de tiempo máximo es 0,32 % contra ±5 %. Lo que queda es el error humano al cargar T; con T fija en firmware desaparece.</div></li>
       <li><div><strong>P3 depende del I²t del iniciador.</strong> Con C_F = 330 µF el peor caso entrega ~3 A²·ms a 40 s. Si el iniciador pide 5 A²·ms, P3 sube a ~4 %. Es el dato pendiente que más mueve el resultado.</div></li>
-      <li><div><strong>El esquemático propuesto baja P1 unas 120 veces</strong> con una llave del lado alto, clamp de VDD, pull-downs de 10 kΩ con C_GS y un enclavamiento de t1 por hardware. Agrega ≈ 0,20 USD por placa armada en JLCPCB (≈ 0,24 USD puesta en Argentina) a 1000 unidades. El supervisor TPS3808 elegido no alcanza: su retardo varía ±40 % y no garantiza t1 (sección 8).</div></li>
+      <li><div><strong>El esquemático propuesto baja P1 unas 190 veces</strong> con una llave del lado alto, clamp de VDD, pull-downs de 10 kΩ con C_GS y un enclavamiento de t1 por hardware. Agrega ≈ 0,20 USD por placa armada en JLCPCB (≈ 0,24 USD puesta en Argentina) a 1000 unidades. El supervisor TPS3808 elegido no alcanza: su retardo varía ±40 % y no garantiza t1 (sección 8).</div></li>
       <li><div><strong>La revisión de datos (sección 4.1) cambió tres cosas:</strong> el extremo alto de las tasas ahora sale de MIL-HDBK-217F; el factor de reposo pasó de 0,1 a 1/30; y la fuga de C_F quedó marcada como no garantizada por la hoja de datos. Con eso P3 bajó de 3,5 × 10⁻⁴ a 2,2 × 10⁻⁴ y P1 quedó casi igual.</div></li>
     </ol>
   </section>
@@ -348,7 +348,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       </svg>
     </div>
     <ul class="marks">
-      <li><span class="n">1</span><div><strong>Drain de Q1 o cable del iniciador a masa.</strong> Saltea las dos llaves: el puente queda sobre C_F y dispara en t0. Falla simple de P1.</div></li>
+      <li><span class="n">1</span><div><strong>Drain de Q1 a masa.</strong> Saltea las dos llaves: el puente queda sobre C_F y dispara en t0. Falla simple de P1. El mismo corto en el cable del iniciador es del montaje del cliente (fuera del alcance), pero tiene igual efecto.</div></li>
       <li><span class="n">2</span><div><strong>LDO en corto entrada-salida.</strong> ~11 V en VDD; el MCU dañado puede dejar FIRE_A y FIRE_B en alto. Causa común de P1.</div></li>
       <li><span class="n">3</span><div><strong>R1 o R3 en corto.</strong> 12 V o 11 V directo a un pin; la corriente entra a VDD por el diodo de protección. Causa común de P1.</div></li>
       <li><span class="n">4</span><div><strong>Salidas del MCU.</strong> Una salida trabada en alto es latente; las dos juntas son P1. RA3 no tiene ADC: no puede medir el umbral de 5–6 V del modo programación.</div></li>
@@ -409,9 +409,9 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <tr><td>Reparto de modos de MOSFET, diodos, cristal y PCB</td><td>Tabla PTC</td><td>Sin cambio; para resistores y cerámicos coincide con MIL-HDBK-338B (vía DSIAC)</td><td class="src"><span data-src="ptc"></span> <span data-src="dsiac"></span></td><td><span class="t-mix">B</span></td></tr>
       <tr><td>Reparto de modos del MCU</td><td>Supuesto</td><td>Sin cambio: ST no publica FMEDA del STM32L0</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
       <tr><td>Probabilidades condicionales (MCU dañado sube ambas salidas, corto de PCB en el par crítico, etc.)</td><td>0,05–0,5</td><td>Sin cambio: razonamiento en la sección 4.4</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
-      <tr><td>Corto a masa del cable del iniciador</td><td>10⁻⁷–10⁻⁵</td><td>Sin cambio: no hay dato publicado</td><td class="src" data-src="sup"></td><td><span class="t-sup" style="background:color-mix(in srgb, var(--c-init) 18%, transparent);color:var(--c-init)">D</span></td></tr>
+      <tr><td>Corto a masa del cable del iniciador</td><td>10⁻⁷–10⁻⁵</td><td><strong>Fuera del alcance:</strong> es del montaje del cliente; no se suma salvo que se active en la sección 9. Requisitos para el cliente en la sección 8.2</td><td class="src" data-src="sup"></td><td><span class="t-sup" style="background:color-mix(in srgb, var(--c-init) 18%, transparent);color:var(--c-init)">D</span></td></tr>
     </tbody></table></div>
-    <p class="small">Efecto en el caso base: P1 pasó de 1,5 × 10⁻⁶ a 1,6 × 10⁻⁶ (la salida alta del LDO pesa más y el reposo pesa menos); P3 bajó de 3,5 × 10⁻⁴ a 2,2 × 10⁻⁴, pero su rango se abrió (4,9 × 10⁻⁵ – 1,4 × 10⁻³) porque las dos fuentes difieren mucho; P2 y P4 no cambiaron.</p>
+    <p class="small">Efecto en el caso base, con el cableado del cliente todavía incluido (antes de excluirlo, sección 8.2): P1 pasó de 1,5 × 10⁻⁶ a 1,6 × 10⁻⁶ (la salida alta del LDO pesa más y el reposo pesa menos); P3 bajó de 3,5 × 10⁻⁴ a 2,2 × 10⁻⁴, pero su rango se abrió (4,9 × 10⁻⁵ – 1,4 × 10⁻³) porque las dos fuentes difieren mucho; P2 y P4 no cambiaron.</p>
     <h3>4.2 Tasas de falla por familia (FIT)</h3>
     <div class="scroll"><table style="min-width:860px"><thead><tr><th>Familia</th><th>Piezas</th><th>λ bajo</th><th>λ alto</th><th>Central</th><th>De dónde sale</th></tr></thead><tbody id="lam-table"></tbody></table></div>
     <h3>4.3 Reparto de modos de falla</h3>
@@ -441,7 +441,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     <div class="scroll"><table style="min-width:760px"><thead><tr><th>Evento</th><th>Rango</th><th>Cómo se obtiene</th></tr></thead><tbody>
       <tr><td>Defecto de soldadura que pasa AOI y prueba funcional</td><td class="n">1,4 × 10⁻⁵ – 2,1 × 10⁻⁴</td><td>200–600 defectos por millón de juntas (IPC) × ~70 juntas = 1,4–4,2 % de placas con algún defecto antes de probar; la prueba funcional deja pasar el 0,1–0,5 % (supuesto de cobertura 99,5–99,9 %). <span data-src="ipc"></span></td></tr>
       <tr><td>MOSFET dañado por ESD en el armado (corto latente)</td><td class="n">10⁻⁶ – 10⁻⁵</td><td>Supuesto. La prueba funcional no lo ve porque la otra llave sigue abriendo.</td></tr>
-      <tr><td>Cable del iniciador del lado de Q1 en corto a masa</td><td class="n">10⁻⁷ – 10⁻⁵</td><td>Supuesto sin dato publicado: pellizco o roce del cable al integrar. Dos órdenes de magnitud de incertidumbre; es el término de P1 que más conviene eliminar por diseño en lugar de estimar.</td></tr>
+      <tr><td>Cable del iniciador del lado de Q1 en corto a masa <span class="small">(fuera del alcance: montaje del cliente)</span></td><td class="n">10⁻⁷ – 10⁻⁵</td><td>Supuesto sin dato publicado: pellizco o roce del cable al integrar. Dos órdenes de magnitud de incertidumbre; es el término de P1 que más conviene eliminar por diseño en lugar de estimar.</td></tr>
       <tr><td>Error al cargar T, por operación</td><td class="n">10⁻⁵ – 3 × 10⁻³</td><td>Orden de magnitud de las tablas de error humano THERP: ~3 × 10⁻³ al leer e ingresar un valor; una verificación independiente recupera ~90 % (3 × 10⁻⁴); con la orden en formato legible por máquina y relectura automática, ~10⁻⁵. Se reparte mitad P2 (más corto) y mitad P4 (más largo). <span data-src="therp"></span></td></tr>
     </tbody></table></div>
   </section>
@@ -455,7 +455,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     <h3>5.2 Memoria de cálculo</h3>
     <div class="scroll"><table class="calc" id="calc-P1"></table></div>
     <div class="callout" style="--cc:var(--c-init)">
-      <p><strong>Por qué domina el cable a masa:</strong> es la única falla simple que dispara sin pasar por el MCU ni por las llaves. Su valor (10⁻⁶ central) es un supuesto con dos órdenes de incertidumbre, pero la conclusión no depende de él: con el valor más bajo del rango sigue siendo del mismo orden que la sobretensión de VDD, y una llave del lado alto lo elimina sin necesidad de estimarlo mejor.</p>
+      <p><strong>Qué domina sin el cableado del cliente:</strong> en el original, la salida alta del LDO y la falla interna del MCU que sube las dos salidas, ambas causas comunes que encienden las dos llaves a la vez. En el mejorado y el recomendado, el clamp de VDD y el enclavamiento de t1 las reducen y queda dominando la falla interna del MCU (con el enclavamiento) y el corto de pista en la placa. El corto del cable del iniciador se excluye por ser del montaje del cliente; se puede volver a sumar en la sección 9.</p>
       <p><strong>Por qué las dos fallas independientes no pesan:</strong> la probabilidad de cada MOSFET en corto latente es ~1,6 × 10⁻⁵ (λ central 38 FIT × 56 % × 584 h, más el daño por ESD en el armado); el producto de dos de ellas queda en ~2 × 10⁻¹⁰.</p>
     </div>
     <h3>5.3 Chequeos de diseño de P1</h3>
@@ -728,8 +728,18 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <tr><td>Fabricación</td><td>Panel de 30 en armado estándar; JLCPCB solo arma; sin rayos X</td><td>Confirmar el formato de panel con JLCPCB</td></tr>
       <tr><td>Prueba</td><td>Banco propio al 100 %: programación, autoprueba, fuga de C_F, disparo sobre 2 Ω; prueba corta después de encapsular</td><td>A construir</td></tr>
       <tr><td>Almacenamiento</td><td>Temperatura y humedad controladas, bolsa barrera (k_d 1/60)</td><td>Logística</td></tr>
+      <tr><td>Interfaz con el cliente</td><td>El cableado al iniciador, la carcasa y la instalación son del cliente; los requisitos están en la sección 8.2</td><td>Documento de interfaz a entregar</td></tr>
       <tr><td>Uso</td><td>T se programa poco antes del uso, con autoprueba y la orden en formato legible por máquina con relectura automática</td><td>Procedimiento a escribir</td></tr>
     </tbody></table></div>
+    <h3 id="s82">8.2 Alcance y requisitos para el integrador</h3>
+    <p>El análisis cubre la placa del retardo hasta sus pads de salida. El cable al iniciador, la carcasa y la instalación son del montaje del cliente y sus fallas no se suman (se pueden incluir desde la sección 9). Igual conviene entregar estos requisitos, porque el diseño decide qué pasa si el cliente se equivoca:</p>
+    <ul class="list">
+      <li><strong>Cable al iniciador:</strong> lo más corto posible, par trenzado con vaina, alivio de tensión, sin pasar por bordes metálicos, encapsulado o fijado contra vibración.</li>
+      <li><strong>Carcasa:</strong> indicar si va unida a la masa del circuito. Si queda aislada, un corto del cable a la carcasa necesita además una segunda falla.</li>
+      <li><strong>Prueba de aislación al 100 %</strong> de cada conductor contra la carcasa, con el cableado armado y <strong>sin el iniciador conectado</strong>.</li>
+      <li><strong>Autoprueba antes del uso:</strong> con el iniciador ya conectado, la autoprueba (sección 7.4) detecta el cable cortado y el corto a masa del lado bajo, y rechaza la unidad.</li>
+    </ul>
+    <p class="small">Tolerancia del diseño a un error del cliente: con el original, un corto a masa del cable del lado de Q1 dispara en t0. Con el mejorado (una llave del lado alto y otra del lado bajo), cualquier corto de un solo cable a masa deja una llave abierta: hace falta una segunda falla. Por eso la llave del lado alto se mantiene aunque el cable no sea de nuestro alcance; además baja P1 de la propia placa unas 12 veces (corto de pista del drain de Q1).</p>
     <h3>Resultado: original, mejorado y recomendado</h3>
     <div class="scroll"><table id="cmp" style="min-width:720px"></table></div>
     <p class="small">El consumo de U3 (~2,4 µA) suma ~0,1 mC en 40 s al presupuesto de carga de C_F y hay que incluirlo en el dimensionado. Los cambios no tocan P2 ni P4, que dependen de cómo se fija T.</p>
@@ -789,6 +799,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
           <label><input type="checkbox" id="m-noxtal"> Sin cristal (oscilador interno)</label>
           <label><input type="checkbox" id="m-fab"> Prueba de fabricación reforzada</label>
           <label><input type="checkbox" id="m-init"> Sumar el iniciador a P3</label>
+          <label><input type="checkbox" id="m-ext"> Sumar el cableado del cliente (fuera del alcance)</label>
         </div>
       </div>
     </div>
@@ -884,9 +895,9 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     <div class="bars" id="tor-P3"></div>
     <h3>12.5 Veredicto de solidez</h3>
     <div id="verdict" class="prose">
-      <div class="callout" style="--cc:var(--c-drive)"><p><strong>Robusto: la comparación entre configuraciones.</strong> Que el recomendado tiene mucho menos P1 que el original (~140 veces) se sostiene con cualquier combinación de datos de la sección 12.4: la mejora viene de eliminar caminos de falla simple (cable a masa, sobretensión de VDD), no de un número fino. Lo mismo para el orden de prioridades: qué medida conviene primero.</p></div>
-      <div class="callout" style="--cc:var(--c-store)"><p><strong>Incierto: el valor absoluto de P1 del recomendado (1,1 × 10⁻⁸).</strong> El 87 % sale de un solo dato sin base (corto a masa del cable, 10⁻⁷–10⁻⁵) multiplicado por la eficacia supuesta de la llave del lado alto (0,01). Cada una de esas entradas, y las tasas de falla, lo mueven unas 10 veces. Rango creíble: 10⁻⁹ a 10⁻⁷. Para respaldarlo: estimar el corto de cableado con el proceso real de integración y ensayar las mejoras (sobretensión forzada en VDD, descarga electrostática, flanco de carga).</p></div>
-      <div class="callout" style="--cc:var(--c-store)"><p><strong>Incierto: P3 del recomendado (1,0 × 10⁻⁵).</strong> El 87 % depende de la cobertura supuesta de la autoprueba (90 %): con 80 % se duplica, con 99 % baja seis veces. Las tasas de falla lo mueven entre 2 × 10⁻⁶ y 7 × 10⁻⁵. El riesgo más grande es el dato del iniciador: si pide 3 A²·ms en lugar de 2, P3 sube a 1,5 × 10⁻⁴; y ese término depende de la fuga de C_F, que no está medida. Para respaldarlo: dato de all-fire del iniciador, fuga de C_F medida en el banco, cobertura de la autoprueba medida con fallas inyectadas y FIT del STM32L010 pedido a ST.</p></div>
+      <div class="callout" style="--cc:var(--c-drive)"><p><strong>Robusto: la comparación entre configuraciones.</strong> Que el recomendado tiene mucho menos P1 que el original (~400 veces) se sostiene con cualquier combinación de datos de la sección 12.4: la mejora viene de eliminar caminos de falla simple (corto a masa del lado bajo, sobretensión de VDD, falla interna del MCU), no de un número fino. Lo mismo para el orden de prioridades: qué medida conviene primero.</p></div>
+      <div class="callout" style="--cc:var(--c-store)"><p><strong>Incierto: el valor absoluto de P1 del recomendado (1,5 × 10⁻⁹).</strong> El 87 % sale de la falla interna del MCU que sube las dos salidas: una fracción de modo supuesta (0,2 % de las fallas del MCU, respaldo C) sobre una tasa de falla con 80 veces de diferencia entre fuentes, multiplicada por la eficacia supuesta del enclavamiento de t1 (0,01). Rango creíble: 2 × 10⁻¹⁰ a 1 × 10⁻⁸. Para respaldarlo: el reparto de modos de falla y el FIT del STM32L010 (pedir a ST un FMEDA), y ensayar el enclavamiento y las demás mejoras (sobretensión forzada en VDD, descarga electrostática, flanco de carga). El cableado del cliente no está incluido.</p></div>
+      <div class="callout" style="--cc:var(--c-store)"><p><strong>Incierto: P3 del recomendado (9,2 × 10⁻⁶).</strong> Casi todo (97 %) depende de la cobertura supuesta de la autoprueba (90 %): con 80 % se duplica, con 99 % baja seis veces. Las tasas de falla lo mueven entre 2 × 10⁻⁶ y 6 × 10⁻⁵. El riesgo más grande es el dato del iniciador: si pide 3 A²·ms en lugar de 2, P3 sube a 1,5 × 10⁻⁴; y ese término depende de la fuga de C_F, que no está medida. Para respaldarlo: dato de all-fire del iniciador, fuga de C_F medida en el banco, cobertura de la autoprueba medida con fallas inyectadas y FIT del STM32L010 pedido a ST.</p></div>
       <div class="callout" style="--cc:var(--c-store)"><p><strong>P2 y P4 (≈ 5 × 10⁻⁶ cada uno)</strong> son 100 % error humano al cargar T, con valores de orden de magnitud de THERP. Dependen del procedimiento, no del circuito. Con T fija en el firmware bajan a ~10⁻⁹ y ese resultado sí es robusto, porque desaparece el término.</p></div>
       <div class="callout" style="--cc:var(--c-drive)"><p><strong>Precio: sólido a ±10 %.</strong> Piezas y tarifas de armado son datos publicados (A). Lo que más lo mueve es el derecho de importación (0–20 % según la posición arancelaria: ±0,2 USD por placa) y la amortización del banco de prueba, que depende del volumen.</p></div>
       <p><strong>En resumen:</strong> el modelo sirve para comparar alternativas y decidir prioridades. Sus valores absolutos de P1 y P3 tienen una incertidumbre de alrededor de un orden de magnitud y no deberían presentarse como valores certificados hasta reemplazar los datos C y D por mediciones. La tabla 12.3 muestra que hoy ninguna probabilidad del recomendado sale mayormente de datos A o B.</p>
@@ -1060,8 +1071,8 @@ const R = [
   {blk:"ini", ref:"PCB", modo:"Pista abierta", mec:"Circuito interrumpido.", ef:"P3", frac:.76, fsrc:"ptc", fam:"pcb"},
   {blk:"ini", ref:"PCB", modo:"Corto entre pistas: drain de Q1 a GND", mec:"El puente queda sobre C_F y dispara en t0.", ef:"P1", frac:.24, fsrc:"ptc", fam:"pcb", cond:.05, mit:["hs"]},
   {blk:"ini", ref:"PCB", modo:"Corto entre pistas: otras redes", mec:"La mayoría termina en aborto o en no carga.", ef:"P3", frac:.24, fsrc:"ptc", fam:"pcb", cond:.5},
-  {blk:"ini", ref:"Cable", modo:"Cable del iniciador (lado Q1) a masa o carcasa", mec:"Saltea las dos llaves del lado bajo; dispara en t0.", ef:"P1", p:[1e-7, 1e-5], psrc:"sup", mit:["hs"]},
-  {blk:"ini", ref:"Cable", modo:"Cable abierto o mal conectado", mec:"El puente no recibe corriente.", ef:"P3", p:[1e-6, 1e-4], psrc:"sup"},
+  {blk:"ini", ext:true, ref:"Cable", modo:"Cable del iniciador (lado Q1) a masa o carcasa", mec:"Saltea las dos llaves del lado bajo; dispara en t0.", ef:"P1", p:[1e-7, 1e-5], psrc:"sup", mit:["hs"]},
+  {blk:"ini", ext:true, ref:"Cable", modo:"Cable abierto o mal conectado", mec:"El puente no recibe corriente.", ef:"P3", p:[1e-6, 1e-4], psrc:"sup"},
   {blk:"ini", ref:"Iniciador", modo:"No funciona con estímulo ≥ all-fire", mec:"Confiabilidad propia del iniciador; solo se suma si se elige.", ef:"P3", p:[1e-6, 1e-3], psrc:"mil23659", init:true},
   {blk:"ini", ref:"Iniciador", modo:"Más sensible que su especificación", mec:"El acople dV/dt o una corriente RF pueden alcanzar para activarlo.", ef:"S", sys:"P1", note:"a ensayo"},
   {blk:"fab", ref:"Juntas", modo:"Defecto de soldadura que pasa AOI y prueba", mec:"200–600 DPMO × ~70 juntas; cobertura de prueba 99,5–99,9 %.", ef:"P3", p:[1.4e-5, 2.1e-4], psrc:"ipc"},
@@ -1123,7 +1134,7 @@ const PROP = Object.assign({}, BASE, { rs: 0.5, m: MP });
 const X = (st, o) => Object.assign({}, st, o, { m: Object.assign({}, st.m, (o && o.m) || {}) });
 const REC = X(PROP, { kd: 1 / 60, tmode: 1e-5, m: { bit: true, noxtal: true, fab: true } });
 
-function active(r, s) { if (r.req && !s.m[r.req]) return false; if (r.nreq && s.m[r.nreq]) return false; if (s.m.noxtal && (r.ref === "Y1" || r.ref === "C1, C2")) return false; return true; }
+function active(r, s) { if (r.ext && !s.m.ext) return false; if (r.req && !s.m[r.req]) return false; if (r.nreq && s.m[r.nreq]) return false; if (s.m.noxtal && (r.ref === "Y1" || r.ref === "C1, C2")) return false; return true; }
 let BIT_COV = 0.9, BIT_H = 168;
 const bitCovers = r => !r.sys && !r.human && !r.init && r.blk !== "calc" && (r.ef === "P3" || r.lat === "Q1" || r.lat === "Q2");
 function hoursRow(r, s) { return (s.m.bit && bitCovers(r)) ? s.kd * (s.years * 8760 * (1 - BIT_COV) + BIT_H) + 40 / 3600 : hoursOf(s); }
@@ -1233,7 +1244,7 @@ $("grp-P3").innerHTML = `<thead><tr><th>Grupo</th><th>P</th><th>% de P3</th><th>
   $("ft-p1").innerHTML = `<div class="ft-top"><b>P1 · activa antes de t1</b><span>${fmt(RB.tot.P1)}</span></div>
     <div class="ft-gate">${orSvg}</div><div class="ft-bus"></div>
     <div class="ft-row">
-      ${node("Falla simple que saltea las llaves", "COMPUERTA O", [["Cable lado Q1 a masa", v(single[0])], ["Pista drain Q1 a GND", v(single[1])]], fmt(sum(single)))}
+      ${node("Falla simple que saltea las llaves", "COMPUERTA O", [["Pista drain Q1 a GND", v(single[1])], ["Cable lado Q1 a masa (cliente)", "excluido"]], fmt(sum(single)))}
       ${node("Causa común que enciende Q1 y Q2", "COMPUERTA O", [["LDO en corto", v(cc[0])], ["R1 en corto", v(cc[1])], ["R3 en corto", v(cc[2])], ["MCU sube ambas", v(cc[3])], ["ESD / EOS", "sin tasa"]], fmt(sum(cc)))}
       ${node("Dos fallas independientes", "O de compuertas Y", dbl.map(x => [x.r.ref.replace(" + ", " y "), fmt(x.p)]), fmt(sum(dbl)))}
       ${node("Acople dV/dt en las gates", "DETERMINISTA", [["V_gs inducida", dec(dv.vg, 2) + " V"], ["V_th mín. 70 °C", dec(dv.vthMin, 2) + " V"], ["Resultado", dv.vg > dv.vthMin ? "no pasa" : "pasa"]], null, "det")}
@@ -1293,8 +1304,6 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
     ["Cobertura de la autoprueba (99 % / 80 %)", () => withMut(() => { BIT_COV = 0.99; }, REC), () => withMut(() => { BIT_COV = 0.8; }, REC), "C"],
     ["Tiempo entre autoprueba y uso (1 día / 3 meses)", () => withMut(() => { BIT_H = 24; }, REC), () => withMut(() => { BIT_H = 2190; }, REC), "C"],
     ["Escapes de fabricación (÷ 3 / × 3)", () => withMut(row(r => r.ref === "Juntas", r => { r.p = r.p.map(v => v / 3); }), REC), () => withMut(row(r => r.ref === "Juntas", r => { r.p = r.p.map(v => v * 3); }), REC), "C"],
-    ["Cable del iniciador a masa (10⁻⁷ / 10⁻⁵)", () => withMut(row(r => /a masa o carcasa/.test(r.modo), r => { r.p = [1e-7, 1e-7]; }), REC), () => withMut(row(r => /a masa o carcasa/.test(r.modo), r => { r.p = [1e-5, 1e-5]; }), REC), "D"],
-    ["Cable abierto o mal conectado (10⁻⁶ / 10⁻⁴)", () => withMut(row(r => /Cable abierto/.test(r.modo), r => { r.p = [1e-6, 1e-6]; }), REC), () => withMut(row(r => /Cable abierto/.test(r.modo), r => { r.p = [1e-4, 1e-4]; }), REC), "D"],
     ["MCU dañado deja ambas salidas en alto (0,01 / 0,2)", () => withMut(row(r => r.cond === 0.05 && r.ef === "P1", r => { r.cond = 0.01; }), REC), () => withMut(row(r => r.cond === 0.05 && r.ef === "P1", r => { r.cond = 0.2; }), REC), "C"],
     ["Eficacia de cada mejora de diseño (× 0,001 / × 0,1)", () => RR.tot, () => withMut(row(r => !!r.mit, r => { r.mitExtra = 1; }), X(REC, {})), "C"],
     ["I²t de all-fire del iniciador (2 / 3 A²·ms)", () => RR.tot, () => compute(X(REC, { req: 3 })).tot, "D"],
@@ -1303,7 +1312,7 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
   // la fila de eficacia de mejoras se resuelve aparte: recalcular con MITF_REF.v 0,1
   const effHi = (() => { const saved = MITF_REF.v; MITF_REF.v = 0.1; const o = compute(REC).tot; MITF_REF.v = saved; return o; })();
   const effLo = (() => { const saved = MITF_REF.v; MITF_REF.v = 0.001; const o = compute(REC).tot; MITF_REF.v = saved; return o; })();
-  T[9][1] = () => effLo; T[9][2] = () => effHi;
+  T[7][1] = () => effLo; T[7][2] = () => effHi;
   const res = T.map(([n, lo, hi, g]) => ({ n, lo: lo(), hi: hi(), g }));
   ["P1", "P3"].forEach(k => {
     const c = RR.tot[k];
@@ -1407,7 +1416,7 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
 const MKEYS = ["hs", "vdd", "pd", "t1", "key"], P3KEYS = ["bit", "noxtal", "fab"];
 function state() {
   return { years: +$("years").value, kd: +$("kd").value, scen: $("scen").value, cf: $("cf").value, req: +$("req").value, tmode: +$("tmode").value, rs: +$("rs").value,
-    m: { hs: $("m-hs").checked, vdd: $("m-vdd").checked, pd: $("m-pd").checked, t1: $("m-t1").checked, key: $("m-key").checked, init: $("m-init").checked, bit: $("m-bit").checked, noxtal: $("m-noxtal").checked, fab: $("m-fab").checked } };
+    m: { hs: $("m-hs").checked, vdd: $("m-vdd").checked, pd: $("m-pd").checked, t1: $("m-t1").checked, key: $("m-key").checked, init: $("m-init").checked, ext: $("m-ext").checked, bit: $("m-bit").checked, noxtal: $("m-noxtal").checked, fab: $("m-fab").checked } };
 }
 $("schem").addEventListener("change", () => { const v = $("schem").value; if (v !== "custom") { MKEYS.forEach(k => $("m-" + k).checked = v !== "act"); P3KEYS.forEach(k => $("m-" + k).checked = v === "propp3" || v === "rec"); }
   if (v === "rec") { $("kd").value = "0.016667"; $("tmode").value = "1e-5"; } if (v !== "act" && v !== "custom") $("rs").value = "0.5"; });
