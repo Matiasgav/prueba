@@ -223,7 +223,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <li><div><strong>Recomendado: un temporizador sin microcontrolador</strong> (sección 2). El TPL5110-Q1 cuenta T (25, 30, 35 o 40 s por puentes), U3 bloquea cualquier disparo antes de ~4,6 s y dos llaves (una de cada lado) evitan que una falla simple dispare. Sale ≈ 2,06 USD puesto en Argentina y no lleva firmware.</div></li>
       <li><div><strong>Por qué temporizador y no micro:</strong> sin prueba antes del uso, el micro es la pieza que más falla durante los 2–3 años de almacenamiento. El temporizador falla la mitad de veces por no activar (P3 6,2 × 10⁻⁵ contra 1,2 × 10⁻⁴) y cuesta ~0,26 USD menos. A cambio, activar fuera de la ventana (P2 y P4, ~2–3 × 10⁻⁶) es más probable que con el micro (~10⁻⁹ y ~10⁻⁷), porque nadie controla el oscilador del temporizador.</div></li>
       <li><div><strong>Frente al diseño original</strong>, en las mismas condiciones: P1 baja unas 100 veces (de 4,6 × 10⁻⁷ a 4,7 × 10⁻⁹) y P3 a la mitad. El original tenía fallas simples que disparaban en t0: corto a masa del drain de Q1, sobretensión de VDD y acople del flanco en las gates.</div></li>
-      <li><div><strong>La precisión dejó de ser un riesgo:</strong> con ±5 s de ventana el temporizador tiene margen de ~7 veces (error ~2–3 %). Lo que limita P3 es el camino de energía (conector, soldaduras, LDO, C_F, llaves) y el dato del iniciador: si pide 3 A²·ms en vez de 2, P3 se triplica.</div></li>
+      <li><div><strong>La precisión dejó de ser un riesgo:</strong> con ±5 s de ventana el temporizador tiene margen de ~7 veces (error ~2–3 %). Lo que limita P3 es el camino de energía (soldaduras, LDO, C_F, llaves) y el dato del iniciador: si pide 3 A²·ms en vez de 2, P3 se triplica.</div></li>
       <li><div><strong>Lo que falta para cerrar el diseño</strong> (sección 2.6): verificar con osciloscopio el arranque de la salida del temporizador, medir la deriva de T en temperatura, la fuga de C_F y el I²t del iniciador, y ensayar choque y vibración.</div></li>
       <li><div><strong>Alternativas guardadas:</strong> el diseño original y el del micro están en las secciones 13.1 y 13.2, y los datos clave de todas las alternativas evaluadas (arquitecturas, integrados, fabricación) en la sección 13.4, para reflotarlas si cambian los requisitos.</div></li>
     </ol>
@@ -398,7 +398,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <tr><td>C_F dimensionado para ≥ 2 × el I²t de all-fire</td><td>El margen de energía del Monte Carlo da P3 ≈ 0 por energía insuficiente. Depende del dato del iniciador.</td></tr>
       <tr><td>Selección de C_F por fuga, antes y después de encapsular</td><td>Cubre la fuga no garantizada del polímero, que el modelo no cuantifica.</td></tr>
     </tbody></table></div>
-    <p class="small"><strong>Posibilidades evaluadas, no incluidas:</strong> almacenamiento redundante con dos capacitores aislados por diodos (+0,37 a +0,61 USD por placa; mejora poco en el modelo porque cubre sobre todo la fuga que crece en el almacenamiento, que no tiene datos), limpieza y barniz de JLCPCB antes de encapsular (~+0,29 USD por placa) y reemplazo de J1 por cables soldados (J1 pesa ~22 % de P3).</p>
+    <p class="small"><strong>Posibilidades evaluadas, no incluidas:</strong> almacenamiento redundante con dos capacitores aislados por diodos (+0,37 a +0,61 USD por placa; mejora poco en el modelo porque cubre sobre todo la fuga que crece en el almacenamiento, que no tiene datos), limpieza y barniz de JLCPCB antes de encapsular (~+0,29 USD por placa).</p>
 
     <h3 id="s82">2.5 Alcance y requisitos para el integrador</h3>
     <p>El análisis cubre la placa del retardo hasta sus pads de salida. El cable al iniciador, la carcasa y la instalación son del montaje del cliente y sus fallas no se suman (se pueden incluir desde la sección 10). Igual conviene entregar estos requisitos, porque el diseño decide qué pasa si el cliente se equivoca:</p>
@@ -559,7 +559,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
   <!-- 7 P3 -->
   <section id="s7" aria-labelledby="h7s">
     <div class="sec-head"><h2 id="h7s"><span class="num">7</span>P3: no activa</h2><span class="tag" id="p3-tag"></span></div>
-    <p>En el recomendado no hay firmware que aborte: P3 aparece cuando no llega la energía o no llega la orden de disparo. Lo dominan las piezas del camino de energía (conector, soldaduras, LDO, C_F, llaves, D1) que pueden fallar durante los 3 años de almacenamiento, y los defectos de fabricación que escapan al banco. El temporizador aporta poco: 4 FIT, con la mitad de sus fallas sin salida.</p>
+    <p>En el recomendado no hay firmware que aborte: P3 aparece cuando no llega la energía o no llega la orden de disparo. Lo dominan las piezas del camino de energía (soldaduras, LDO, C_F, llaves, D1) que pueden fallar durante los 3 años de almacenamiento, y los defectos de fabricación que escapan al banco. El temporizador aporta poco: 4 FIT, con la mitad de sus fallas sin salida.</p>
     <h3>7.1 Aporte por grupo</h3>
     <div class="scroll"><table class="calc" id="grp-P3" style="min-width:640px"></table></div>
     <h3>7.2 Memoria de cálculo</h3>
@@ -1218,7 +1218,7 @@ const SRC = {
 const SO = Object.keys(SRC);
 const BLK = { ent: "Entrada", alm: "Almacenamiento", cnt: "Contador", drv: "Driver", ini: "Iniciador y cableado", fab: "Fabricación", fw: "Firmware", hum: "Operación", amb: "Ambiente", sis: "Sistema", calc: "Calculado" };
 const L = {
-  con:  [10, 100, ["sup", "mil217"], "Conector", "J1", "Alto: MIL-HDBK-217F N2, conector rectangular, G_B 0,050/10⁶ h × π_Q 2 (no MIL). Bajo: sin dato de fabricante; supuesto 10 veces menor."],
+  con:  [0.24, 2.4, ["mil217", "sup"], "Junta de cable soldada a mano en agujero pasante", "J1 (4 juntas)", "MIL-HDBK-217F N2, sección 16 (interconexión con PTH): λ_b 0,000017/10⁶ h × (π_C 1 + 13) por PTH soldado a mano × π_E G_B 1. Bajo: π_Q 1 (IPC nivel 3) = 0,24 FIT por junta. Alto: π_Q 2 = 0,48 FIT, × 5 por fatiga del cable en la junta sin alivio de tensión (supuesto). No hay conector."],
   tvs:  [2.3, 23, ["sup", "mil217"], "Supresor / zener", "D3, D5", "Alto: MIL-HDBK-217F N2, supresor de transitorios, G_B 0,0029/10⁶ h × π_Q 8 (plástico). Bajo: sin dato de fabricante; supuesto 10 veces menor."],
   res:  [0.000016, 37, ["panares", "mil217"], "Resistor de film chip", "R_s, R1–R10, R_bleed", "Bajo: Panasonic ERJ 0402, campo (televisores), 0 fallas en 5,9 × 10¹³ h, 60 % de confianza. Alto: MIL-HDBK-217F N2, film chip RM, G_B 0,0037/10⁶ h × π_Q 10."],
   rect: [0.46, 22, ["nexp", "mil217"], "Diodo Schottky de potencia", "D1", "Bajo: Nexperia, Schottky (BAS40LS-Q), HTRB, 55 °C, 60 %; es otra pieza. Alto: MIL-HDBK-217F N2, rectificador/Schottky de potencia, G_B 0,0028/10⁶ h × π_Q 8."],
@@ -1235,8 +1235,8 @@ const L = {
 };
 // req: solo con esa mejora; nreq: solo sin ella
 const R = [
-  {blk:"ent", ref:"J1", modo:"Abierto o contacto intermitente", mec:"El pulso no llega o llega cortado.", ef:"P3", frac:.7, fsrc:"sup", fam:"con"},
-  {blk:"ent", ref:"J1", modo:"Corto +12 V a GND", mec:"El pulso queda en cortocircuito; C_F no carga.", ef:"P3", frac:.3, fsrc:"sup", fam:"con"},
+  {blk:"ent", ref:"J1", modo:"Junta de cable abierta o intermitente", mec:"Cables de entrada y salida soldados en agujeros pasantes (4 juntas): el pulso o el disparo no pasan.", ef:"P3", frac:.9, fsrc:"sup", fam:"con", n:4},
+  {blk:"ent", ref:"J1", modo:"Puente de soldadura entre cables vecinos", mec:"Entrada en corto (C_F no carga) o salida en corto (el puente no recibe corriente).", ef:"P3", frac:.1, fsrc:"sup", fam:"con", n:4},
   {blk:"ent", ref:"D3", modo:"Corto", mec:"La TVS cortocircuita el pulso; C_F no carga.", ef:"P3", frac:.20, fsrc:"ptc", fam:"tvs"},
   {blk:"ent", ref:"D3", modo:"Abierto", mec:"Sin protección contra sobretensión; agrava ESD/EOS.", ef:"L", frac:.45, fsrc:"ptc", fam:"tvs"},
   {blk:"ent", ref:"D3", modo:"Deriva: fuga alta o V_BR baja", mec:"Recorta el pulso; C_F carga menos.", ef:"P3", frac:.35, fsrc:"ptc", fam:"tvs", cond:.1},
@@ -1547,7 +1547,7 @@ $("cmp").innerHTML = `<thead><tr><th>Modo</th><th>Original</th><th>Mejorado</th>
     return `<tr><td><span class="pill e-${k}">${k}</span></td><td class="n">${pv(a)}</td><td class="n">${pv(b)}</td><td class="n" style="color:var(--c-new);font-weight:600">${pv(c)}</td><td class="n">${ch}</td><td>${top ? top.r.ref + " · " + top.r.modo : "—"}</td></tr>`; }).join("") + "</tbody>";
 
 // --- auditoría: grado de respaldo de cada término
-const GRL = { tmr: "A", res: "A", mlcc: "A", cf: "A", svr: "A", fet: "B", sig: "B", rect: "B", ldo: "B", pcb: "B", xtal: "C", tvs: "C", con: "C", mcu: "C" };
+const GRL = { tmr: "A", res: "A", mlcc: "A", cf: "A", svr: "A", fet: "B", sig: "B", rect: "B", ldo: "B", pcb: "B", xtal: "C", tvs: "C", con: "B", mcu: "C" };
 const GORD = ["A", "B", "C", "D"], worst = (...g) => g.reduce((a, b) => GORD.indexOf(b) > GORD.indexOf(a) ? b : a, "A");
 function gradeOf(r, s) {
   let g;
