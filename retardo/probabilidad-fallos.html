@@ -1377,7 +1377,15 @@ function fmt(p, floor) {
   const ms = dec(m, 1);
   return (ms === "1,0" ? "" : ms + " × ") + "10" + sup(e);
 }
-const oneIn = p => (!p || p <= 0 || 1 / p < 1.5) ? "" : "1 en " + Math.round(1 / p).toLocaleString("es-AR", { maximumSignificantDigits: 2 });
+const bigN = n => {
+  if (n >= 1e6) { const m = n / 1e6; const t = m >= 10 ? (+m.toPrecision(2)).toLocaleString("es-AR") : dec(+m.toPrecision(2), 1).replace(/,0$/, ""); return t + (t === "1" ? " millón" : " millones"); }
+  if (n >= 1e4) return (+(n / 1e3).toPrecision(2)) + " mil";
+  if (n >= 1e3) return (Math.round(n / 100) * 100).toLocaleString("es-AR");
+  return String(Math.round(n));
+};
+const oneIn = p => (p == null) ? "—" : (p <= 0) ? "0" : (1 / p < 1.5) ? fmt(p) : "1 en " + bigN(1 / p);
+const pv = p => `<b>${oneIn(p)}</b><br><span class="small">${fmt(p)}</span>`;
+const rngIn = (lo, hi) => `${oneIn(hi)} a ${oneIn(lo)}`;
 const pick = (lo, hi, s) => s === "lo" ? lo : s === "hi" ? hi : Math.sqrt(lo * hi);
 const srcLinks = keys => [...new Set(keys)].map(k => `<a href="#src-${k}">[${SO.indexOf(k) + 1}]</a>`).join(" ");
 const typeOf = r => {
@@ -1466,10 +1474,10 @@ const RT = compute(TREC), RTLO = compute(X(TREC, { scen: "lo" })), RTHI = comput
 // --- resumen
 $("sum-cards").innerHTML = ["P1", "P2", "P3", "P4"].map(k => {
   const top = RT.all.filter(x => x.r.ef === k && x.p > 0).sort((a, b) => b.p - a.p).slice(0, 2);
-  return `<div class="card k-${k}"><div class="code">${k} · recomendado</div><div class="name">${NAMES[k]}</div><div class="big">${fmt(RT.tot[k])}</div><div class="one">${oneIn(RT.tot[k])}</div>
-  <div class="rng">rango ${fmt(RTLO.tot[k])} – ${fmt(RTHI.tot[k])}</div>
+  return `<div class="card k-${k}"><div class="code">${k} · recomendado</div><div class="name">${NAMES[k]}</div><div class="big">${oneIn(RT.tot[k])}</div><div class="one">${fmt(RT.tot[k])}</div>
+  <div class="rng">rango ${rngIn(RTLO.tot[k], RTHI.tot[k])}</div>
   <ul>${top.map(x => `<li>${x.r.modo} (${Math.round(100 * x.p / RT.tot[k])} %)</li>`).join("")}</ul>
-  <div class="prop">Original: <b style="color:var(--ink)">${fmt(RO3.tot[k])}</b> · Micro sin prueba previa: <b>${fmt(RMB.tot[k])}</b></div></div>`;
+  <div class="prop">Original: <b style="color:var(--ink)">${oneIn(RO3.tot[k])}</b> · Micro sin prueba previa: <b>${oneIn(RMB.tot[k])}</b></div></div>`;
 }).join("");
 $("n-rows").textContent = R.length + " modos de falla";
 
@@ -1536,7 +1544,7 @@ $("p1-checks").innerHTML = checksHtml(TREC, "recomendado") + `<div class="check"
 $("cmp").innerHTML = `<thead><tr><th>Modo</th><th>Original</th><th>Mejorado</th><th>Recomendado</th><th>Cambio total</th><th>Qué queda dominando en el recomendado</th></tr></thead><tbody>` +
   ["P1", "P2", "P3", "P4"].map(k => { const a = RB.tot[k], b = RP.tot[k], c = RR.tot[k]; const top = RR.all.filter(x => x.r.ef === k && x.p > 0).sort((x, y) => y.p - x.p)[0];
     const r = a / c; const ch = r > 1.15 ? "÷ " + (r >= 10 ? Math.round(r) : dec(r, 1)) : r < 0.87 ? "× " + dec(1 / r, 1) : "≈ igual";
-    return `<tr><td><span class="pill e-${k}">${k}</span></td><td class="n">${fmt(a)}</td><td class="n">${fmt(b)}</td><td class="n" style="color:var(--c-new);font-weight:600">${fmt(c)}</td><td class="n">${ch}</td><td>${top ? top.r.ref + " · " + top.r.modo : "—"}</td></tr>`; }).join("") + "</tbody>";
+    return `<tr><td><span class="pill e-${k}">${k}</span></td><td class="n">${pv(a)}</td><td class="n">${pv(b)}</td><td class="n" style="color:var(--c-new);font-weight:600">${pv(c)}</td><td class="n">${ch}</td><td>${top ? top.r.ref + " · " + top.r.modo : "—"}</td></tr>`; }).join("") + "</tbody>";
 
 // --- auditoría: grado de respaldo de cada término
 const GRL = { tmr: "A", res: "A", mlcc: "A", cf: "A", svr: "A", fet: "B", sig: "B", rect: "B", ldo: "B", pcb: "B", xtal: "C", tvs: "C", con: "C", mcu: "C" };
@@ -1658,9 +1666,9 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
   window.REC_BOM = { mat: sum(RBOM), j: 80, feed: 26 };
   const ROWS = [["Original (documento de diseño)", RO3, 0], ["Micro, T fijo, solo banco", RMB, 2], ["Micro + autoprueba antes del uso (no aplicable)", RMA, 2], ["Recomendado: temporizador TPL5110-Q1", RT, 3]];
   $("rec-box").innerHTML = `<div class="scroll"><table style="min-width:760px"><thead><tr><th>Configuración</th><th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>FOB por placa</th><th>Puesta en Argentina</th></tr></thead><tbody>` +
-    ROWS.map(([n, r, pi], i) => `<tr${i === 3 ? ' style="font-weight:600;color:var(--c-new)"' : ""}><td>${n}</td>${["P1", "P2", "P3", "P4"].map(k => `<td class="n">${fmt(r.tot[k])}</td>`).join("")}<td class="n">${dec(window.PRICES[pi].fob, 2)} USD</td><td class="n">${dec(window.PRICES[pi].land, 2)} USD</td></tr>`).join("") +
+    ROWS.map(([n, r, pi], i) => `<tr${i === 3 ? ' style="font-weight:600;color:var(--c-new)"' : ""}><td>${n}</td>${["P1", "P2", "P3", "P4"].map(k => `<td class="n">${pv(r.tot[k])}</td>`).join("")}<td class="n">${dec(window.PRICES[pi].fob, 2)} USD</td><td class="n">${dec(window.PRICES[pi].land, 2)} USD</td></tr>`).join("") +
     `</tbody></table></div><p class="small">Todas en las mismas condiciones: T fijo (25–40 s), ventana ±5 s, 3 años de almacenamiento controlado, banco de fábrica al 100 %, sin prueba antes del uso salvo donde se indica. Lote de 1000 placas en panel de 30. Cómo se calcula: secciones 3–7 (probabilidad) y 8 (precio); qué tan sólido es: sección 9.</p>`;
-  const tr = $("tmr-res"); if (tr) tr.innerHTML = `<thead><tr><th>Modo</th><th>Valor central</th><th>Rango (λ bajas – altas)</th><th>Qué lo domina</th></tr></thead><tbody>` + ["P1", "P2", "P3", "P4"].map(k => { const top = RT.all.filter(x => x.r.ef === k && x.p > 0).sort((a, b) => b.p - a.p).slice(0, 2); return `<tr><td><span class="pill e-${k}">${k}</span></td><td class="n">${fmt(RT.tot[k])}</td><td class="n">${fmt(RTLO.tot[k])} – ${fmt(RTHI.tot[k])}</td><td>${top.map(x => x.r.ref + " · " + x.r.modo + " (" + Math.round(100 * x.p / RT.tot[k]) + " %)").join("<br>")}</td></tr>`; }).join("") + "</tbody>";
+  const tr = $("tmr-res"); if (tr) tr.innerHTML = `<thead><tr><th>Modo</th><th>Valor central</th><th>Rango (λ bajas – altas)</th><th>Qué lo domina</th></tr></thead><tbody>` + ["P1", "P2", "P3", "P4"].map(k => { const top = RT.all.filter(x => x.r.ef === k && x.p > 0).sort((a, b) => b.p - a.p).slice(0, 2); return `<tr><td><span class="pill e-${k}">${k}</span></td><td class="n">${pv(RT.tot[k])}</td><td class="n">${rngIn(RTLO.tot[k], RTHI.tot[k])}</td><td>${top.map(x => x.r.ref + " · " + x.r.modo + " (" + Math.round(100 * x.p / RT.tot[k]) + " %)").join("<br>")}</td></tr>`; }).join("") + "</tbody>";
 })();
 
 // --- medidas tomadas y diseño sin medidas
@@ -1686,10 +1694,10 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
   const dvCell = r => r.dv.vg > r.dv.vthMin ? '<span class="status st-bad">NO PASA</span>' : r.dv.vg > 0.6 * r.dv.vthMin ? '<span class="status st-mid">MARGEN CHICO</span>' : '<span class="status st-ok">PASA</span>';
   $("meas-tab").innerHTML = `<thead><tr><th>Paso</th><th>Qué ataca</th>${ks.map(k => `<th><span class="pill e-${k}">${k}</span></th>`).join("")}<th>Acople dV/dt</th><th>Δ puesto en Argentina</th></tr></thead><tbody>` +
     res.map((r, i) => `<tr${i === 0 ? ' style="font-weight:600"' : i === res.length - 1 ? ' style="font-weight:600;color:var(--c-new)"' : ""}><td>${i === 0 ? "<b>Sin medidas</b><br><span class='small'>temporizador, 1 llave, banco al 100 %</span>" : `+ ${r.n}<br><span class="small">${r.m[7]}</span>`}</td><td class="small">${i === 0 ? "Base de comparación" : r.m[1]}</td>` +
-      ks.map(k => `<td class="n">${fmt(r.t[k])}</td>`).join("") + `<td>${dvCell(r)}</td><td class="n">${i === 0 ? "USD " + dec(r.land, 2) + " por placa" : "+" + dec(r.land - res[i - 1].land, 3)}</td></tr>`).join("") +
+      ks.map(k => `<td class="n">${pv(r.t[k])}</td>`).join("") + `<td>${dvCell(r)}</td><td class="n">${i === 0 ? "USD " + dec(r.land, 2) + " por placa" : "+" + dec(r.land - res[i - 1].land, 3)}</td></tr>`).join("") +
     `<tr class="tot"><td>Recomendado (todas las medidas)</td><td class="small">Mejora total, sin medidas → recomendado</td>${ks.map(k => `<td class="n">${first.t[k] > 0 && last.t[k] > 0 ? "÷ " + (first.t[k] / last.t[k]).toLocaleString("es-AR", { maximumSignificantDigits: 2 }) : "—"}</td>`).join("")}<td></td><td class="n">+${dec(last.land - first.land, 2)}</td></tr></tbody>`;
-  $("meas-sum").innerHTML = `<thead><tr><th>Modelo</th>${ks.map(k => `<th><span class="pill e-${k}">${k}</span> central<br><span class="small">rango</span></th>`).join("")}<th>FOB por placa</th><th>Puesta en Argentina</th></tr></thead><tbody>` +
-    [[first, "Sin medidas"], [last, "Recomendado"]].map(([r, n], i) => `<tr${i ? ' style="font-weight:600;color:var(--c-new)"' : ""}><td>${n}</td>${ks.map(k => `<td class="n">${fmt(r.t[k])}<br><span class="small">${fmt(r.lo[k])} – ${fmt(r.hi[k])}</span><br><span class="small">${oneIn(r.t[k])}</span></td>`).join("")}<td class="n">${dec(r.fob, 2)}</td><td class="n">${dec(r.land, 2)}</td></tr>`).join("") + "</tbody>";
+  $("meas-sum").innerHTML = `<thead><tr><th>Modelo</th>${ks.map(k => `<th><span class="pill e-${k}">${k}</span></th>`).join("")}<th>FOB por placa</th><th>Puesta en Argentina</th></tr></thead><tbody>` +
+    [[first, "Sin medidas"], [last, "Recomendado"]].map(([r, n], i) => `<tr${i ? ' style="font-weight:600;color:var(--c-new)"' : ""}><td>${n}</td>${ks.map(k => `<td class="n"><b>${oneIn(r.t[k])}</b><br><span class="small">${fmt(r.t[k])}</span><br><span class="small">rango ${rngIn(r.lo[k], r.hi[k])}</span></td>`).join("")}<td class="n">${dec(r.fob, 2)}</td><td class="n">${dec(r.land, 2)}</td></tr>`).join("") + "</tbody>";
   const chk = Math.abs(last.t.P1 - RT.tot.P1) / RT.tot.P1 + Math.abs(last.t.P3 - RT.tot.P3) / RT.tot.P3;
   if (chk > 1e-9) console.error("medidas: el último paso no coincide con el recomendado", chk);
   window.MEAS = res.map(r => ({ n: r.n, t: r.t, land: r.land }));
@@ -1704,7 +1712,7 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
     ["2 · Temporizador solo (TPL5110-Q1), T fijo, solo banco de fábrica", X(b, { m: { bit: false, tmr: true } }), 3, "No hay autoprueba posible: la placa no puede informar nada"]];
   $("opt-table").innerHTML = `<thead><tr><th>Opción</th><th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>Puesta en Argentina</th><th>Condición</th></tr></thead><tbody>` +
     OPT.map(([n, st, pi, cond]) => { const c = compute(st), lo = compute(X(st, { scen: "lo" })), hi = compute(X(st, { scen: "hi" }));
-      return `<tr><td>${n}</td>${["P1", "P2", "P3", "P4"].map(k => `<td class="n">${fmt(c.tot[k])}<br><span class="small">${fmt(lo.tot[k])} – ${fmt(hi.tot[k])}</span></td>`).join("")}<td class="n">${dec(window.PRICES[pi].land, 2)} USD</td><td>${cond}</td></tr>`; }).join("") + "</tbody>";
+      return `<tr><td>${n}</td>${["P1", "P2", "P3", "P4"].map(k => `<td class="n">${pv(c.tot[k])}<br><span class="small">${rngIn(lo.tot[k], hi.tot[k])}</span></td>`).join("")}<td class="n">${dec(window.PRICES[pi].land, 2)} USD</td><td>${cond}</td></tr>`; }).join("") + "</tbody>";
 })();
 
 // --- tabla de alternativas (apéndice 14)
@@ -1715,13 +1723,13 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
     ["Micro + autoprueba antes del uso", "Ídem + autoprueba por los 2 cables con el iniciador conectado", RMA, 2, "modelo", "La mejor en P3, pero el cliente no puede probar antes del uso. Reflotar si eso cambia"],
     ["Recomendado: temporizador TPL5110-Q1 + U3", "Sección 8", RT, 3, "modelo", "Elegido"]];
   let h = `<thead><tr><th>Arquitectura</th><th>Descripción</th><th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>Puesta en Argentina</th><th>Base</th><th>Por qué no / cuándo reflotarla</th></tr></thead><tbody>`;
-  rows.forEach(([n, d, r, pi, b, why]) => { h += `<tr${pi === 3 ? ' style="font-weight:600;color:var(--c-new)"' : ""}><td>${n}</td><td>${d}</td>${["P1", "P2", "P3", "P4"].map(k => `<td class="n">${fmt(r.tot[k])}</td>`).join("")}<td class="n">${dec(window.PRICES[pi].land, 2)} USD</td><td>${b}</td><td>${why}</td></tr>`; });
+  rows.forEach(([n, d, r, pi, b, why]) => { h += `<tr${pi === 3 ? ' style="font-weight:600;color:var(--c-new)"' : ""}><td>${n}</td><td>${d}</td>${["P1", "P2", "P3", "P4"].map(k => `<td class="n">${pv(r.tot[k])}</td>`).join("")}<td class="n">${dec(window.PRICES[pi].land, 2)} USD</td><td>${b}</td><td>${why}</td></tr>`; });
   const est = [
-    ["Dos TPL5110-Q1 en “Y” (ventana)", "El principal en T y otro en T − 3 s; dispara cuando los dos están activos; sin U3", "~10⁻⁹", "~10⁻⁸", "~6,6 × 10⁻⁵", "~4 × 10⁻⁶", "~2,5 USD", "Reflotar si un disparo entre 4 y 25 s es tan grave como no disparar. Ojo con la causa común entre dos integrados iguales"],
-    ["TPL5110-Q1 sin U3", "Ahorra el enclavamiento", "~4 × 10⁻⁷", "≈ recomendado", "≈ recomendado", "≈ recomendado", "~1,9 USD", "P1 unas 100 veces peor: descartado"],
+    ["Dos TPL5110-Q1 en “Y” (ventana)", "El principal en T y otro en T − 3 s; dispara cuando los dos están activos; sin U3", "~1 en 1.000 millones", "~1 en 100 millones", "~1 en 15 mil", "~1 en 250 mil", "~2,5 USD", "Reflotar si un disparo entre 4 y 25 s es tan grave como no disparar. Ojo con la causa común entre dos integrados iguales"],
+    ["TPL5110-Q1 sin U3", "Ahorra el enclavamiento", "~1 en 2,5 millones", "≈ recomendado", "≈ recomendado", "≈ recomendado", "~1,9 USD", "P1 unas 100 veces peor: descartado"],
     ["Dos temporizadores en “O”", "Cualquiera dispara", "≈ recomendado", "× 2", "apenas mejor", "≈", "~2,5 USD", "Duplica el disparo anticipado; el temporizador pesa poco en P3"],
-    ["Contadores CMOS + cristal 32 kHz", "Sin software, precisión de cristal", "~10⁻⁹", "~10⁻⁹", "peor (cristal, choque)", "~10⁻⁷", "~2,0 USD", "Más piezas, cristal sensible a choque, reset al arranque delicado"],
-    ["Micro sin cristal (HSI16)", "Con ±5 s la precisión alcanza", "~2 × 10⁻⁹", "~10⁻⁹", "~1,2 × 10⁻⁴", "~10⁻⁷", "~2,2 USD", "Sigue dominado por el micro en P3; necesita firmware"]];
+    ["Contadores CMOS + cristal 32 kHz", "Sin software, precisión de cristal", "~1 en 1.000 millones", "~1 en 1.000 millones", "peor (cristal, choque)", "~1 en 10 millones", "~2,0 USD", "Más piezas, cristal sensible a choque, reset al arranque delicado"],
+    ["Micro sin cristal (HSI16)", "Con ±5 s la precisión alcanza", "~1 en 500 millones", "~1 en 1.000 millones", "~1 en 8.300", "~1 en 10 millones", "~2,2 USD", "Sigue dominado por el micro en P3; necesita firmware"]];
   est.forEach(e => { h += `<tr><td>${e[0]}</td><td>${e[1]}</td><td class="n">${e[2]}</td><td class="n">${e[3]}</td><td class="n">${e[4]}</td><td class="n">${e[5]}</td><td class="n">${e[6]}</td><td>estimación</td><td>${e[7]}</td></tr>`; });
   $("alt-table").innerHTML = h + "</tbody>";
 })();
