@@ -205,355 +205,33 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
   <header>
     <div class="eyebrow">Sistema de retardo autoalimentado · informe de análisis de fallos</div>
     <h1>Probabilidad de fallos del retardo</h1>
-    <p class="lead">Estimación de la probabilidad de cada modo de fallo P1–P4 del núcleo (almacenamiento, contador, driver, iniciador), con la justificación de cada número, el esquemático analizado y un esquemático propuesto que corrige los caminos de falla encontrados.</p>
+    <p class="lead">Diseño recomendado del retardo autoalimentado: un temporizador TPL5110-Q1 sin microcontrolador, con T fijo de 25 a 40 s por puentes. Este informe presenta su esquemático, la probabilidad de cada modo de fallo P1–P4 con la justificación de cada número, su precio y qué tan sólido es el modelo. Las alternativas evaluadas (el diseño original y el diseño con micro) están al final.</p>
     <div class="meta"><span>Base: sistema-retardo-autoalimentado.md y Core del retardo autoalimentado</span><span>Fecha: 22/11/2026</span><span>Unidad: probabilidad por unidad y por uso</span></div>
     <nav class="toc" aria-label="Índice">
-      <a href="#s1"><span>1</span>Resumen</a><a href="#s2"><span>2</span>Esquemático analizado</a><a href="#s3"><span>3</span>Método</a><a href="#s4"><span>4</span>Datos de entrada</a><a href="#s4r"><span>4.1</span>Revisión de datos</a><a href="#s5"><span>5</span>P1</a><a href="#s6"><span>6</span>P2 y P4</a><a href="#s7"><span>7</span>P3</a><a href="#s7b"><span>7.4</span>Bajar P3</a><a href="#s8"><span>8</span>Esquemático recomendado</a><a href="#s9"><span>9</span>Sensibilidad</a><a href="#s10"><span>10</span>Anexo</a><a href="#s11"><span>11</span>Precio</a><a href="#s12"><span>12</span>Auditoría del modelo</a><a href="#s14"><span>13</span>Alternativa con micro</a><a href="#s15"><span>14</span>Alternativas evaluadas</a><a href="#s13"><span>15</span>Límites y fuentes</a>
+      <a href="#s1"><span>1</span>Resumen</a><a href="#s8"><span>2</span>Esquemático</a><a href="#s3"><span>3</span>Método</a><a href="#s4"><span>4</span>Datos de entrada</a><a href="#s5"><span>5</span>P1</a><a href="#s6"><span>6</span>P2 y P4</a><a href="#s7"><span>7</span>P3</a><a href="#s11"><span>8</span>Precio</a><a href="#s12"><span>9</span>Auditoría</a><a href="#s9"><span>10</span>Sensibilidad</a><a href="#s10"><span>11</span>Anexo</a><a href="#s13"><span>12</span>Límites y fuentes</a><a href="#salt"><span>13</span>Alternativas</a>
     </nav>
   </header>
 
   <!-- 1 RESUMEN -->
   <section id="s1" aria-labelledby="h1s">
-    <div class="sec-head"><h2 id="h1s"><span class="num">1</span>Resumen</h2><span class="tag">configuración recomendada · 2 años almacenada · λ centrales</span></div>
+    <div class="sec-head"><h2 id="h1s"><span class="num">1</span>Resumen</h2><span class="tag">recomendado: temporizador · T fijo ± 5 s · 3 años almacenada · λ centrales</span></div>
     <div id="rec-box"></div>
     <div class="cards" id="sum-cards"></div>
-    <p class="small">Las tarjetas muestran el <strong>recomendado: temporizador TPL5110-Q1</strong> (sección 8), con T fijo de 25–40 s por puentes, ventana ±5 s, 3 años de almacenamiento controlado y sin prueba antes del uso. Abajo de cada tarjeta, el original y el mejorado con micro en las mismas condiciones. Valor central con las tasas de falla de la media geométrica entre el dato bajo y el alto; el rango usa todas las tasas bajas o todas las altas. No incluye la confiabilidad propia del iniciador, el cableado del cliente ni las fallas sin tasa (choque, RF), que se cierran con ensayo.</p>
+    <p class="small">Las tarjetas muestran el <strong>recomendado: temporizador TPL5110-Q1</strong> (sección 2), con T fijo de 25–40 s por puentes, ventana ±5 s, 3 años de almacenamiento controlado y sin prueba antes del uso. Abajo de cada tarjeta, el original y el mejorado con micro en las mismas condiciones. Valor central con las tasas de falla de la media geométrica entre el dato bajo y el alto; el rango usa todas las tasas bajas o todas las altas. No incluye la confiabilidad propia del iniciador, el cableado del cliente ni las fallas sin tasa (choque, RF), que se cierran con ensayo.</p>
     <h3>Hallazgos</h3>
     <ol class="findings">
-      <li><div><strong>Recomendado: un temporizador sin microcontrolador</strong> (sección 8). El TPL5110-Q1 cuenta T (25, 30, 35 o 40 s por puentes), U3 bloquea cualquier disparo antes de ~4,6 s y dos llaves (una de cada lado) evitan que una falla simple dispare. Sale ≈ 2,05 USD puesto en Argentina y no lleva firmware.</div></li>
-      <li><div><strong>Por qué temporizador y no micro:</strong> sin prueba antes del uso, el micro es la pieza que más falla durante los 2–3 años de almacenamiento. El temporizador falla la mitad de veces por no activar (P3 6,2 × 10⁻⁵ contra 1,2 × 10⁻⁴) y cuesta ~0,27 USD menos. A cambio, activar fuera de la ventana (P2 y P4, ~2–3 × 10⁻⁶) es más probable que con el micro (~10⁻⁹ y ~10⁻⁷), porque nadie controla el oscilador del temporizador.</div></li>
+      <li><div><strong>Recomendado: un temporizador sin microcontrolador</strong> (sección 2). El TPL5110-Q1 cuenta T (25, 30, 35 o 40 s por puentes), U3 bloquea cualquier disparo antes de ~4,6 s y dos llaves (una de cada lado) evitan que una falla simple dispare. Sale ≈ 2,06 USD puesto en Argentina y no lleva firmware.</div></li>
+      <li><div><strong>Por qué temporizador y no micro:</strong> sin prueba antes del uso, el micro es la pieza que más falla durante los 2–3 años de almacenamiento. El temporizador falla la mitad de veces por no activar (P3 6,2 × 10⁻⁵ contra 1,2 × 10⁻⁴) y cuesta ~0,26 USD menos. A cambio, activar fuera de la ventana (P2 y P4, ~2–3 × 10⁻⁶) es más probable que con el micro (~10⁻⁹ y ~10⁻⁷), porque nadie controla el oscilador del temporizador.</div></li>
       <li><div><strong>Frente al diseño original</strong>, en las mismas condiciones: P1 baja unas 100 veces (de 4,6 × 10⁻⁷ a 4,7 × 10⁻⁹) y P3 a la mitad. El original tenía fallas simples que disparaban en t0: corto a masa del drain de Q1, sobretensión de VDD y acople del flanco en las gates.</div></li>
       <li><div><strong>La precisión dejó de ser un riesgo:</strong> con ±5 s de ventana el temporizador tiene margen de ~7 veces (error ~2–3 %). Lo que limita P3 es el camino de energía (conector, soldaduras, LDO, C_F, llaves) y el dato del iniciador: si pide 3 A²·ms en vez de 2, P3 se triplica.</div></li>
-      <li><div><strong>Lo que falta para cerrar el diseño</strong> (sección 8.5): verificar con osciloscopio el arranque de la salida del temporizador, medir la deriva de T en temperatura, la fuga de C_F y el I²t del iniciador, y ensayar choque y vibración.</div></li>
-      <li><div><strong>Alternativas guardadas:</strong> el diseño con micro está en la sección 13 y los datos clave de todas las alternativas evaluadas (arquitecturas, integrados, fabricación) en la sección 14, para reflotarlas si cambian los requisitos.</div></li>
+      <li><div><strong>Lo que falta para cerrar el diseño</strong> (sección 2.5): verificar con osciloscopio el arranque de la salida del temporizador, medir la deriva de T en temperatura, la fuga de C_F y el I²t del iniciador, y ensayar choque y vibración.</div></li>
+      <li><div><strong>Alternativas guardadas:</strong> el diseño original y el del micro están en las secciones 13.1 y 13.2, y los datos clave de todas las alternativas evaluadas (arquitecturas, integrados, fabricación) en la sección 13.4, para reflotarlas si cambian los requisitos.</div></li>
     </ol>
-  </section>
-
-  <!-- 2 ESQUEMÁTICO ANALIZADO -->
-  <section id="s2" aria-labelledby="h2s">
-    <div class="sec-head"><h2 id="h2s"><span class="num">2</span>Esquemático analizado</h2><span class="tag">referencia PIC12LF1822 · equivalente STM32L010</span></div>
-    <p>Es el esquemático del documento de diseño, recortado a los cuatro bloques del núcleo. Los círculos numerados marcan los puntos donde se originan las contribuciones principales a P1 y P3.</p>
-    <div class="legend">
-      <span style="color:var(--c-store)"><i class="sw"></i>Almacenamiento</span>
-      <span style="color:var(--c-count)"><i class="sw"></i>Contador</span>
-      <span style="color:var(--c-drive)"><i class="sw"></i>Driver</span>
-      <span style="color:var(--c-init)"><i class="sw"></i>Iniciador</span>
-      <span>Las etiquetas de red con el mismo nombre están conectadas.</span>
-    </div>
-    <div class="scroll sch">
-      <svg viewBox="0 0 1090 800" role="img" aria-label="Esquemático analizado con marcas de los puntos de falla: corto a masa del drain de Q1, sobretensión del LDO, cortos de R1 y R3, salidas del MCU, acople en las gates, cristal y C_F.">
-        <defs>
-          <g id="res" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H14M46 0H60"/><rect x="14" y="-6" width="32" height="12"/></g>
-          <g id="cap" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H27M33 0H60M27 -13V13M33 -13V13"/></g>
-          <g id="pcap" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H27M34 0H60M27 -13V13"/><path d="M38 -13Q31 0 38 13"/><path d="M14 -16h6M17 -19v6" stroke-width="1.2"/></g>
-          <g id="sch" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H20M40 0H60"/><path d="M20 -10L40 0L20 10Z"/><path d="M44 -6V-10H40V10H36V6"/></g>
-          <g id="tvs" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H20M40 0H60"/><path d="M20 -10L40 0L20 10Z"/><path d="M44 -13L40 -10V10L36 13"/></g>
-          <g id="xtal" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H20M40 0H60M20 -12V12M40 -12V12"/><rect x="24" y="-9" width="12" height="18"/></g>
-          <g id="gnd" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0V8M-10 8H10M-6 12H6M-2 16H2"/></g>
-          <g id="nmos" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M-30 0H-9M-9 -13V13"/><path d="M-3 -16V-8M-3 -4V4M-3 8V16"/><path d="M-3 -12H14V-30M-3 12H14V30M14 0V12M14 0H3"/><path d="M-2 0L5 -4V4Z" fill="currentColor"/></g>
-          <g id="pmos" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M-30 0H-9M-9 -13V13"/><path d="M-3 -16V-8M-3 -4V4M-3 8V16"/><path d="M-3 -12H14V-30M-3 12H14V30M14 0V-12M14 0H-3"/><path d="M12 0L5 -4V4Z" fill="currentColor"/></g>
-          <g id="mark"><circle r="10"/></g>
-        </defs>
-        <rect x="10" y="40" width="720" height="385" rx="4" class="zone zstore"/>
-        <text x="20" y="417" class="ztag tstore">ALMACENAMIENTO DE ENERGÍA</text>
-        <rect x="745" y="172" width="335" height="253" rx="4" class="zone zdrive"/>
-        <text x="1070" y="417" text-anchor="end" class="ztag tdrive">DRIVER</text>
-        <rect x="900" y="100" width="180" height="66" rx="4" class="zone zinit"/>
-        <text x="1070" y="118" text-anchor="end" class="ztag tinit">INICIADOR</text>
-        <rect x="10" y="450" width="1070" height="342" rx="4" class="zone zcount"/>
-        <text x="20" y="470" class="ztag tcount">CONTADOR</text>
-
-        <rect x="22" y="70" width="22" height="340" rx="2" class="w"/>
-        <text x="22" y="62" class="lbl">J1</text><text x="52" y="82" class="lbl">+12 V</text><text x="52" y="392" class="lbl">GND</text>
-        <path class="w" d="M44 90H160M220 90H300M360 90H940V110M940 170V180M940 240V280M940 340V400M44 400H940"/>
-        <use href="#res" transform="translate(160 90)"/><text x="190" y="76" text-anchor="middle" class="lbl">R_s 0,1–0,5 Ω</text>
-        <use href="#sch" transform="translate(300 90)"/><text x="330" y="76" text-anchor="middle" class="lbl">D1 SS34</text>
-        <text x="600" y="82" text-anchor="middle" class="lbl">V_CF ≈ 11,3 V</text>
-        <path class="w" d="M130 90V200M130 260V400"/><use href="#tvs" transform="translate(130 260) rotate(-90)"/>
-        <text x="146" y="226" class="lbl">D3</text><text x="146" y="240" class="val">SMAJ15A</text>
-        <path class="w" d="M250 90V130M250 190V230M250 290V400M250 210H262"/>
-        <use href="#res" transform="translate(250 130) rotate(90)"/><use href="#res" transform="translate(250 230) rotate(90)"/>
-        <text x="262" y="164" class="lbl">R1 100 kΩ</text><text x="262" y="264" class="lbl">R2 22 kΩ</text>
-        <g class="net"><rect x="262" y="202" width="90" height="16" rx="2"/><text x="307" y="214">LINE_SENSE</text></g>
-        <path class="w" d="M410 90V130M410 190V230M410 290V400M410 210H422"/>
-        <use href="#res" transform="translate(410 130) rotate(90)"/><use href="#res" transform="translate(410 230) rotate(90)"/>
-        <text x="422" y="164" class="lbl">R3 8,2 MΩ</text><text x="422" y="264" class="lbl">R4 1,8 MΩ</text>
-        <g class="net"><rect x="422" y="202" width="86" height="16" rx="2"/><text x="465" y="214">VCF_SENSE</text></g>
-        <path class="w" d="M540 90V200M540 260V400"/><use href="#pcap" transform="translate(540 200) rotate(90)"/>
-        <text x="558" y="226" class="lbl">C_F 330 µF</text><text x="558" y="240" class="val">25 V polímero</text>
-        <path class="w" d="M660 90V200M660 260V400"/><use href="#res" transform="translate(660 200) rotate(90)"/>
-        <text x="672" y="226" class="lbl">R_bleed</text><text x="672" y="240" class="val">4,7 MΩ</text>
-        <use href="#res" transform="translate(940 110) rotate(90)" style="color:var(--c-init)"/>
-        <text x="956" y="136" class="lbl">R_E</text><text x="956" y="150" class="val">1–2 Ω</text>
-        <use href="#nmos" transform="translate(926 210)"/><use href="#nmos" transform="translate(926 310)"/>
-        <text x="958" y="206" class="lbl">Q1</text><text x="958" y="220" class="val">AO3400A</text>
-        <text x="958" y="306" class="lbl">Q2</text><text x="958" y="320" class="val">AO3400A</text>
-        <path class="w" d="M840 210H896M866 210V220M840 310H896M880 310V320M880 380V400"/>
-        <use href="#res" transform="translate(866 220) rotate(90)"/><use href="#gnd" transform="translate(866 280)"/>
-        <use href="#res" transform="translate(880 320) rotate(90)"/>
-        <text x="856" y="254" text-anchor="end" class="lbl">R5 100 kΩ</text><text x="870" y="354" text-anchor="end" class="lbl">R6 100 kΩ</text>
-        <g class="net"><rect x="760" y="202" width="80" height="16" rx="2"/><text x="800" y="214">FIRE_A</text></g>
-        <g class="net"><rect x="760" y="302" width="80" height="16" rx="2"/><text x="800" y="314">FIRE_B</text></g>
-        <g class="dot">
-          <circle cx="44" cy="90" r="2.6"/><circle cx="44" cy="400" r="2.6"/>
-          <circle cx="130" cy="90" r="3"/><circle cx="250" cy="90" r="3"/><circle cx="410" cy="90" r="3"/><circle cx="540" cy="90" r="3"/><circle cx="660" cy="90" r="3"/>
-          <circle cx="130" cy="400" r="3"/><circle cx="250" cy="400" r="3"/><circle cx="410" cy="400" r="3"/><circle cx="540" cy="400" r="3"/><circle cx="660" cy="400" r="3"/><circle cx="880" cy="400" r="3"/>
-          <circle cx="250" cy="210" r="3"/><circle cx="410" cy="210" r="3"/><circle cx="866" cy="210" r="3"/><circle cx="880" cy="310" r="3"/>
-        </g>
-        <g class="net"><rect x="40" y="512" width="60" height="16" rx="2"/><text x="70" y="524">V_CF</text></g>
-        <path class="w" d="M100 520H140M200 520H320M260 520V540M380 555V590M440 520H620M480 520V540M540 520V540M620 620H596"/>
-        <use href="#sch" transform="translate(140 520)"/><text x="170" y="506" text-anchor="middle" class="lbl">D2 BAT54WS</text>
-        <use href="#cap" transform="translate(260 540) rotate(90)"/><use href="#gnd" transform="translate(260 600)"/>
-        <text x="276" y="568" class="lbl">C_loc</text><text x="276" y="582" class="val">10 µF 25 V</text>
-        <rect x="320" y="495" width="120" height="60" rx="2" class="w"/>
-        <text x="380" y="516" text-anchor="middle" class="lbl">U2 HT7525S</text><text x="380" y="532" text-anchor="middle" class="val">LDO 2,5 V</text>
-        <text x="326" y="550" class="sm">IN</text><text x="434" y="550" text-anchor="end" class="sm">OUT</text>
-        <use href="#gnd" transform="translate(380 590)"/>
-        <text x="580" y="512" text-anchor="middle" class="lbl">VDD</text>
-        <use href="#cap" transform="translate(480 540) rotate(90)"/><use href="#gnd" transform="translate(480 600)"/>
-        <text x="494" y="568" class="lbl">C4</text><text x="494" y="582" class="val">1 µF</text>
-        <use href="#cap" transform="translate(540 540) rotate(90)"/><use href="#gnd" transform="translate(540 600)"/>
-        <text x="555" y="568" class="lbl">C5</text><text x="555" y="582" class="val">100 nF</text>
-        <use href="#gnd" transform="translate(596 620)"/>
-        <rect x="620" y="490" width="220" height="160" rx="2" class="w"/>
-        <text x="730" y="552" text-anchor="middle" class="lbl" style="font-weight:600">U1 PIC12LF1822</text><text x="730" y="568" text-anchor="middle" class="val">alt. STM32L010</text>
-        <text x="628" y="524" class="sm">1 VDD</text><text x="628" y="624" class="sm">8 VSS</text>
-        <text x="832" y="519" text-anchor="end" class="sm">RA2 5</text><text x="832" y="559" text-anchor="end" class="sm">RA1 6</text>
-        <text x="832" y="599" text-anchor="end" class="sm">AN0/RA0 7</text><text x="832" y="639" text-anchor="end" class="sm">RA3 4</text>
-        <text x="660" y="642" text-anchor="middle" class="sm">RA5 2</text><text x="760" y="642" text-anchor="middle" class="sm">RA4 3</text>
-        <path class="w" d="M840 515H880M840 555H880M840 595H880M840 635H880"/>
-        <g class="net"><rect x="880" y="507" width="90" height="16" rx="2"/><text x="925" y="519">FIRE_A</text></g>
-        <g class="net"><rect x="880" y="547" width="90" height="16" rx="2"/><text x="925" y="559">FIRE_B</text></g>
-        <g class="net"><rect x="880" y="587" width="90" height="16" rx="2"/><text x="925" y="599">VCF_SENSE</text></g>
-        <g class="net"><rect x="880" y="627" width="90" height="16" rx="2"/><text x="925" y="639">LINE_SENSE</text></g>
-        <path class="w" d="M660 650V710M660 700H690M750 700H760M760 650V710"/>
-        <use href="#xtal" transform="translate(690 700)"/>
-        <text x="720" y="684" text-anchor="middle" class="lbl">Y1</text><text x="720" y="728" text-anchor="middle" class="sm">32,768 kHz</text>
-        <use href="#cap" transform="translate(660 710) rotate(90)"/><use href="#gnd" transform="translate(660 770)"/>
-        <use href="#cap" transform="translate(760 710) rotate(90)"/><use href="#gnd" transform="translate(760 770)"/>
-        <text x="642" y="744" text-anchor="end" class="lbl">C1 10 pF</text><text x="778" y="744" class="lbl">C2 10 pF</text>
-        <g class="dot"><circle cx="260" cy="520" r="3"/><circle cx="480" cy="520" r="3"/><circle cx="540" cy="520" r="3"/><circle cx="660" cy="700" r="3"/><circle cx="760" cy="700" r="3"/></g>
-        <!-- marcas -->
-        <g class="mk"><circle cx="912" cy="176" r="10"/><text x="912" y="180">1</text></g>
-        <g class="mk"><circle cx="452" cy="490" r="10"/><text x="452" y="494">2</text></g>
-        <g class="mk"><circle cx="232" cy="160" r="10"/><text x="232" y="164">3</text></g>
-        <g class="mk"><circle cx="392" cy="160" r="10"/><text x="392" y="164">3</text></g>
-        <g class="mk"><circle cx="852" cy="484" r="10"/><text x="852" y="488">4</text></g>
-        <g class="mk"><circle cx="906" cy="256" r="10"/><text x="906" y="260">5</text></g>
-        <g class="mk"><circle cx="906" cy="356" r="10"/><text x="906" y="360">5</text></g>
-        <g class="mk"><circle cx="800" cy="690" r="10"/><text x="800" y="694">6</text></g>
-        <g class="mk"><circle cx="620" cy="190" r="10"/><text x="620" y="194">7</text></g>
-      </svg>
-    </div>
-    <ul class="marks">
-      <li><span class="n">1</span><div><strong>Drain de Q1 a masa.</strong> Saltea las dos llaves: el puente queda sobre C_F y dispara en t0. Falla simple de P1. El mismo corto en el cable del iniciador es del montaje del cliente (fuera del alcance), pero tiene igual efecto.</div></li>
-      <li><span class="n">2</span><div><strong>LDO en corto entrada-salida.</strong> ~11 V en VDD; el MCU dañado puede dejar FIRE_A y FIRE_B en alto. Causa común de P1.</div></li>
-      <li><span class="n">3</span><div><strong>R1 o R3 en corto.</strong> 12 V o 11 V directo a un pin; la corriente entra a VDD por el diodo de protección. Causa común de P1.</div></li>
-      <li><span class="n">4</span><div><strong>Salidas del MCU.</strong> Una salida trabada en alto es latente; las dos juntas son P1. RA3 no tiene ADC: no puede medir el umbral de 5–6 V del modo programación.</div></li>
-      <li><span class="n">5</span><div><strong>Pull-downs de 100 kΩ.</strong> El flanco de carga de C_F acopla por C_rss y lleva la gate por encima de V_th (sección 5.3).</div></li>
-      <li><span class="n">6</span><div><strong>Cristal de 32 kHz.</strong> Primer aporte a P3: no arranca, se fractura por choque o arranca tarde en frío.</div></li>
-      <li><span class="n">7</span><div><strong>C_F.</strong> Su capacidad, fuga y ESR en frío fijan el margen de energía contra el I²t del iniciador (sección 7.3).</div></li>
-    </ul>
-  </section>
-
-  <!-- 3 MÉTODO -->
-  <section id="s3" aria-labelledby="h3s">
-    <div class="sec-head"><h2 id="h3s"><span class="num">3</span>Método</h2><span class="tag">FMEA cuantificado + árbol de fallas</span></div>
-    <div class="prose">
-      <p>Se listaron todos los modos de falla de cada pieza del esquemático (corto, abierto, deriva y modos propios de cada tipo), más los de fabricación, firmware, operación, ambiente y del pulso de entrada: <span id="n-rows"></span> filas en el anexo. A cada una se le asignó qué produce en una demanda: P1, P2, P3, P4, <em>latente</em> (no actúa sola pero habilita una segunda falla) o <em>sin efecto</em>.</p>
-      <p>Una demanda dura como máximo 40 s. En ese tiempo la probabilidad de que se rompa algo es despreciable; lo que importa es lo que ya está roto al llegar el pulso. Por eso la exposición se mide en horas de almacenamiento, corregidas por el factor de reposo k<sub>d</sub> (las piezas sin energía fallan menos que en operación).</p>
-    </div>
-    <div class="formula">
-      <div class="eq">P = λ · 10⁻⁹ · f · (k<sub>d</sub> · t<sub>alm</sub> + t<sub>uso</sub>) · c · m</div>
-      <div class="ex">λ: tasa de falla de la pieza en FIT (fallas cada 10⁹ h) · f: fracción de las fallas que son de ese modo</div>
-      <div class="ex">k<sub>d</sub>: factor de reposo = 1/30 (Harris: relación operación/reposo 30:1 a 60:1) · t<sub>alm</sub>: horas de almacenamiento = 2 × 8760 · t<sub>uso</sub>: 40 s = 0,011 h</div>
-      <div class="ex">c: probabilidad condicional de que ese modo produzca el efecto · m: factor de la mejora de diseño (1 sin mejora)</div>
-    </div>
-    <div class="callout" style="--cc:var(--c-count)">
-      <h3>Ejemplo resuelto: C_F abierto</h3>
-      <p class="mono" style="font-size:13.5px">λ = √(0,13 × 13) = 1,30 FIT · f = 0,5 · horas = (1/30) × 17 520 + 0,011 = 584 h · c = 1</p>
-      <p class="mono" style="font-size:13.5px">P = 1,30 × 10⁻⁹ × 0,5 × 584 = <b>3,8 × 10⁻⁷</b> → aporta a P3</p>
-      <p class="small">El término de uso (0,011 h) es 53 000 veces menor que el de almacenamiento: por eso P crece linealmente con los años de almacenamiento.</p>
-    </div>
-    <div class="prose">
-      <p><strong>Valor central y rango.</strong> Para cada familia de piezas hay un λ bajo (dato del fabricante, de la misma pieza o de una equivalente) y uno alto (MIL-HDBK-217F Notice 2, método de conteo de piezas en ambiente G_B, con el factor de calidad de piezas comerciales). Las dos fuentes difieren entre 7 y más de 1000 veces: el manual es de 1991–1995 y sobreestima mucho a los componentes actuales. Por eso el valor central es la media geométrica √(λ<sub>bajo</sub> · λ<sub>alto</sub>), que es el centro en escala logarítmica. El rango del resumen se calcula con todas las tasas bajas y con todas las altas.</p>
-      <p><strong>Combinaciones de dos fallas.</strong> Las filas latentes se agrupan por lo que habilitan (Q1 encendido, Q2 encendido, FIRE_A en alto, FIRE_B en alto, gate flotante) y se multiplican de a pares, suponiendo independencia.</p>
-      <p><strong>Lo paramétrico</strong> (energía y tiempo) se calcula por Monte Carlo con las tolerancias de los componentes. <strong>Lo sistemático</strong> (errores de firmware) y lo que depende del ambiente (choque, RF, ESD) no tiene tasa: queda en el listado pero no se suma.</p>
-      <p><strong>Tipo de dato.</strong> Cada término de las memorias de cálculo indica si viene de un <span class="t-dato">dato</span> publicado, de un <span class="t-sup">supuesto</span>, de una <span class="t-mix">mezcla</span> (λ alto publicado, λ bajo supuesto) o de un <span class="t-calc">cálculo</span> de este análisis.</p>
-    </div>
-  </section>
-
-  <!-- 4 DATOS -->
-  <section id="s4" aria-labelledby="h4s">
-    <div class="sec-head"><h2 id="h4s"><span class="num">4</span>Datos de entrada</h2><span class="tag">tasas de falla y reparto de modos</span></div>
-    <h3 id="s4r">4.1 Revisión de los datos</h3>
-    <p>Cada dato del modelo se revisó contra una fuente primaria (norma, hoja de datos o informe del fabricante). El respaldo indica qué tan firme es: <span class="t-dato">A</span> dato publicado de la misma pieza o familia; <span class="t-mix">B</span> norma, manual o pieza equivalente; <span class="t-sup">C</span> supuesto razonado; <span class="t-sup" style="background:color-mix(in srgb, var(--c-init) 18%, transparent);color:var(--c-init)">D</span> sin base: hay que medirlo.</p>
-    <div class="scroll"><table style="min-width:980px"><thead><tr><th>Dato</th><th>Antes</th><th>Revisado</th><th>Fuente</th><th>Respaldo</th></tr></thead><tbody>
-      <tr><td>Tasas de falla, extremo alto</td><td>Tabla A-1 de PTC (no nombra la norma de origen)</td><td>MIL-HDBK-217F N2, Apéndice A, G_B, π_Q comercial (tabla de la sección 4.2)</td><td class="src" data-src="mil217"></td><td><span class="t-mix">B</span></td></tr>
-      <tr><td>Tasas de falla, extremo bajo</td><td>Mayormente supuestos (“10 veces menos”)</td><td>Fabricantes: AOS, Panasonic, Vishay, Nexperia, TI; SN 29500-2 para el MCU</td><td class="src"><span data-src="aos"></span> <span data-src="vmlcc"></span> <span data-src="panares"></span> <span data-src="nexp"></span> <span data-src="ti7a16"></span></td><td><span class="t-dato">A</span> / <span class="t-mix">B</span></td></tr>
-      <tr><td>Factor de reposo k_d</td><td>0,1 (supuesto)</td><td>1/30, rango 1/60–1/10. Regla general para electrónica, no por familia</td><td class="src" data-src="harris"></td><td><span class="t-mix">B</span></td></tr>
-      <tr><td>C_rss del AO3400A</td><td>77 pF</td><td><strong>50 pF</strong>; el acople baja de ~0,88 V a ~0,57 V</td><td class="src" data-src="aods"></td><td><span class="t-dato">A</span></td></tr>
-      <tr><td>Coeficiente térmico de V_th</td><td>−3 mV/°C</td><td>Sin cambio: valor típico, la hoja de datos no lo da</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
-      <tr><td>Reparto de modos del LDO</td><td>Supuesto: salida alta 20 %</td><td><strong>Salida alta 35 %</strong>, sin salida 35 %, fuera de especificación 15 %, power-good 10 %, corto 5 % (LDO de TI equivalente)</td><td class="src" data-src="ti7a16"></td><td><span class="t-mix">B</span></td></tr>
-      <tr><td>Reparto de modos del supervisor</td><td>Supuesto 30/30/20</td><td>Disparo falso 40 %, no se activa 22 %, umbral 22 %, retardo 16 %</td><td class="src" data-src="ti3808"></td><td><span class="t-dato">A</span></td></tr>
-      <tr><td>Retardo del TPS3808</td><td>5,7 s ±30 % (4–7,8 s)</td><td><strong>±40 % del CI</strong> (0,62–1,44 s con 180 nF) → 3,1–8,8 s: no garantiza t1</td><td class="src" data-src="tps3808ds"></td><td><span class="t-dato">A</span></td></tr>
-      <tr><td>Fuga de C_F (presupuesto de energía)</td><td>2–5 µA</td><td>La hoja de datos solo garantiza ≈ 0,2·C·V (≈ 1,6 mA para 330 µF 25 V). La fuga real a 50 % de tensión suele ser de µA, pero no está garantizada y sube con humedad. <strong>Hay que medirla y seleccionar</strong></td><td class="src"><span data-src="leak"></span> <span data-src="tev"></span></td><td><span class="t-sup" style="background:color-mix(in srgb, var(--c-init) 18%, transparent);color:var(--c-init)">D</span></td></tr>
-      <tr><td>Norma del iniciador</td><td>“All-fire 0,999 a 95 %”</td><td>MIL-DTL-23659 pide confiabilidad ≥ 0,99 a 95 % y define el all-fire a 0,999 con 95 %. Su no-fire es 1 A / 1 W durante 5 min: este iniciador (no-fire 0,2–0,25 A) es bastante más sensible que lo que pide esa norma</td><td class="src" data-src="mil23659"></td><td><span class="t-dato">A</span></td></tr>
-      <tr><td>Precisión del HSI16 (opción sin cristal)</td><td>±3 %</td><td>ST da ±1 % típico a 25 °C y dice que empeora en temperatura, sin número en la nota. Leer la tabla de la hoja de datos del STM32L010</td><td class="src" data-src="an4631"></td><td><span class="t-sup">C</span></td></tr>
-      <tr><td>Coeficiente térmico del cristal</td><td>−0,034 ppm/°C²</td><td>Sin cambio: valor típico de diapasón; confirmar en la hoja de datos de Y1</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
-      <tr><td>Error humano al cargar T</td><td>3 × 10⁻³, verificación 0,1</td><td>Sin cambio: orden de magnitud de THERP; las tablas originales no se verificaron</td><td class="src" data-src="therp"></td><td><span class="t-sup">C</span></td></tr>
-      <tr><td>Defectos de soldadura</td><td>200–600 DPMO</td><td>Sin cambio</td><td class="src" data-src="ipc"></td><td><span class="t-mix">B</span></td></tr>
-      <tr><td>Cobertura de la prueba funcional</td><td>99,5–99,9 %</td><td>Sin cambio</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
-      <tr><td>Reparto de modos de MOSFET, diodos, cristal y PCB</td><td>Tabla PTC</td><td>Sin cambio; para resistores y cerámicos coincide con MIL-HDBK-338B (vía DSIAC)</td><td class="src"><span data-src="ptc"></span> <span data-src="dsiac"></span></td><td><span class="t-mix">B</span></td></tr>
-      <tr><td>Reparto de modos del MCU</td><td>Supuesto</td><td>Sin cambio: ST no publica FMEDA del STM32L0</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
-      <tr><td>Probabilidades condicionales (MCU dañado sube ambas salidas, corto de PCB en el par crítico, etc.)</td><td>0,05–0,5</td><td>Sin cambio: razonamiento en la sección 4.4</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
-      <tr><td>Corto a masa del cable del iniciador</td><td>10⁻⁷–10⁻⁵</td><td><strong>Fuera del alcance:</strong> es del montaje del cliente; no se suma salvo que se active en la sección 9. Requisitos para el cliente en la sección 8.4</td><td class="src" data-src="sup"></td><td><span class="t-sup" style="background:color-mix(in srgb, var(--c-init) 18%, transparent);color:var(--c-init)">D</span></td></tr>
-    </tbody></table></div>
-    <p class="small">Efecto en el caso base, con el cableado del cliente todavía incluido (antes de excluirlo, sección 8.4): P1 pasó de 1,5 × 10⁻⁶ a 1,6 × 10⁻⁶ (la salida alta del LDO pesa más y el reposo pesa menos); P3 bajó de 3,5 × 10⁻⁴ a 2,2 × 10⁻⁴, pero su rango se abrió (4,9 × 10⁻⁵ – 1,4 × 10⁻³) porque las dos fuentes difieren mucho; P2 y P4 no cambiaron.</p>
-    <h3>4.2 Tasas de falla por familia (FIT)</h3>
-    <div class="scroll"><table style="min-width:860px"><thead><tr><th>Familia</th><th>Piezas</th><th>λ bajo</th><th>λ alto</th><th>Central</th><th>De dónde sale</th></tr></thead><tbody id="lam-table"></tbody></table></div>
-    <h3>4.3 Reparto de modos de falla</h3>
-    <div class="scroll"><table style="min-width:760px"><thead><tr><th>Tipo de pieza</th><th>Reparto usado</th><th>Fuente</th></tr></thead><tbody>
-      <tr><td>MOSFET de silicio</td><td class="n" style="white-space:normal">corto 51 % · no conduce 22 % · deriva 17 % · abierto 5 % · conduce 5 %</td><td class="src" data-src="ptc"></td></tr>
-      <tr><td>Diodo rectificador (D1)</td><td class="n" style="white-space:normal">abierto 60 % · corto 40 %</td><td class="src" data-src="ptc"></td></tr>
-      <tr><td>Diodo de señal (D2)</td><td class="n" style="white-space:normal">abierto 24 % · corto 16 % · deriva 58 %</td><td class="src" data-src="ptc"></td></tr>
-      <tr><td>Supresor / zener (D3)</td><td class="n" style="white-space:normal">abierto 45 % · corto 20 % · deriva 35 %</td><td class="src" data-src="ptc"></td></tr>
-      <tr><td>Resistor de film</td><td class="n" style="white-space:normal">abierto 59 % · deriva 36 % · corto 5 %</td><td class="src" data-src="dsiac"></td></tr>
-      <tr><td>Capacitor cerámico</td><td class="n" style="white-space:normal">corto 49 % · abierto 22 % · deriva 29 %</td><td class="src" data-src="dsiac"></td></tr>
-      <tr><td>Capacitor de polímero (C_F)</td><td class="n" style="white-space:normal">abierto 50 % · corto 30 % · pérdida de capacidad / ESR 20 %</td><td class="src"><span data-src="vish"></span> <span data-src="mur"></span> <span data-src="sup"></span></td></tr>
-      <tr><td>Cristal de cuarzo</td><td class="n" style="white-space:normal">no oscila / abierto 80 % · corrimiento 20 %</td><td class="src" data-src="ptc"></td></tr>
-      <tr><td>Circuito impreso</td><td class="n" style="white-space:normal">abierto 76 % · corto 24 %</td><td class="src" data-src="ptc"></td></tr>
-      <tr><td>LDO (TI TPS7A16-Q1 como equivalente)</td><td class="n" style="white-space:normal">salida alta (sigue a la entrada) 35 % · sin salida 35 % · fuera de especificación 15 % · power-good 10 % · corto entre pines 5 %</td><td class="src" data-src="ti7a16"></td></tr>
-      <tr><td>Supervisor (TI TPS3808E)</td><td class="n" style="white-space:normal">disparo falso 40 % · no se activa 22 % · umbral fuera de especificación 22 % · retardo fuera de especificación 16 %</td><td class="src" data-src="ti3808"></td></tr>
-      <tr><td>Microcontrolador</td><td class="n" style="white-space:normal">muerto 60 % · salida trabada 2 % por pin · ambas salidas 0,2 % · otros</td><td class="src" data-src="sup"></td></tr>
-    </tbody></table></div>
-    <h3>4.4 Probabilidades condicionales usadas</h3>
-    <div class="scroll"><table style="min-width:760px"><thead><tr><th>Factor</th><th>Valor</th><th>Razonamiento</th></tr></thead><tbody>
-      <tr><td>MCU dañado por sobretensión deja las dos salidas en alto</td><td class="n">0,05</td><td>Cada salida puede quedar baja, alta o en alta impedancia: 1 de 9 combinaciones tiene las dos altas. Se multiplica por ~0,5 de que el daño deje las salidas activas.</td></tr>
-      <tr><td>Corto de PCB que une el drain de Q1 con GND</td><td class="n">0,05</td><td>El drain de Q1 es una de ~20 redes de la placa; se supone que el corto cae en un par de redes vecinas al azar.</td></tr>
-      <tr><td>D1 en corto descarga C_F hacia la línea</td><td class="n">0,5</td><td>Depende de si la fuente del pulso queda en baja impedancia o abierta al terminar; no se conoce, se toma 50 %.</td></tr>
-      <tr><td>Deriva que se come el margen (C_F, Q, D3, LDO)</td><td class="n">0,1–0,3</td><td>Solo una parte de las derivas es lo bastante grande como para pasar el margen de energía o de tensión de gate.</td></tr>
-      <tr><td>Ambos pull-downs abiertos encienden las dos gates al arrancar</td><td class="n">0,1</td><td>Gate flotante con acople del flanco; supuesto.</td></tr>
-    </tbody></table></div>
-    <h3>4.5 Probabilidades por unidad (no vienen de una tasa)</h3>
-    <div class="scroll"><table style="min-width:760px"><thead><tr><th>Evento</th><th>Rango</th><th>Cómo se obtiene</th></tr></thead><tbody>
-      <tr><td>Defecto de soldadura que pasa AOI y prueba funcional</td><td class="n">1,4 × 10⁻⁵ – 2,1 × 10⁻⁴</td><td>200–600 defectos por millón de juntas (IPC) × ~70 juntas = 1,4–4,2 % de placas con algún defecto antes de probar; la prueba funcional deja pasar el 0,1–0,5 % (supuesto de cobertura 99,5–99,9 %). <span data-src="ipc"></span></td></tr>
-      <tr><td>MOSFET dañado por ESD en el armado (corto latente)</td><td class="n">10⁻⁶ – 10⁻⁵</td><td>Supuesto. La prueba funcional no lo ve porque la otra llave sigue abriendo.</td></tr>
-      <tr><td>Cable del iniciador del lado de Q1 en corto a masa <span class="small">(fuera del alcance: montaje del cliente)</span></td><td class="n">10⁻⁷ – 10⁻⁵</td><td>Supuesto sin dato publicado: pellizco o roce del cable al integrar. Dos órdenes de magnitud de incertidumbre; es el término de P1 que más conviene eliminar por diseño en lugar de estimar.</td></tr>
-      <tr><td>Error al cargar T, por operación</td><td class="n">10⁻⁵ – 3 × 10⁻³</td><td>Orden de magnitud de las tablas de error humano THERP: ~3 × 10⁻³ al leer e ingresar un valor; una verificación independiente recupera ~90 % (3 × 10⁻⁴); con la orden en formato legible por máquina y relectura automática, ~10⁻⁵. Se reparte mitad P2 (más corto) y mitad P4 (más largo). <span data-src="therp"></span></td></tr>
-    </tbody></table></div>
-  </section>
-
-  <!-- 5 P1 -->
-  <section id="s5" aria-labelledby="h5s">
-    <div class="sec-head"><h2 id="h5s"><span class="num">5</span>P1: activa antes de t1</h2><span class="tag" id="p1-tag"></span></div>
-    <p>Para disparar hace falta corriente por el puente, y en el esquemático analizado eso solo pasa si Q1 y Q2 conducen a la vez, o si algo saltea a las dos. El firmware no sube ninguna gate antes de T. Entonces P1 necesita una falla que saltee el driver, una falla que encienda las dos llaves juntas, o dos fallas independientes.</p>
-    <h3>5.1 Árbol de fallas</h3>
-    <div class="scroll"><div class="ft" id="ft-p1"></div></div>
-    <h3>5.2 Memoria de cálculo</h3>
-    <div class="scroll"><table class="calc" id="calc-P1"></table></div>
-    <div class="callout" style="--cc:var(--c-init)">
-      <p><strong>Qué domina sin el cableado del cliente:</strong> en el original, la salida alta del LDO y la falla interna del MCU que sube las dos salidas, ambas causas comunes que encienden las dos llaves a la vez. En el mejorado y el recomendado, el clamp de VDD y el enclavamiento de t1 las reducen y queda dominando la falla interna del MCU (con el enclavamiento) y el corto de pista en la placa. El corto del cable del iniciador se excluye por ser del montaje del cliente; se puede volver a sumar en la sección 9.</p>
-      <p><strong>Por qué las dos fallas independientes no pesan:</strong> la probabilidad de cada MOSFET en corto latente es ~1,6 × 10⁻⁵ (λ central 38 FIT × 56 % × 584 h, más el daño por ESD en el armado); el producto de dos de ellas queda en ~2 × 10⁻¹⁰.</p>
-    </div>
-    <h3>5.3 Chequeos de diseño de P1</h3>
-    <div class="grid2" id="p1-checks"></div>
-  </section>
-
-  <!-- 6 P2 P4 -->
-  <section id="s6" aria-labelledby="h6s">
-    <div class="sec-head"><h2 id="h6s"><span class="num">6</span>P2 y P4: activa fuera de t2 ± 5 %</h2><span class="tag" id="p24-tag"></span></div>
-    <p>Una falla de hardware presente al llegar el pulso dispara en t0, o sea que es P1. Para que el disparo caiga entre t1 y t2, o después de t2, hace falta que la cuenta esté mal (base de tiempo o valor de T) o que la falla aparezca justo durante los 36 s entre t1 y t2. Con T programable, el error humano al cargarlo es el término que domina P2 y P4.</p>
-    <div class="grid2">
-      <div><h3>6.1 Memoria de cálculo de P2</h3><div class="scroll"><table class="calc" id="calc-P2" style="min-width:640px"></table></div></div>
-      <div><h3>6.2 Memoria de cálculo de P4</h3><div class="scroll"><table class="calc" id="calc-P4" style="min-width:640px"></table></div></div>
-    </div>
-    <h3>6.3 Error de tiempo paramétrico</h3>
-    <div class="grid2">
-      <div class="check">
-        <span class="status st-ok">PASA con margen &gt; 15×</span>
-        <dl class="kv">
-          <dt>Casos simulados</dt><dd>2 × 10⁶</dd>
-          <dt>Error máximo</dt><dd>33 ms</dd>
-          <dt>Error máximo relativo</dt><dd>0,32 % (tolerancia ±5 %)</dd>
-          <dt>P2 o P4 paramétrico</dt><dd>&lt; 10⁻⁹ (se usa 5 × 10⁻¹⁰ como cota)</dd>
-        </dl>
-      </div>
-      <div class="prose">
-        <p class="small">Entradas del Monte Carlo: cristal ±20 ppm inicial; temperatura de −30 a +70 °C con curva parabólica −0,034 ppm/°C² (hasta −103 ppm en frío); envejecimiento ±5 ppm; corrección de arranque con error de ±0,1 % sobre los primeros 0,5–3 s; latencia entre el flanco del pulso y el arranque del micro de 5–50 ms, compensando 20 ms; T entre 10 y 40 s.</p>
-        <p class="small">La tolerancia ±5 % a 10 s son ±500 ms. El error más grande hallado (33 ms) está a más de 15 veces de ese límite, así que la cola de la distribución no llega. Por eso el término paramétrico se acota en 5 × 10⁻¹⁰ y no aporta.</p>
-        <p class="small">Consecuencia de diseño: con ±5 % el cristal no hace falta para la precisión. Un oscilador interno calibrado contra el HSI16 (±3 % supuesto) da 3,3 % máximo y eliminaría los modos de falla del cristal, que son el primer aporte a P3.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 7 P3 -->
-  <section id="s7" aria-labelledby="h7s">
-    <div class="sec-head"><h2 id="h7s"><span class="num">7</span>P3: no activa</h2><span class="tag" id="p3-tag"></span></div>
-    <p>Casi cualquier componente que se abre, se pone en corto o se muere termina en P3: el firmware aborta ante cualquier anomalía (cristal que no arranca, CRC malo, V_CF baja, reset) y basta con que una de las dos llaves no cierre. P3 junta muchos aportes chicos; ninguno domina solo.</p>
-    <h3>7.1 Aporte por grupo</h3>
-    <div class="scroll"><table class="calc" id="grp-P3" style="min-width:640px"></table></div>
-    <h3>7.2 Memoria de cálculo</h3>
-    <div class="scroll"><table class="calc" id="calc-P3"></table></div>
-    <details><summary id="p3-more-sum">Resto de los términos de P3</summary><div class="scroll"><table class="calc" id="calc-P3-rest"></table></div></details>
-    <h3>7.3 Margen de energía</h3>
-    <div class="grid2">
-      <div class="check">
-        <p class="small">P(I²t entregado &lt; all-fire) según el I²t que pide el iniciador. Monte Carlo de 10⁶ casos por curva, t2 = 40 s (peor caso).</p>
-        <div class="scroll"><svg id="echart" class="chart" viewBox="0 0 520 260" role="img" aria-label="Probabilidad de energía insuficiente según el I²t del iniciador para C_F de 150, 330, 560 y 1000 µF" style="width:100%;min-width:440px;height:auto;display:block"></svg></div>
-        <div class="legend" id="elegend"></div>
-      </div>
-      <div class="prose">
-        <p class="small">Entradas: pulso de 10,8–13,2 V; caída de D1 de 0,35–0,5 V; C_F ±20 % (3σ) por −0–12 % en frío; consumo más fuga de 5–25 µA durante 40 s; puente de 1–2 Ω; dos R_DS(on) de 35–60 mΩ; ESR de 25–100 mΩ; trazas 20 mΩ.</p>
-        <p class="small">I²t entregado = V<sub>f</sub>² · C / (2 · R<sub>total</sub>), donde V<sub>f</sub> es la tensión de C_F al momento del disparo. La descarga tiene τ ≈ 0,7 ms, así que los 20 ms de disparo la completan.</p>
-        <p class="small">Con 330 µF la mediana entregada es 8,6 A²·ms y el 0,1 % peor es 3,4 A²·ms. Si el iniciador pide 2 A²·ms la probabilidad es &lt; 10⁻⁶; con 3 A²·ms ya es 1,4 × 10⁻⁴ y con 5 A²·ms, 3,9 %.</p>
-        <p class="small"><strong>Límite de este cálculo:</strong> usa una fuga de C_F de 5–25 µA en total. La hoja de datos de un capacitor de polímero solo garantiza ≈ 0,2·C·V (del orden de mA), que vaciaría C_F en segundos. Hasta medir la fuga real del modelo elegido, a 11 V, a −30 °C y después de humedad, esta curva vale solo para capacitores seleccionados por fuga.</p>
-        <p class="small">Nota: la tabla del §5.2 del documento de diseño escribe “mA²·s”, pero sus valores de C_F corresponden a A²·ms. Conviene corregirlo antes de pedirle el dato al fabricante.</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="s7b" aria-labelledby="h7bs">
-    <div class="sec-head"><h2 id="h7bs"><span class="num">7.4</span>Cómo bajar P3</h2><span class="tag">sobre el esquemático propuesto</span></div>
-    <p class="small"><strong>Nota:</strong> esta sección se escribió para el diseño con micro (sección 13). La autoprueba requiere probar antes del uso, que el cliente no puede hacer; para el recomendado aplican la prueba de fabricación reforzada y el almacenamiento controlado.</p>
-    <p>Cinco sextas partes de P3 son piezas que se rompen mientras la placa está guardada, más defectos de fabricación que pasan la prueba. Las medidas que más rinden son las que detectan esas fallas antes del uso o eliminan piezas que fallan.</p>
-    <div class="scroll"><table id="p3-scen" style="min-width:860px"></table></div>
-    <p class="small">Calculado con el mismo modelo (λ centrales, 2 años, k_d 1/30 salvo donde se indica). Lo que queda dominando con las cuatro medidas:</p>
-    <ul class="list small" id="p3-rest"></ul>
-    <div class="grid2">
-      <div class="prose">
-        <h3>1. Autoprueba al programar T</h3>
-        <p>Si T se programa poco antes del uso, ese paso sirve también de prueba. A 5 V el firmware ya está en modo programación con los pines de disparo bloqueados. Puede verificar que responden el micro, el LDO y D2; que arranca el oscilador; el CRC de la EEPROM; la lectura del ADC; la capacidad de C_F (midiendo el tiempo de descarga por R_bleed); y la continuidad del camino de disparo con la red R11–R13 del esquemático propuesto. Una unidad que no pasa se descarta en lugar de fallar en el uso.</p>
-        <p>En el modelo, la autoprueba detecta el 90 % de las fallas de piezas ocurridas antes de la prueba, los defectos de fabricación y los cables abiertos, y deja expuesta una semana entre la prueba y el uso. El 90 % es un supuesto: hay que medir la cobertura real inyectando fallas en placas de prueba.</p>
-        <p>También detecta MOSFET en corto, que son latentes de P1. P1 casi no cambia porque lo domina el corto a masa del cable, que la prueba no puede anticipar.</p>
-      </div>
-      <div class="check">
-        <h3>Secuencia segura de la prueba de continuidad</h3>
-        <ol class="list" style="font-size:13.5px">
-          <li>Las dos llaves abiertas. R13 (1 MΩ a VDD) lleva LOOP a un valor intermedio conocido. Si LOOP ≈ V_CF, Q1 está en corto; si LOOP ≈ 0, Q2 está en corto o el cable del lado bajo toca masa. En los dos casos se rechaza y <strong>no se sigue</strong>.</li>
-          <li>Solo Q2 encendida: LOOP debe ir a 0 V. Verifica que Q2 conduce.</li>
-          <li>Q2 apagada y solo Q1 encendida: LOOP debe subir a V_CF a través del puente. Verifica Q1, el cable y la continuidad del puente.</li>
-          <li>Nunca se encienden las dos llaves a la vez durante la prueba.</li>
-        </ol>
-        <p class="small">La corriente por el puente durante la prueba es la del divisor: 5 V / 1,22 MΩ ≈ 4 µA, unas 50 000 veces menos que la corriente de no-activación (0,2 A). Esta secuencia es una propuesta: hay que revisarla con el análisis de fallas del propio circuito de prueba antes de usarla con el iniciador conectado.</p>
-      </div>
-    </div>
-    <div class="grid2">
-      <div class="prose">
-        <h3>2. Sacar el cristal</h3>
-        <p>Con ±5 % de tolerancia la precisión no depende del cristal. El oscilador interno calibrado contra el HSI16 cumple si su deriva en temperatura es menor que ~4 %: ST da ±1 % a 25 °C y no publica el número en temperatura en la nota de calibración, así que hay que confirmarlo en la tabla de la hoja de datos del STM32L010. Se eliminan Y1, C1 y C2 y, además, dos riesgos sin tasa: que el cristal no arranque en frío y que se fracture con el choque.</p>
-      </div>
-      <div class="prose">
-        <h3>3. Prueba de fabricación reforzada</h3>
-        <p>Inspección óptica y por rayos X de las juntas de la etapa de disparo, prueba en circuito o con puntas volantes, y un ciclado térmico corto antes de la prueba funcional para que fallen las juntas marginales. Divide los escapes por ~10 (supuesto: depende de lo que ofrezca el ensamblador). <strong>4. Almacenamiento controlado</strong> (temperatura y humedad estables, bolsa barrera) acerca k_d al extremo bajo de Harris (1/60).</p>
-      </div>
-    </div>
-    <p class="small">No recomendado: dos canales de disparo completos en paralelo. P3 bajaría a ~10⁻⁷, pero cada canal puede disparar solo: P1 se duplica y vuelven las fallas simples.</p>
   </section>
 
   <!-- 8 RECOMENDADO: TEMPORIZADOR -->
   <section id="s8" aria-labelledby="h8s">
-    <div class="sec-head"><h2 id="h8s"><span class="num">8</span>Esquemático recomendado: temporizador</h2><span class="tag">TPL5110-Q1 · T fijo 25–40 s por puentes · sin firmware · piezas nuevas en violeta</span></div>
+    <div class="sec-head"><h2 id="h8s"><span class="num">2</span>Esquemático recomendado: temporizador</h2><span class="tag">TPL5110-Q1 · T fijo 25–40 s por puentes · sin firmware · piezas nuevas en violeta</span></div>
     <p>Sin microcontrolador. El temporizador U4 (TPL5110-Q1) cuenta el tiempo fijado por una cadena de resistores con puentes de 0 Ω y, al cumplirse, su salida DRV habilita las dos llaves. U3 impide cualquier disparo antes de ~4,6 s aunque U4 falle. Se mantienen del diseño mejorado la llave del lado alto, el clamp de VDD y los pull-downs con C_GS.</p>
     <div class="legend">
       <span style="color:var(--c-new)"><i class="sw" style="border-style:solid"></i>Pieza nueva o cambiada respecto del original</span>
@@ -681,9 +359,9 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
         <circle cx="1166" cy="740" r="4" fill="var(--paper)" stroke="var(--c-new)" stroke-width="1.6"/><text x="1156" y="744" text-anchor="end" class="sm new-t">TP ARM_T1</text>
       </svg>
     </div>
-    <p class="small">* La conexión de DONE en modo de un solo pulso, el estado de DRV durante el arranque y la duración de la salida activa se toman de la hoja de datos y se verifican con osciloscopio antes de cerrar el diseño (sección 8.5).</p>
+    <p class="small">* La conexión de DONE en modo de un solo pulso, el estado de DRV durante el arranque y la duración de la salida activa se toman de la hoja de datos y se verifican con osciloscopio antes de cerrar el diseño (sección 2.5).</p>
 
-    <h3 id="s81">8.1 Configuración recomendada</h3>
+    <h3 id="s81">2.1 Configuración recomendada</h3>
     <div class="scroll"><table style="min-width:860px"><thead><tr><th>Bloque</th><th>Piezas</th><th>Función y decisión de diseño</th></tr></thead><tbody>
       <tr><td>Temporizador</td><td class="n">U4 TPL5110-Q1, cadena R0–Rc, puentes P1–P3</td><td>Cuenta T desde que recibe alimentación (modo de un solo pulso). Automotriz AEC-Q100 grado 1, 35 nA, 4 FIT publicados. <strong>El disparo se toma cuando DRV pasa a alto</strong>: un pin en corto a masa (la falla por pin más común, según TI) deja la salida en el nivel seguro</td></tr>
       <tr><td>Enclavamiento de t1</td><td class="n">U3 TPS3808, C7 1,5 µF</td><td>Mantiene la gate de Q2 a masa durante 4,6–13 s desde el arranque. Con T ≥ 25 s, su tolerancia de ±40 % alcanza: libera siempre antes del disparo válido más temprano (20 s)</td></tr>
@@ -694,7 +372,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <tr><td>Fabricación</td><td class="n">Panel de 30, JLCPCB solo arma</td><td>Sin firmware ni programación; sin rayos X (todas las soldaduras visibles)</td></tr>
     </tbody></table></div>
 
-    <h3 id="s84">8.2 Ajuste de T por puentes</h3>
+    <h3 id="s84">2.2 Ajuste de T por puentes</h3>
     <p>R_EXT según la ecuación 1 de la hoja de datos (coeficientes para 10–100 s), resistores E96 al 1 %. Los puentes son resistores de 0 Ω montados por la máquina según la variante, o soldados antes de encapsular. Las fallas más probables (un puente que se abre, un puente que falta) <strong>alargan</strong> T; un puente de más lo acorta un escalón y lo detecta el banco.</p>
     <div class="scroll"><table style="min-width:640px"><thead><tr><th>Variante</th><th>Puentes</th><th>R_EXT</th><th>T nominal</th><th>T con ±1 % de resistores</th></tr></thead><tbody>
       <tr><td>25 s</td><td class="n">P1 + P2 + P3</td><td class="n">15,80 kΩ</td><td class="n">25,6 s</td><td class="n">24,9 – 26,3 s</td></tr>
@@ -704,22 +382,21 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     </tbody></table></div>
     <p class="small">Sumando el error del temporizador (~2–3 %), cada variante queda dentro de ±2 s. El tiempo máximo que permite la energía de C_F con 330 µF es ~2–4 minutos, según la fuga real.</p>
 
-    <h3>8.3 Resultado del recomendado</h3>
+    <h3>2.3 Resultado del recomendado</h3>
     <div class="scroll"><table id="tmr-res" style="min-width:760px"></table></div>
-    <p class="small">T fijo, ventana ±5 s, 3 años de almacenamiento controlado (k_d 1/60), banco al 100 %, sin prueba antes del uso. Las filas del temporizador usan los datos publicados por TI (4 FIT, reparto 50 % sin salida / 50 % precisión degradada); los supuestos que quedan se ven en la sección 12.</p>
+    <p class="small">T fijo, ventana ±5 s, 3 años de almacenamiento controlado (k_d 1/60), banco al 100 %, sin prueba antes del uso. Las filas del temporizador usan los datos publicados por TI (4 FIT, reparto 50 % sin salida / 50 % precisión degradada); los supuestos que quedan se ven en la sección 9.</p>
 
-    <h3 id="s82">8.4 Alcance y requisitos para el integrador</h3>
-    <p>El análisis cubre la placa del retardo hasta sus pads de salida. El cable al iniciador, la carcasa y la instalación son del montaje del cliente y sus fallas no se suman (se pueden incluir desde la sección 9). Igual conviene entregar estos requisitos, porque el diseño decide qué pasa si el cliente se equivoca:</p>
+    <h3 id="s82">2.4 Alcance y requisitos para el integrador</h3>
+    <p>El análisis cubre la placa del retardo hasta sus pads de salida. El cable al iniciador, la carcasa y la instalación son del montaje del cliente y sus fallas no se suman (se pueden incluir desde la sección 10). Igual conviene entregar estos requisitos, porque el diseño decide qué pasa si el cliente se equivoca:</p>
     <ul class="list">
       <li><strong>Cable al iniciador:</strong> lo más corto posible, par trenzado con vaina, alivio de tensión, sin pasar por bordes metálicos, encapsulado o fijado contra vibración.</li>
       <li><strong>Carcasa:</strong> indicar si va unida a la masa del circuito. Si queda aislada, un corto del cable a la carcasa necesita además una segunda falla.</li>
       <li><strong>Prueba de aislación al 100 %</strong> de cada conductor contra la carcasa, con el cableado armado y <strong>sin el iniciador conectado</strong>.</li>
-      <li><strong>Autoprueba antes del uso:</strong> con el iniciador ya conectado, la autoprueba (sección 7.4) detecta el cable cortado y el corto a masa del lado bajo, y rechaza la unidad.</li>
     </ul>
     <p class="small">Tolerancia del diseño a un error del cliente: con el original, un corto a masa del cable del lado de Q1 dispara en t0. Con el mejorado (una llave del lado alto y otra del lado bajo), cualquier corto de un solo cable a masa deja una llave abierta: hace falta una segunda falla. Por eso la llave del lado alto se mantiene aunque el cable no sea de nuestro alcance; además baja P1 de la propia placa unas 12 veces (corto de pista del drain de Q1).</p>
 
 
-    <h3 id="s85">8.5 Pendiente de verificar antes de cerrar el diseño</h3>
+    <h3 id="s85">2.5 Pendiente de verificar antes de cerrar el diseño</h3>
     <ul class="list">
       <li><strong>Arranque de DRV</strong> con la rampa real de VDD: sin pulso al nivel de disparo durante el encendido y la lectura del resistor (osciloscopio).</li>
       <li><strong>Conexión de DONE y EN/ONE_SHOT</strong> para el modo de un solo pulso y <strong>duración de la salida activa</strong> (≥ 20 ms).</li>
@@ -730,19 +407,258 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     </ul>
   </section>
 
+  <!-- 3 MÉTODO -->
+  <section id="s3" aria-labelledby="h3s">
+    <div class="sec-head"><h2 id="h3s"><span class="num">3</span>Método</h2><span class="tag">FMEA cuantificado + árbol de fallas</span></div>
+    <div class="prose">
+      <p>Se listaron todos los modos de falla de cada pieza del esquemático (corto, abierto, deriva y modos propios de cada tipo), más los de fabricación, firmware, operación, ambiente y del pulso de entrada: <span id="n-rows"></span> filas en el anexo. A cada una se le asignó qué produce en una demanda: P1, P2, P3, P4, <em>latente</em> (no actúa sola pero habilita una segunda falla) o <em>sin efecto</em>.</p>
+      <p>Una demanda dura como máximo 40 s. En ese tiempo la probabilidad de que se rompa algo es despreciable; lo que importa es lo que ya está roto al llegar el pulso. Por eso la exposición se mide en horas de almacenamiento, corregidas por el factor de reposo k<sub>d</sub> (las piezas sin energía fallan menos que en operación).</p>
+    </div>
+    <div class="formula">
+      <div class="eq">P = λ · 10⁻⁹ · f · (k<sub>d</sub> · t<sub>alm</sub> + t<sub>uso</sub>) · c · m</div>
+      <div class="ex">λ: tasa de falla de la pieza en FIT (fallas cada 10⁹ h) · f: fracción de las fallas que son de ese modo</div>
+      <div class="ex">k<sub>d</sub>: factor de reposo = 1/60 con almacenamiento controlado (Harris: relación operación/reposo 30:1 a 60:1) · t<sub>alm</sub>: horas de almacenamiento = 3 × 8760 · t<sub>uso</sub>: 40 s = 0,011 h</div>
+      <div class="ex">c: probabilidad condicional de que ese modo produzca el efecto · m: factor de la mejora de diseño (1 sin mejora)</div>
+    </div>
+    <div class="callout" style="--cc:var(--c-count)">
+      <h3>Ejemplo resuelto: C_F abierto</h3>
+      <p class="mono" style="font-size:13.5px">λ = √(0,13 × 13) = 1,30 FIT · f = 0,5 · horas = (1/60) × 26 280 + 0,011 = 438 h · c = 1</p>
+      <p class="mono" style="font-size:13.5px">P = 1,30 × 10⁻⁹ × 0,5 × 438 = <b>2,8 × 10⁻⁷</b> → aporta a P3</p>
+      <p class="small">El término de uso (0,011 h) es 40 000 veces menor que el de almacenamiento: por eso P crece linealmente con los años de almacenamiento.</p>
+    </div>
+    <div class="prose">
+      <p><strong>Valor central y rango.</strong> Para cada familia de piezas hay un λ bajo (dato del fabricante, de la misma pieza o de una equivalente) y uno alto (MIL-HDBK-217F Notice 2, método de conteo de piezas en ambiente G_B, con el factor de calidad de piezas comerciales). Las dos fuentes difieren entre 7 y más de 1000 veces: el manual es de 1991–1995 y sobreestima mucho a los componentes actuales. Por eso el valor central es la media geométrica √(λ<sub>bajo</sub> · λ<sub>alto</sub>), que es el centro en escala logarítmica. El rango del resumen se calcula con todas las tasas bajas y con todas las altas.</p>
+      <p><strong>Combinaciones de dos fallas.</strong> Las filas latentes se agrupan por lo que habilitan (Q1 encendido, Q2 encendido, salida de control trabada, gate flotante) y se multiplican de a pares, suponiendo independencia.</p>
+      <p><strong>Lo paramétrico</strong> (energía y tiempo) se calcula por Monte Carlo con las tolerancias de los componentes. <strong>Lo sistemático</strong> (errores de diseño; en el recomendado no hay firmware) y lo que depende del ambiente (choque, RF, ESD) no tiene tasa: queda en el listado pero no se suma.</p>
+      <p><strong>Tipo de dato.</strong> Cada término de las memorias de cálculo indica si viene de un <span class="t-dato">dato</span> publicado, de un <span class="t-sup">supuesto</span>, de una <span class="t-mix">mezcla</span> (λ alto publicado, λ bajo supuesto) o de un <span class="t-calc">cálculo</span> de este análisis.</p>
+    </div>
+  </section>
+
+  <!-- 4 DATOS -->
+  <section id="s4" aria-labelledby="h4s">
+    <div class="sec-head"><h2 id="h4s"><span class="num">4</span>Datos de entrada</h2><span class="tag">tasas de falla y reparto de modos</span></div>
+    <h3 id="s4r">4.1 Revisión de los datos</h3>
+    <p>Cada dato del modelo se revisó contra una fuente primaria (norma, hoja de datos o informe del fabricante). El respaldo indica qué tan firme es: <span class="t-dato">A</span> dato publicado de la misma pieza o familia; <span class="t-mix">B</span> norma, manual o pieza equivalente; <span class="t-sup">C</span> supuesto razonado; <span class="t-sup" style="background:color-mix(in srgb, var(--c-init) 18%, transparent);color:var(--c-init)">D</span> sin base: hay que medirlo.</p>
+    <div class="scroll"><table style="min-width:980px"><thead><tr><th>Dato</th><th>Antes</th><th>Revisado</th><th>Fuente</th><th>Respaldo</th></tr></thead><tbody>
+      <tr><td>Tasas de falla, extremo alto</td><td>Tabla A-1 de PTC (no nombra la norma de origen)</td><td>MIL-HDBK-217F N2, Apéndice A, G_B, π_Q comercial (tabla de la sección 4.2)</td><td class="src" data-src="mil217"></td><td><span class="t-mix">B</span></td></tr>
+      <tr><td>Tasas de falla, extremo bajo</td><td>Mayormente supuestos (“10 veces menos”)</td><td>Fabricantes: AOS, Panasonic, Vishay, Nexperia, TI; SN 29500-2 para el MCU</td><td class="src"><span data-src="aos"></span> <span data-src="vmlcc"></span> <span data-src="panares"></span> <span data-src="nexp"></span> <span data-src="ti7a16"></span></td><td><span class="t-dato">A</span> / <span class="t-mix">B</span></td></tr>
+      <tr><td>Factor de reposo k_d</td><td>0,1 (supuesto)</td><td>1/30, rango 1/60–1/10. Regla general para electrónica, no por familia</td><td class="src" data-src="harris"></td><td><span class="t-mix">B</span></td></tr>
+      <tr><td>C_rss del AO3400A</td><td>77 pF</td><td><strong>50 pF</strong>; el acople baja de ~0,88 V a ~0,57 V</td><td class="src" data-src="aods"></td><td><span class="t-dato">A</span></td></tr>
+      <tr><td>Coeficiente térmico de V_th</td><td>−3 mV/°C</td><td>Sin cambio: valor típico, la hoja de datos no lo da</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
+      <tr><td>Reparto de modos del LDO</td><td>Supuesto: salida alta 20 %</td><td><strong>Salida alta 35 %</strong>, sin salida 35 %, fuera de especificación 15 %, power-good 10 %, corto 5 % (LDO de TI equivalente)</td><td class="src" data-src="ti7a16"></td><td><span class="t-mix">B</span></td></tr>
+      <tr><td>Reparto de modos del supervisor</td><td>Supuesto 30/30/20</td><td>Disparo falso 40 %, no se activa 22 %, umbral 22 %, retardo 16 %</td><td class="src" data-src="ti3808"></td><td><span class="t-dato">A</span></td></tr>
+      <tr><td>Retardo del TPS3808</td><td>5,7 s ±30 % (4–7,8 s)</td><td><strong>±40 % del CI</strong> (0,62–1,44 s con 180 nF) → 3,1–8,8 s: no garantiza t1</td><td class="src" data-src="tps3808ds"></td><td><span class="t-dato">A</span></td></tr>
+      <tr><td>Fuga de C_F (presupuesto de energía)</td><td>2–5 µA</td><td>La hoja de datos solo garantiza ≈ 0,2·C·V (≈ 1,6 mA para 330 µF 25 V). La fuga real a 50 % de tensión suele ser de µA, pero no está garantizada y sube con humedad. <strong>Hay que medirla y seleccionar</strong></td><td class="src"><span data-src="leak"></span> <span data-src="tev"></span></td><td><span class="t-sup" style="background:color-mix(in srgb, var(--c-init) 18%, transparent);color:var(--c-init)">D</span></td></tr>
+      <tr><td>Norma del iniciador</td><td>“All-fire 0,999 a 95 %”</td><td>MIL-DTL-23659 pide confiabilidad ≥ 0,99 a 95 % y define el all-fire a 0,999 con 95 %. Su no-fire es 1 A / 1 W durante 5 min: este iniciador (no-fire 0,2–0,25 A) es bastante más sensible que lo que pide esa norma</td><td class="src" data-src="mil23659"></td><td><span class="t-dato">A</span></td></tr>
+      <tr><td>Precisión del HSI16 (opción sin cristal)</td><td>±3 %</td><td>ST da ±1 % típico a 25 °C y dice que empeora en temperatura, sin número en la nota. Leer la tabla de la hoja de datos del STM32L010</td><td class="src" data-src="an4631"></td><td><span class="t-sup">C</span></td></tr>
+      <tr><td>Coeficiente térmico del cristal</td><td>−0,034 ppm/°C²</td><td>Sin cambio: valor típico de diapasón; confirmar en la hoja de datos de Y1</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
+      <tr><td>Error humano al cargar T</td><td>3 × 10⁻³, verificación 0,1</td><td>Sin cambio: orden de magnitud de THERP; las tablas originales no se verificaron</td><td class="src" data-src="therp"></td><td><span class="t-sup">C</span></td></tr>
+      <tr><td>Defectos de soldadura</td><td>200–600 DPMO</td><td>Sin cambio</td><td class="src" data-src="ipc"></td><td><span class="t-mix">B</span></td></tr>
+      <tr><td>Cobertura de la prueba funcional</td><td>99,5–99,9 %</td><td>Sin cambio</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
+      <tr><td>Reparto de modos de MOSFET, diodos, cristal y PCB</td><td>Tabla PTC</td><td>Sin cambio; para resistores y cerámicos coincide con MIL-HDBK-338B (vía DSIAC)</td><td class="src"><span data-src="ptc"></span> <span data-src="dsiac"></span></td><td><span class="t-mix">B</span></td></tr>
+      <tr><td>Reparto de modos del MCU</td><td>Supuesto</td><td>Sin cambio: ST no publica FMEDA del STM32L0</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
+      <tr><td>Probabilidades condicionales (MCU dañado sube ambas salidas, corto de PCB en el par crítico, etc.)</td><td>0,05–0,5</td><td>Sin cambio: razonamiento en la sección 4.4</td><td class="src" data-src="sup"></td><td><span class="t-sup">C</span></td></tr>
+      <tr><td>Corto a masa del cable del iniciador</td><td>10⁻⁷–10⁻⁵</td><td><strong>Fuera del alcance:</strong> es del montaje del cliente; no se suma salvo que se active en la sección 10. Requisitos para el cliente en la sección 2.4</td><td class="src" data-src="sup"></td><td><span class="t-sup" style="background:color-mix(in srgb, var(--c-init) 18%, transparent);color:var(--c-init)">D</span></td></tr>
+    </tbody></table></div>
+    <p class="small">Efecto en el caso base, con el cableado del cliente todavía incluido (antes de excluirlo, sección 2.4): P1 pasó de 1,5 × 10⁻⁶ a 1,6 × 10⁻⁶ (la salida alta del LDO pesa más y el reposo pesa menos); P3 bajó de 3,5 × 10⁻⁴ a 2,2 × 10⁻⁴, pero su rango se abrió (4,9 × 10⁻⁵ – 1,4 × 10⁻³) porque las dos fuentes difieren mucho; P2 y P4 no cambiaron.</p>
+    <h3>4.2 Tasas de falla por familia (FIT)</h3>
+    <div class="scroll"><table style="min-width:860px"><thead><tr><th>Familia</th><th>Piezas</th><th>λ bajo</th><th>λ alto</th><th>Central</th><th>De dónde sale</th></tr></thead><tbody id="lam-table"></tbody></table></div>
+    <h3>4.3 Reparto de modos de falla</h3>
+    <div class="scroll"><table style="min-width:760px"><thead><tr><th>Tipo de pieza</th><th>Reparto usado</th><th>Fuente</th></tr></thead><tbody>
+      <tr><td>MOSFET de silicio</td><td class="n" style="white-space:normal">corto 51 % · no conduce 22 % · deriva 17 % · abierto 5 % · conduce 5 %</td><td class="src" data-src="ptc"></td></tr>
+      <tr><td>Diodo rectificador (D1)</td><td class="n" style="white-space:normal">abierto 60 % · corto 40 %</td><td class="src" data-src="ptc"></td></tr>
+      <tr><td>Diodo de señal (D2)</td><td class="n" style="white-space:normal">abierto 24 % · corto 16 % · deriva 58 %</td><td class="src" data-src="ptc"></td></tr>
+      <tr><td>Supresor / zener (D3)</td><td class="n" style="white-space:normal">abierto 45 % · corto 20 % · deriva 35 %</td><td class="src" data-src="ptc"></td></tr>
+      <tr><td>Resistor de film</td><td class="n" style="white-space:normal">abierto 59 % · deriva 36 % · corto 5 %</td><td class="src" data-src="dsiac"></td></tr>
+      <tr><td>Capacitor cerámico</td><td class="n" style="white-space:normal">corto 49 % · abierto 22 % · deriva 29 %</td><td class="src" data-src="dsiac"></td></tr>
+      <tr><td>Capacitor de polímero (C_F)</td><td class="n" style="white-space:normal">abierto 50 % · corto 30 % · pérdida de capacidad / ESR 20 %</td><td class="src"><span data-src="vish"></span> <span data-src="mur"></span> <span data-src="sup"></span></td></tr>
+      <tr><td>Cristal de cuarzo</td><td class="n" style="white-space:normal">no oscila / abierto 80 % · corrimiento 20 %</td><td class="src" data-src="ptc"></td></tr>
+      <tr><td>Circuito impreso</td><td class="n" style="white-space:normal">abierto 76 % · corto 24 %</td><td class="src" data-src="ptc"></td></tr>
+      <tr><td>LDO (TI TPS7A16-Q1 como equivalente)</td><td class="n" style="white-space:normal">salida alta (sigue a la entrada) 35 % · sin salida 35 % · fuera de especificación 15 % · power-good 10 % · corto entre pines 5 %</td><td class="src" data-src="ti7a16"></td></tr>
+      <tr><td>Supervisor (TI TPS3808E)</td><td class="n" style="white-space:normal">disparo falso 40 % · no se activa 22 % · umbral fuera de especificación 22 % · retardo fuera de especificación 16 %</td><td class="src" data-src="ti3808"></td></tr>
+      <tr><td>Microcontrolador</td><td class="n" style="white-space:normal">muerto 60 % · salida trabada 2 % por pin · ambas salidas 0,2 % · otros</td><td class="src" data-src="sup"></td></tr>
+    </tbody></table></div>
+    <h3>4.4 Probabilidades condicionales usadas</h3>
+    <div class="scroll"><table style="min-width:760px"><thead><tr><th>Factor</th><th>Valor</th><th>Razonamiento</th></tr></thead><tbody>
+      <tr><td>MCU dañado por sobretensión deja las dos salidas en alto</td><td class="n">0,05</td><td>Cada salida puede quedar baja, alta o en alta impedancia: 1 de 9 combinaciones tiene las dos altas. Se multiplica por ~0,5 de que el daño deje las salidas activas.</td></tr>
+      <tr><td>Corto de PCB que une el drain de Q1 con GND</td><td class="n">0,05</td><td>El drain de Q1 es una de ~20 redes de la placa; se supone que el corto cae en un par de redes vecinas al azar.</td></tr>
+      <tr><td>D1 en corto descarga C_F hacia la línea</td><td class="n">0,5</td><td>Depende de si la fuente del pulso queda en baja impedancia o abierta al terminar; no se conoce, se toma 50 %.</td></tr>
+      <tr><td>Deriva que se come el margen (C_F, Q, D3, LDO)</td><td class="n">0,1–0,3</td><td>Solo una parte de las derivas es lo bastante grande como para pasar el margen de energía o de tensión de gate.</td></tr>
+      <tr><td>Ambos pull-downs abiertos encienden las dos gates al arrancar</td><td class="n">0,1</td><td>Gate flotante con acople del flanco; supuesto.</td></tr>
+    </tbody></table></div>
+    <h3>4.5 Probabilidades por unidad (no vienen de una tasa)</h3>
+    <div class="scroll"><table style="min-width:760px"><thead><tr><th>Evento</th><th>Rango</th><th>Cómo se obtiene</th></tr></thead><tbody>
+      <tr><td>Defecto de soldadura que pasa AOI y prueba funcional</td><td class="n">1,4 × 10⁻⁵ – 2,1 × 10⁻⁴</td><td>200–600 defectos por millón de juntas (IPC) × ~70 juntas = 1,4–4,2 % de placas con algún defecto antes de probar; la prueba funcional deja pasar el 0,1–0,5 % (supuesto de cobertura 99,5–99,9 %). <span data-src="ipc"></span></td></tr>
+      <tr><td>MOSFET dañado por ESD en el armado (corto latente)</td><td class="n">10⁻⁶ – 10⁻⁵</td><td>Supuesto. La prueba funcional no lo ve porque la otra llave sigue abriendo.</td></tr>
+      <tr><td>Cable del iniciador del lado de Q1 en corto a masa <span class="small">(fuera del alcance: montaje del cliente)</span></td><td class="n">10⁻⁷ – 10⁻⁵</td><td>Supuesto sin dato publicado: pellizco o roce del cable al integrar. Dos órdenes de magnitud de incertidumbre; es el término de P1 que más conviene eliminar por diseño en lugar de estimar.</td></tr>
+      <tr><td>Error al cargar T, por operación</td><td class="n">10⁻⁵ – 3 × 10⁻³</td><td>Orden de magnitud de las tablas de error humano THERP: ~3 × 10⁻³ al leer e ingresar un valor; una verificación independiente recupera ~90 % (3 × 10⁻⁴); con la orden en formato legible por máquina y relectura automática, ~10⁻⁵. Se reparte mitad P2 (más corto) y mitad P4 (más largo). <span data-src="therp"></span></td></tr>
+    </tbody></table></div>
+  </section>
+
+  <!-- 5 P1 -->
+  <section id="s5" aria-labelledby="h5s">
+    <div class="sec-head"><h2 id="h5s"><span class="num">5</span>P1: activa antes de t1</h2><span class="tag" id="p1-tag"></span></div>
+    <p>Para disparar hace falta corriente por el puente, y en el recomendado eso solo pasa si Q1 y Q2 conducen a la vez. El temporizador U4 no ordena el disparo antes de T y, aunque lo hiciera, U3 mantiene Q2 apagada hasta ~4,6 s. Un corto a masa de un cable o de una pista saltea solo una llave, porque hay una de cada lado. Entonces P1 necesita dos fallas a la vez (U4 con la salida activa y U3 sin bloquear, un corto más la otra llave, o las dos llaves en corto) o una causa común que encienda las dos.</p>
+    <h3>5.1 Árbol de fallas</h3>
+    <div class="scroll"><div class="ft" id="ft-p1"></div></div>
+    <h3>5.2 Memoria de cálculo</h3>
+    <div class="scroll"><table class="calc" id="calc-P1"></table></div>
+    <div class="callout" style="--cc:var(--c-init)">
+      <p><strong>Qué domina:</strong> casi todo P1 es la doble falla del temporizador con la salida trabada en el nivel activo y U3 sin bloquear. Las dos partes son supuestos (respaldo C): el 5 % de fallas de U4 que dejan la salida activa (TI no lo separa) y la eficacia del enclavamiento (0,01, pesimista). Su rango se analiza en la sección 9.4.</p>
+      <p><strong>Por qué las dos llaves en corto no pesan:</strong> cada MOSFET en corto latente tiene una probabilidad del orden de 10⁻⁵ en 3 años; las dos a la vez quedan en ~10⁻¹⁰.</p>
+    </div>
+    <h3>5.3 Chequeos de diseño de P1</h3>
+    <div class="grid2" id="p1-checks"></div>
+  </section>
+
+  <!-- 6 P2 P4 -->
+  <section id="s6" aria-labelledby="h6s">
+    <div class="sec-head"><h2 id="h6s"><span class="num">6</span>P2 y P4: activa fuera de la ventana T ± 5 s</h2><span class="tag" id="p24-tag"></span></div>
+    <p>Con T fijo por puentes y una ventana de ±5 s, activar fuera de tiempo solo puede venir del temporizador o de su cadena de ajuste: U4 con la precisión degradada (hacia corto o largo), U4 con la salida trabada en el nivel activo (dispara cuando U3 libera, a los ~4,6–13 s), el resistor de ajuste en corto (100 ms: también dispara cuando U3 libera), un puente que se abre (T más largo) o un puente de más que escapó al banco (T más corto). No hay error humano al cargar T: se fija en fábrica y el banco lo mide.</p>
+    <div class="grid2">
+      <div><h3>6.1 Memoria de cálculo de P2</h3><div class="scroll"><table class="calc" id="calc-P2" style="min-width:640px"></table></div></div>
+      <div><h3>6.2 Memoria de cálculo de P4</h3><div class="scroll"><table class="calc" id="calc-P4" style="min-width:640px"></table></div></div>
+    </div>
+    <h3>6.3 Precisión del temporizador frente a la ventana</h3>
+    <div class="grid2">
+      <div class="check">
+        <span class="status st-ok">PASA con margen ≈ 3–7×</span>
+        <dl class="kv">
+          <dt>Ventana</dt><dd>±5 s (±17 % a 30 s)</dd>
+          <dt>Oscilador a 25 °C</dt><dd>±0,5 % (garantizado)</dd>
+          <dt>Ajuste del intervalo</dt><dd>±0,6 % (típico)</dd>
+          <dt>Temperatura −30 a +70 °C</dt><dd>±0,8 % (150 ppm/°C típico)</dd>
+          <dt>Vida útil</dt><dd>±0,24 % (típico)</dd>
+          <dt>Resistores al 1 % / al 0,1 %</dt><dd>±2,6 % / ±0,3 % en T</dd>
+          <dt>Peor caso sumado</dt><dd>±4,8 % (≈ ±1,4 s) con 1 %; ±2,4 % (≈ ±0,7 s) con 0,1 %</dd>
+          <dt>P2 o P4 paramétrico</dt><dd>&lt; 10⁻⁸ (cota)</dd>
+        </dl>
+      </div>
+      <div class="prose">
+        <p class="small">Datos de la hoja de datos del TPL5110-Q1. Solo el ±0,5 % a 25 °C es un límite garantizado; los demás son típicos (“por diseño y caracterización, no probados en producción”). Aun si la deriva real fuera tres veces la típica, el peor caso seguiría dentro de ±5 s.</p>
+        <p class="small">Sensibilidad de T al resistor: +1 % de R_EXT alarga T ≈ 0,8 s a 30 s (T crece aproximadamente con el cuadrado de R). Por eso conviene la cadena con resistores al 0,1 % si se quiere margen máximo; con 1 % igual entra.</p>
+        <p class="small">El banco mide T en cada placa a temperatura ambiente y la compara con la variante de la etiqueta; una muestra de 30 placas en cámara a −30 y +70 °C reemplaza el dato típico de deriva por uno medido.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 P3 -->
+  <section id="s7" aria-labelledby="h7s">
+    <div class="sec-head"><h2 id="h7s"><span class="num">7</span>P3: no activa</h2><span class="tag" id="p3-tag"></span></div>
+    <p>En el recomendado no hay firmware que aborte: P3 aparece cuando no llega la energía o no llega la orden de disparo. Lo dominan las piezas del camino de energía (conector, soldaduras, LDO, C_F, llaves, D1) que pueden fallar durante los 3 años de almacenamiento, y los defectos de fabricación que escapan al banco. El temporizador aporta poco: 4 FIT, con la mitad de sus fallas sin salida.</p>
+    <h3>7.1 Aporte por grupo</h3>
+    <div class="scroll"><table class="calc" id="grp-P3" style="min-width:640px"></table></div>
+    <h3>7.2 Memoria de cálculo</h3>
+    <div class="scroll"><table class="calc" id="calc-P3"></table></div>
+    <details><summary id="p3-more-sum">Resto de los términos de P3</summary><div class="scroll"><table class="calc" id="calc-P3-rest"></table></div></details>
+    <h3>7.3 Margen de energía</h3>
+    <div class="grid2">
+      <div class="check">
+        <p class="small">P(I²t entregado &lt; all-fire) según el I²t que pide el iniciador. Monte Carlo de 10⁶ casos por curva, t2 = 40 s (peor caso).</p>
+        <div class="scroll"><svg id="echart" class="chart" viewBox="0 0 520 260" role="img" aria-label="Probabilidad de energía insuficiente según el I²t del iniciador para C_F de 150, 330, 560 y 1000 µF" style="width:100%;min-width:440px;height:auto;display:block"></svg></div>
+        <div class="legend" id="elegend"></div>
+      </div>
+      <div class="prose">
+        <p class="small">Entradas: pulso de 10,8–13,2 V; caída de D1 de 0,35–0,5 V; C_F ±20 % (3σ) por −0–12 % en frío; consumo más fuga de 5–25 µA durante 40 s; puente de 1–2 Ω; dos R_DS(on) de 35–60 mΩ; ESR de 25–100 mΩ; trazas 20 mΩ.</p>
+        <p class="small">I²t entregado = V<sub>f</sub>² · C / (2 · R<sub>total</sub>), donde V<sub>f</sub> es la tensión de C_F al momento del disparo. La descarga tiene τ ≈ 0,7 ms, así que los 20 ms de disparo la completan.</p>
+        <p class="small">Con 330 µF la mediana entregada es 8,6 A²·ms y el 0,1 % peor es 3,4 A²·ms. Si el iniciador pide 2 A²·ms la probabilidad es &lt; 10⁻⁶; con 3 A²·ms ya es 1,4 × 10⁻⁴ y con 5 A²·ms, 3,9 %.</p>
+        <p class="small"><strong>Límite de este cálculo:</strong> usa una fuga de C_F de 5–25 µA en total. La hoja de datos de un capacitor de polímero solo garantiza ≈ 0,2·C·V (del orden de mA), que vaciaría C_F en segundos. Hasta medir la fuga real del modelo elegido, a 11 V, a −30 °C y después de humedad, esta curva vale solo para capacitores seleccionados por fuga.</p>
+        <p class="small">Nota: la tabla del §5.2 del documento de diseño escribe “mA²·s”, pero sus valores de C_F corresponden a A²·ms. Conviene corregirlo antes de pedirle el dato al fabricante.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 LÍMITES Y FUENTES -->
+  <section id="s11" aria-labelledby="h11ps">
+    <div class="sec-head"><h2 id="h11ps"><span class="num">8</span>Precio y cómo se calcula</h2><span class="tag">lote de 1000 · panel de 30 · JLCPCB armado estándar</span></div>
+    <p>El precio sale de cuatro bloques que se suman: <strong>materiales</strong> (lista de piezas con precio de LCSC a 1000 unidades), <strong>armado</strong> (tarifas publicadas de JLCPCB), <strong>circuito impreso y gastos</strong>, e <strong>importación</strong> a la Argentina (supuestos del documento de diseño). Todo se recalcula en esta página a partir de las tablas de abajo.</p>
+    <div class="formula">
+      <div class="eq">Puesta en Argentina = (FOB + flete) × (1 + 0,16 + 0,03) + despachante</div>
+      <div class="ex">FOB = piezas × 1,03 + preparación + stencil + alimentadores + soldaduras + varios + programación + circuito impreso + comisión 2 %</div>
+      <div class="ex">Soldaduras: 0,0016 USD por junta hasta 50 000 y 0,0013 hasta 100 000 (tarifa escalonada de JLCPCB) · alimentadores: 1,53 USD por referencia</div>
+    </div>
+    <div class="scroll"><table id="price-table" style="min-width:760px"></table></div>
+    <h3>Lista de piezas del recomendado y origen de cada precio</h3>
+    <div class="scroll"><table id="bom-table" style="min-width:860px"></table></div>
+    <details><summary>Listas de piezas de las alternativas (original, mejorado con micro, micro + autoprueba)</summary><div class="scroll"><table id="bom-alt" style="min-width:860px"></table></div></details>
+    <h3>Supuestos del precio y qué tan firmes son</h3>
+    <div class="scroll"><table style="min-width:860px"><thead><tr><th>Supuesto</th><th>Valor</th><th>Origen</th><th>Respaldo</th></tr></thead><tbody>
+      <tr><td>Precios de piezas</td><td>LCSC a 1000 unidades</td><td>Documento de diseño (04/11/2026); AO3401A y TPS3808 consultados en LCSC en 11/2026</td><td><span class="t-dato">A</span></td></tr>
+      <tr><td>Precio de la TVS de 3,3 V (D5) y de 4,7 nF</td><td>0,02 y 0,002 USD</td><td>Estimados: no se consultó el precio</td><td><span class="t-sup">C</span></td></tr>
+      <tr><td>Tarifas de armado (preparación, alimentadores, soldaduras, rayos X, mínimo por placa)</td><td>Ver fórmula</td><td>Ayuda de JLCPCB, “PCB assembly price” (11/2026)</td><td><span class="t-dato">A</span></td></tr>
+      <tr><td>Cantidad de juntas y de referencias distintas</td><td>Recomendado: ~80 juntas y 26 referencias (original 70 y 16)</td><td>Contadas a partir de los encapsulados del esquemático</td><td><span class="t-mix">B</span></td></tr>
+      <tr><td>Circuito impreso</td><td>60 USD por lote</td><td>Documento de diseño (rango 40–80)</td><td><span class="t-mix">B</span></td></tr>
+      <tr><td>Programación</td><td>El recomendado no lleva firmware: 0. Las alternativas con micro: ≈ 30 USD por lote en JLCPCB</td><td>Ayuda de JLCPCB: ≈ 8 USD de ingeniería + ≈ 8 USD por hora</td><td><span class="t-mix">B</span></td></tr>
+      <tr><td>Flete, derecho 16 %, estadística 3 %, despachante 350 USD</td><td>Caso central</td><td>Documento de diseño §10.2; el derecho depende de la posición arancelaria que fije el despachante (0–20 %)</td><td><span class="t-sup">C</span></td></tr>
+      <tr><td>IVA y percepciones</td><td>No incluidos</td><td>Son recuperables (crédito fiscal o pago a cuenta)</td><td>—</td></tr>
+    </tbody></table></div>
+    <p class="small">No incluye el banco de prueba, que es una inversión única: 300–500 USD el de una placa y 700–1200 USD el de panel. Repartido en 1000 placas suma 0,3–1,2 USD por placa; en 10 000, 0,03–0,12 USD. Tampoco incluye resina, etiqueta ni mano de obra propia.</p>
+  </section>
+
+  <section id="s12" aria-labelledby="h12s">
+    <div class="sec-head"><h2 id="h12s"><span class="num">9</span>Auditoría del modelo</h2><span class="tag">qué tan sólido es cada resultado</span></div>
+    <h3>9.1 Cadena de cálculo</h3>
+    <ol class="list">
+      <li><strong>Lista de modos de falla</strong> (anexo, sección 11): cada pieza con sus modos (corto, abierto, deriva…), más fabricación, firmware, operación, ambiente y sistema. Cada fila dice qué produce: P1–P4, latente o sin efecto.</li>
+      <li><strong>Probabilidad de cada fila</strong>: P = λ · 10⁻⁹ · f · horas · c · m (sección 3). λ sale de la tabla 4.2, f de la 4.3, c de la 4.4; las horas son k_d · años · 8760 + 40 s. Las filas de fabricación, cableado y operación usan una probabilidad por unidad (4.5).</li>
+      <li><strong>Combinaciones de dos fallas</strong> (para P1): se multiplican las probabilidades de los latentes de a pares (Q1 y Q2 en corto, una llave y un pin trabado, etc.).</li>
+      <li><strong>Monte Carlo</strong> para energía (P3) y tiempo (P2, P4): scripts <code>retardo/montecarlo_energia_tabla.py</code> y <code>retardo/montecarlo_fallos.py</code> en el repositorio.</li>
+      <li><strong>Suma por modo</strong>: P1, P2, P3 y P4 son la suma de sus filas. Cada número de la página tiene su cálculo a la vista en las memorias de cálculo (secciones 5–7) y en el anexo.</li>
+    </ol>
+    <h3>9.2 Supuestos de estructura</h3>
+    <div class="scroll"><table style="min-width:900px"><thead><tr><th>Supuesto</th><th>Por qué es razonable</th><th>Cuándo deja de valer</th><th>Efecto si falla</th></tr></thead><tbody>
+      <tr><td>Tasa de falla constante en el tiempo (modelo exponencial)</td><td>Es la base de MIL-HDBK-217F y de los datos de fabricante. La prueba al 100 % elimina la mortalidad infantil</td><td>Almacenamientos largos con desgaste (capacitores de polímero en humedad, años) o lotes con defectos latentes</td><td>Subestima P3 con muchos años de almacenamiento</td></tr>
+      <tr><td>Suma de probabilidades en lugar de 1 − Π(1 − p)</td><td>Cada término es ≪ 1; el error es menor que el producto de dos términos</td><td>Si algún término pasa de ~1 %</td><td>Despreciable con los valores actuales</td></tr>
+      <tr><td>Fallas independientes</td><td>Las causas comunes conocidas (sobretensión de VDD, ESD, cortos de PCB) se modelaron aparte como filas propias</td><td>Fallas de lote entero: componente defectuoso, perfil de soldado, firmware</td><td>Subestima mucho: un problema de lote afecta a todas las placas a la vez. Lo cubre la prueba al 100 %, no el modelo</td></tr>
+      <tr><td>Factor de reposo único para todas las piezas</td><td>Regla general publicada (Harris: 1/30 a 1/60)</td><td>Piezas sensibles a humedad o ciclos térmicos en almacenamiento (polímero, juntas)</td><td>Puede subestimar esas piezas</td></tr>
+      <tr><td>Valor central = media geométrica del dato bajo y alto</td><td>Las fuentes difieren hasta 1000 veces; la media geométrica es el centro en escala logarítmica</td><td>Si una de las dos fuentes está claramente más cerca de la realidad</td><td>El rango (bajo–alto) muestra cuánto puede moverse</td></tr>
+      <tr><td>Datos de fabricante al 60 % de confianza</td><td>Es el estándar de la industria para FIT</td><td>—</td><td>Son cotas superiores de sus ensayos: el valor bajo ya es algo conservador</td></tr>
+      <tr><td>Lo sistemático y lo ambiental no se suman</td><td>No tienen tasa publicada</td><td>Siempre</td><td>El total no incluye firmware, choque, vibración, RF ni ESD: se cubren con ensayos</td></tr>
+    </tbody></table></div>
+    <h3>9.3 De qué datos depende cada resultado</h3>
+    <p>Cada fila tiene el respaldo del dato más débil que usa (A dato de la misma pieza · B norma o pieza equivalente · C supuesto razonado · D sin base). La barra muestra qué parte de cada probabilidad sale de cada tipo de dato.</p>
+    <div class="scroll"><table id="grade-share" style="min-width:820px"></table></div>
+    <div class="legend"><span><i class="sw" style="background:var(--c-drive);border:0"></i>A</span><span><i class="sw" style="background:var(--c-count);border:0"></i>B</span><span><i class="sw" style="background:var(--c-store);border:0"></i>C</span><span><i class="sw" style="background:var(--c-init);border:0"></i>D</span></div>
+    <h3>9.4 Qué entradas mueven más el resultado (recomendado: temporizador)</h3>
+    <p>Cada barra cambia una sola entrada entre un valor bajo y uno alto razonables, dejando el resto fijo. La línea vertical es el valor central; la escala es logarítmica (cada marca es un factor de 10).</p>
+    <h3 style="font-size:15px">P1 · activa antes de t1</h3>
+    <div class="bars" id="tor-P1"></div>
+    <h3 style="font-size:15px">P2 · activa entre t1 y la ventana</h3>
+    <div class="bars" id="tor-P2"></div>
+    <h3 style="font-size:15px">P3 · no activa</h3>
+    <div class="bars" id="tor-P3"></div>
+    <h3>9.5 Veredicto de solidez</h3>
+    <div id="verdict" class="prose">
+      <div class="callout" style="--cc:var(--c-drive)"><p><strong>Robusto: las comparaciones.</strong> Que el recomendado tiene unas 100 veces menos P1 que el original, y la mitad de P3 que el micro sin prueba previa, se sostiene con cualquier combinación de entradas de la sección 9.4: viene de eliminar caminos de falla simple y de sacar la pieza que más falla, no de un número fino.</p></div>
+      <div class="callout" style="--cc:var(--c-store)"><p><strong>P1 del recomendado (4,7 × 10⁻⁹):</strong> el 90 % es una doble falla, el temporizador con la salida trabada en el nivel activo y U3 sin bloquear. Las dos partes son supuestos (respaldo C): el 5 % de fallas con salida activa (TI no lo separa en su reparto) y la eficacia del enclavamiento (0,01, deliberadamente pesimista). Rango creíble: 6 × 10⁻¹⁰ a 5 × 10⁻⁸. Para respaldarlo: verificar el arranque de DRV y ensayar el enclavamiento.</p></div>
+      <div class="callout" style="--cc:var(--c-store)"><p><strong>P2 y P4 (2,7 × 10⁻⁶ y 2,2 × 10⁻⁶):</strong> el 80–96 % sale del 50 % de “precisión degradada” del reparto de TI, repartido mitad hacia corto y mitad hacia largo, y supone que <strong>todas</strong> esas fallas sacan T de ±5 s. Es conservador: con ~7 veces de margen en la precisión, probablemente solo una parte las saque. La tasa de falla del temporizador es dato de TI (respaldo A); el reparto hacia corto o largo es supuesto.</p></div>
+      <div class="callout" style="--cc:var(--c-store)"><p><strong>P3 (6,2 × 10⁻⁵):</strong> lo domina el camino de energía, con datos de respaldo B y C. Las tasas de falla lo mueven entre 2 × 10⁻⁵ y 3 × 10⁻⁴; un almacenamiento sin control (k_d 1/10) lo multiplica por 5; un iniciador que pida 3 A²·ms en lugar de 2, por 3. Para respaldarlo: dato de all-fire, fuga de C_F medida y condiciones reales de almacenamiento del cliente.</p></div>
+      <div class="callout" style="--cc:var(--c-drive)"><p><strong>Precio: sólido a ±10 %.</strong> Piezas y tarifas de armado son datos publicados. Lo que más lo mueve es el derecho de importación (0–20 %) y la amortización del banco de prueba.</p></div>
+      <p><strong>En resumen:</strong> el modelo sirve para elegir entre alternativas y priorizar. Los valores absolutos tienen alrededor de un orden de magnitud de incertidumbre; P2 y P4 del temporizador están del lado pesimista. No deberían presentarse como valores certificados hasta reemplazar los supuestos C y D por mediciones.</p>
+    </div>
+    <h3>9.6 Cómo verificarlo de forma independiente</h3>
+    <ol class="list">
+      <li><strong>Recalcular a mano una fila</strong> con la fórmula de la sección 3 y los valores de las tablas 4.2–4.4 (el ejemplo de C_F abierto está resuelto en la sección 3).</li>
+      <li><strong>Revisar las fuentes</strong>: cada valor de las tablas 4.1–4.5 tiene su referencia numerada en la sección 12; MIL-HDBK-217F se leyó de las tablas originales del Apéndice A.</li>
+      <li><strong>Reproducir el Monte Carlo</strong> con los scripts del repositorio.</li>
+      <li><strong>Contrastar con datos propios</strong>: la prueba al 100 % y los ensayos del lote piloto dan la tasa real de escapes, la cobertura de la autoprueba (con fallas inyectadas), la fuga de C_F y el retardo del temporizador. Con cero fallas en n unidades, la cota al 95 % es 3/n.</li>
+      <li><strong>Datos de campo</strong>: el registro por número de serie permite comparar las fallas observadas con lo que predice el modelo y recalibrarlo.</li>
+    </ol>
+  </section>
+
   <!-- 9 SENSIBILIDAD -->
   <section id="s9" aria-labelledby="h9s">
-    <div class="sec-head"><h2 id="h9s"><span class="num">9</span>Sensibilidad</h2><span class="tag">cambiá los supuestos; el anexo usa estos valores</span></div>
+    <div class="sec-head"><h2 id="h9s"><span class="num">10</span>Sensibilidad</h2><span class="tag">cambiá los supuestos; el anexo usa estos valores</span></div>
     <div class="controls">
       <div class="ctl">
         <label for="years">Almacenamiento antes del uso</label>
-        <input type="range" id="years" min="0.25" max="15" step="0.25" value="2">
-        <span class="rv" id="years-v">2 años</span>
+        <input type="range" id="years" min="0.25" max="15" step="0.25" value="3">
+        <span class="rv" id="years-v">3 años</span>
         <span class="help">Tiempo entre la prueba en banco y el uso.</span>
       </div>
       <div class="ctl">
         <label for="kd">Factor de reposo k<sub>d</sub></label>
-        <select id="kd"><option value="0.016667">1/60 (Harris, extremo bajo)</option><option value="0.033333" selected>1/30 (Harris, caso base)</option><option value="0.1">1/10 (conservador)</option><option value="0.3">0,3 (ciclos térmicos y humedad, supuesto)</option></select>
+        <select id="kd"><option value="0.016667" selected>1/60 (almacenamiento controlado, recomendado)</option><option value="0.033333">1/30 (Harris, sin control)</option><option value="0.1">1/10 (conservador)</option><option value="0.3">0,3 (ciclos térmicos y humedad, supuesto)</option></select>
         <span class="help">Supuesto. El valor por familia está en RAC NONOP-1 / RADC-TR-85-91.</span>
       </div>
       <div class="ctl">
@@ -761,28 +677,28 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <div class="ctl">
         <label for="tmode">Cómo se fija T</label>
         <select id="tmode">
-          <option value="0">Fija en firmware (variante A)</option>
+          <option value="0" selected>Fija (puentes o firmware)</option>
           <option value="1e-5">Programable, orden legible por máquina + relectura</option>
-          <option value="3e-4" selected>Programable, operador + verificación</option>
+          <option value="3e-4">Programable, operador + verificación</option>
           <option value="3e-3">Programable, operador sin verificación</option>
         </select>
       </div>
       <div class="ctl">
         <label for="rs">R_s</label>
-        <select id="rs"><option value="0">0 Ω</option><option value="0.1" selected>0,1 Ω</option><option value="0.25">0,25 Ω</option><option value="0.5">0,5 Ω</option><option value="1">1 Ω</option></select>
+        <select id="rs"><option value="0">0 Ω</option><option value="0.1">0,1 Ω</option><option value="0.25">0,25 Ω</option><option value="0.5" selected>0,5 Ω</option><option value="1">1 Ω</option></select>
       </div>
       <div class="ctl">
         <label for="schem">Esquemático</label>
-        <select id="schem"><option value="act" selected>Analizado (sección 2)</option><option value="prop">Mejorado con micro (sección 13)</option><option value="propp3">Propuesto + medidas de P3 (sección 7.4)</option><option value="rec">Micro + autoprueba (sección 13)</option><option value="tmr">Recomendado: temporizador (sección 8)</option><option value="custom">Personalizado</option></select>
+        <select id="schem"><option value="act">Original (sección 13.1)</option><option value="prop">Mejorado con micro (sección 13.2)</option><option value="propp3">Micro + medidas de P3 (sección 13.3)</option><option value="rec">Micro + autoprueba (sección 13.2)</option><option value="tmr" selected>Recomendado: temporizador (sección 2)</option><option value="custom">Personalizado</option></select>
         <div class="checks">
-          <label><input type="checkbox" id="m-hs"> Llave del lado alto</label>
-          <label><input type="checkbox" id="m-vdd"> Clamp de VDD</label>
-          <label><input type="checkbox" id="m-pd"> Pull-down 10 kΩ + C_GS</label>
-          <label><input type="checkbox" id="m-t1"> Enclavamiento t1</label>
-          <label><input type="checkbox" id="m-key"> Prueba de cada llave</label>
+          <label><input type="checkbox" id="m-hs" checked> Llave del lado alto</label>
+          <label><input type="checkbox" id="m-vdd" checked> Clamp de VDD</label>
+          <label><input type="checkbox" id="m-pd" checked> Pull-down 10 kΩ + C_GS</label>
+          <label><input type="checkbox" id="m-t1" checked> Enclavamiento t1</label>
+          <label><input type="checkbox" id="m-key" checked> Prueba de cada llave</label>
           <label><input type="checkbox" id="m-bit"> Autoprueba al programar T</label>
-          <label><input type="checkbox" id="m-noxtal"> Sin cristal (oscilador interno)</label>
-          <label><input type="checkbox" id="m-fab"> Prueba de fabricación reforzada</label>
+          <label><input type="checkbox" id="m-noxtal" checked> Sin cristal (oscilador interno)</label>
+          <label><input type="checkbox" id="m-fab" checked> Prueba de fabricación reforzada</label>
           <label><input type="checkbox" id="m-init"> Sumar el iniciador a P3</label>
           <label><input type="checkbox" id="m-ext"> Sumar el cableado del cliente (fuera del alcance)</label>
         </div>
@@ -793,7 +709,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
 
   <!-- 10 ANEXO -->
   <section id="s10" aria-labelledby="h10s">
-    <div class="sec-head"><h2 id="h10s"><span class="num">10</span>Anexo: todos los modos de falla</h2><span class="tag" id="fcount"></span></div>
+    <div class="sec-head"><h2 id="h10s"><span class="num">11</span>Anexo: todos los modos de falla</h2><span class="tag" id="fcount"></span></div>
     <div class="filters">
       <div class="ctl" style="flex:2 1 320px">
         <span class="lab">Efecto</span>
@@ -822,86 +738,171 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     </div>
   </section>
 
-  <!-- 11 LÍMITES Y FUENTES -->
-  <section id="s11" aria-labelledby="h11ps">
-    <div class="sec-head"><h2 id="h11ps"><span class="num">11</span>Cómo se calcula el precio</h2><span class="tag">lote de 1000 · panel de 30 · JLCPCB armado estándar</span></div>
-    <p>El precio sale de cuatro bloques que se suman: <strong>materiales</strong> (lista de piezas con precio de LCSC a 1000 unidades), <strong>armado</strong> (tarifas publicadas de JLCPCB), <strong>circuito impreso y gastos</strong>, e <strong>importación</strong> a la Argentina (supuestos del documento de diseño). Todo se recalcula en esta página a partir de las tablas de abajo.</p>
-    <div class="formula">
-      <div class="eq">Puesta en Argentina = (FOB + flete) × (1 + 0,16 + 0,03) + despachante</div>
-      <div class="ex">FOB = piezas × 1,03 + preparación + stencil + alimentadores + soldaduras + varios + programación + circuito impreso + comisión 2 %</div>
-      <div class="ex">Soldaduras: 0,0016 USD por junta hasta 50 000 y 0,0013 hasta 100 000 (tarifa escalonada de JLCPCB) · alimentadores: 1,53 USD por referencia</div>
-    </div>
-    <div class="scroll"><table id="price-table" style="min-width:760px"></table></div>
-    <h3>Lista de piezas y origen de cada precio</h3>
-    <div class="scroll"><table id="bom-table" style="min-width:860px"></table></div>
-    <h3>Supuestos del precio y qué tan firmes son</h3>
-    <div class="scroll"><table style="min-width:860px"><thead><tr><th>Supuesto</th><th>Valor</th><th>Origen</th><th>Respaldo</th></tr></thead><tbody>
-      <tr><td>Precios de piezas</td><td>LCSC a 1000 unidades</td><td>Documento de diseño (04/11/2026); AO3401A y TPS3808 consultados en LCSC en 11/2026</td><td><span class="t-dato">A</span></td></tr>
-      <tr><td>Precio de la TVS de 3,3 V (D5) y de 4,7 nF</td><td>0,02 y 0,002 USD</td><td>Estimados: no se consultó el precio</td><td><span class="t-sup">C</span></td></tr>
-      <tr><td>Tarifas de armado (preparación, alimentadores, soldaduras, rayos X, mínimo por placa)</td><td>Ver fórmula</td><td>Ayuda de JLCPCB, “PCB assembly price” (11/2026)</td><td><span class="t-dato">A</span></td></tr>
-      <tr><td>Cantidad de juntas y de referencias distintas</td><td>70 → 95 juntas; 16 → 22 referencias</td><td>Contadas a partir de los encapsulados del esquemático</td><td><span class="t-mix">B</span></td></tr>
-      <tr><td>Circuito impreso</td><td>60 USD por lote</td><td>Documento de diseño (rango 40–80)</td><td><span class="t-mix">B</span></td></tr>
-      <tr><td>Programación en JLCPCB (original y mejorado)</td><td>≈ 30 USD por lote</td><td>Ayuda de JLCPCB: ≈ 8 USD de ingeniería + ≈ 8 USD por hora</td><td><span class="t-mix">B</span></td></tr>
-      <tr><td>Flete, derecho 16 %, estadística 3 %, despachante 350 USD</td><td>Caso central</td><td>Documento de diseño §10.2; el derecho depende de la posición arancelaria que fije el despachante (0–20 %)</td><td><span class="t-sup">C</span></td></tr>
-      <tr><td>IVA y percepciones</td><td>No incluidos</td><td>Son recuperables (crédito fiscal o pago a cuenta)</td><td>—</td></tr>
+  <section id="s13" aria-labelledby="h11s">
+    <h2 id="h11s"><span class="num">12</span>Límites del análisis y fuentes</h2>
+    <h3>Qué tan reales son los números</h3>
+    <ul class="list">
+      <li><strong>Extremo alto de las tasas:</strong> MIL-HDBK-217F Notice 2, Apéndice A, leído de las tablas originales (ambiente G_B, piezas comerciales). Es la referencia pública más usada, pero sus datos son de 1991–1995: para un MCU actual da ~1900 FIT, decenas de veces más que lo que publican los fabricantes.</li>
+      <li><strong>Extremo bajo:</strong> datos de fabricante. De la misma pieza o familia: MOSFET (AOS), C_F (Panasonic), MLCC (Vishay), resistores (Panasonic), supervisor (TI). De una pieza equivalente: LDO (TI TPS7A16), diodos (Nexperia BAS40LS), cristal (TI, osciladores). Para el MCU no hay dato: se usa el valor de referencia de SN 29500-2.</li>
+      <li><strong>Supuestos sin dato:</strong> probabilidades condicionales, cortos de cableado, cobertura de la prueba, fuga de C_F y el reparto de modos del MCU. La tabla de la sección 4.1 los marca con respaldo C o D: son los primeros que conviene reemplazar por mediciones propias.</li>
+      <li><strong>Sin cuantificar:</strong> choque y vibración, ambiente electromagnético y errores de firmware. Para P1 y P3 pueden ser mayores que todo lo sumado; los cubre el plan de ensayos.</li>
+      <li>Para demostrar por ensayo P &lt; 10⁻³ con 95 % de confianza hacen falta ~3000 unidades sin falla (regla de 3/n). Los valores más chicos salen del análisis, no del ensayo.</li>
+    </ul>
+    <h3>Datos que faltan</h3>
+    <div class="scroll"><table style="min-width:640px"><thead><tr><th>Dato</th><th>Afecta</th></tr></thead><tbody>
+      <tr><td>I²t de all-fire del iniciador (media y desvío o datos probit) y corriente de no-activación</td><td>P3 (dominante si supera 3 A²·ms) y P1 por acople</td></tr>
+      <tr><td>Tiempo y temperatura de almacenamiento</td><td>P1 y P3 latentes, lineal</td></tr>
+      <tr><td>Perfil de choque y vibración</td><td>Cristal y juntas → P3</td></tr>
+      <tr><td>Flanco, impedancia y rebotes del pulso de 12 V</td><td>Acople dV/dt → P1; carga de C_F → P3</td></tr>
+      <tr><td>Ambiente electromagnético (RF, ESD, descargas)</td><td>P1 por EMI/EOS</td></tr>
+      <tr><td>FIT del STM32L0 a pedir a ST, con la temperatura de uso</td><td>P3 y P1 por MCU</td></tr>
+      <tr><td>Quién y dónde programa T</td><td>P2 y P4</td></tr>
     </tbody></table></div>
-    <p class="small">No incluye el banco de prueba, que es una inversión única: 300–500 USD el de una placa y 700–1200 USD el de panel. Repartido en 1000 placas suma 0,3–1,2 USD por placa; en 10 000, 0,03–0,12 USD. Tampoco incluye resina, etiqueta ni mano de obra propia.</p>
+    <h3>Fuentes</h3>
+    <ol class="list src-list" id="srclist"></ol>
   </section>
 
-  <section id="s12" aria-labelledby="h12s">
-    <div class="sec-head"><h2 id="h12s"><span class="num">12</span>Auditoría del modelo</h2><span class="tag">qué tan sólido es cada resultado</span></div>
-    <h3>12.1 Cadena de cálculo</h3>
-    <ol class="list">
-      <li><strong>Lista de modos de falla</strong> (anexo, sección 10): cada pieza con sus modos (corto, abierto, deriva…), más fabricación, firmware, operación, ambiente y sistema. Cada fila dice qué produce: P1–P4, latente o sin efecto.</li>
-      <li><strong>Probabilidad de cada fila</strong>: P = λ · 10⁻⁹ · f · horas · c · m (sección 3). λ sale de la tabla 4.2, f de la 4.3, c de la 4.4; las horas son k_d · años · 8760 + 40 s. Las filas de fabricación, cableado y operación usan una probabilidad por unidad (4.5).</li>
-      <li><strong>Combinaciones de dos fallas</strong> (para P1): se multiplican las probabilidades de los latentes de a pares (Q1 y Q2 en corto, una llave y un pin trabado, etc.).</li>
-      <li><strong>Monte Carlo</strong> para energía (P3) y tiempo (P2, P4): scripts <code>retardo/montecarlo_energia_tabla.py</code> y <code>retardo/montecarlo_fallos.py</code> en el repositorio.</li>
-      <li><strong>Suma por modo</strong>: P1, P2, P3 y P4 son la suma de sus filas. Cada número de la página tiene su cálculo a la vista en las memorias de cálculo (secciones 5–7) y en el anexo.</li>
-    </ol>
-    <h3>12.2 Supuestos de estructura</h3>
-    <div class="scroll"><table style="min-width:900px"><thead><tr><th>Supuesto</th><th>Por qué es razonable</th><th>Cuándo deja de valer</th><th>Efecto si falla</th></tr></thead><tbody>
-      <tr><td>Tasa de falla constante en el tiempo (modelo exponencial)</td><td>Es la base de MIL-HDBK-217F y de los datos de fabricante. La prueba al 100 % elimina la mortalidad infantil</td><td>Almacenamientos largos con desgaste (capacitores de polímero en humedad, años) o lotes con defectos latentes</td><td>Subestima P3 con muchos años de almacenamiento</td></tr>
-      <tr><td>Suma de probabilidades en lugar de 1 − Π(1 − p)</td><td>Cada término es ≪ 1; el error es menor que el producto de dos términos</td><td>Si algún término pasa de ~1 %</td><td>Despreciable con los valores actuales</td></tr>
-      <tr><td>Fallas independientes</td><td>Las causas comunes conocidas (sobretensión de VDD, ESD, cortos de PCB) se modelaron aparte como filas propias</td><td>Fallas de lote entero: componente defectuoso, perfil de soldado, firmware</td><td>Subestima mucho: un problema de lote afecta a todas las placas a la vez. Lo cubre la prueba al 100 %, no el modelo</td></tr>
-      <tr><td>Factor de reposo único para todas las piezas</td><td>Regla general publicada (Harris: 1/30 a 1/60)</td><td>Piezas sensibles a humedad o ciclos térmicos en almacenamiento (polímero, juntas)</td><td>Puede subestimar esas piezas</td></tr>
-      <tr><td>Valor central = media geométrica del dato bajo y alto</td><td>Las fuentes difieren hasta 1000 veces; la media geométrica es el centro en escala logarítmica</td><td>Si una de las dos fuentes está claramente más cerca de la realidad</td><td>El rango (bajo–alto) muestra cuánto puede moverse</td></tr>
-      <tr><td>Datos de fabricante al 60 % de confianza</td><td>Es el estándar de la industria para FIT</td><td>—</td><td>Son cotas superiores de sus ensayos: el valor bajo ya es algo conservador</td></tr>
-      <tr><td>Lo sistemático y lo ambiental no se suman</td><td>No tienen tasa publicada</td><td>Siempre</td><td>El total no incluye firmware, choque, vibración, RF ni ESD: se cubren con ensayos</td></tr>
-    </tbody></table></div>
-    <h3>12.3 De qué datos depende cada resultado</h3>
-    <p>Cada fila tiene el respaldo del dato más débil que usa (A dato de la misma pieza · B norma o pieza equivalente · C supuesto razonado · D sin base). La barra muestra qué parte de cada probabilidad sale de cada tipo de dato.</p>
-    <div class="scroll"><table id="grade-share" style="min-width:820px"></table></div>
-    <div class="legend"><span><i class="sw" style="background:var(--c-drive);border:0"></i>A</span><span><i class="sw" style="background:var(--c-count);border:0"></i>B</span><span><i class="sw" style="background:var(--c-store);border:0"></i>C</span><span><i class="sw" style="background:var(--c-init);border:0"></i>D</span></div>
-    <h3>12.4 Qué entradas mueven más el resultado (recomendado: temporizador)</h3>
-    <p>Cada barra cambia una sola entrada entre un valor bajo y uno alto razonables, dejando el resto fijo. La línea vertical es el valor central; la escala es logarítmica (cada marca es un factor de 10).</p>
-    <h3 style="font-size:15px">P1 · activa antes de t1</h3>
-    <div class="bars" id="tor-P1"></div>
-    <h3 style="font-size:15px">P2 · activa entre t1 y la ventana</h3>
-    <div class="bars" id="tor-P2"></div>
-    <h3 style="font-size:15px">P3 · no activa</h3>
-    <div class="bars" id="tor-P3"></div>
-    <h3>12.5 Veredicto de solidez</h3>
-    <div id="verdict" class="prose">
-      <div class="callout" style="--cc:var(--c-drive)"><p><strong>Robusto: las comparaciones.</strong> Que el recomendado tiene unas 100 veces menos P1 que el original, y la mitad de P3 que el micro sin prueba previa, se sostiene con cualquier combinación de entradas de la sección 12.4: viene de eliminar caminos de falla simple y de sacar la pieza que más falla, no de un número fino.</p></div>
-      <div class="callout" style="--cc:var(--c-store)"><p><strong>P1 del recomendado (4,7 × 10⁻⁹):</strong> el 90 % es una doble falla, el temporizador con la salida trabada en el nivel activo y U3 sin bloquear. Las dos partes son supuestos (respaldo C): el 5 % de fallas con salida activa (TI no lo separa en su reparto) y la eficacia del enclavamiento (0,01, deliberadamente pesimista). Rango creíble: 6 × 10⁻¹⁰ a 5 × 10⁻⁸. Para respaldarlo: verificar el arranque de DRV y ensayar el enclavamiento.</p></div>
-      <div class="callout" style="--cc:var(--c-store)"><p><strong>P2 y P4 (2,7 × 10⁻⁶ y 2,2 × 10⁻⁶):</strong> el 80–96 % sale del 50 % de “precisión degradada” del reparto de TI, repartido mitad hacia corto y mitad hacia largo, y supone que <strong>todas</strong> esas fallas sacan T de ±5 s. Es conservador: con ~7 veces de margen en la precisión, probablemente solo una parte las saque. La tasa de falla del temporizador es dato de TI (respaldo A); el reparto hacia corto o largo es supuesto.</p></div>
-      <div class="callout" style="--cc:var(--c-store)"><p><strong>P3 (6,2 × 10⁻⁵):</strong> lo domina el camino de energía, con datos de respaldo B y C. Las tasas de falla lo mueven entre 2 × 10⁻⁵ y 3 × 10⁻⁴; un almacenamiento sin control (k_d 1/10) lo multiplica por 5; un iniciador que pida 3 A²·ms en lugar de 2, por 3. Para respaldarlo: dato de all-fire, fuga de C_F medida y condiciones reales de almacenamiento del cliente.</p></div>
-      <div class="callout" style="--cc:var(--c-drive)"><p><strong>Precio: sólido a ±10 %.</strong> Piezas y tarifas de armado son datos publicados. Lo que más lo mueve es el derecho de importación (0–20 %) y la amortización del banco de prueba.</p></div>
-      <p><strong>En resumen:</strong> el modelo sirve para elegir entre alternativas y priorizar. Los valores absolutos tienen alrededor de un orden de magnitud de incertidumbre; P2 y P4 del temporizador están del lado pesimista. No deberían presentarse como valores certificados hasta reemplazar los supuestos C y D por mediciones.</p>
+  <section id="salt" aria-labelledby="haltsec">
+    <div class="sec-head"><h2 id="haltsec"><span class="num">13</span>Alternativas evaluadas</h2><span class="tag">diseños y piezas descartados, con sus datos para reflotarlos</span></div>
+    <p>El análisis empezó por el diseño del documento original y pasó por un diseño mejorado con microcontrolador antes de llegar al temporizador. Esta sección guarda esos diseños y los datos relevados, para poder retomarlos si cambian los requisitos (por ejemplo, si el cliente pudiera hacer una prueba antes del uso, o si T tuviera que programarse por cable).</p>
+    <ul class="list">
+      <li><a href="#s2">13.1 Diseño original analizado</a>: esquemático del documento de diseño y sus puntos de falla.</li>
+      <li><a href="#s14">13.2 Diseño mejorado con micro</a>: esquemático, cambios, comparación micro contra temporizador.</li>
+      <li><a href="#s7b">13.3 Cómo bajar P3 con micro y autoprueba</a>.</li>
+      <li><a href="#s15">13.4 Datos clave de las alternativas</a>: arquitecturas, integrados revisados, fabricación y prueba.</li>
+    </ul>
+  </section>
+
+  <!-- 2 ESQUEMÁTICO ANALIZADO -->
+  <section id="s2" aria-labelledby="h2s">
+    <div class="sec-head"><h2 id="h2s"><span class="num">13.1</span>Diseño original analizado</h2><span class="tag">referencia PIC12LF1822 · equivalente STM32L010</span></div>
+    <p>Es el esquemático del documento de diseño, recortado a los cuatro bloques del núcleo. Los círculos numerados marcan los puntos donde se originan las contribuciones principales a P1 y P3.</p>
+    <div class="legend">
+      <span style="color:var(--c-store)"><i class="sw"></i>Almacenamiento</span>
+      <span style="color:var(--c-count)"><i class="sw"></i>Contador</span>
+      <span style="color:var(--c-drive)"><i class="sw"></i>Driver</span>
+      <span style="color:var(--c-init)"><i class="sw"></i>Iniciador</span>
+      <span>Las etiquetas de red con el mismo nombre están conectadas.</span>
     </div>
-    <h3>12.6 Cómo verificarlo de forma independiente</h3>
-    <ol class="list">
-      <li><strong>Recalcular a mano una fila</strong> con la fórmula de la sección 3 y los valores de las tablas 4.2–4.4 (el ejemplo de C_F abierto está resuelto en la sección 3).</li>
-      <li><strong>Revisar las fuentes</strong>: cada valor de las tablas 4.1–4.5 tiene su referencia numerada en la sección 15; MIL-HDBK-217F se leyó de las tablas originales del Apéndice A.</li>
-      <li><strong>Reproducir el Monte Carlo</strong> con los scripts del repositorio.</li>
-      <li><strong>Contrastar con datos propios</strong>: la prueba al 100 % y los ensayos del lote piloto dan la tasa real de escapes, la cobertura de la autoprueba (con fallas inyectadas), la fuga de C_F y el retardo del temporizador. Con cero fallas en n unidades, la cota al 95 % es 3/n.</li>
-      <li><strong>Datos de campo</strong>: el registro por número de serie permite comparar las fallas observadas con lo que predice el modelo y recalibrarlo.</li>
-    </ol>
+    <div class="scroll sch">
+      <svg viewBox="0 0 1090 800" role="img" aria-label="Esquemático analizado con marcas de los puntos de falla: corto a masa del drain de Q1, sobretensión del LDO, cortos de R1 y R3, salidas del MCU, acople en las gates, cristal y C_F.">
+        <defs>
+          <g id="res" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H14M46 0H60"/><rect x="14" y="-6" width="32" height="12"/></g>
+          <g id="cap" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H27M33 0H60M27 -13V13M33 -13V13"/></g>
+          <g id="pcap" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H27M34 0H60M27 -13V13"/><path d="M38 -13Q31 0 38 13"/><path d="M14 -16h6M17 -19v6" stroke-width="1.2"/></g>
+          <g id="sch" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H20M40 0H60"/><path d="M20 -10L40 0L20 10Z"/><path d="M44 -6V-10H40V10H36V6"/></g>
+          <g id="tvs" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H20M40 0H60"/><path d="M20 -10L40 0L20 10Z"/><path d="M44 -13L40 -10V10L36 13"/></g>
+          <g id="xtal" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H20M40 0H60M20 -12V12M40 -12V12"/><rect x="24" y="-9" width="12" height="18"/></g>
+          <g id="gnd" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0V8M-10 8H10M-6 12H6M-2 16H2"/></g>
+          <g id="nmos" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M-30 0H-9M-9 -13V13"/><path d="M-3 -16V-8M-3 -4V4M-3 8V16"/><path d="M-3 -12H14V-30M-3 12H14V30M14 0V12M14 0H3"/><path d="M-2 0L5 -4V4Z" fill="currentColor"/></g>
+          <g id="pmos" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M-30 0H-9M-9 -13V13"/><path d="M-3 -16V-8M-3 -4V4M-3 8V16"/><path d="M-3 -12H14V-30M-3 12H14V30M14 0V-12M14 0H-3"/><path d="M12 0L5 -4V4Z" fill="currentColor"/></g>
+          <g id="mark"><circle r="10"/></g>
+        </defs>
+        <rect x="10" y="40" width="720" height="385" rx="4" class="zone zstore"/>
+        <text x="20" y="417" class="ztag tstore">ALMACENAMIENTO DE ENERGÍA</text>
+        <rect x="745" y="172" width="335" height="253" rx="4" class="zone zdrive"/>
+        <text x="1070" y="417" text-anchor="end" class="ztag tdrive">DRIVER</text>
+        <rect x="900" y="100" width="180" height="66" rx="4" class="zone zinit"/>
+        <text x="1070" y="118" text-anchor="end" class="ztag tinit">INICIADOR</text>
+        <rect x="10" y="450" width="1070" height="342" rx="4" class="zone zcount"/>
+        <text x="20" y="470" class="ztag tcount">CONTADOR</text>
+
+        <rect x="22" y="70" width="22" height="340" rx="2" class="w"/>
+        <text x="22" y="62" class="lbl">J1</text><text x="52" y="82" class="lbl">+12 V</text><text x="52" y="392" class="lbl">GND</text>
+        <path class="w" d="M44 90H160M220 90H300M360 90H940V110M940 170V180M940 240V280M940 340V400M44 400H940"/>
+        <use href="#res" transform="translate(160 90)"/><text x="190" y="76" text-anchor="middle" class="lbl">R_s 0,1–0,5 Ω</text>
+        <use href="#sch" transform="translate(300 90)"/><text x="330" y="76" text-anchor="middle" class="lbl">D1 SS34</text>
+        <text x="600" y="82" text-anchor="middle" class="lbl">V_CF ≈ 11,3 V</text>
+        <path class="w" d="M130 90V200M130 260V400"/><use href="#tvs" transform="translate(130 260) rotate(-90)"/>
+        <text x="146" y="226" class="lbl">D3</text><text x="146" y="240" class="val">SMAJ15A</text>
+        <path class="w" d="M250 90V130M250 190V230M250 290V400M250 210H262"/>
+        <use href="#res" transform="translate(250 130) rotate(90)"/><use href="#res" transform="translate(250 230) rotate(90)"/>
+        <text x="262" y="164" class="lbl">R1 100 kΩ</text><text x="262" y="264" class="lbl">R2 22 kΩ</text>
+        <g class="net"><rect x="262" y="202" width="90" height="16" rx="2"/><text x="307" y="214">LINE_SENSE</text></g>
+        <path class="w" d="M410 90V130M410 190V230M410 290V400M410 210H422"/>
+        <use href="#res" transform="translate(410 130) rotate(90)"/><use href="#res" transform="translate(410 230) rotate(90)"/>
+        <text x="422" y="164" class="lbl">R3 8,2 MΩ</text><text x="422" y="264" class="lbl">R4 1,8 MΩ</text>
+        <g class="net"><rect x="422" y="202" width="86" height="16" rx="2"/><text x="465" y="214">VCF_SENSE</text></g>
+        <path class="w" d="M540 90V200M540 260V400"/><use href="#pcap" transform="translate(540 200) rotate(90)"/>
+        <text x="558" y="226" class="lbl">C_F 330 µF</text><text x="558" y="240" class="val">25 V polímero</text>
+        <path class="w" d="M660 90V200M660 260V400"/><use href="#res" transform="translate(660 200) rotate(90)"/>
+        <text x="672" y="226" class="lbl">R_bleed</text><text x="672" y="240" class="val">4,7 MΩ</text>
+        <use href="#res" transform="translate(940 110) rotate(90)" style="color:var(--c-init)"/>
+        <text x="956" y="136" class="lbl">R_E</text><text x="956" y="150" class="val">1–2 Ω</text>
+        <use href="#nmos" transform="translate(926 210)"/><use href="#nmos" transform="translate(926 310)"/>
+        <text x="958" y="206" class="lbl">Q1</text><text x="958" y="220" class="val">AO3400A</text>
+        <text x="958" y="306" class="lbl">Q2</text><text x="958" y="320" class="val">AO3400A</text>
+        <path class="w" d="M840 210H896M866 210V220M840 310H896M880 310V320M880 380V400"/>
+        <use href="#res" transform="translate(866 220) rotate(90)"/><use href="#gnd" transform="translate(866 280)"/>
+        <use href="#res" transform="translate(880 320) rotate(90)"/>
+        <text x="856" y="254" text-anchor="end" class="lbl">R5 100 kΩ</text><text x="870" y="354" text-anchor="end" class="lbl">R6 100 kΩ</text>
+        <g class="net"><rect x="760" y="202" width="80" height="16" rx="2"/><text x="800" y="214">FIRE_A</text></g>
+        <g class="net"><rect x="760" y="302" width="80" height="16" rx="2"/><text x="800" y="314">FIRE_B</text></g>
+        <g class="dot">
+          <circle cx="44" cy="90" r="2.6"/><circle cx="44" cy="400" r="2.6"/>
+          <circle cx="130" cy="90" r="3"/><circle cx="250" cy="90" r="3"/><circle cx="410" cy="90" r="3"/><circle cx="540" cy="90" r="3"/><circle cx="660" cy="90" r="3"/>
+          <circle cx="130" cy="400" r="3"/><circle cx="250" cy="400" r="3"/><circle cx="410" cy="400" r="3"/><circle cx="540" cy="400" r="3"/><circle cx="660" cy="400" r="3"/><circle cx="880" cy="400" r="3"/>
+          <circle cx="250" cy="210" r="3"/><circle cx="410" cy="210" r="3"/><circle cx="866" cy="210" r="3"/><circle cx="880" cy="310" r="3"/>
+        </g>
+        <g class="net"><rect x="40" y="512" width="60" height="16" rx="2"/><text x="70" y="524">V_CF</text></g>
+        <path class="w" d="M100 520H140M200 520H320M260 520V540M380 555V590M440 520H620M480 520V540M540 520V540M620 620H596"/>
+        <use href="#sch" transform="translate(140 520)"/><text x="170" y="506" text-anchor="middle" class="lbl">D2 BAT54WS</text>
+        <use href="#cap" transform="translate(260 540) rotate(90)"/><use href="#gnd" transform="translate(260 600)"/>
+        <text x="276" y="568" class="lbl">C_loc</text><text x="276" y="582" class="val">10 µF 25 V</text>
+        <rect x="320" y="495" width="120" height="60" rx="2" class="w"/>
+        <text x="380" y="516" text-anchor="middle" class="lbl">U2 HT7525S</text><text x="380" y="532" text-anchor="middle" class="val">LDO 2,5 V</text>
+        <text x="326" y="550" class="sm">IN</text><text x="434" y="550" text-anchor="end" class="sm">OUT</text>
+        <use href="#gnd" transform="translate(380 590)"/>
+        <text x="580" y="512" text-anchor="middle" class="lbl">VDD</text>
+        <use href="#cap" transform="translate(480 540) rotate(90)"/><use href="#gnd" transform="translate(480 600)"/>
+        <text x="494" y="568" class="lbl">C4</text><text x="494" y="582" class="val">1 µF</text>
+        <use href="#cap" transform="translate(540 540) rotate(90)"/><use href="#gnd" transform="translate(540 600)"/>
+        <text x="555" y="568" class="lbl">C5</text><text x="555" y="582" class="val">100 nF</text>
+        <use href="#gnd" transform="translate(596 620)"/>
+        <rect x="620" y="490" width="220" height="160" rx="2" class="w"/>
+        <text x="730" y="552" text-anchor="middle" class="lbl" style="font-weight:600">U1 PIC12LF1822</text><text x="730" y="568" text-anchor="middle" class="val">alt. STM32L010</text>
+        <text x="628" y="524" class="sm">1 VDD</text><text x="628" y="624" class="sm">8 VSS</text>
+        <text x="832" y="519" text-anchor="end" class="sm">RA2 5</text><text x="832" y="559" text-anchor="end" class="sm">RA1 6</text>
+        <text x="832" y="599" text-anchor="end" class="sm">AN0/RA0 7</text><text x="832" y="639" text-anchor="end" class="sm">RA3 4</text>
+        <text x="660" y="642" text-anchor="middle" class="sm">RA5 2</text><text x="760" y="642" text-anchor="middle" class="sm">RA4 3</text>
+        <path class="w" d="M840 515H880M840 555H880M840 595H880M840 635H880"/>
+        <g class="net"><rect x="880" y="507" width="90" height="16" rx="2"/><text x="925" y="519">FIRE_A</text></g>
+        <g class="net"><rect x="880" y="547" width="90" height="16" rx="2"/><text x="925" y="559">FIRE_B</text></g>
+        <g class="net"><rect x="880" y="587" width="90" height="16" rx="2"/><text x="925" y="599">VCF_SENSE</text></g>
+        <g class="net"><rect x="880" y="627" width="90" height="16" rx="2"/><text x="925" y="639">LINE_SENSE</text></g>
+        <path class="w" d="M660 650V710M660 700H690M750 700H760M760 650V710"/>
+        <use href="#xtal" transform="translate(690 700)"/>
+        <text x="720" y="684" text-anchor="middle" class="lbl">Y1</text><text x="720" y="728" text-anchor="middle" class="sm">32,768 kHz</text>
+        <use href="#cap" transform="translate(660 710) rotate(90)"/><use href="#gnd" transform="translate(660 770)"/>
+        <use href="#cap" transform="translate(760 710) rotate(90)"/><use href="#gnd" transform="translate(760 770)"/>
+        <text x="642" y="744" text-anchor="end" class="lbl">C1 10 pF</text><text x="778" y="744" class="lbl">C2 10 pF</text>
+        <g class="dot"><circle cx="260" cy="520" r="3"/><circle cx="480" cy="520" r="3"/><circle cx="540" cy="520" r="3"/><circle cx="660" cy="700" r="3"/><circle cx="760" cy="700" r="3"/></g>
+        <!-- marcas -->
+        <g class="mk"><circle cx="912" cy="176" r="10"/><text x="912" y="180">1</text></g>
+        <g class="mk"><circle cx="452" cy="490" r="10"/><text x="452" y="494">2</text></g>
+        <g class="mk"><circle cx="232" cy="160" r="10"/><text x="232" y="164">3</text></g>
+        <g class="mk"><circle cx="392" cy="160" r="10"/><text x="392" y="164">3</text></g>
+        <g class="mk"><circle cx="852" cy="484" r="10"/><text x="852" y="488">4</text></g>
+        <g class="mk"><circle cx="906" cy="256" r="10"/><text x="906" y="260">5</text></g>
+        <g class="mk"><circle cx="906" cy="356" r="10"/><text x="906" y="360">5</text></g>
+        <g class="mk"><circle cx="800" cy="690" r="10"/><text x="800" y="694">6</text></g>
+        <g class="mk"><circle cx="620" cy="190" r="10"/><text x="620" y="194">7</text></g>
+      </svg>
+    </div>
+    <ul class="marks">
+      <li><span class="n">1</span><div><strong>Drain de Q1 a masa.</strong> Saltea las dos llaves: el puente queda sobre C_F y dispara en t0. Falla simple de P1. El mismo corto en el cable del iniciador es del montaje del cliente (fuera del alcance), pero tiene igual efecto.</div></li>
+      <li><span class="n">2</span><div><strong>LDO en corto entrada-salida.</strong> ~11 V en VDD; el MCU dañado puede dejar FIRE_A y FIRE_B en alto. Causa común de P1.</div></li>
+      <li><span class="n">3</span><div><strong>R1 o R3 en corto.</strong> 12 V o 11 V directo a un pin; la corriente entra a VDD por el diodo de protección. Causa común de P1.</div></li>
+      <li><span class="n">4</span><div><strong>Salidas del MCU.</strong> Una salida trabada en alto es latente; las dos juntas son P1. RA3 no tiene ADC: no puede medir el umbral de 5–6 V del modo programación.</div></li>
+      <li><span class="n">5</span><div><strong>Pull-downs de 100 kΩ.</strong> El flanco de carga de C_F acopla por C_rss y lleva la gate por encima de V_th (sección 5.3).</div></li>
+      <li><span class="n">6</span><div><strong>Cristal de 32 kHz.</strong> Primer aporte a P3: no arranca, se fractura por choque o arranca tarde en frío.</div></li>
+      <li><span class="n">7</span><div><strong>C_F.</strong> Su capacidad, fuga y ESR en frío fijan el margen de energía contra el I²t del iniciador (sección 7.3).</div></li>
+    </ul>
   </section>
 
   <!-- 14 ALTERNATIVA: MICRO -->
   <section id="s14" aria-labelledby="h14s">
-    <div class="sec-head"><h2 id="h14s"><span class="num">13</span>Alternativa evaluada: esquemático mejorado con micro</h2><span class="tag">referencia STM32L010F4 · piezas nuevas en violeta</span></div>
+    <div class="sec-head"><h2 id="h14s"><span class="num">13.2</span>Diseño mejorado con micro</h2><span class="tag">referencia STM32L010F4 · piezas nuevas en violeta</span></div>
     <p>Mantiene la arquitectura del documento (un solo reservorio, micro alimentado por D2 y LDO, dos llaves en serie) y cambia lo necesario para cerrar los caminos de P1 encontrados. Pasa al STM32L010F4 porque el PIC12LF1822 no tiene pines analógicos libres para medir la línea y V_CF a la vez.</p>
     <div class="legend">
       <span style="color:var(--c-new)"><i class="sw" style="border-style:solid"></i>Pieza nueva o cambiada</span>
@@ -1026,7 +1027,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
         <g class="net newnet"><rect x="980" y="774" width="60" height="16" rx="2"/><text x="1010" y="786">LOOP</text></g>
         <g class="net newnet"><rect x="1072" y="718" width="76" height="16" rx="2"/><text x="1110" y="730">LOOP_SENSE</text></g>
         <g class="dot"><circle cx="1010" cy="750" r="3"/><circle cx="1110" cy="750" r="3"/></g>
-        <text x="40" y="812" class="sm new-t">R11–R13: red de autoprueba (continuidad con ≈ 4 µA, sección 7.4)</text>
+        <text x="40" y="812" class="sm new-t">R11–R13: red de autoprueba (continuidad con ≈ 4 µA, sección 13.3)</text>
         <g opacity="0.35">
         <path class="w" d="M690 680V740M690 730H720M780 730H830M830 680V740"/>
         <use href="#xtal" transform="translate(720 730)"/>
@@ -1057,7 +1058,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <tr><td>Pull-down de 10 kΩ y C_GS de 4,7 nF en cada gate</td><td class="n">R6, R10 10 kΩ; C8, C9 4,7 nF; R9 1 kΩ serie</td><td>El acople del flanco baja de ~0,9 V a ~0,1 V en la gate (sección 5.3). R9 limita la corriente si U3 mantiene la gate a masa mientras FIRE_B está alto.</td><td>Marca 5: chequeo dV/dt pasa.</td><td class="n">≈ 0,005 USD</td></tr>
       <tr><td>Enclavamiento de t1 por hardware</td><td class="n">U3 supervisor con retardo, C7 1 µF</td><td>La salida de drenador abierto de U3 mantiene la gate de Q2 a masa durante ~6 s desde el arranque (retardo = C_T/175 nF + 0,5 ms: ≈ 5,7 s con C_T = 1 µF). Independiente del firmware: ninguna falla del MCU puede disparar antes de t1. <strong>Corrección:</strong> la hoja de datos da 0,62–1,44 s para el valor típico de 1,03 s (±40 %); con ±10 % de C_T el retardo queda entre ~3,1 y ~8,8 s y el mínimo cae debajo de t1. Hace falta un temporizador más preciso (ver chequeo abajo).</td><td>Marca 4: fallas del MCU que llevan a P1 × 0,01. Agrega sus propios modos (anexo).</td><td class="n">≈ 0,12 USD</td></tr>
       <tr><td>Filtro en VCF_SENSE y LINE_SENSE con ADC</td><td class="n">C6 100 nF; LINE_SENSE a PA1</td><td>El ADC muestrea bien un divisor de 1,5 MΩ; el modo programación se decide midiendo la tensión y no con un pin digital.</td><td>Reduce abortos en falso (no modelado aparte).</td><td class="n">≈ 0,002 USD</td></tr>
-      <tr><td>Red de autoprueba (sección 7.4)</td><td class="n">R11, R13 1 MΩ; R12 220 kΩ; LOOP_SENSE a PA4</td><td>Permite verificar Q1, Q2, el cable y el puente con ~4 µA antes del uso, sin encender las dos llaves juntas. Baja P3 y detecta latentes de P1.</td><td>Ver sección 7.4.</td><td class="n">≈ 0,004 USD</td></tr>
+      <tr><td>Red de autoprueba (sección 13.3)</td><td class="n">R11, R13 1 MΩ; R12 220 kΩ; LOOP_SENSE a PA4</td><td>Permite verificar Q1, Q2, el cable y el puente con ~4 µA antes del uso, sin encender las dos llaves juntas. Baja P3 y detecta latentes de P1.</td><td>Ver sección 13.3.</td><td class="n">≈ 0,004 USD</td></tr>
       <tr><td>Prueba de cada llave por separado en el banco</td><td class="n">Comando de prueba + pads</td><td>Detecta un MOSFET en corto de fábrica que la prueba funcional normal no ve.</td><td>Corto latente de armado × 0.</td><td class="n">sin costo de BOM</td></tr>
       <tr><td>Armado en JLCPCB</td><td class="n">+10 piezas, +25 soldaduras, ~6 referencias nuevas</td><td>25 × 0,0017 USD por soldadura y carga de alimentadores (1,53–3 USD por referencia y pedido) repartida en 1000 placas.</td><td>—</td><td class="n">≈ 0,06 USD</td></tr>
       <tr class="tot"><td>Total por placa, 1000 u</td><td></td><td>Materiales ≈ 0,14 + armado ≈ 0,06. Con derechos, tasa de estadística y despachante (× ~1,19), ≈ 0,24 USD puesta en Argentina.</td><td></td><td class="n">≈ 0,20 USD FOB</td></tr>
@@ -1067,7 +1068,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
         <dl class="kv"><dt>Ventana necesaria</dt><dd>≥ 4,2 s (t1 + 5 %) y ≤ 9,5 s (t2 mín. − 5 %)</dd><dt>Relación máx./mín. admisible</dt><dd>2,26</dd><dt>TPS3808, solo el CI</dt><dd>1,44 / 0,62 = 2,32</dd><dt>TPS3808 + C_T ±10 %</dt><dd>≈ 2,8 → 3,1–8,8 s</dd><dt>TPL5111 (a verificar)</dt><dd>1 % típ. + 100–400 ppm/°C ≈ ±4 % → 5,8–6,2 s para 6 s</dd></dl>
         <p class="small">El TPS3808 no puede cubrir la ventana ni con un capacitor perfecto. Un temporizador de precisión como el TPL5111 de TI (35 nA) entra con margen, pero hay que verificar la lógica de su salida en modo de un solo pulso y cotizarlo antes de cambiarlo en el esquemático. El modelo sigue usando las tasas de falla del TPS3808.</p></div>
     </div>
-    <h3 id="s141">13.1 Configuración con micro y autoprueba (era la recomendada antes de saber que no hay prueba previa al uso)</h3>
+    <h3 id="s141">13.2.1 Configuración con micro y autoprueba (era la recomendada antes de saber que no hay prueba previa al uso)</h3>
     <p>Es el esquemático mejorado de arriba más las medidas para bajar P3 y la forma de producir y usar la placa. En el dibujo, Y1, C1 y C2 aparecen atenuados: en el recomendado no se montan.</p>
     <div class="scroll"><table style="min-width:860px"><thead><tr><th>Parte</th><th>Qué incluye</th><th>Estado</th></tr></thead><tbody>
       <tr><td>Esquemático</td><td>Mejorado (llave del lado alto, clamp de VDD, pull-downs de 10 kΩ + C_GS, enclavamiento de t1, filtros) + red de autoprueba R11–R13 + ARM_T1 leído en PA5 + pads de prueba</td><td>Falta reemplazar el TPS3808 (no cubre la ventana de t1)</td></tr>
@@ -1075,25 +1076,63 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <tr><td>Fabricación</td><td>Panel de 30 en armado estándar; JLCPCB solo arma; sin rayos X</td><td>Confirmar el formato de panel con JLCPCB</td></tr>
       <tr><td>Prueba</td><td>Banco propio al 100 %: programación, autoprueba, fuga de C_F, disparo sobre 2 Ω; prueba corta después de encapsular</td><td>A construir</td></tr>
       <tr><td>Almacenamiento</td><td>Temperatura y humedad controladas, bolsa barrera (k_d 1/60)</td><td>Logística</td></tr>
-      <tr><td>Interfaz con el cliente</td><td>El cableado al iniciador, la carcasa y la instalación son del cliente; los requisitos están en la sección 8.4</td><td>Documento de interfaz a entregar</td></tr>
+      <tr><td>Interfaz con el cliente</td><td>El cableado al iniciador, la carcasa y la instalación son del cliente; los requisitos están en la sección 2.4</td><td>Documento de interfaz a entregar</td></tr>
       <tr><td>Uso</td><td>T se programa poco antes del uso, con autoprueba y la orden en formato legible por máquina con relectura automática</td><td>Procedimiento a escribir</td></tr>
     </tbody></table></div>
-    <h3 id="s143">13.2 T fijo de 30 s y 2–3 años de almacenamiento: micro o temporizador</h3>
+    <h3 id="s143">13.2.2 T fijo de 30 s y 2–3 años de almacenamiento: micro o temporizador</h3>
     <p>Con T fijo hay dos caminos. <strong>Micro</strong>: el recomendado con T grabado en el firmware. <strong>Temporizador solo</strong>: un TPL5111 cuenta los 30 s con un resistor de ajuste y maneja las dos llaves; no hay micro, cristal, divisores ni autoprueba; se mantienen la llave del lado alto, el clamp de VDD y U3. Con T = 30 s, el TPS3808 alcanza como enclavamiento de t1 en los dos (C_T para ~8 s: 4,3–12 s contando tolerancias, dentro de 4,2–28,5 s). Cálculo con 3 años de almacenamiento, almacenamiento controlado (k_d 1/60) y banco de fábrica al 100 %.</p>
     <div class="scroll"><table id="opt-table" style="min-width:900px"></table></div>
     <p class="small">El temporizador es el <strong>TPL5110-Q1</strong> (versión automotriz), porque TI publica sus datos de falla (SNAA343A): 4 FIT, reparto de modos 50 % sin salida y 50 % precisión degradada, y el análisis por pin. Supuestos que quedan: que toda la “precisión degradada” sale de ±5 % (conservador), el 5 % de fallas que dejan la salida trabada en el nivel activo, y la cola del error de tiempo (los datos de deriva son típicos). Regla de diseño que sale del análisis por pin: el nivel que ordena disparar no debe ser el que produce un corto a masa.</p>
-    <h3>13.3 Resultado: original, mejorado y micro + autoprueba (2 años, T programable)</h3>
+    <h3>13.2.3 Resultado: original, mejorado y micro + autoprueba (2 años, T programable)</h3>
     <div class="scroll"><table id="cmp" style="min-width:720px"></table></div>
     <p class="small">El consumo de U3 (~2,4 µA) suma ~0,1 mC en 40 s al presupuesto de carga de C_F y hay que incluirlo en el dimensionado. Los cambios no tocan P2 ni P4, que dependen de cómo se fija T.</p>
   </section>
 
+  <section id="s7b" aria-labelledby="h7bs">
+    <div class="sec-head"><h2 id="h7bs"><span class="num">13.3</span>Cómo bajar P3 con micro y autoprueba</h2><span class="tag">sobre el esquemático propuesto</span></div>
+    <p class="small"><strong>Nota:</strong> esta sección se escribió para el diseño con micro (sección 13.2). La autoprueba requiere probar antes del uso, que el cliente no puede hacer; para el recomendado aplican la prueba de fabricación reforzada y el almacenamiento controlado.</p>
+    <p>Cinco sextas partes de P3 son piezas que se rompen mientras la placa está guardada, más defectos de fabricación que pasan la prueba. Las medidas que más rinden son las que detectan esas fallas antes del uso o eliminan piezas que fallan.</p>
+    <div class="scroll"><table id="p3-scen" style="min-width:860px"></table></div>
+    <p class="small">Calculado con el mismo modelo (λ centrales, 2 años, k_d 1/30 salvo donde se indica). Lo que queda dominando con las cuatro medidas:</p>
+    <ul class="list small" id="p3-rest"></ul>
+    <div class="grid2">
+      <div class="prose">
+        <h3>1. Autoprueba al programar T</h3>
+        <p>Si T se programa poco antes del uso, ese paso sirve también de prueba. A 5 V el firmware ya está en modo programación con los pines de disparo bloqueados. Puede verificar que responden el micro, el LDO y D2; que arranca el oscilador; el CRC de la EEPROM; la lectura del ADC; la capacidad de C_F (midiendo el tiempo de descarga por R_bleed); y la continuidad del camino de disparo con la red R11–R13 del esquemático propuesto. Una unidad que no pasa se descarta en lugar de fallar en el uso.</p>
+        <p>En el modelo, la autoprueba detecta el 90 % de las fallas de piezas ocurridas antes de la prueba, los defectos de fabricación y los cables abiertos, y deja expuesta una semana entre la prueba y el uso. El 90 % es un supuesto: hay que medir la cobertura real inyectando fallas en placas de prueba.</p>
+        <p>También detecta MOSFET en corto, que son latentes de P1. P1 casi no cambia porque lo domina el corto a masa del cable, que la prueba no puede anticipar.</p>
+      </div>
+      <div class="check">
+        <h3>Secuencia segura de la prueba de continuidad</h3>
+        <ol class="list" style="font-size:13.5px">
+          <li>Las dos llaves abiertas. R13 (1 MΩ a VDD) lleva LOOP a un valor intermedio conocido. Si LOOP ≈ V_CF, Q1 está en corto; si LOOP ≈ 0, Q2 está en corto o el cable del lado bajo toca masa. En los dos casos se rechaza y <strong>no se sigue</strong>.</li>
+          <li>Solo Q2 encendida: LOOP debe ir a 0 V. Verifica que Q2 conduce.</li>
+          <li>Q2 apagada y solo Q1 encendida: LOOP debe subir a V_CF a través del puente. Verifica Q1, el cable y la continuidad del puente.</li>
+          <li>Nunca se encienden las dos llaves a la vez durante la prueba.</li>
+        </ol>
+        <p class="small">La corriente por el puente durante la prueba es la del divisor: 5 V / 1,22 MΩ ≈ 4 µA, unas 50 000 veces menos que la corriente de no-activación (0,2 A). Esta secuencia es una propuesta: hay que revisarla con el análisis de fallas del propio circuito de prueba antes de usarla con el iniciador conectado.</p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="prose">
+        <h3>2. Sacar el cristal</h3>
+        <p>Con ±5 % de tolerancia la precisión no depende del cristal. El oscilador interno calibrado contra el HSI16 cumple si su deriva en temperatura es menor que ~4 %: ST da ±1 % a 25 °C y no publica el número en temperatura en la nota de calibración, así que hay que confirmarlo en la tabla de la hoja de datos del STM32L010. Se eliminan Y1, C1 y C2 y, además, dos riesgos sin tasa: que el cristal no arranque en frío y que se fracture con el choque.</p>
+      </div>
+      <div class="prose">
+        <h3>3. Prueba de fabricación reforzada</h3>
+        <p>Inspección óptica y por rayos X de las juntas de la etapa de disparo, prueba en circuito o con puntas volantes, y un ciclado térmico corto antes de la prueba funcional para que fallen las juntas marginales. Divide los escapes por ~10 (supuesto: depende de lo que ofrezca el ensamblador). <strong>4. Almacenamiento controlado</strong> (temperatura y humedad estables, bolsa barrera) acerca k_d al extremo bajo de Harris (1/60).</p>
+      </div>
+    </div>
+    <p class="small">No recomendado: dos canales de disparo completos en paralelo. P3 bajaría a ~10⁻⁷, pero cada canal puede disparar solo: P1 se duplica y vuelven las fallas simples.</p>
+  </section>
+
   <section id="s15" aria-labelledby="h15s">
-    <div class="sec-head"><h2 id="h15s"><span class="num">14</span>Datos clave de las alternativas evaluadas</h2><span class="tag">para reflotar una alternativa sin rehacer la búsqueda</span></div>
-    <h3>14.1 Arquitecturas</h3>
+    <div class="sec-head"><h2 id="h15s"><span class="num">13.4</span>Datos clave de las alternativas</h2><span class="tag">para reflotar una alternativa sin rehacer la búsqueda</span></div>
+    <h3>13.4.1 Arquitecturas</h3>
     <div class="scroll"><table id="alt-table" style="min-width:1000px"></table></div>
     <p class="small">Las filas marcadas “modelo” salen del cálculo de esta página en las mismas condiciones del recomendado (T fijo, ventana ±5 s, 3 años, banco al 100 %). Las marcadas “estimación” no están cargadas en el modelo.</p>
 
-    <h3>14.2 Integrados temporizadores y de enclavamiento revisados</h3>
+    <h3>13.4.2 Integrados temporizadores y de enclavamiento revisados</h3>
     <div class="scroll"><table style="min-width:1050px"><thead><tr><th>Integrado</th><th>Tipo</th><th>Consumo</th><th>Precisión / tiempo</th><th>Calificación</th><th>Datos de falla</th><th>Precio aprox. (1000 u)</th><th>Veredicto y cuándo reflotarlo</th></tr></thead><tbody>
       <tr style="font-weight:600"><td>TI TPL5110-Q1</td><td>Temporizador, ajuste por resistor, 100 ms – 7200 s</td><td class="n">35 nA típ. / 50 nA máx.</td><td>Oscilador ±0,5 % garantizado a 25 °C; 150 ppm/°C, ±0,6 % de ajuste y ±0,24 % de vida (típicos)</td><td>AEC-Q100 grado 1 (−40 a 125 °C)</td><td>Sí: 4 FIT (IEC TR 62380), FMD 50/50, análisis por pin (SNAA343A)</td><td class="n">0,35–0,51 USD (LCSC C1539984)</td><td><strong>Elegido.</strong> Sin segunda fuente</td></tr>
       <tr><td>TI TPL5110 / TPL5111 comerciales</td><td>Misma familia</td><td class="n">35 nA</td><td>Igual (TPL5111: salida activa en alto)</td><td>Comercial</td><td>No (sin documento propio)</td><td class="n">0,27–0,40 USD (TPL5111 C2870554)</td><td>Ahorra 0,1–0,2 USD pero sin datos de falla. Reflotar si el costo pasa a ser lo principal</td></tr>
@@ -1107,7 +1146,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <tr><td>STM32L010F4P6</td><td>Microcontrolador</td><td class="n">~1 µA en Stop con LSE</td><td>Cristal 0,32 % máx.; HSI16 ±1 % típ. a 25 °C</td><td>Comercial</td><td>No publicado (FIT a pedido a ST)</td><td class="n">0,70 USD (LCSC C529415)</td><td>Reflotar si vuelve a ser posible una prueba antes del uso o se necesita T programable por cable</td></tr>
     </tbody></table></div>
 
-    <h3>14.3 Fabricación y prueba (datos relevados)</h3>
+    <h3>13.4.3 Fabricación y prueba (datos relevados)</h3>
     <div class="scroll"><table style="min-width:860px"><thead><tr><th>Tema</th><th>Dato</th><th>Fuente</th></tr></thead><tbody>
       <tr><td>Panel</td><td>Pedir en panel de ~30 (6 × 5, ~82 × 95 mm), orificios de ruptura, bordes de 5 mm. JLCPCB cobra un mínimo de armado de 0,46–0,48 USD por placa del pedido: en panel cada panel cuenta como una placa. Pedidas sueltas, JLCPCB las separa</td><td>JLCPCB: Panelizing your PCB for Assembly; PCB assembly price; PCB Assembly FAQs part 2</td></tr>
       <tr><td>Tarifas de armado (estándar)</td><td>Preparación ~25,6 USD; stencil ~8,2; alimentadores 1,53 por referencia; soldaduras 0,0016 USD hasta 50 000 juntas y 0,0013 hasta 100 000</td><td>JLCPCB: PCB assembly price (11/2026)</td></tr>
@@ -1118,30 +1157,6 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <tr><td>Separación del panel</td><td>Con herramienta (matriz o cuchilla rodante), nunca doblando; cerámicos a ≥ 3 mm del borde y paralelos</td><td>Práctica de la industria</td></tr>
       <tr><td>Puentes de configuración</td><td>0 Ω montados por máquina &gt; estaño a mano &gt; corte de pista. En la cadena, las fallas de soldadura alargan T; un corte incompleto lo acorta</td><td>Análisis de este informe</td></tr>
     </tbody></table></div>
-  </section>
-
-  <section id="s13" aria-labelledby="h11s">
-    <h2 id="h11s"><span class="num">15</span>Límites del análisis y fuentes</h2>
-    <h3>Qué tan reales son los números</h3>
-    <ul class="list">
-      <li><strong>Extremo alto de las tasas:</strong> MIL-HDBK-217F Notice 2, Apéndice A, leído de las tablas originales (ambiente G_B, piezas comerciales). Es la referencia pública más usada, pero sus datos son de 1991–1995: para un MCU actual da ~1900 FIT, decenas de veces más que lo que publican los fabricantes.</li>
-      <li><strong>Extremo bajo:</strong> datos de fabricante. De la misma pieza o familia: MOSFET (AOS), C_F (Panasonic), MLCC (Vishay), resistores (Panasonic), supervisor (TI). De una pieza equivalente: LDO (TI TPS7A16), diodos (Nexperia BAS40LS), cristal (TI, osciladores). Para el MCU no hay dato: se usa el valor de referencia de SN 29500-2.</li>
-      <li><strong>Supuestos sin dato:</strong> probabilidades condicionales, cortos de cableado, cobertura de la prueba, fuga de C_F y el reparto de modos del MCU. La tabla de la sección 4.1 los marca con respaldo C o D: son los primeros que conviene reemplazar por mediciones propias.</li>
-      <li><strong>Sin cuantificar:</strong> choque y vibración, ambiente electromagnético y errores de firmware. Para P1 y P3 pueden ser mayores que todo lo sumado; los cubre el plan de ensayos.</li>
-      <li>Para demostrar por ensayo P &lt; 10⁻³ con 95 % de confianza hacen falta ~3000 unidades sin falla (regla de 3/n). Los valores más chicos salen del análisis, no del ensayo.</li>
-    </ul>
-    <h3>Datos que faltan</h3>
-    <div class="scroll"><table style="min-width:640px"><thead><tr><th>Dato</th><th>Afecta</th></tr></thead><tbody>
-      <tr><td>I²t de all-fire del iniciador (media y desvío o datos probit) y corriente de no-activación</td><td>P3 (dominante si supera 3 A²·ms) y P1 por acople</td></tr>
-      <tr><td>Tiempo y temperatura de almacenamiento</td><td>P1 y P3 latentes, lineal</td></tr>
-      <tr><td>Perfil de choque y vibración</td><td>Cristal y juntas → P3</td></tr>
-      <tr><td>Flanco, impedancia y rebotes del pulso de 12 V</td><td>Acople dV/dt → P1; carga de C_F → P3</td></tr>
-      <tr><td>Ambiente electromagnético (RF, ESD, descargas)</td><td>P1 por EMI/EOS</td></tr>
-      <tr><td>FIT del STM32L0 a pedir a ST, con la temperatura de uso</td><td>P3 y P1 por MCU</td></tr>
-      <tr><td>Quién y dónde programa T</td><td>P2 y P4</td></tr>
-    </tbody></table></div>
-    <h3>Fuentes</h3>
-    <ol class="list src-list" id="srclist"></ol>
   </section>
 </main>
 
@@ -1445,42 +1460,44 @@ function calcTable(el, k, rows, total, showTotal) {
   const head = `<thead><tr><th>Ref.</th><th>Mecanismo</th><th>Tipo</th><th>Cálculo</th><th>P</th><th>% de ${k}</th><th>Fuente</th></tr></thead>`;
   const body = rows.map(x => { const sh = total ? 100 * x.p / total : 0; const src = x.r.fam ? [x.r.fsrc].concat(L[x.r.fam][2]) : [x.r.psrc]; const t = typeOf(x.r);
     return `<tr><td class="n">${x.r.ref}</td><td>${x.r.modo}<br><span class="small">${x.r.mec}</span></td><td><span class="t-${t}">${TLAB[t]}</span></td><td class="f">${x.f}</td><td class="n">${fmt(x.p)}</td><td class="n"><span class="share" style="--cc:${COL[k]};width:${Math.max(1, sh * 0.6)}px"></span>${sh < 0.1 ? "< 0,1" : dec(sh, sh < 10 ? 1 : 0)} %</td><td class="src">${srcLinks(src)}</td></tr>`; }).join("");
-  const tot = showTotal ? `<tr class="tot"><td></td><td>Total ${k}</td><td></td><td class="f">suma de ${RB.all.filter(x => x.r.ef === k && x.p > 0).length} términos</td><td class="n">${fmt(total)}</td><td class="n">100 %</td><td></td></tr>` : "";
+  const tot = showTotal ? `<tr class="tot"><td></td><td>Total ${k}</td><td></td><td class="f">suma de ${RT.all.filter(x => x.r.ef === k && x.p > 0).length} términos</td><td class="n">${fmt(total)}</td><td class="n">100 %</td><td></td></tr>` : "";
   el.innerHTML = head + "<tbody>" + body + tot + "</tbody>";
 }
-["P1", "P2", "P4"].forEach(k => calcTable($("calc-" + k), k, RB.all.filter(x => x.r.ef === k && x.p > 0).sort((a, b) => b.p - a.p), RB.tot[k], true));
-const p3rows = RB.all.filter(x => x.r.ef === "P3" && x.p > 0).sort((a, b) => b.p - a.p);
-calcTable($("calc-P3"), "P3", p3rows.slice(0, 12), RB.tot.P3, false);
-calcTable($("calc-P3-rest"), "P3", p3rows.slice(12), RB.tot.P3, true);
+["P1", "P2", "P4"].forEach(k => calcTable($("calc-" + k), k, RT.all.filter(x => x.r.ef === k && x.p > 0).sort((a, b) => b.p - a.p), RT.tot[k], true));
+const p3rows = RT.all.filter(x => x.r.ef === "P3" && x.p > 0).sort((a, b) => b.p - a.p);
+calcTable($("calc-P3"), "P3", p3rows.slice(0, 12), RT.tot.P3, false);
+calcTable($("calc-P3-rest"), "P3", p3rows.slice(12), RT.tot.P3, true);
 $("p3-more-sum").textContent = `Resto de los términos de P3 (${p3rows.length - 12}) y total`;
-["P1", "P2", "P3", "P4"].forEach(k => { const el = $(k === "P2" || k === "P4" ? "p24-tag" : k.toLowerCase() + "-tag"); if (el) el.textContent = k === "P2" || k === "P4" ? `P2 = ${fmt(RB.tot.P2)} · P4 = ${fmt(RB.tot.P4)} (caso base)` : `${k} = ${fmt(RB.tot[k])} (caso base)`; });
+["P1", "P2", "P3", "P4"].forEach(k => { const el = $(k === "P2" || k === "P4" ? "p24-tag" : k.toLowerCase() + "-tag"); if (el) el.textContent = k === "P2" || k === "P4" ? `P2 = ${fmt(RT.tot.P2)} · P4 = ${fmt(RT.tot.P4)} (recomendado)` : `${k} = ${fmt(RT.tot[k])} (recomendado)`; });
 
 // grupos de P3
-const grp = { "Fallas de piezas en almacenamiento": x => !!x.r.fam, "Fabricación": x => x.r.blk === "fab", "Cableado del iniciador": x => x.r.blk === "ini" && !x.r.fam, "Energía insuficiente (Monte Carlo)": x => x.r.blk === "calc" };
+const grp = { "Fallas de piezas en almacenamiento": x => !!x.r.fam, "Fabricación": x => x.r.blk === "fab", "Energía insuficiente (Monte Carlo)": x => x.r.blk === "calc" };
+const HT = Math.round(hoursOf(TREC));
 $("grp-P3").innerHTML = `<thead><tr><th>Grupo</th><th>P</th><th>% de P3</th><th>Cómo se obtiene</th></tr></thead><tbody>` +
-  Object.keys(grp).map(g => { const p = p3rows.filter(grp[g]).reduce((a, x) => a + x.p, 0); const how = { "Fallas de piezas en almacenamiento": "λ · f · 584 h · c, por pieza y modo (sección 3)", "Fabricación": "defectos que pasan la prueba (sección 4)", "Cableado del iniciador": "supuesto por unidad (sección 4)", "Energía insuficiente (Monte Carlo)": "C_F = 330 µF, all-fire 2 A²·ms" }[g];
-    return `<tr><td>${g}</td><td class="n">${fmt(p)}</td><td class="n"><span class="share" style="--cc:${COL.P3};width:${Math.max(1, 100 * p / RB.tot.P3 * 0.6)}px"></span>${dec(100 * p / RB.tot.P3, 0)} %</td><td>${how}</td></tr>`; }).join("") +
-  `<tr class="tot"><td>Total P3</td><td class="n">${fmt(RB.tot.P3)}</td><td class="n">100 %</td><td>sin la confiabilidad propia del iniciador</td></tr></tbody>`;
+  Object.keys(grp).map(g => { const p = p3rows.filter(grp[g]).reduce((a, x) => a + x.p, 0); const how = { "Fallas de piezas en almacenamiento": `λ · f · ${HT} h · c, por pieza y modo (sección 3)`, "Fabricación": "defectos que pasan la prueba de banco (sección 4.5)", "Energía insuficiente (Monte Carlo)": "C_F = 330 µF, all-fire 2 A²·ms (sección 7.3)" }[g];
+    return `<tr><td>${g}</td><td class="n">${fmt(p)}</td><td class="n"><span class="share" style="--cc:${COL.P3};width:${Math.max(1, 100 * p / RT.tot.P3 * 0.6)}px"></span>${dec(100 * p / RT.tot.P3, 0)} %</td><td>${how}</td></tr>`; }).join("") +
+  `<tr class="tot"><td>Total P3</td><td class="n">${fmt(RT.tot.P3)}</td><td class="n">100 %</td><td>sin la confiabilidad propia del iniciador ni el cableado del cliente</td></tr></tbody>`;
 
-// --- árbol P1
+// --- árbol P1 (recomendado)
 (function () {
-  const v = x => x ? fmt(x.p) : "0";
-  const by = (ref, modo) => RB.all.find(x => x.r.ref === ref && x.r.modo.startsWith(modo));
-  const single = [by("Cable", "Cable del iniciador"), by("PCB", "Corto entre pistas: drain")];
-  const cc = [by("U2 LDO", "Salida alta"), by("R1", "Corto"), by("R3", "Corto"), by("U1 MCU", "Falla interna")];
-  const dbl = RB.all.filter(x => x.r.blk === "calc" && x.r.ef === "P1");
-  const sum = a => a.reduce((t, x) => t + (x ? x.p : 0), 0);
-  const dv = dvdt(BASE);
+  const P1 = RT.all.filter(x => x.r.ef === "P1" && x.p > 0);
+  const pick = f => P1.filter(f), sum = a => a.reduce((t, x) => t + x.p, 0);
+  const single = pick(x => /drain de Q1/.test(x.r.modo));
+  const tmr = pick(x => x.r.ref === "U4 + U3");
+  const cc = pick(x => x.r.fam && x.r.ref !== "U4 + U3" && !/drain de Q1/.test(x.r.modo));
+  const dbl = pick(x => x.r.blk === "calc");
+  const dv = dvdt(TREC);
   const orSvg = `<svg width="46" height="40" viewBox="0 0 46 40" aria-hidden="true"><path d="M23 0V6" stroke="var(--ink)" stroke-width="1.5"/><path d="M6 34Q23 24 40 34Q38 14 23 6Q8 14 6 34Z" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.6"/><text x="23" y="29" text-anchor="middle" style="font-size:9px;font-weight:600">O</text><path d="M23 31V40" stroke="var(--ink)" stroke-width="1.5"/></svg>`;
   const node = (title, gate, items, total, cls) => `<div class="ft-node ${cls || ""}"><span class="g">${gate}</span><h4>${title}</h4>${total != null ? `<span class="pv">${total}</span>` : ""}<ul>${items.map(i => `<li><span>${i[0]}</span><span>${i[1]}</span></li>`).join("")}</ul></div>`;
-  $("ft-p1").innerHTML = `<div class="ft-top"><b>P1 · activa antes de t1</b><span>${fmt(RB.tot.P1)}</span></div>
+  const it = a => a.map(x => [x.r.ref + " · " + x.r.modo.replace(/\s*\(.*\)$/, ""), fmt(x.p)]);
+  $("ft-p1").innerHTML = `<div class="ft-top"><b>P1 · activa antes de t1</b><span>${fmt(RT.tot.P1)}</span></div>
     <div class="ft-gate">${orSvg}</div><div class="ft-bus"></div>
     <div class="ft-row">
-      ${node("Falla simple que saltea las llaves", "COMPUERTA O", [["Pista drain Q1 a GND", v(single[1])], ["Cable lado Q1 a masa (cliente)", "excluido"]], fmt(sum(single)))}
-      ${node("Causa común que enciende Q1 y Q2", "COMPUERTA O", [["LDO en corto", v(cc[0])], ["R1 en corto", v(cc[1])], ["R3 en corto", v(cc[2])], ["MCU sube ambas", v(cc[3])], ["ESD / EOS", "sin tasa"]], fmt(sum(cc)))}
-      ${node("Dos fallas independientes", "O de compuertas Y", dbl.map(x => [x.r.ref.replace(" + ", " y "), fmt(x.p)]), fmt(sum(dbl)))}
-      ${node("Acople dV/dt en las gates", "DETERMINISTA", [["V_gs inducida", dec(dv.vg, 2) + " V"], ["V_th mín. 70 °C", dec(dv.vthMin, 2) + " V"], ["Resultado", dv.vg > dv.vthMin ? "no pasa" : "pasa"]], null, "det")}
-      ${node("Error de firmware", "SISTEMÁTICO", [["Pines altos al arrancar", "sin tasa"], ["Cálculo de T", "sin tasa"]], null, "sys")}
+      ${node("Temporizador con la salida activa y U3 sin bloquear", "COMPUERTA Y", it(tmr), fmt(sum(tmr)))}
+      ${node("Corto que saltea una llave + la otra falla", "COMPUERTA Y", it(single).concat([["Cable al iniciador (cliente)", "excluido"]]), fmt(sum(single)))}
+      ${node("Causa común que enciende las dos llaves", "COMPUERTA O", it(cc).concat([["ESD / EOS", "sin tasa"]]), fmt(sum(cc)))}
+      ${node("Dos fallas independientes en las llaves", "O de compuertas Y", dbl.map(x => [x.r.ref.replace(" + ", " y "), fmt(x.p)]), fmt(sum(dbl)))}
+      ${node("A verificar en banco", "DETERMINISTA", [["Acople dV/dt", dv.vg > dv.vthMin ? "no pasa" : "pasa"], ["Arranque de DRV", "osciloscopio"]], null, "det")}
     </div>`;
 })();
 
@@ -1491,7 +1508,7 @@ function checksHtml(s, label) {
     <dl class="kv"><dt>R_s</dt><dd>${dec(s.rs)} Ω</dd><dt>dV/dt en el drain</dt><dd>${Math.round(dv.rate / 1000)} V/ms</dd><dt>Pull-down / C_GS</dt><dd>${dv.Rpd / 1000} kΩ / ${dv.Cgs ? "4,7 nF" : "—"}</dd><dt>V_gs inducida</dt><dd>${dec(dv.vg, 2)} V</dd><dt>V_th mínima a 70 °C</dt><dd>${dec(dv.vthMin, 2)} V</dd><dt>Unidades con V_th menor</dt><dd>${dv.frac > 0 ? Math.round(dv.frac * 100) + " % por MOSFET" : "ninguna"}</dd></dl>
     <p class="small">V_gs ≈ C_rss · dV/dt · R_pd, con C_rss = 50 pF y C_iss = 630 pF (hoja de datos AO3400A); tope en el divisor C_rss / (C_iss + C_GS). V_th: 0,65–1,45 V a 25 °C (hoja de datos); el coeficiente de −3 mV/°C es un valor típico de MOSFET de baja tensión, no figura en la hoja de datos. Estimación cuasi estática: medir con osciloscopio y la fuente real.</p></div>`;
 }
-$("p1-checks").innerHTML = checksHtml(BASE, "analizado") + checksHtml(PROP, "propuesto");
+$("p1-checks").innerHTML = checksHtml(TREC, "recomendado") + `<div class="check"><h3>Arranque de la salida del temporizador</h3><span class="status st-mid">A VERIFICAR</span><p>La hoja de datos dice que, tras leer el resistor (~100 ms), DRV queda en alto. Si en ese instante aparece un pulso al nivel de disparo, U3 lo retiene (Q2 sigue a masa hasta ~4,6 s), pero no debe depender de eso. Medir con osciloscopio DRV y ARM_T1 con la rampa real de VDD, en frío y en caliente.</p><p class="small">En el diseño original este chequeo de acople no pasaba (0,57 V contra 0,52 V); ver sección 13.1.</p></div>`;
 
 // --- comparación
 $("cmp").innerHTML = `<thead><tr><th>Modo</th><th>Original</th><th>Mejorado</th><th>Recomendado</th><th>Cambio total</th><th>Qué queda dominando en el recomendado</th></tr></thead><tbody>` +
@@ -1557,6 +1574,13 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
 
 // --- precio
 (function () {
+  const RBOM = [ // recomendado: temporizador, lista completa
+    ["U4", "TPL5110QDDCRQ1, temporizador automotriz", "C1539984", 1, 0.51, "lcsc"], ["U3", "TPS3808G01DBVR, enclavamiento", "C19653", 1, 0.11, "lcsc"],
+    ["U2", "LDO HT7525S", "C22466410", 1, 0.029, "doc"], ["Q1", "AO3401A (P-MOS, lado alto)", "C15127", 1, 0.040, "lcsc"], ["Q2", "AO3400A (lado bajo)", "C20917", 1, 0.056, "doc"],
+    ["Q4", "2N7002 (manejo de Q1)", "C8545", 1, 0.013, "doc"], ["D1", "SS34", "C8678", 1, 0.025, "doc"], ["D2", "BAT54WS", "C191198", 1, 0.010, "doc"], ["D3", "SMAJ15A", "C86819", 1, 0.030, "doc"],
+    ["D5", "TVS 3,3 V SOD-323 (precio estimado)", "a elegir", 1, 0.02, "est"], ["C_F", "Polímero 330 µF 25 V (según I²t)", "C54321572", 1, 0.125, "doc"], ["C_loc", "10 µF 25 V", "C15850", 1, 0.030, "doc"],
+    ["C4", "1 µF", "C52923", 1, 0.005, "doc"], ["C7", "1,5 µF (retardo de U3)", "a elegir", 1, 0.006, "est"], ["C5, C_U4", "100 nF", "C1525", 2, 0.002, "doc"], ["C8, C9", "4,7 nF (C_GS)", "básica", 2, 0.002, "est"],
+    ["R_s, R_bleed, R6–R12", "Resistores 0402", "varios", 9, 0.0012, "doc"], ["R0, Ra, Rb, Rc", "Cadena de ajuste 15,8k / 1,13k / 1,02k / 953 Ω, 1 %", "varios", 4, 0.0015, "est"], ["P1–P3", "Puentes de 0 Ω (hasta 3, según variante)", "básica", 3, 0.0012, "est"]];
   const BOM0 = [
     ["U1", "STM32L010F4P6 (TSSOP-20)", "C529415", 1, 0.697, "doc"], ["Y1", "Cristal 32,768 kHz", "C97604", 1, 0.111, "doc"], ["C1, C2", "10 pF C0G", "C32949", 2, 0.0015, "doc"],
     ["U2", "LDO HT7525S", "C22466410", 1, 0.029, "doc"], ["Q1, Q2", "AO3400A", "C20917", 2, 0.056, "doc"], ["Q3", "2N7002", "C8545", 1, 0.013, "doc"],
@@ -1580,7 +1604,7 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
     { n: "Original", mat: sum(BOM0), j: 70, feed: 16, prog: 30 },
     { n: "Mejorado", mat: sum(BOM0) + sum(DM), j: 95, feed: 22, prog: 30 },
     { n: "Micro + autoprueba", mat: sum(BOM0) + sum(DM) + sum(DR), j: 95, feed: 22, prog: 0 },
-    { n: "Recomendado: temporizador", mat: sum(BOM0) + sum(DM) + sum(DR) + sum(DT), j: 78, feed: 24, prog: 0 }];
+    { n: "Recomendado: temporizador", mat: sum(RBOM), j: 80, feed: 26, prog: 0 }];
   const rowsP = [];
   cfg.forEach(c => {
     const parts = c.mat * N * 1.03, setup = 25.6, sten = 8.2, feed = c.feed * 1.53, jo = joints(c.j * N), misc = 15, pcb = 60;
@@ -1591,25 +1615,27 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
   });
   const L1 = [["Materiales por placa (BOM)", r => "USD " + dec(r.c.mat, 3)], ["Piezas × 1000 × 1,03 (merma 3 %)", r => dec(r.parts, 0)], ["Preparación (estándar, una cara)", r => dec(r.setup, 1)], ["Stencil", r => dec(r.sten, 1)],
     ["Carga de alimentadores (referencias × 1,53)", r => `${r.c.feed} × 1,53 = ${dec(r.feed, 1)}`], ["Soldaduras (juntas × 1000, tarifa escalonada)", r => `${r.c.j} × 1000 → ${dec(r.jo, 0)}`], ["Accesorios, embalaje, varios", r => dec(r.misc, 0)],
-    ["Programación en JLCPCB", r => r.c.prog ? dec(r.c.prog, 0) : "0 (la hace el banco)"], ["Circuito impreso, 34 paneles", r => dec(r.pcb, 0)], ["Comisión de pago 2 %", r => dec(r.com, 0)],
+    ["Programación", r => r.c.prog ? dec(r.c.prog, 0) + " (JLCPCB)" : /temporizador/.test(r.c.n) ? "0 (sin firmware)" : "0 (la hace el banco)"], ["Circuito impreso, 34 paneles", r => dec(r.pcb, 0)], ["Comisión de pago 2 %", r => dec(r.com, 0)],
     ["<b>FOB total</b>", r => `<b>${dec(r.fob, 0)}</b>`], ["<b>FOB por placa</b>", r => `<b>${dec(r.fob / N, 2)}</b>`], ["Flete (DHL)", r => "70"], ["CIF", r => dec(r.cif, 0)],
     ["Derecho de importación 16 % del CIF", r => dec(r.duty, 0)], ["Tasa de estadística 3 % del CIF", r => dec(r.est, 0)], ["Despachante y depósito", r => dec(r.desp, 0)],
     ["<b>Puesta en Argentina, no recuperable</b>", r => `<b>${dec(r.land, 0)}</b>`], ["<b>Por placa puesta en Argentina</b>", r => `<b>${dec(r.land / N, 2)}</b>`],
     ["Control: armado por panel (mínimo de JLCPCB 0,48 USD)", r => `${dec(r.perPanel, 1)} USD por panel: ${r.perPanel > 0.48 ? "sin recargo" : "con recargo"}`]];
-  $("price-table").innerHTML = `<thead><tr><th>Concepto (USD, lote de 1000)</th>${rowsP.map(r => `<th>${r.c.n}</th>`).join("")}</tr></thead><tbody>` +
-    L1.map(([n, f]) => `<tr${/<b>/.test(n) ? ' class="tot"' : ""}><td>${n}</td>${rowsP.map(r => `<td class="n">${f(r)}</td>`).join("")}</tr>`).join("") + "</tbody>";
+  const RP2 = [rowsP[3], rowsP[0], rowsP[1], rowsP[2]];
+  $("price-table").innerHTML = `<thead><tr><th>Concepto (USD, lote de 1000)</th>${RP2.map((r, i) => `<th${i === 0 ? ' style="color:var(--c-new)"' : ""}>${i === 0 ? r.c.n : "Alternativa: " + r.c.n}</th>`).join("")}</tr></thead><tbody>` +
+    L1.map(([n, f]) => `<tr${/<b>/.test(n) ? ' class="tot"' : ""}><td>${n}</td>${RP2.map((r, k) => `<td class="n"${k === 0 ? ' style="font-weight:600"' : ""}>${f(r)}</td>`).join("")}</tr>`).join("") + "</tbody>";
   const SRCN = { doc: "documento de diseño (LCSC, 04/11/2026)", lcsc: "LCSC, consulta 11/2026", est: "estimado, sin precio consultado" };
   const bomRow = (x, sign) => `<tr><td class="n">${x[0]}</td><td>${x[1]}</td><td class="n">${x[2]}</td><td class="n">${x[3]}</td><td class="n">${dec(x[4], 4)}</td><td class="n">${dec(x[3] * x[4], 4)}</td><td class="src">${SRCN[x[5]]}</td></tr>`;
   $("bom-table").innerHTML = `<thead><tr><th>Ref.</th><th>Pieza</th><th>LCSC</th><th>Cant.</th><th>USD c/u</th><th>Subtotal</th><th>Origen del precio</th></tr></thead><tbody>` +
-    `<tr><td colspan="7"><b>Original</b></td></tr>` + BOM0.map(bomRow).join("") + `<tr class="tot"><td></td><td>Total original</td><td></td><td></td><td></td><td class="n">${dec(sum(BOM0), 3)}</td><td></td></tr>` +
-    `<tr><td colspan="7"><b>Cambios del mejorado</b></td></tr>` + DM.map(bomRow).join("") + `<tr class="tot"><td></td><td>Total mejorado</td><td></td><td></td><td></td><td class="n">${dec(sum(BOM0) + sum(DM), 3)}</td><td></td></tr>` +
-    `<tr><td colspan="7"><b>Cambios de micro + autoprueba</b></td></tr>` + DR.map(bomRow).join("") + `<tr class="tot"><td></td><td>Total micro + autoprueba</td><td></td><td></td><td></td><td class="n">${dec(sum(BOM0) + sum(DM) + sum(DR), 3)}</td><td></td></tr>` +
-    `<tr><td colspan="7"><b>Cambios del recomendado (temporizador)</b></td></tr>` + DT.map(bomRow).join("") + `<tr class="tot"><td></td><td>Total recomendado (temporizador)</td><td></td><td></td><td></td><td class="n">${dec(sum(BOM0) + sum(DM) + sum(DR) + sum(DT), 3)}</td><td></td></tr></tbody>`;
+    RBOM.map(bomRow).join("") + `<tr class="tot"><td></td><td>Total recomendado (materiales por placa)</td><td></td><td></td><td></td><td class="n">${dec(sum(RBOM), 3)}</td><td></td></tr></tbody>`;
+  $("bom-alt").innerHTML = `<thead><tr><th>Ref.</th><th>Pieza</th><th>LCSC</th><th>Cant.</th><th>USD c/u</th><th>Subtotal</th><th>Origen del precio</th></tr></thead><tbody>` +
+    `<tr><td colspan="7"><b>Original (documento de diseño)</b></td></tr>` + BOM0.map(bomRow).join("") + `<tr class="tot"><td></td><td>Total original</td><td></td><td></td><td></td><td class="n">${dec(sum(BOM0), 3)}</td><td></td></tr>` +
+    `<tr><td colspan="7"><b>Cambios del mejorado con micro</b></td></tr>` + DM.map(bomRow).join("") + `<tr class="tot"><td></td><td>Total mejorado</td><td></td><td></td><td></td><td class="n">${dec(sum(BOM0) + sum(DM), 3)}</td><td></td></tr>` +
+    `<tr><td colspan="7"><b>Cambios de micro + autoprueba</b></td></tr>` + DR.map(bomRow).join("") + `<tr class="tot"><td></td><td>Total micro + autoprueba</td><td></td><td></td><td></td><td class="n">${dec(sum(BOM0) + sum(DM) + sum(DR), 3)}</td><td></td></tr></tbody>`;
   window.PRICES = rowsP.map(r => ({ n: r.c.n, fob: r.fob / N, land: r.land / N }));
   const ROWS = [["Original (documento de diseño)", RO3, 0], ["Micro, T fijo, solo banco", RMB, 2], ["Micro + autoprueba antes del uso (no aplicable)", RMA, 2], ["Recomendado: temporizador TPL5110-Q1", RT, 3]];
   $("rec-box").innerHTML = `<div class="scroll"><table style="min-width:760px"><thead><tr><th>Configuración</th><th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>FOB por placa</th><th>Puesta en Argentina</th></tr></thead><tbody>` +
     ROWS.map(([n, r, pi], i) => `<tr${i === 3 ? ' style="font-weight:600;color:var(--c-new)"' : ""}><td>${n}</td>${["P1", "P2", "P3", "P4"].map(k => `<td class="n">${fmt(r.tot[k])}</td>`).join("")}<td class="n">${dec(window.PRICES[pi].fob, 2)} USD</td><td class="n">${dec(window.PRICES[pi].land, 2)} USD</td></tr>`).join("") +
-    `</tbody></table></div><p class="small">Todas en las mismas condiciones: T fijo (25–40 s), ventana ±5 s, 3 años de almacenamiento controlado, banco de fábrica al 100 %, sin prueba antes del uso salvo donde se indica. Lote de 1000 placas en panel de 30. Cómo se calcula: secciones 3–7 (probabilidad) y 11 (precio); qué tan sólido es: sección 12.</p>`;
+    `</tbody></table></div><p class="small">Todas en las mismas condiciones: T fijo (25–40 s), ventana ±5 s, 3 años de almacenamiento controlado, banco de fábrica al 100 %, sin prueba antes del uso salvo donde se indica. Lote de 1000 placas en panel de 30. Cómo se calcula: secciones 3–7 (probabilidad) y 8 (precio); qué tan sólido es: sección 9.</p>`;
   const tr = $("tmr-res"); if (tr) tr.innerHTML = `<thead><tr><th>Modo</th><th>Valor central</th><th>Rango (λ bajas – altas)</th><th>Qué lo domina</th></tr></thead><tbody>` + ["P1", "P2", "P3", "P4"].map(k => { const top = RT.all.filter(x => x.r.ef === k && x.p > 0).sort((a, b) => b.p - a.p).slice(0, 2); return `<tr><td><span class="pill e-${k}">${k}</span></td><td class="n">${fmt(RT.tot[k])}</td><td class="n">${fmt(RTLO.tot[k])} – ${fmt(RTHI.tot[k])}</td><td>${top.map(x => x.r.ref + " · " + x.r.modo + " (" + Math.round(100 * x.p / RT.tot[k]) + " %)").join("<br>")}</td></tr>`; }).join("") + "</tbody>";
 })();
 
@@ -1648,7 +1674,7 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
 (function () {
   const X = (o) => Object.assign({}, PROP, o, { m: Object.assign({}, PROP.m, o.m || {}) });
   const sc = [
-    ["Esquemático mejorado con micro (sección 13)", PROP, "—", "—"],
+    ["Esquemático mejorado con micro (sección 13.2)", PROP, "—", "—"],
     ["+ Autoprueba al programar T", X({ m: { bit: true } }), "C (cobertura 90 % supuesta)", "≈ 0,005 USD + firmware"],
     ["+ Sin cristal (oscilador interno calibrado)", X({ m: { noxtal: true } }), "C (precisión del HSI16 a confirmar)", "ahorra ≈ 0,11 USD"],
     ["+ Prueba de fabricación reforzada (escapes ÷ 10)", X({ m: { fab: true } }), "C", "tiempo de banco"],
