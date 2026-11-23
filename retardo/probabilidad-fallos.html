@@ -743,7 +743,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     <h3 id="s83">8.3 T fijo de 30 s y 2–3 años de almacenamiento: micro o temporizador</h3>
     <p>Con T fijo hay dos caminos. <strong>Micro</strong>: el recomendado con T grabado en el firmware. <strong>Temporizador solo</strong>: un TPL5111 cuenta los 30 s con un resistor de ajuste y maneja las dos llaves; no hay micro, cristal, divisores ni autoprueba; se mantienen la llave del lado alto, el clamp de VDD y U3. Con T = 30 s, el TPS3808 alcanza como enclavamiento de t1 en los dos (C_T para ~8 s: 4,3–12 s contando tolerancias, dentro de 4,2–28,5 s). Cálculo con 3 años de almacenamiento, almacenamiento controlado (k_d 1/60) y banco de fábrica al 100 %.</p>
     <div class="scroll"><table id="opt-table" style="min-width:900px"></table></div>
-    <p class="small">El temporizador solo no tiene datos publicados de modos de falla: el reparto (40 % sin salida, 15 % salida activa desde el arranque, 15 % intervalo corto, 15 % intervalo largo) es un supuesto, y su FIT usa el del TPS3808E como dato bajo. Por eso sus P1, P2 y P4 tienen respaldo C. La cola del error de tiempo depende de la deriva máxima garantizada del TPL5111, que falta confirmar (respaldo D).</p>
+    <p class="small">El temporizador es el <strong>TPL5110-Q1</strong> (versión automotriz), porque TI publica sus datos de falla (SNAA343A): 4 FIT, reparto de modos 50 % sin salida y 50 % precisión degradada, y el análisis por pin. Supuestos que quedan: que toda la “precisión degradada” sale de ±5 % (conservador), el 5 % de fallas que dejan la salida trabada en el nivel activo, y la cola del error de tiempo (los datos de deriva son típicos). Regla de diseño que sale del análisis por pin: el nivel que ordena disparar no debe ser el que produce un corto a masa.</p>
     <h3>Resultado: original, mejorado y recomendado</h3>
     <div class="scroll"><table id="cmp" style="min-width:720px"></table></div>
     <p class="small">El consumo de U3 (~2,4 µA) suma ~0,1 mC en 40 s al presupuesto de carga de C_F y hay que incluirlo en el dimensionado. Los cambios no tocan P2 ni P4, que dependen de cómo se fija T.</p>
@@ -971,6 +971,8 @@ const SRC = {
   leak:  ["Power Systems Design: fuga de capacitores de polímero ≈ 0,2·C·V; híbridos ≤ 0,01·C·V (Panasonic)", "https://www.powersystemsdesign.com/articles/aluminum-electrolytic-capacitor-performance-and-circuit-impacts/22/19562"],
   tev:   ["Teverovsky, NASA TM-2024: capacitores de aluminio-polímero, corrientes de fuga operativas y su variación con humedad y temperatura", "https://nepp.nasa.gov/docs/tasks/005a-APC-Aluminum-Polymer-Capacitors/NASA-TM-2024-Teverovsky-Paper-Aluminum-Polymer-Capacitors-20240011830.pdf"],
   an4631: ["ST AN4631: HSI16 del STM32L0 ±1 % típico a 25 °C, empeora entre −40 y 105 °C", "https://www.st.com/resource/en/application_note/an4631-how-to-calibrate-an-stm32l0xx-internal-rc-oscillator-stmicroelectronics.pdf"],
+  ti5110: ["Texas Instruments SNAA343A, TPL5110-Q1: 4 FIT (IEC TR 62380), reparto de modos (precisión 50 %, sin salida 50 %) y análisis de fallas por pin", "https://www.ti.com/lit/pdf/snaa343"],
+  tpl5110ds: ["TI, hoja de datos TPL5110-Q1: oscilador ±0,5 % a 25 °C (mín./máx.), 150 ppm/°C, ±0,24 % en la vida útil, ajuste ±0,6 %, 35 nA", "https://www.ti.com/lit/ds/symlink/tpl5110-q1.pdf"],
   sup:   ["Supuesto de este análisis (sin dato publicado)", null],
   mc:    ["Cálculo de este análisis (Monte Carlo o combinación)", null]
 };
@@ -989,7 +991,7 @@ const L = {
   mcu:  [25, 1900, ["sn29500", "mil217", "st"], "Microcontrolador", "U1", "Bajo: SN 29500-2, CMOS digital/mixto, 25 FIT de referencia a 55 °C (citado por TI); ST no publica el FIT del STM32L0. Alto: MIL-HDBK-217F N2, microprocesador MOS hasta 32 bits, G_B 0,19/10⁶ h × π_Q 10. El manual es de 1991 y sobreestima mucho a los MCU actuales."],
   xtal: [15, 67, ["ti", "mil217"], "Cristal de cuarzo", "Y1", "Bajo: TI, osciladores de cristal 15–30 FIT (no es el cristal solo). Alto: MIL-HDBK-217F N2, cristal de cuarzo, G_B 0,032/10⁶ h × π_Q 2,1 (no MIL)."],
   fet:  [13, 112, ["aos", "mil217"], "MOSFET", "Q1, Q2, Q4", "Bajo: AOS AO3400, 13 FIT a 55 °C, 60 % (informe de 2005). Alto: MIL-HDBK-217F N2, FET de silicio, G_B 0,014/10⁶ h × π_Q 8 (plástico)."],
-  tmr:  [6, 95, ["ti3808", "mil217", "sup"], "Temporizador TPL5111 (opción 2)", "U4", "TI no publica el FIT del TPL5111: se usa el del TPS3808E (6 FIT, misma clase de integrado analógico de TI) como dato bajo y MIL-HDBK-217F lineal MOS (95 FIT) como alto."],
+  tmr:  [4, 95, ["ti5110", "mil217"], "Temporizador TPL5110-Q1 (opción 2)", "U4", "Bajo: TI SNAA343A, TPL5110-Q1, 4 FIT por IEC TR 62380 (SN 29500-2: 25 FIT de referencia). Alto: MIL-HDBK-217F N2, lineal MOS, G_B 0,0095/10⁶ h × π_Q 10."],
   pcb:  [2.5, 9.1, ["mil217"], "Circuito impreso y soldaduras", "PCB", "MIL-HDBK-217F N2: placa SMT G_B 0,0025/10⁶ h (bajo) y la misma más ~95 juntas por reflujo de 6,9 × 10⁻⁵/10⁶ h cada una (alto)."]
 };
 // req: solo con esa mejora; nreq: solo sin ella
@@ -1054,18 +1056,17 @@ const R = [
   {blk:"cnt", ref:"U3, C7", modo:"Retardo fuera de especificación (16 %)", mec:"La mitad de los casos alarga el retardo más allá de t2 (P4); la otra mitad lo acorta (latente, se pierde el enclavamiento).", ef:"P4", frac:.16, fsrc:"ti3808", fam:"svr", cond:.5, req:"t1"},
   {blk:"cnt", ref:"C7", modo:"Corto", mec:"Sin retardo: U3 libera enseguida.", ef:"L", frac:.49, fsrc:"dsiac", fam:"mlcc", req:"t1"},
   {blk:"cnt", ref:"C7", modo:"Abierto", mec:"Retardo mínimo: se pierde el enclavamiento.", ef:"L", frac:.22, fsrc:"dsiac", fam:"mlcc", req:"t1"},
-  {blk:"cnt", ref:"U4 TPL5111", modo:"La salida nunca se activa", mec:"No ordena el disparo.", ef:"P3", frac:.40, fsrc:"sup", fam:"tmr", req:"tmr"},
-  {blk:"cnt", ref:"U4 TPL5111", modo:"Salida activa desde el arranque", mec:"Ordena disparar en t0; el enclavamiento U3 lo retiene hasta ~8 s y ahí dispara.", ef:"P2", frac:.15, fsrc:"sup", fam:"tmr", req:"tmr"},
-  {blk:"cnt", ref:"U4 + U3", modo:"Salida activa desde el arranque y enclavamiento inoperante", mec:"Mismo modo, con U3 sin bloquear: dispara en t0.", ef:"P1", frac:.15, fsrc:"sup", fam:"tmr", mit:["t1"], req:"tmr"},
-  {blk:"cnt", ref:"U4 TPL5111", modo:"Intervalo más corto que T − 5 %", mec:"Dispara antes de tiempo (después de que U3 libera).", ef:"P2", frac:.15, fsrc:"sup", fam:"tmr", req:"tmr"},
-  {blk:"cnt", ref:"U4 TPL5111", modo:"Intervalo más largo que T + 5 %", mec:"Dispara tarde.", ef:"P4", frac:.15, fsrc:"sup", fam:"tmr", req:"tmr"},
-  {blk:"cnt", ref:"U4 TPL5111", modo:"Otros (sin efecto en la demanda)", mec:"Pines auxiliares, consumo.", ef:"N", frac:.15, fsrc:"sup", fam:"tmr", req:"tmr"},
-  {blk:"cnt", ref:"R_T", modo:"Abierto", mec:"El TPL5111 lee un valor inválido: se toma como sin disparo.", ef:"P3", frac:.59, fsrc:"dsiac", fam:"res", req:"tmr"},
-  {blk:"cnt", ref:"R_T", modo:"Corto", mec:"Intervalo mínimo: dispara cuando U3 libera (~8 s).", ef:"P2", frac:.05, fsrc:"dsiac", fam:"res", req:"tmr"},
+  {blk:"cnt", ref:"U4 TPL5110-Q1", modo:"Sin salida (50 %)", mec:"No ordena el disparo.", ef:"P3", frac:.50, fsrc:"ti5110", fam:"tmr", req:"tmr"},
+  {blk:"cnt", ref:"U4 TPL5110-Q1", modo:"Precisión de tiempo degradada, hacia corto (25 %)", mec:"La mitad del 50 % de “precisión degradada”; se supone que siempre sale de ±5 %. Dispara antes, después de que U3 libera.", ef:"P2", frac:.25, fsrc:"ti5110", fam:"tmr", req:"tmr"},
+  {blk:"cnt", ref:"U4 TPL5110-Q1", modo:"Precisión de tiempo degradada, hacia largo (25 %)", mec:"Ídem hacia el lado lento.", ef:"P4", frac:.25, fsrc:"ti5110", fam:"tmr", req:"tmr"},
+  {blk:"cnt", ref:"U4 TPL5110-Q1", modo:"Pin de salida en corto al nivel activo", mec:"Análisis por pin de TI: un pin en corto fuerza la salida. Diseñando para que el corto a masa (el más común) sea el estado seguro, queda el corto a VDD. U3 lo retiene hasta ~8 s y ahí dispara.", ef:"P2", frac:.05, fsrc:"sup", fam:"tmr", req:"tmr"},
+  {blk:"cnt", ref:"U4 + U3", modo:"Pin de salida en corto y enclavamiento inoperante", mec:"Mismo modo con U3 sin bloquear: dispara en t0.", ef:"P1", frac:.05, fsrc:"sup", fam:"tmr", mit:["t1"], req:"tmr"},
+  {blk:"cnt", ref:"R_T", modo:"Abierto", mec:"Análisis por pin de TI: puede ir al intervalo máximo (7200 s) → no dispara a tiempo.", ef:"P3", frac:.59, fsrc:"dsiac", fam:"res", req:"tmr"},
+  {blk:"cnt", ref:"R_T", modo:"Corto", mec:"Análisis por pin de TI: va al intervalo mínimo (100 ms); dispara cuando U3 libera (~8 s).", ef:"P2", frac:.05, fsrc:"dsiac", fam:"res", req:"tmr"},
   {blk:"cnt", ref:"R_T", modo:"Deriva hacia abajo", mec:"T más corto.", ef:"P2", frac:.18, fsrc:"dsiac", fam:"res", cond:.3, req:"tmr"},
   {blk:"cnt", ref:"R_T", modo:"Deriva hacia arriba", mec:"T más largo.", ef:"P4", frac:.18, fsrc:"dsiac", fam:"res", cond:.3, req:"tmr"},
-  {blk:"cnt", ref:"U4", modo:"Error de tiempo paramétrico fuera de ±5 % (antes)", mec:"Suma de errores 2–3,6 % en el peor caso con la deriva típica; la cola depende de la deriva máxima garantizada, que falta confirmar.", ef:"P2", p:[1e-8, 1e-5], psrc:"sup", req:"tmr"},
-  {blk:"cnt", ref:"U4", modo:"Error de tiempo paramétrico fuera de ±5 % (después)", mec:"Ídem, hacia el lado lento.", ef:"P4", p:[1e-8, 1e-5], psrc:"sup", req:"tmr"},
+  {blk:"cnt", ref:"U4", modo:"Error de tiempo paramétrico fuera de ±5 % (antes)", mec:"Peor caso ≈ 2,3 % con los datos del TPL5110-Q1 (±0,5 % garantizado a 25 °C; 150 ppm/°C, ajuste ±0,6 % y vida ±0,24 % son típicos). La cola depende de cuánto se alejen los típicos del máximo; el banco rechaza unidades corridas a 25 °C.", ef:"P2", p:[1e-8, 1e-6], psrc:"sup", req:"tmr"},
+  {blk:"cnt", ref:"U4", modo:"Error de tiempo paramétrico fuera de ±5 % (después)", mec:"Ídem, hacia el lado lento.", ef:"P4", p:[1e-8, 1e-6], psrc:"sup", req:"tmr"},
   {blk:"drv", ref:"Q1", modo:"Corto drain-source", mec:"No dispara solo; combina con Q2 encendido.", ef:"L", frac:.51, fsrc:"ptc", fam:"fet", lat:"Q1"},
   {blk:"drv", ref:"Q1", modo:"Conduce (salida alta)", mec:"Equivalente a corto.", ef:"L", frac:.05, fsrc:"ptc", fam:"fet", lat:"Q1"},
   {blk:"drv", ref:"Q1", modo:"Abierto o no conduce", mec:"No cierra el circuito.", ef:"P3", frac:.27, fsrc:"ptc", fam:"fet"},
@@ -1286,7 +1287,7 @@ $("cmp").innerHTML = `<thead><tr><th>Modo</th><th>Original</th><th>Mejorado</th>
     return `<tr><td><span class="pill e-${k}">${k}</span></td><td class="n">${fmt(a)}</td><td class="n">${fmt(b)}</td><td class="n" style="color:var(--c-new);font-weight:600">${fmt(c)}</td><td class="n">${ch}</td><td>${top ? top.r.ref + " · " + top.r.modo : "—"}</td></tr>`; }).join("") + "</tbody>";
 
 // --- auditoría: grado de respaldo de cada término
-const GRL = { tmr: "C", res: "A", mlcc: "A", cf: "A", svr: "A", fet: "B", sig: "B", rect: "B", ldo: "B", pcb: "B", xtal: "C", tvs: "C", con: "C", mcu: "C" };
+const GRL = { tmr: "A", res: "A", mlcc: "A", cf: "A", svr: "A", fet: "B", sig: "B", rect: "B", ldo: "B", pcb: "B", xtal: "C", tvs: "C", con: "C", mcu: "C" };
 const GORD = ["A", "B", "C", "D"], worst = (...g) => g.reduce((a, b) => GORD.indexOf(b) > GORD.indexOf(a) ? b : a, "A");
 function gradeOf(r, s) {
   let g;
@@ -1360,7 +1361,7 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
   const DT = [ // temporizador solo, sobre el recomendado
     ["U1", "Sin microcontrolador", "C529415", -1, 0.697, "doc"], ["R1–R4", "Sin divisores de medición", "varios", -4, 0.0012, "doc"], ["C6", "Sin filtro de VCF_SENSE", "C1525", -1, 0.002, "doc"],
     ["Q3", "Sin transistor de respuesta al programador", "C8545", -1, 0.013, "doc"], ["R11–R13", "Sin red de autoprueba", "varios", -3, 0.0012, "doc"],
-    ["U4", "TPL5111DDCR (temporizador)", "C2870554", 1, 0.35, "lcsc"], ["R_T", "Resistor de ajuste 0,1 %", "a elegir", 1, 0.002, "est"], ["C", "100 nF de desacople de U4", "C1525", 1, 0.002, "doc"]];
+    ["U4", "TPL5110QDDCRQ1 (temporizador automotriz; LCSC 0,35–0,51 a 1000, se toma 0,51)", "C1539984", 1, 0.51, "lcsc"], ["R_T", "Resistor de ajuste 0,1 %", "a elegir", 1, 0.002, "est"], ["C", "100 nF de desacople de U4", "C1525", 1, 0.002, "doc"]];
   const sum = L => L.reduce((a, x) => a + x[3] * x[4], 0);
   const joints = n => n <= 50000 ? n * 0.0016 : 50000 * 0.0016 + Math.min(n - 50000, 50000) * 0.0013 + Math.max(0, n - 100000) * 0.0012;
   const N = 1000, PANEL = 30, panels = Math.ceil(N / PANEL);
@@ -1406,7 +1407,7 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
   const OPT = [
     ["1a · Micro, T fijo, autoprueba antes del uso", b, 2, "El cliente corre la autoprueba por los 2 cables, con el iniciador conectado, poco antes del uso"],
     ["1b · Micro, T fijo, solo banco de fábrica", X(b, { m: { bit: false } }), 2, "Sin prueba antes del uso"],
-    ["2 · Temporizador solo, T fijo, solo banco de fábrica", X(b, { m: { bit: false, tmr: true } }), 3, "No hay autoprueba posible: la placa no puede informar nada"]];
+    ["2 · Temporizador solo (TPL5110-Q1), T fijo, solo banco de fábrica", X(b, { m: { bit: false, tmr: true } }), 3, "No hay autoprueba posible: la placa no puede informar nada"]];
   $("opt-table").innerHTML = `<thead><tr><th>Opción</th><th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>Puesta en Argentina</th><th>Condición</th></tr></thead><tbody>` +
     OPT.map(([n, st, pi, cond]) => { const c = compute(st), lo = compute(X(st, { scen: "lo" })), hi = compute(X(st, { scen: "hi" }));
       return `<tr><td>${n}</td>${["P1", "P2", "P3", "P4"].map(k => `<td class="n">${fmt(c.tot[k])}<br><span class="small">${fmt(lo.tot[k])} – ${fmt(hi.tot[k])}</span></td>`).join("")}<td class="n">${dec(window.PRICES[pi].land, 2)} USD</td><td>${cond}</td></tr>`; }).join("") + "</tbody>";
