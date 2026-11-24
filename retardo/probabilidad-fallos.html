@@ -510,7 +510,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <tr class="tot"><td>Total sin la fuga propia de C_F (470 µF)</td><td class="n">~7 µA → −0,45 V en 30 s</td><td class="n">~17 µA → −1,1 V en 30 s</td></tr>
       <tr><td>Fuga propia de C_F</td><td class="n">≲ 1–10 µA (no especificada)</td><td class="n">2350 µA → C_F vacío en ~2 s</td></tr>
     </tbody></table></div>
-    <p class="small">Criterio de banco propuesto: caída total ≤ 1,1 V en 30 s a 11 V (≈ 17 µA en total con 470 µF), antes y después de encapsular. Con eso, la peor placa aceptada (pulso de −10 %, variante de 40 s, −28 % de capacidad) llega a ~7,5 V, por encima del umbral máximo del bloqueo (7,25 V). Con un umbral de 8 V, el Monte Carlo rechazaba 2 de cada 1000 placas buenas: por eso quedó en 7 V.</p>
+    <p class="small">Criterio de banco propuesto: caída total ≤ 1,1 V en 30 s a 11 V (≈ 17 µA en total con 470 µF), antes y después de encapsular. Con eso, la peor placa aceptada (pulso de −10 %, variante de 40 s, −28 % de capacidad) llega a ~7,5 V, por encima del umbral máximo del bloqueo (7,25 V). Con un umbral de 8 V, el Monte Carlo bloqueaba el disparo en 2 de cada 1000 usos normales (placa sin fallas y pulso dentro de ±10 %), cuando C_F igual tenía energía suficiente: por eso quedó en 7 V.</p>
 
     <h3 style="font-size:15px">Funcionamiento paso a paso</h3>
     <div class="scroll"><table style="min-width:900px"><thead><tr><th>Momento</th><th>Qué pasa</th><th>Qué lo garantiza</th></tr></thead><tbody>
