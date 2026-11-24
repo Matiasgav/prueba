@@ -393,10 +393,23 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <li><strong>Alternativa 0, sin medidas:</strong> el mismo temporizador TPL5010-Q1 con puentes, C_F y alimentación (puente de entrada incluido), con una sola llave del lado bajo, sin enclavamiento, sin clamp, sin pull-down reforzado ni C_GS, R_s de 0,1 Ω y almacenamiento sin controlar (k_d 1/30).</li>
       <li><strong>Alternativa A, recomendada:</strong> la de la sección 2, un canal con seis medidas.</li>
       <li><strong>Alternativa C, con micro:</strong> la A con un microcontrolador PY32F002A (0,12 USD) en lugar del temporizador: lee los puentes, cuenta T con su oscilador interno calibrado al arrancar y maneja cada llave con un pin propio. Mismas llaves, U3, entrada y alimentación. Necesita firmware y programarlo en el banco.</li>
+      <li><strong>Alternativa D, 24 V:</strong> la A cargada con un pulso de 24 V. Cuatro veces más energía por µF, bloqueo por baja tensión y llaves de 60 V (detalle más abajo).</li>
       <li><strong>Alternativa B, dos canales:</strong> busca P3 de 1 en 1 millón. Canal A con TPL5010 comercial y alimentación por divisor; canal B con un micro PY32F002A y su propio U3, llaves y C_F. Disparan los dos sobre el mismo puente; alcanza con uno.</li>
     </ul>
     <div class="scroll"><table id="meas-sum" style="min-width:760px"></table></div>
     <div class="note" id="c-note" style="margin-top:12px"></div>
+    <h3 id="s88">Alternativa D: 24 V con bloqueo por baja tensión</h3>
+    <p>Misma arquitectura que A (temporizador TPL5010-Q1, enclavamiento U3, una llave de cada lado, puente de entrada), cargada con un pulso de 24 V (se supone ±10 %). La energía por µF es cuatro veces mayor, así que C_F baja a 150 µF de 50 V; las pérdidas fijas (puente de entrada, corte de Q1) y la caída por fuga pesan mucho menos.</p>
+    <ul class="list">
+      <li><strong>Bloqueo por baja tensión, sin integrado nuevo:</strong> el pin SENSE de U3 (comparador de 0,405 V ±2 %) mide C_F con un divisor de 10 MΩ / 261 kΩ. Umbral ≈ 15,9 V nominal, 15,4–16,5 V con tolerancias (referencia ±2 %, resistores 1 %, corriente del pin). Debajo de eso RESET queda activado y Q2 no puede cerrar: con 12 V, o si la fuga baja C_F durante la espera, <strong>no dispara</strong>. Un filtro de 50 ms (0,22 µF) evita que U3 corte la descarga: cuando reacciona, C_F ya se vació. El mismo divisor reemplaza a R_bleed (descarga C_F en ~25 min).</li>
+      <li><strong>Por qué ~16 V y no 20 V:</strong> con 24 V −10 % C_F termina en ~20,4 V, y la fuga lo baja ~2 V en 30 s (10 µA con 150 µF). Con 20 V, placas buenas no dispararían. En D el criterio de fuga del banco es más estricto: ≤ 12 µA en total (≤ 2,4 V en 30 s), así la peor placa aceptada llega a ~18 V, por encima del umbral máximo (16,5 V). En el umbral más bajo (15,4 V) y con −28 % de capacidad entrega ≥ 3,9 A²·ms con un puente de 2 Ω: o dispara con margen, o no dispara. Rechaza cualquier sistema de 12 V.</li>
+      <li><strong>Llaves de 60 V con las gates a ~0,4·V_CF:</strong> no hay MOSFET de 60 V con umbral garantizado a 3,3 V, así que tres transistores bipolares de 65 V traducen la salida de 3,3 V del temporizador: un NPN baja la gate de Q1 y un PNP (encendido por otro NPN) sube la de Q2. En reposo no consumen. V_GS ≈ −9 V / +9 V con 22,8 V; ≤ 17 V con la TVS en 42 V (máximo ±20 V). U3 sigue actuando del lado de 3,3 V. Corriente pico: 9 A con un puente de 2 Ω y 16 A con 1 Ω, dentro de los 24–27 A pulsados de las llaves.</li>
+      <li><strong>Energía:</strong> nominal 14,5 A²·ms (puente de 2 Ω) y 24 A²·ms (1 Ω); peor caso en el umbral 3,9 A²·ms (2 Ω). En A el peor caso es 3,5 A²·ms, pero sin piso: con menos tensión de entrada A dispara igual con menos energía.</li>
+    </ul>
+    <div class="scroll"><table id="d-res" style="min-width:700px"></table></div>
+    <div class="scroll" style="margin-top:12px"><table id="d-tab" style="min-width:860px"></table></div>
+    <p class="small">Las probabilidades de D casi no cambian respecto de A: el modelo cuenta tasas de falla, y D tiene la misma cantidad de piezas críticas más tres bipolares y el divisor. Lo que gana D es margen frente a lo que todavía no se conoce (all-fire del iniciador, fuga real de C_F, frío) y el piso de energía del bloqueo. Falta: esquemático cerrado, verificar el umbral y el filtro de SENSE en banco, y confirmar la variación real del pulso de 24 V.</p>
+
     <div class="scroll" style="margin-top:14px"><table id="meas-tab" style="min-width:1000px"></table></div>
     <p class="small">Cada fila muestra el resultado acumulado (1 en N) y, debajo, el efecto de esa medida sobre cada probabilidad respecto de la fila anterior. T fijo, ventana ±5 s, 3 años, escenario central; el rango del resumen usa las tasas bajas y altas. El costo sale del modelo de precio de la sección 8 (lote de 1000, panel de 30, JLCPCB, importación); el almacenamiento controlado y el área extra de placa de B son estimaciones. El acople dV/dt es un chequeo determinista: si no pasa, el disparo en t0 durante el pulso de carga es un riesgo de diseño, no una probabilidad baja; por eso no se suma a P1.</p>
     <p class="small"><strong>Cómo se combinan los dos canales de B:</strong> P3 = P3_A × P3_B + β × el menor + la pieza equivocada (común a los dos canales). β es la fracción de fallas que tiran a los dos a la vez (lote, humedad, ESD, montaje): 2 % en el valor central, 1 % en el rango bajo y 5 % en el alto; es un supuesto (grado C) y es lo que fija el resultado. P1 suma los dos canales más las combinaciones cruzadas (una llave del lado alto en corto en un canal y una del lado bajo en el otro). P2 suma los dos. El canal B se calcula con los datos del micro analizado en la sección 13 (el PY32 no publica tasa de falla) y el TPL5010 con los datos del TPL5110-Q1, igual que en A (misma familia; TI no publica su FIT). B todavía no tiene esquemático cerrado.</p>
@@ -1425,9 +1438,9 @@ const R = [
   {blk:"alm", ref:"C_F", modo:"Abierto", mec:"Sin energía para el disparo. Modo de desgaste dominante en polímero.", ef:"P3", frac:.5, fsrc:"vish", fam:"cf"},
   {blk:"alm", ref:"C_F", modo:"Corto", mec:"Línea y C_F en corto; no carga.", ef:"P3", frac:.3, fsrc:"mur", fam:"cf"},
   {blk:"alm", ref:"C_F", modo:"Pérdida de capacidad o ESR alta", mec:"Menos I²t; P3 solo si se come el margen.", ef:"P3", frac:.2, fsrc:"sup", fam:"cf", cond:.3},
-  {blk:"alm", ref:"R_bleed", modo:"Abierto", mec:"Sin efecto en la demanda; C_F queda cargado tras un no-disparo.", ef:"N", frac:.59, fsrc:"dsiac", fam:"res"},
-  {blk:"alm", ref:"R_bleed", modo:"Corto", mec:"C_F se descarga enseguida.", ef:"P3", frac:.05, fsrc:"dsiac", fam:"res"},
-  {blk:"alm", ref:"R_bleed", modo:"Deriva de valor", mec:"Cambia la pérdida en 40 s; entra en el margen.", ef:"N", frac:.36, fsrc:"dsiac", fam:"res"},
+  {blk:"alm", ref:"R_bleed", modo:"Abierto", mec:"Sin efecto en la demanda; C_F queda cargado tras un no-disparo.", ef:"N", frac:.59, fsrc:"dsiac", fam:"res", nreq:"v24"},
+  {blk:"alm", ref:"R_bleed", modo:"Corto", mec:"C_F se descarga enseguida.", ef:"P3", frac:.05, fsrc:"dsiac", fam:"res", nreq:"v24"},
+  {blk:"alm", ref:"R_bleed", modo:"Deriva de valor", mec:"Cambia la pérdida en 40 s; entra en el margen.", ef:"N", frac:.36, fsrc:"dsiac", fam:"res", nreq:"v24"},
   {blk:"alm", ref:"R1", modo:"Abierto", mec:"LINE_SENSE en 0 → modo programación → nunca dispara. Falla segura.", ef:"P3", frac:.59, fsrc:"dsiac", fam:"res"},
   {blk:"alm", ref:"R1", modo:"Corto", mec:"12 V directo al pin; la corriente entra a VDD por el diodo de protección y daña el MCU (causa común).", ef:"P1", frac:.05, fsrc:"dsiac", fam:"res", cond:.05, mit:["vdd","t1"]},
   {blk:"alm", ref:"R1, R2", modo:"Deriva del divisor", mec:"12 V leído como programación.", ef:"P3", frac:.36, fsrc:"dsiac", fam:"res", n:2, cond:.05},
@@ -1504,8 +1517,19 @@ const R = [
   {blk:"drv", ref:"R5", modo:"Corto", mec:"FIRE_A no puede subir la gate.", ef:"P3", frac:.05, fsrc:"dsiac", fam:"res", nreq:"hs"},
   {blk:"drv", ref:"R6", modo:"Abierto", mec:"Gate de Q2 flotante.", ef:"L", frac:.59, fsrc:"dsiac", fam:"res", lat:"pd6"},
   {blk:"drv", ref:"R6", modo:"Corto", mec:"FIRE_B no puede subir la gate.", ef:"P3", frac:.05, fsrc:"dsiac", fam:"res"},
-  {blk:"drv", ref:"Q4", modo:"Corto drain-source", mec:"Q1 (P-MOS) encendido desde t0; combina con Q2 encendido.", ef:"L", frac:.56, fsrc:"ptc", fam:"fet", lat:"Q1", req:"hs"},
-  {blk:"drv", ref:"Q4", modo:"Abierto o no conduce", mec:"Q1 no enciende.", ef:"P3", frac:.27, fsrc:"ptc", fam:"fet", req:"hs"},
+  {blk:"drv", ref:"Q4", modo:"Corto drain-source", mec:"Q1 (P-MOS) encendido desde t0; combina con Q2 encendido.", ef:"L", frac:.56, fsrc:"ptc", fam:"fet", lat:"Q1", req:"hs", nreq:"v24"},
+  {blk:"drv", ref:"Qa (D: mando de Q1)", modo:"Corto colector-emisor", mec:"Versión de 24 V: el NPN que baja la gate de Q1 queda conduciendo; Q1 encendido desde que hay energía. Combina con Q2.", ef:"L", frac:.5, fsrc:"sup", fam:"bjt", lat:"Q1", req:"v24"},
+  {blk:"drv", ref:"Qa (D: mando de Q1)", modo:"Abierto", mec:"Q1 no enciende.", ef:"P3", frac:.3, fsrc:"sup", fam:"bjt", req:"v24"},
+  {blk:"drv", ref:"Qb, Qc (D: mando de Q2)", modo:"Corto colector-emisor", mec:"El PNP que lleva la gate de Q2 a ~0,4·V_CF, o el NPN que lo enciende, queda conduciendo: Q2 encendido. Combina con Q1.", ef:"L", frac:.5, fsrc:"sup", fam:"bjt", n:2, lat:"Q2", req:"v24"},
+  {blk:"drv", ref:"Qb, Qc (D: mando de Q2)", modo:"Abierto", mec:"Q2 no enciende.", ef:"P3", frac:.3, fsrc:"sup", fam:"bjt", n:2, req:"v24"},
+  {blk:"drv", ref:"R9b (D: gate de Q2)", modo:"Abierto", mec:"La corriente del PNP no llega a la gate de Q2.", ef:"P3", frac:.59, fsrc:"dsiac", fam:"res", req:"v24"},
+  {blk:"drv", ref:"R_be (D: base de Qb)", modo:"Abierto", mec:"La base del PNP queda flotante y puede encenderlo con fugas: Q2 encendido (latente).", ef:"L", frac:.59, fsrc:"dsiac", fam:"res", cond:.5, lat:"Q2", req:"v24"},
+  {blk:"cnt", ref:"R_uv1 10 MΩ (D: bloqueo)", modo:"Abierto", mec:"SENSE queda en 0: RESET activado, no dispara nunca.", ef:"P3", frac:.59, fsrc:"dsiac", fam:"res", req:"v24"},
+  {blk:"cnt", ref:"R_uv1 10 MΩ (D: bloqueo)", modo:"Corto", mec:"SENSE recibe V_CF sin limitar: puede dañar a U3; se toma la mitad como no disparo.", ef:"P3", frac:.05, fsrc:"dsiac", fam:"res", cond:.5, req:"v24"},
+  {blk:"cnt", ref:"R_uv2 261 kΩ (D: bloqueo)", modo:"Corto", mec:"SENSE en 0: no dispara nunca.", ef:"P3", frac:.05, fsrc:"dsiac", fam:"res", req:"v24"},
+  {blk:"cnt", ref:"R_uv2 261 kΩ (D: bloqueo)", modo:"Abierto", mec:"SENSE sube a ~VDD por el pin (corriente limitada por 10 MΩ): se pierde el bloqueo por baja tensión, el resto funciona.", ef:"N", frac:.59, fsrc:"dsiac", fam:"res", req:"v24"},
+  {blk:"cnt", ref:"C_s (D: filtro de SENSE)", modo:"Corto", mec:"SENSE en 0: no dispara nunca.", ef:"P3", frac:.49, fsrc:"dsiac", fam:"mlcc", req:"v24"},
+  {blk:"drv", ref:"Q4", modo:"Abierto o no conduce", mec:"Q1 no enciende.", ef:"P3", frac:.27, fsrc:"ptc", fam:"fet", req:"hs", nreq:"v24"},
   {blk:"drv", ref:"R7", modo:"Abierto", mec:"Gate de Q1 flotante; puede quedar encendido.", ef:"L", frac:.59, fsrc:"dsiac", fam:"res", lat:"Q1", cond:.5, req:"hs"},
   {blk:"drv", ref:"R8", modo:"Abierto", mec:"Q4 no puede bajar la gate de Q1.", ef:"P3", frac:.59, fsrc:"dsiac", fam:"res", req:"hs"},
   {blk:"drv", ref:"R10", modo:"Abierto", mec:"Gate de Q4 flotante; puede encender Q1.", ef:"L", frac:.59, fsrc:"dsiac", fam:"res", lat:"Q1", cond:.5, req:"hs"},
@@ -1897,6 +1921,24 @@ function dualTot(sa, sb, scen) {
   const SC = X(TREC, { m: { tmr: false } });
   const cC = { mat: REC_BOM.mat - 0.52 - 4 * 0.0015 - 0.002 + 0.1157 + 0.002 + 4 * 0.0012 + 0.002, j: REC_BOM.j + 14, feed: REC_BOM.feed };
   const AC = Object.assign({ n: "Alternativa C" }, one(SC));
+  // --- alternativa D: 24 V con bloqueo por baja tensión
+  const SD = X(TREC, { rs: 4.7, m: { v24: true } });
+  const DD = [ // [pieza, cambio respecto de A, Δ USD c/u × cant, Δ juntas, Δ tipos, origen]
+    ["C_F", "470 µF 25 V → 150 µF 50 V polímero 10 × 10 mm (Honor HV1H157M1010PZ, C5246563)", 0.229 - 0.147, 0, 0, "LCSC"],
+    ["Q1", "AO3401A → DMP6110SVT (Diodes, 60 V, AEC-Q101, I_DM −24 A, TSOP-6)", 0.30 - 0.045, 3, 0, "estimado (DigiKey)"],
+    ["Q2", "AO3400A → NTR5198NL (onsemi, 60 V, I_DM 27 A)", 0.089 - 0.043, 0, 1, "LCSC C163243"],
+    ["Q4 → Qa, Qb, Qc", "AO3400A → 2 × LBC846BPDW1T1G (NPN + PNP de 65 V en SOT-363)", 2 * 0.0162 - 0.043, 9, 0, "LCSC C189598"],
+    ["U2", "HT7533S → HT7533S-TD de 55 V", 0.0499 - 0.021, 0, 0, "LCSC C49023493"],
+    ["D2", "BAT54WS → BAS116H (85 V, fuga de pA)", 0.0212 - 0.0068, 0, 0, "LCSC C74210"],
+    ["D3", "SMAJ15CA → SMAJ26CA", 0.053 - 0.022, 0, 0, "LCSC"],
+    ["C_loc", "10 µF 25 V → 2,2 µF 50 V 1206", 0.03 - 0.017, 0, 0, "estimado"],
+    ["R_s", "2,2 Ω → 4,7 Ω 2512 (43 mJ por carga)", 0.015 - 0.01, 0, 0, "estimado"],
+    ["Bloqueo", "R_bleed 4,7 MΩ → divisor 10 MΩ / 261 kΩ + C_s 0,22 µF a SENSE de U3", 0.0012 + 0.003, 4, 3, "estimado"],
+    ["Gates", "Divisores a ~0,4·V_CF y bases de los bipolares (+5 resistores)", 5 * 0.0012, 10, 4, "estimado"]];
+  const dD = DD.reduce((q, x) => q + x[2], 0), jD = DD.reduce((q, x) => q + x[3], 0), fD = DD.reduce((q, x) => q + x[4], 0);
+  const AD = Object.assign({ n: "Alternativa D" }, one(SD)); { const k = COSTOF(REC_BOM.mat + dD, REC_BOM.j + jD, REC_BOM.feed + fD); AD.fob = k.fob + 0.015 / 1.19; AD.land = k.land + 0.015; }
+  $("d-tab").innerHTML = `<thead><tr><th>Pieza</th><th>Cambio respecto de A</th><th>Δ USD por placa (piezas)</th><th>Origen del precio</th></tr></thead><tbody>` + DD.map(x => `<tr><td>${x[0]}</td><td>${x[1]}</td><td class="n">${x[2] >= 0 ? "+" : "−"}${dec(Math.abs(x[2]), 3)}</td><td class="src">${x[5]}</td></tr>`).join("") + `<tr class="tot"><td></td><td>Total en piezas / puesta en Argentina (con armado e importación)</td><td class="n">+${dec(dD, 2)} / +${dec(AD.land - AA.land, 2)}</td><td></td></tr></tbody>`;
+  $("d-res").innerHTML = `<thead><tr><th></th>${ks.map(k => `<th><span class="pill e-${k}">${k}</span></th>`).join("")}<th>Puesta en Argentina</th></tr></thead><tbody>` + [[AA, "A · 12 V"], [AD, "D · 24 V"]].map(([r, n], i) => `<tr${i ? ' style="font-weight:600"' : ""}><td>${n}</td>${ks.map(k => `<td class="n"><b>${oneIn(r.t[k])}</b><br><span class="small">${fmt(r.t[k])}</span></td>`).join("")}<td class="n">${dec(r.land, 2)}</td></tr>`).join("") + "</tbody>";
   const mcuWith = (lo, hi) => { const sv = L.mcu.slice(0, 2); L.mcu[0] = lo; L.mcu[1] = hi; const t = compute(SC).tot; L.mcu[0] = sv[0]; L.mcu[1] = sv[1]; return t; };
   const cT = mcuWith(4, 95), c25 = mcuWith(25, 95);
   const cRows = compute(SC).all.filter(x => x.r.ef === "P3" && /^U1/.test(x.r.ref) && x.p).reduce((q, x) => q + x.p, 0); { const k = COSTOF(cC.mat, cC.j, cC.feed); AC.fob = k.fob + 0.015 / 1.19; AC.land = k.land + 0.015; }
@@ -1916,10 +1958,10 @@ function dualTot(sa, sb, scen) {
   h += tot("= Alternativa B (dos canales)", "Alternativa A + las 4 medidas", AA, AB) + "</tbody>";
   $("meas-tab").innerHTML = h;
   $("meas-sum").innerHTML = `<thead><tr><th>Alternativa</th>${ks.map(k => `<th><span class="pill e-${k}">${k}</span></th>`).join("")}<th>FOB por placa</th><th>Puesta en Argentina</th></tr></thead><tbody>` +
-    [[A0, "0 · Sin medidas", "Temporizador TPL5010-Q1, una llave, sin enclavamiento ni protecciones"], [AA, "A · Recomendada", "Un canal con temporizador y todas las medidas (sección 2)"], [AC, "C · Con micro", "La A con un micro PY32 en lugar del temporizador; firmware; el micro no publica tasa de falla"], [AB, "B · Dos canales", "TPL5010 + micro PY32, cada uno con su U3, llaves y C_F (esquemático pendiente)"]].map(([r, n, d], i) => `<tr${i === 1 ? ' style="font-weight:600;color:var(--c-new)"' : ""}><td>${n}<br><span class="small">${d}</span></td>${ks.map(k => `<td class="n"><b>${oneIn(r.t[k])}</b><br><span class="small">${fmt(r.t[k])}</span><br><span class="small">rango ${rngIn2(r.lo[k], r.hi[k])}</span></td>`).join("")}<td class="n">${dec(r.fob, 2)}</td><td class="n">${dec(r.land, 2)}</td></tr>`).join("") + "</tbody>";
+    [[A0, "0 · Sin medidas", "Temporizador TPL5010-Q1, una llave, sin enclavamiento ni protecciones"], [AA, "A · Recomendada", "Un canal con temporizador y todas las medidas (sección 2)"], [AC, "C · Con micro", "La A con un micro PY32 en lugar del temporizador; firmware; el micro no publica tasa de falla"], [AD, "D · 24 V", "La A cargada a 24 V, con bloqueo por baja tensión (~16 V) y llaves de 60 V (esquemático pendiente)"], [AB, "B · Dos canales", "TPL5010 + micro PY32, cada uno con su U3, llaves y C_F (esquemático pendiente)"]].map(([r, n, d], i) => `<tr${i === 1 ? ' style="font-weight:600;color:var(--c-new)"' : ""}><td>${n}<br><span class="small">${d}</span></td>${ks.map(k => `<td class="n"><b>${oneIn(r.t[k])}</b><br><span class="small">${fmt(r.t[k])}</span><br><span class="small">rango ${rngIn2(r.lo[k], r.hi[k])}</span></td>`).join("")}<td class="n">${dec(r.fob, 2)}</td><td class="n">${dec(r.land, 2)}</td></tr>`).join("") + "</tbody>";
   const chk = Math.abs(AA.t.P1 - RT.tot.P1) / RT.tot.P1 + Math.abs(AA.t.P3 - RT.tot.P3) / RT.tot.P3;
   if (chk > 1e-9) console.error("medidas: la alternativa A no coincide con el recomendado", chk);
-  window.MEAS = res.map(r => ({ n: r.n, t: r.t, lo: r.lo, hi: r.hi, land: r.land })).concat([{ n: "Alternativa C", t: AC.t, lo: AC.lo, hi: AC.hi, land: AC.land }]);
+  window.MEAS = res.map(r => ({ n: r.n, t: r.t, lo: r.lo, hi: r.hi, land: r.land })).concat([{ n: "Alternativa C", t: AC.t, lo: AC.lo, hi: AC.hi, land: AC.land }, { n: "Alternativa D", t: AD.t, lo: AD.lo, hi: AD.hi, land: AD.land }]);
   $("c-note").innerHTML = `<p><strong>Por qué C empeora P3 y cuánto cuesta de verdad.</strong> El micro aporta ${fmt(cRows)} a P3 de C (${Math.round(100 * cRows / AC.t.P3)} %): el modelo le asigna 25–1900 FIT, y el valor alto sale de MIL-HDBK-217F (1991) para un microprocesador, porque Puya no publica datos. Con la misma tasa que el temporizador (4–95 FIT), P3 de C sería ${oneIn(cT.P3)}; con 25–95 FIT, ${oneIn(c25.P3)}: prácticamente igual que A. La diferencia es un supuesto de datos, no de circuito.</p><p>En piezas C es ${dec(AA.land - AC.land, 2)} USD más barata por placa (el PY32F002A cuesta 0,12 USD contra 0,52 del TPL5010-Q1). No incluye: desarrollo y revisión del firmware (costo único), programar en el banco (segundos por placa con banco propio, o 7,86 + 7,86 USD/h en JLCPCB), y el consumo del micro en reposo con su oscilador lento (4,5–6 µA típicos, sin máximo publicado), que suma ~0,4 V de caída en 30 s. Su oscilador lento varía ±20 % con la temperatura: hay que calibrarlo contra el interno de 24 MHz (−4 a +2 %) al arrancar. Funciona de −40 a +85 °C, sin calificación automotriz.</p>`;
   const np = compute(X(TREC, { m: { pol: false } })).tot, wp = RT.tot;
   $("pol-eff").textContent = `Efecto en la alternativa A: P3 pasa de ${fmt(np.P3)} (un solo diodo, sin polaridad indistinta) a ${fmt(wp.P3)} con el puente (+${Math.round(100 * (wp.P3 / np.P3 - 1))} %); P1, P2 y P4 no cambian.`;
