@@ -224,7 +224,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <li><div><strong>Por qué temporizador y no micro:</strong> el micro (alternativa C) es más barato en piezas (~<span id="dyn-dC"></span> USD por placa) y más preciso, pero necesita firmware y su tasa de falla no está publicada: con el valor que el modelo le asigna, P3 empeora a <span id="dyn-P3C"></span> contra <span id="dyn-P3A"></span> del temporizador; con una tasa como la del temporizador quedarían iguales (sección 2.4). El temporizador tiene datos de TI y no tiene software que pueda fallar de forma sistemática.</div></li>
       <li><div><strong>Frente al diseño original</strong>, en las mismas condiciones: P1 baja unas 100 veces (de 4,6 × 10⁻⁷ a 4,7 × 10⁻⁹) y P3 a la mitad. El original tenía fallas simples que disparaban en t0: corto a masa del drain de Q1, sobretensión de VDD y acople del flanco en las gates.</div></li>
       <li><div><strong>La precisión dejó de ser un riesgo:</strong> con ±5 s de ventana y la cadena de resistores al 0,1 %, el peor caso del tiempo es ±5 % (±1,5 s): margen de ~3 veces. Lo que limita P3 es el camino de energía (soldaduras, LDO, C_F, llaves) y el dato del iniciador: si pide 3 A²·ms en vez de 2, P3 se triplica.</div></li>
-      <li><div><strong>Lo que falta para cerrar el diseño</strong> (sección 2.7): verificar con osciloscopio WAKE durante el encendido y la duración de su pulso, el ensayo de humedad de C_F y su fuga, el retardo de U3 y la deriva de T en temperatura, el I²t del iniciador, y choque y vibración. La revisión contra hojas de datos (sección 2.5) encontró 5 problemas críticos y los corrigió.</div></li>
+      <li><div><strong>Lo que falta para cerrar el diseño</strong> (sección 2.7): verificar que los retenes no se activen al encender, el ensayo de humedad de C_F y su fuga, el retardo de U3 y la deriva de T en temperatura, el I²t del iniciador, y choque y vibración. La revisión contra hojas de datos (sección 2.5) encontró 5 problemas críticos y los corrigió.</div></li>
       <li><div><strong>Alternativas guardadas:</strong> el diseño original y el del micro están en las secciones 13.1 y 13.2, y los datos clave de todas las alternativas evaluadas (arquitecturas, integrados, fabricación) en la sección 13.4, para reflotarlas si cambian los requisitos.</div></li>
     </ol>
   </section>
@@ -281,7 +281,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
         <use href="#gnd" transform="translate(920 270)"/>
         <path class="w" d="M840 240H876M860 240V240"/>
         <use href="#res" transform="translate(860 240) rotate(90)" class="new"/><use href="#gnd" transform="translate(860 300)"/>
-        <text x="852" y="280" text-anchor="end" class="lbl new-t">R10 10 kΩ</text>
+        <text x="852" y="280" text-anchor="end" class="lbl new-t">R10 100 kΩ</text>
         <g class="net"><rect x="760" y="232" width="80" height="16" rx="2"/><text x="800" y="244">FIRE_A</text></g>
         <path class="w" d="M840 340H860M920 340V310H1006M968 310V282"/>
         <use href="#res" transform="translate(860 340)" class="new"/>
@@ -368,7 +368,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <tr><td>Alimentación</td><td class="n">D2 + R_D2 47 Ω, C_loc, U2 HT7533S (3,3 V), D5 zener 4,7 V</td><td>3,3 V dan margen de gate a Q2 y Q4. El zener mantiene VDD por debajo de 6 V (máximo absoluto de U4) si el LDO falla con la salida alta</td></tr>
       <tr><td>Temporizador</td><td class="n">U4 TPL5010-Q1, cadena R0–Rc al 0,1 %, puentes P1–P3</td><td>Cuenta T desde que recibe alimentación. Automotriz AEC-Q100. <strong>Dispara con el primer pulso WAKE</strong> (20 ms, activo en alto), que la hoja de datos da recién al terminar el primer intervalo; en reposo y durante el arranque WAKE está en bajo. Un pin en corto a masa deja la salida en el nivel seguro. Reemplaza al TPL5110-Q1, cuyo estado de reposo (DRV en alto) coincide con el nivel de disparo (sección 2.5)</td></tr>
       <tr><td>Enclavamiento de t1</td><td class="n">U3 TPS3808, C7 2,2 µF X7R, SENSE a VDD</td><td>Mantiene la gate de Q2 a masa 5,6–20,6 s desde el arranque (peor caso). Libera después de t1 (4 s) y antes del disparo válido más temprano (~23,9 s en la variante de 25 s)</td></tr>
-      <tr><td>Llaves</td><td class="n">Q1 AO3401A (lado alto), Q4 y Q2 AO3400A, R7 47 kΩ, R8 68 kΩ, R11 1 kΩ, R12 10 kΩ, R6 100 kΩ</td><td>Ninguna falla simple de una llave o de un cable a masa dispara. R7/R8 dejan V_GS de Q1 en −0,41·V_CF: −4,3 V con 10,4 V y −10 V con la TVS en 24,4 V (máximo ±12 V); Q1 se apaga recién con C_F por debajo de ~3,2 V. R12 de 10 kΩ deja la corriente contra el RESET de U3 en 0,3 mA; con R6 de 100 kΩ la gate de Q2 recibe ~3,0 V</td></tr>
+      <tr><td>Llaves</td><td class="n">Q1 AO3401A (lado alto), Q4 y Q2 AO3400A, R7 47 kΩ, R8 68 kΩ, R11 1 kΩ, R12 10 kΩ, R6 y R10 100 kΩ; retenes A y B</td><td>Ninguna falla simple de una llave o de un cable a masa dispara. <strong>Un retén por llave</strong> (MMBT3904 + MMBT3906) las deja cerradas desde el pulso WAKE hasta que se agota la energía, sin depender de la duración del pulso (sección 2.5); una falla del retén equivale, como mucho, a una llave en corto. R7/R8 dejan V_GS de Q1 en −0,41·V_CF: −4,3 V con 10,4 V y −10 V con la TVS en 24,4 V (máximo ±12 V); Q1 se apaga recién con C_F por debajo de ~3,2 V. R12 de 10 kΩ deja la corriente contra el RESET de U3 en 0,3 mA; con R6 de 100 kΩ la gate de Q2 recibe ~3,0 V</td></tr>
       <tr><td>Prueba</td><td class="n">TP VCF, TP WAKE, TP ARM_T1, TP LOAD±</td><td>Banco al 100 %: T medido contra la variante, retardo de U3, fuga de C_F, disparo real sobre 2 Ω y prueba con las dos polaridades</td></tr>
       <tr><td>Fabricación</td><td class="n">Panel de 30, JLCPCB solo arma</td><td>Sin firmware ni programación; sin rayos X (todas las soldaduras visibles)</td></tr>
     </tbody></table></div>
@@ -426,6 +426,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <tr><td><span class="status st-bad">CRÍTICO</span></td><td>Q4 2N7002 (JSCJ)</td><td>V_GS(th) 1,0–2,5 V a 250 µA.</td><td>Con VDD de 2,5 V la salida del temporizador llega a ~2,1 V: Q4 puede no encender, Q1 no conduce y no dispara (P3 sistemático en una parte de las placas o en frío).</td><td><strong>AO3400A</strong> (V_GS(th) ≤ 1,45 V), la misma pieza que Q2, y VDD de 3,3 V.</td><td class="n">+0,03</td></tr>
       <tr><td><span class="status st-bad">CRÍTICO</span></td><td>D1 SS34 (MDD)</td><td>Schottky: fuga inversa hasta 0,5 mA a 25 °C (y mucho más en caliente).</td><td>Si después del pulso la línea queda en baja impedancia, C_F (3,7 mC) se descarga en segundos.</td><td><strong>Puente de silicio MB10S</strong> (fuga ≤ 5 µA a 1000 V). Además resuelve la polaridad.</td><td class="n">−0,01</td></tr>
       <tr><td><span class="status st-bad">CRÍTICO</span></td><td>C_F JIERR MA25V330M6X9</td><td>Fuga ≤ 0,2·C·V o 500 µA (la mayor): hasta 1,65 mA con 330 µF y 2,35 mA con 470 µF. Humedad: 60 °C, 90–95 % HR, 1000 h, “fuga dentro del valor inicial”. Sin datos de confiabilidad.</td><td>Con la fuga máxima garantizada, C_F se vacía en ~2 s: sostener 30 s depende de la fuga real. Los polímeros además suben su fuga después de almacenarse con humedad.</td><td>Selección al 100 % por fuga (ya prevista), ensayo de humedad sobre una muestra antes de comprar el lote, bolsa barrera. Alternativa con dato: híbrido Panasonic (≤ 0,01·C·V).</td><td class="n">0 (híbrido +0,17)</td></tr>
+      <tr><td><span class="status st-mid">IMPORTANTE</span></td><td>U4 TPL5010-Q1, WAKE</td><td>Hoja de datos SNAS679: “WAKE … normalmente en bajo” (8.3.1) y figura 9 (en bajo hasta t_REXT + t_RSTn + t_IP). Pero t_WAKE = 20 ms figura solo como típico, sin mínimo ni máximo; la nota 3 aclara que los típicos no se garantizan.</td><td>Si el pulso fuera mucho más corto que lo típico, las llaves se abrirían antes de vaciar C_F (hace falta ~5 ms).</td><td><strong>Un retén por llave</strong> con dos transistores bipolares: WAKE lo activa y las llaves quedan cerradas hasta que se agota la energía. La duración del pulso deja de importar.</td><td class="n">+0,10</td></tr>
       <tr><td><span class="status st-mid">IMPORTANTE</span></td><td>Entrada (D1, D3)</td><td>SMAJ15A unidireccional: en directa conduce a ~1 V.</td><td>Con la polaridad invertida la TVS pone el pulso en corto y puede quemarse, y D1 bloquea: no carga. El requisito nuevo es que funcione con cualquier polaridad.</td><td><strong>SMAJ15CA bidireccional</strong> entre los cables y puente de 4 diodos.</td><td class="n">0</td></tr>
       <tr><td><span class="status st-mid">IMPORTANTE</span></td><td>U3 TPS3808, R12</td><td>RESET: V_OL ≤ 0,4 V a 1 mA (máximo absoluto 5 mA).</td><td>Con R12 de 1 kΩ, si la salida del temporizador queda en alto durante el enclavamiento, el RESET recibe 2–3 mA, su V_OL sube y la gate de Q2 puede acercarse a su umbral (0,52 V en caliente): el enclavamiento pierde fuerza justo cuando hace falta.</td><td><strong>R12 10 kΩ</strong> (0,3 mA) y R6 100 kΩ para que la gate de Q2 siga en ~3,0 V.</td><td class="n">0</td></tr>
       <tr><td><span class="status st-mid">IMPORTANTE</span></td><td>Q1 AO3401A, R7/R8</td><td>V_GS máximo ±12 V; R_DS(on) especificada desde −2,5 V, umbral hasta −1,3 V.</td><td>Con R7 = R8 = 47 kΩ, V_GS = −V_CF/2: con la TVS en 24,4 V llega a −12,2 V. Pero bajar mucho la fracción apaga Q1 antes de vaciar C_F: con R8 = 100 kΩ se pierde 27 % del I²t en el peor caso.</td><td><strong>R8 68 kΩ</strong>: −10 V en la sobretensión máxima y 83 % del I²t ideal en el peor caso (Q1 se apaga con C_F en ~3,2 V).</td><td class="n">0</td></tr>
@@ -453,7 +454,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <tr><td></td><td>C_loc CL21A106KAYNNNE (Samsung)</td><td>10 µF 25 V X5R 0805</td><td>A 11 V quedan ~3–4 µF por polarización: sostienen VDD ~60 ms; el disparo necesita ~4 ms</td><td><span class="status st-ok">OK</span></td><td>Vishay MLCC por similitud (A)</td></tr>
       <tr><td></td><td>U2 HT7533S (TDSEMIC)</td><td>V_IN ≤ 36 V, I_Q 2–3 µA, ±2 %, −40 a +85 °C</td><td>11 V de entrada, ~0,2 mA de carga al disparar</td><td><span class="status st-ok">OK</span> hasta 85 °C</td><td>Sin dato; TI TPS7A16 por similitud (B)</td></tr>
       <tr><td></td><td>D5 BZT52C4V7</td><td>4,47–4,94 V a 5 mA; fuga 2 µA a 1 V</td><td>Clamp si el LDO sale alto: ≤ 6 V del TPL5010; fuga a 3,3 V</td><td><span class="status st-mid">VERIFICAR</span> fuga ≤ 5 µA</td><td>MIL-HDBK-217F (C)</td></tr>
-      <tr><td>Temporizador</td><td>U4 TPL5010-Q1 (TI)</td><td>35 nA típ. / 50 máx.; oscilador ±0,5 % a 25 °C, ±100 a ±400 ppm/°C, ±0,24 % en la vida, ajuste ±0,6 %; VDD 1,8–5,5 V (máx. 6 V); WAKE en bajo en reposo, pulso de 20 ms; R_EXT 500 Ω–170 kΩ</td><td>VDD 3,3 V; R_EXT 15,6–18,7 kΩ; T ≈ t_IP + 0,42 s</td><td><span class="status st-ok">OK</span> peor caso ±5 % (±1,5 s) contra ±5 s</td><td>TI no publica FIT ni reparto del TPL5010-Q1: se usan los del TPL5110-Q1, misma familia (C)</td></tr>
+      <tr><td>Temporizador</td><td>U4 TPL5010-Q1 (TI, SNAS679)</td><td>35 nA típ. / 50 máx.; oscilador ±0,5 % a 25 °C, 150 ppm/°C típ. (la versión comercial publica ±100 típ. / ±400), ±0,24 % en la vida, ajuste ±0,6 %; VDD 1,8–5,5 V (máx. 6 V); WAKE normalmente en bajo, pulso de 20 ms típico (sin mínimo); R_EXT 500 Ω–170 kΩ</td><td>VDD 3,3 V; R_EXT 15,6–18,7 kΩ; T ≈ t_IP + 0,42 s</td><td><span class="status st-ok">OK</span> peor caso ±5 % (±1,5 s) contra ±5 s</td><td>TI no publica FIT ni reparto del TPL5010-Q1: se usan los del TPL5110-Q1, misma familia (C)</td></tr>
       <tr><td>Enclavamiento</td><td>U3 TPS3808G01 (TI)</td><td>VDD 1,7–6,5 V (máx. 7 V); I_DD 2,4 típ. / 5 máx. µA; RESET activo desde VDD 0,8 V; V_OL ≤ 0,4 V a 1 mA</td><td>C7 2,2 µF: retardo 5,6–20,6 s; 0,3 mA de R12 en falla; SENSE a VDD</td><td><span class="status st-ok">OK</span></td><td>TI SFFS767 (TPS3808E, 6 FIT) (A)</td></tr>
       <tr><td>Llaves</td><td>Q1 AO3401A (AOS)</td><td>V_DS −30 V, V_GS ±12 V, umbral −0,5 a −1,3 V, R_DS(on) ≤ 85 mΩ a −2,5 V, I_DM −27 A</td><td>V_GS −4,3 V (−10 V en la sobretensión máxima); 3–8 A durante ~1–3 ms</td><td><span class="status st-ok">OK</span></td><td>AOS, informe de confiabilidad (B)</td></tr>
       <tr><td></td><td>Q2, Q4 AO3400A (AOS)</td><td>V_DS 30 V, umbral 0,65–1,45 V, R_DS(on) ≤ 48 mΩ a 2,5 V, I_DM 30 A</td><td>V_GS ≈ 3,0 V</td><td><span class="status st-ok">OK</span></td><td>AOS AO3400, 13 FIT (A/B)</td></tr>
@@ -477,6 +478,27 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       </svg></div>
     <p>El cliente puede conectar el pulso con cualquier polaridad: la TVS bidireccional protege en los dos sentidos y el puente entrega siempre el + a C_F. El puente agrega dos caídas de diodo (C_F termina en ~11 V en lugar de ~11,5 V; la energía baja ~9 %) y cuatro diodos en lugar de uno. En el modelo, un diodo abierto deja sin carga a C_F solo si es uno de los dos que usa la polaridad del cliente (50 %); un diodo en corto pone el pulso en corto en una polaridad y descarga C_F hacia la línea en la otra. <span id="pol-eff"></span></p>
 
+    <h3 style="font-size:15px">Retén de las llaves (uno por llave)</h3>
+    <div class="scroll"><svg viewBox="0 0 640 300" role="img" aria-label="Retén de una llave: la salida WAKE sube la gate G; un transistor NPN Qn con base en G baja el nodo H; un PNP Qp con base en H conecta VDD a G por un resistor de 10 kilohm, y así G queda en alto aunque WAKE vuelva a bajo. R_up de 100 kilohm y C_h de 100 nF mantienen H en VDD al encender." style="width:100%;min-width:500px;max-width:680px;height:auto;display:block;color:var(--ink)">
+        <path class="w" d="M40 30H600"/><text x="44" y="22" class="lbl">VDD 3,3 V</text>
+        <rect x="150" y="60" width="70" height="40" rx="3" class="w"/><text x="185" y="78" text-anchor="middle" class="lbl">R_up</text><text x="185" y="92" text-anchor="middle" class="val">100 kΩ</text>
+        <rect x="250" y="60" width="70" height="40" rx="3" class="w"/><text x="285" y="78" text-anchor="middle" class="lbl">C_h</text><text x="285" y="92" text-anchor="middle" class="val">100 nF</text>
+        <path class="w" d="M185 30V60M285 30V60M185 100V130H400M285 100V130"/><circle cx="285" cy="130" r="3" fill="currentColor"/><circle cx="185" cy="130" r="3" fill="currentColor"/>
+        <text x="292" y="124" class="lbl">H</text>
+        <rect x="140" y="150" width="90" height="44" rx="3" class="w"/><text x="185" y="169" text-anchor="middle" class="lbl">Qn</text><text x="185" y="184" text-anchor="middle" class="val">MMBT3904 NPN</text>
+        <path class="w" d="M185 130V150M185 194V206"/><path class="w" d="M185 206V214M176 214H194M179 218H191M182 222H188"/>
+        <rect x="400" y="50" width="100" height="44" rx="3" class="w"/><text x="450" y="69" text-anchor="middle" class="lbl">Qp</text><text x="450" y="84" text-anchor="middle" class="val">MMBT3906 PNP</text>
+        <path class="w" d="M450 30V50M400 130V72H400"/><text x="406" y="118" class="sm">base ← H (100 kΩ)</text>
+        <rect x="530" y="120" width="70" height="36" rx="3" class="w"/><text x="565" y="136" text-anchor="middle" class="lbl">R_L</text><text x="565" y="150" text-anchor="middle" class="val">10 kΩ</text>
+        <path class="w" d="M500 72H565V120M565 156V250H110"/>
+        <path class="w" d="M230 172H260V250"/><circle cx="260" cy="250" r="3" fill="currentColor"/><text x="266" y="168" class="sm">base ← G (100 kΩ)</text>
+        <circle cx="110" cy="250" r="3" fill="currentColor"/><text x="118" y="244" class="lbl">G</text>
+        <path class="w" d="M110 250V200H60"/><text x="16" y="196" class="lbl">WAKE</text><text x="16" y="212" class="sm">por R11 (o R12)</text>
+        <path class="w" d="M110 250H60"/><text x="16" y="272" class="sm">a la gate de Q4 (o Q2)</text>
+        <path class="w" d="M340 250V262"/><path class="w" d="M340 262V270M331 270H349M334 274H346M337 278H343"/><circle cx="340" cy="250" r="3" fill="currentColor"/><text x="362" y="270" class="sm">R10 (o R6) 100 kΩ a GND</text>
+      </svg></div>
+    <p>WAKE sube la gate G; Qn (NPN, base por 100 kΩ) baja el nodo H y enciende Qp (PNP, base por 100 kΩ), que conecta VDD a G por R_L: G queda en alto aunque WAKE vuelva a bajo, hasta que VDD se apaga al agotarse la energía. Al encender, C_h mantiene H en VDD (Qp cortado) y R10/R6 mantienen G en bajo. Ninguna falla del retén pone la gate a masa: un transistor del retén en corto equivale a una llave en corto (necesita otra falla para disparar) y uno abierto deja el funcionamiento por pulso de WAKE. En la llave Q2, U3 sigue mandando sobre el retén: su RESET absorbe los 0,3 mA de R_L. En reposo el retén no consume. Con el retén activado consume ~0,1 mA de VDD, que alimenta C_loc.</p>
+
     <h3 style="font-size:15px">Presupuesto de fuga de C_F durante los 30 s</h3>
     <div class="scroll"><table style="min-width:720px"><thead><tr><th>Consumo desde C_F</th><th>Típico</th><th>Máximo de hoja de datos</th></tr></thead><tbody>
       <tr><td>U4 TPL5010-Q1</td><td class="n">0,035 µA</td><td class="n">0,05 µA</td></tr>
@@ -497,16 +519,16 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
       <tr><td>t0 + ~1 ms</td><td>El LDO da 3,3 V. U3 activa RESET desde VDD = 0,8 V: la gate de Q2 queda a masa. El TPL5010 lee R_EXT (≤ 120 ms, RSTn en bajo).</td><td>Hoja de datos del TPS3808 (V_POR 0,8 V) y del TPL5010 (WAKE en bajo en reposo).</td></tr>
       <tr><td>t0 + ~0,4 s</td><td>Termina el pulso de RSTn; empieza el intervalo programado. WAKE sigue en bajo.</td><td>El TPL5010 no emite WAKE al comenzar el primer ciclo.</td></tr>
       <tr><td>t0 + 5,6–20,6 s</td><td>U3 libera RESET: la gate de Q2 queda solo bajo el control de WAKE (en bajo).</td><td>C7 2,2 µF; peor caso entre t1 (4 s) y el disparo válido más temprano.</td></tr>
-      <tr><td>t0 + T (25, 30, 35 o 40 s)</td><td>WAKE sube 20 ms: Q2 enciende directo; Q4 enciende y lleva la gate de Q1 a −0,41·V_CF. C_F se descarga por el puente del iniciador (pico 3–8 A, la mayor parte de la energía en ~3 ms).</td><td>C_loc sostiene VDD ~70 ms aunque C_F se vacíe (D2 la aísla).</td></tr>
-      <tr><td>Después del disparo</td><td>WAKE vuelve a bajo y no se repite: sin DONE, el TPL5010 solo da pulsos de RSTn (libre). Con C_F vacío no hay más energía.</td><td>Hoja de datos del TPL5010 (WAKE no se emite si en el intervalo anterior no hubo DONE).</td></tr>
-      <tr><td>Si no disparó (iniciador abierto)</td><td>C_F queda cargado y se descarga por R_bleed con τ = 4,7 MΩ × 470 µF ≈ 37 min. No hay un segundo WAKE.</td><td>Dato para el cliente: esperar ≥ 3 horas (5τ) antes de manipular, o descargar a mano.</td></tr>
+      <tr><td>t0 + T (25, 30, 35 o 40 s)</td><td>WAKE sube (20 ms típicos): Q2 enciende directo; Q4 enciende y lleva la gate de Q1 a −0,41·V_CF; los dos retenes se activan y mantienen las gates en alto. C_F se descarga por el puente del iniciador (pico 3–8 A, la mayor parte de la energía en ~3 ms).</td><td>C_loc sostiene VDD ~70 ms aunque C_F se vacíe (D2 la aísla).</td></tr>
+      <tr><td>Después del disparo</td><td>WAKE vuelve a bajo y no se repite, pero los retenes mantienen las llaves cerradas mientras haya VDD. Cuando C_F y C_loc se vacían, VDD cae y todo se apaga.</td><td>Hoja de datos del TPL5010-Q1 (WAKE no se emite si en el intervalo anterior no hubo DONE); retenes alimentados desde VDD.</td></tr>
+      <tr><td>Si no disparó (iniciador abierto)</td><td>Las llaves quedan cerradas por los retenes y C_F cargado (se descarga por R_bleed con τ = 4,7 MΩ × 470 µF ≈ 37 min). Si el iniciador se reconecta en ese tiempo, dispara tarde.</td><td>Dato para el cliente: esperar ≥ 3 horas (5τ) antes de manipular, o descargar a mano.</td></tr>
     </tbody></table></div>
 
     <h3 style="font-size:15px">Peor caso: tiempo de disparo (variante de 30 s)</h3>
     <div class="scroll"><table style="min-width:760px"><thead><tr><th>Contribución</th><th>Dato</th><th>Efecto en T</th></tr></thead><tbody>
       <tr><td>Oscilador a 25 °C</td><td>±0,5 % (mín./máx., hoja de datos)</td><td class="n">±0,5 %</td></tr>
       <tr><td>Precisión del ajuste</td><td>±0,6 % (típico)</td><td class="n">±0,6 %</td></tr>
-      <tr><td>Temperatura (−35 a +85 °C, 60 °C de 25 °C)</td><td>±100 típ., ±400 ppm/°C peor</td><td class="n">±2,4 %</td></tr>
+      <tr><td>Temperatura (−35 a +85 °C, 60 °C de 25 °C)</td><td>150 ppm/°C típ. (TPL5010-Q1); se toma ±400 ppm/°C de la versión comercial como peor caso</td><td class="n">±2,4 %</td></tr>
       <tr><td>Vida útil</td><td>±0,24 %</td><td class="n">±0,24 %</td></tr>
       <tr><td>Tensión (LDO ±2 %)</td><td>±25 ppm/V</td><td class="n">≈ 0</td></tr>
       <tr><td>Resistores al 0,1 %, 25 ppm/°C, deriva 0,1 %</td><td>sensibilidad 2,6</td><td class="n">±0,9 %</td></tr>
@@ -528,7 +550,7 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
     <h3 style="font-size:15px">Peor caso: gates y enclavamiento</h3>
     <div class="scroll"><table style="min-width:760px"><thead><tr><th>Punto</th><th>Peor caso</th><th>Necesita</th><th>Veredicto</th></tr></thead><tbody>
       <tr><td>V_GS de Q2 al disparar</td><td>WAKE ≥ VDD − 0,4 V con 0,33 mA; VDD ≥ 3,23 V; divisor 10k/100k → ≥ 2,6 V</td><td>Umbral ≤ 1,45 V a 25 °C (~1,6 V a −40 °C); R_DS(on) especificada a 2,5 V</td><td><span class="status st-ok">OK</span></td></tr>
-      <tr><td>V_GS de Q4</td><td>≥ 2,6 V (R11 1k / R10 10k)</td><td>Umbral ≤ 1,45 V</td><td><span class="status st-ok">OK</span></td></tr>
+      <tr><td>V_GS de Q4</td><td>≥ 2,9 V (R11 1k / R10 100k)</td><td>Umbral ≤ 1,45 V</td><td><span class="status st-ok">OK</span></td></tr>
       <tr><td>V_GS de Q1</td><td>−0,41·V_CF: −3,3 V con 8 V; −10 V con 24,4 V</td><td>Umbral ≤ −1,3 V; máximo ±12 V</td><td><span class="status st-ok">OK</span></td></tr>
       <tr><td>Gate de Q2 retenida por U3 con WAKE en corto a VDD</td><td>RESET con 0,33 mA: V_OL &lt; 0,4 V</td><td>Por debajo del umbral mínimo de Q2 (0,52 V a 70 °C)</td><td><span class="status st-ok">OK</span> con R12 10 kΩ</td></tr>
       <tr><td>Liberación de U3</td><td>5,6–20,6 s (±42 % del TPS3808, ±10 % de C7, −15 % en frío)</td><td>Entre 4 s y ~23,9 s</td><td><span class="status st-ok">OK</span> a verificar (pasa los 10 s documentados)</td></tr>
@@ -577,13 +599,13 @@ input[type=range] { width: 100%; accent-color: var(--c-count); }
 
     <h3 id="s85">2.7 Pendiente de verificar antes de cerrar el diseño</h3>
     <ul class="list">
-      <li><strong>WAKE del TPL5010-Q1 durante el encendido</strong>: que quede en bajo durante la subida de VDD, la lectura de R_EXT y el pulso de RSTn (osciloscopio, en frío y en caliente, con la rampa real). Y la <strong>duración real del pulso WAKE</strong> (20 ms típicos, sin mínimo publicado; alcanza con &gt; 5 ms).</li>
+      <li><strong>Retenes de las llaves</strong>: que no se activen solos al encender (rampa real de VDD, en frío y en caliente) y que se activen con WAKE. El arranque de WAKE en bajo está en la hoja de datos (SNAS679, 8.3.1 y figura 9); el banco igual lo confirma en cada placa al medir T.</li>
       <li><strong>Fuga de C_F después del almacenamiento</strong>: ensayo de humedad sin tensión (60 °C, 90–95 % HR, 1000 h, como el de la hoja de datos) sobre una muestra, y medir la caída de tensión en 30 s a 11 V. La hoja de datos permite hasta 1,65 mA de fuga.</li>
       <li><strong>Fuga del zener D5 a 3,3 V</strong> (presupuesto ≤ 5 µA) y su tensión con la corriente de cortocircuito del LDO (≤ 6 V).</li>
       <li><strong>Las dos polaridades</strong> en el banco, y la tensión final de C_F con el puente (~11 V).</li>
       <li><strong>Deriva de T con la temperatura</strong>: el dato del TPL5010 es ±100 a ±400 ppm/°C; medir 30 placas a −30 y +70 °C.</li>
       <li><strong>Retardo de U3 a −30 y +70 °C</strong>: debe quedar entre 4 y 20 s (la hoja de datos lo documenta hasta 10 s).</li>
-      <li><strong>Que una caída de VDD durante el disparo no corte WAKE</strong> antes de que C_F se descargue (~4 ms).</li>
+      <li><strong>Que una caída de VDD durante el disparo no suelte los retenes</strong> antes de que C_F se descargue (~5 ms; C_loc sostiene VDD ~70 ms).</li>
       <li><strong>I²t de all-fire del iniciador</strong>: fija C_F y los límites del banco.</li>
       <li><strong>Choque y vibración</strong> de la placa encapsulada.</li>
     </ul>
@@ -1397,6 +1419,7 @@ const L = {
   svr:  [6, 95, ["ti3808", "mil217"], "Supervisor con retardo", "U3", "Bajo: TI TPS3808E, 6 FIT por IEC TR 62380. Alto: MIL-HDBK-217F N2, lineal MOS, G_B 0,0095/10⁶ h × π_Q 10."],
   mcu:  [25, 1900, ["sn29500", "mil217", "st"], "Microcontrolador", "U1", "Bajo: SN 29500-2, CMOS digital/mixto, 25 FIT de referencia a 55 °C (citado por TI); ST no publica el FIT del STM32L0. Alto: MIL-HDBK-217F N2, microprocesador MOS hasta 32 bits, G_B 0,19/10⁶ h × π_Q 10. El manual es de 1991 y sobreestima mucho a los MCU actuales."],
   xtal: [15, 67, ["ti", "mil217"], "Cristal de cuarzo", "Y1", "Bajo: TI, osciladores de cristal 15–30 FIT (no es el cristal solo). Alto: MIL-HDBK-217F N2, cristal de cuarzo, G_B 0,032/10⁶ h × π_Q 2,1 (no MIL)."],
+  bjt:  [0.12, 1.2, ["sup", "mil217"], "Transistor bipolar de señal", "Retenes (MMBT3904/3906)", "Alto: MIL-HDBK-217F N2, transistor bipolar de baja frecuencia, G_B 0,00015/10⁶ h × π_Q 8 (plástico). Bajo: supuesto 10 veces menor."],
   fet:  [13, 112, ["aos", "mil217"], "MOSFET", "Q1, Q2, Q4", "Bajo: AOS AO3400, 13 FIT a 55 °C, 60 % (informe de 2005). Alto: MIL-HDBK-217F N2, FET de silicio, G_B 0,014/10⁶ h × π_Q 8 (plástico)."],
   tmr:  [4, 95, ["ti5110", "mil217"], "Temporizador TPL5110-Q1 (opción 2)", "U4", "Bajo: TI SNAA343A, TPL5110-Q1, 4 FIT por IEC TR 62380 (SN 29500-2: 25 FIT de referencia). Alto: MIL-HDBK-217F N2, lineal MOS, G_B 0,0095/10⁶ h × π_Q 10."],
   pcb:  [2.5, 9.1, ["mil217"], "Circuito impreso y soldaduras", "PCB", "MIL-HDBK-217F N2: placa SMT G_B 0,0025/10⁶ h (bajo) y la misma más ~95 juntas por reflujo de 6,9 × 10⁻⁵/10⁶ h cada una (alto)."]
@@ -1445,6 +1468,12 @@ const R = [
   {blk:"cnt", ref:"U2 LDO", modo:"Salida fuera de especificación", mec:"BOR, reset o sobretensión moderada → aborta.", ef:"P3", frac:.15, fsrc:"ti7a16", fam:"ldo"},
   {blk:"cnt", ref:"U2 LDO", modo:"Corto entre dos pines", mec:"Según los pines: sin salida o salida alta; se toma como no disparo.", ef:"P3", frac:.05, fsrc:"ti7a16", fam:"ldo"},
   {blk:"cnt", ref:"U2 LDO", modo:"Falla de power-good / habilitación", mec:"El HT7525S no tiene power-good: el 10 % del reparto de TI no aplica.", ef:"N", frac:.10, fsrc:"ti7a16", fam:"ldo"},
+  {blk:"drv", ref:"Retén A (Qn1, Qp1)", modo:"Transistor del retén en corto", mec:"El retén de la gate de Q4 queda activado: Q1 conduce apenas hay energía. No dispara solo: falta Q2.", ef:"L", frac:.5, fsrc:"sup", fam:"bjt", n:2, lat:"Q1", req:"latch"},
+  {blk:"drv", ref:"Retén B (Qn2, Qp2)", modo:"Transistor del retén en corto", mec:"El retén de la gate de Q2 queda activado; U3 lo retiene hasta liberar. No dispara solo: falta Q1.", ef:"L", frac:.5, fsrc:"sup", fam:"bjt", n:2, lat:"Q2", req:"latch"},
+  {blk:"drv", ref:"Retenes A y B", modo:"Transistor del retén abierto", mec:"El retén no sostiene: las llaves quedan cerradas solo durante el pulso WAKE, que alcanza para descargar C_F si dura más de ~5 ms.", ef:"N", frac:.3, fsrc:"sup", fam:"bjt", n:4, req:"latch"},
+  {blk:"drv", ref:"R_up A", modo:"Abierto", mec:"La gate del P-MOS del retén A queda flotante y puede activarlo.", ef:"L", frac:.59, fsrc:"dsiac", fam:"res", cond:.5, lat:"Q1", req:"latch"},
+  {blk:"drv", ref:"R_up B", modo:"Abierto", mec:"La gate del P-MOS del retén B queda flotante y puede activarlo.", ef:"L", frac:.59, fsrc:"dsiac", fam:"res", cond:.5, lat:"Q2", req:"latch"},
+  {blk:"drv", ref:"C_h A, C_h B", modo:"Corto", mec:"El P-MOS del retén no puede encender: vuelve a funcionar como pulso de WAKE.", ef:"N", frac:.49, fsrc:"dsiac", fam:"mlcc", n:2, req:"latch"},
   {blk:"drv", ref:"R11", modo:"Abierto", mec:"La salida de U4 no llega a la gate de Q4: Q1 no enciende.", ef:"P3", frac:.59, fsrc:"dsiac", fam:"res", req:"tmr"},
   {blk:"drv", ref:"R12", modo:"Abierto", mec:"La salida de U4 no llega a la gate de Q2.", ef:"P3", frac:.59, fsrc:"dsiac", fam:"res", req:"tmr"},
   {blk:"drv", ref:"R12", modo:"Corto", mec:"Sin la resistencia, el RESET de U3 recibe toda la corriente de la salida de U4 en una falla: el enclavamiento se debilita (latente).", ef:"L", frac:.05, fsrc:"dsiac", fam:"res", req:"tmr"},
@@ -1580,7 +1609,7 @@ const PROP = Object.assign({}, BASE, { rs: 0.5, m: MP });
 const X = (st, o) => Object.assign({}, st, o, { m: Object.assign({}, st.m, (o && o.m) || {}) });
 const REC = X(PROP, { kd: 1 / 60, tmode: 1e-5, m: { bit: true, noxtal: true, fab: true } });
 // Recomendado actual: temporizador TPL5110-Q1, T fijo (25–40 s por puentes), ventana ±5 s, 3 años, sin prueba antes del uso
-const TREC = X(REC, { years: 3, tmode: 0, T30: true, W5: true, rs: 2.2, m: { bit: false, tmr: true, pol: true, rev: true } });
+const TREC = X(REC, { years: 3, tmode: 0, T30: true, W5: true, rs: 2.2, m: { bit: false, tmr: true, pol: true, rev: true, latch: true } });
 const MICA = X(REC, { years: 3, tmode: 0, T30: true, W5: true });               // micro + autoprueba antes del uso
 const MICB = X(MICA, { m: { bit: false } });                                    // micro, solo banco
 const ORI3 = X(BASE, { years: 3, kd: 1 / 60, tmode: 0, W5: true, m: { fab: true } }); // original en las mismas condiciones
@@ -1715,7 +1744,7 @@ function checksHtml(s, label) {
     <dl class="kv"><dt>R_s</dt><dd>${dec(s.rs)} Ω</dd><dt>dV/dt en el drain</dt><dd>${Math.round(dv.rate / 1000)} V/ms</dd><dt>Pull-down / C_GS</dt><dd>${dv.Rpd / 1000} kΩ / ${dv.Cgs ? "4,7 nF" : "—"}</dd><dt>V_gs inducida</dt><dd>${dec(dv.vg, 2)} V</dd><dt>V_th mínima a 70 °C</dt><dd>${dec(dv.vthMin, 2)} V</dd><dt>Unidades con V_th menor</dt><dd>${dv.frac > 0 ? Math.round(dv.frac * 100) + " % por MOSFET" : "ninguna"}</dd></dl>
     <p class="small">V_gs ≈ C_rss · dV/dt · R_pd, con C_rss = 50 pF y C_iss = 630 pF (hoja de datos AO3400A); tope en el divisor C_rss / (C_iss + C_GS). V_th: 0,65–1,45 V a 25 °C (hoja de datos); el coeficiente de −3 mV/°C es un valor típico de MOSFET de baja tensión, no figura en la hoja de datos. Estimación cuasi estática: medir con osciloscopio y la fuente real.</p></div>`;
 }
-$("p1-checks").innerHTML = checksHtml(TREC, "recomendado") + `<div class="check"><h3>Arranque de la salida del temporizador</h3><span class="status st-mid">A VERIFICAR</span><p>Con el TPL5010-Q1 la orden de disparo es el pulso WAKE, que en reposo está en bajo y la hoja de datos no lo emite al comenzar el primer ciclo: el arranque normal no depende de U3. Con el TPL5110-Q1 (versión anterior) el estado por defecto de DRV después de leer la resistencia es alto, que es justo el nivel de disparo: el arranque normal quedaba frenado solo por U3, y U3 o C7 fallados en el almacenamiento daban un disparo en t0 (P1 ≈ 1 en 400 mil). Medir igual WAKE y ARM_T1 con osciloscopio, con la rampa real de VDD, en frío y en caliente.</p></div>`;
+$("p1-checks").innerHTML = checksHtml(TREC, "recomendado") + `<div class="check"><h3>Arranque de la salida del temporizador</h3><span class="status st-mid">A VERIFICAR</span><p>Con el TPL5010-Q1 la orden de disparo es el pulso WAKE, que según su hoja de datos (SNAS679, 8.3.1 y figura 9) está normalmente en bajo y no se emite al comenzar el primer ciclo: el arranque normal no depende de U3. Los retenes de las llaves se activan con WAKE; hay que verificar que no se activen solos durante la subida de VDD. Con el TPL5110-Q1 (versión anterior) el estado por defecto de DRV después de leer la resistencia es alto, que es justo el nivel de disparo: el arranque normal quedaba frenado solo por U3, y U3 o C7 fallados en el almacenamiento daban un disparo en t0 (P1 ≈ 1 en 400 mil). Medir igual WAKE y ARM_T1 con osciloscopio, con la rampa real de VDD, en frío y en caliente.</p></div>`;
 
 // --- comparación
 $("cmp").innerHTML = `<thead><tr><th>Modo</th><th>Original</th><th>Mejorado</th><th>Recomendado</th><th>Cambio total</th><th>Qué queda dominando en el recomendado</th></tr></thead><tbody>` +
@@ -1724,7 +1753,7 @@ $("cmp").innerHTML = `<thead><tr><th>Modo</th><th>Original</th><th>Mejorado</th>
     return `<tr><td><span class="pill e-${k}">${k}</span></td><td class="n">${pv(a)}</td><td class="n">${pv(b)}</td><td class="n" style="color:var(--c-new);font-weight:600">${pv(c)}</td><td class="n">${ch}</td><td>${top ? top.r.ref + " · " + top.r.modo : "—"}</td></tr>`; }).join("") + "</tbody>";
 
 // --- auditoría: grado de respaldo de cada término
-const GRL = { tmr: "A", res: "A", mlcc: "A", cf: "A", svr: "A", fet: "B", sig: "B", rect: "B", ldo: "B", pcb: "B", xtal: "C", tvs: "C", con: "B", mcu: "C" };
+const GRL = { tmr: "A", res: "A", mlcc: "A", cf: "A", svr: "A", fet: "B", sig: "B", rect: "B", ldo: "B", pcb: "B", xtal: "C", tvs: "C", con: "B", bjt: "C", mcu: "C" };
 const GORD = ["A", "B", "C", "D"], worst = (...g) => g.reduce((a, b) => GORD.indexOf(b) > GORD.indexOf(a) ? b : a, "A");
 function gradeOf(r, s) {
   let g;
@@ -1787,7 +1816,8 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
     ["D1", "Puente MB10S (polaridad indistinta)", "C2488", 1, 0.018, "lcsc"], ["D2", "BAT54WS", "C191198", 1, 0.0068, "lcsc"], ["D3", "SMAJ15CA (bidireccional)", "C726784", 1, 0.022, "lcsc"],
     ["D5", "Zener BZT52C4V7", "C173408", 1, 0.0108, "lcsc"], ["C_F", "Polímero 470 µF 25 V, 8 × 10 mm (según I²t)", "C46550466", 1, 0.147, "lcsc"], ["C_loc", "10 µF 25 V", "C15850", 1, 0.017, "lcsc"],
     ["C4", "1 µF", "C52923", 1, 0.003, "lcsc"], ["C7", "2,2 µF X7R 0603 (retardo de U3)", "a elegir", 1, 0.008, "est"], ["C5, C_U4", "100 nF", "C1525", 2, 0.002, "lcsc"], ["C8, C9", "4,7 nF (C_GS)", "básica", 2, 0.002, "est"],
-    ["R_s", "2,2 Ω anti-pulso 1206 (limita la corriente de carga)", "a elegir", 1, 0.01, "est"], ["R_bleed, R6–R12, R_D2", "Resistores 0402", "varios", 9, 0.0012, "doc"], ["R0, Ra, Rb, Rc", "Cadena de ajuste 15,6k / 1,09k / 1,03k / 959 Ω, 0,1 % y 25 ppm/°C (película delgada)", "varios", 4, 0.008, "est"], ["P1–P3", "Puentes de 0 Ω (hasta 3, según variante)", "básica", 3, 0.0012, "est"]];
+    ["R_s", "2,2 Ω anti-pulso 1206 (limita la corriente de carga)", "a elegir", 1, 0.01, "est"], ["Qn_A, Qn_B", "MMBT3904 (retén de las llaves)", "C20526", 2, 0.0061, "lcsc"], ["Qp_A, Qp_B", "MMBT3906 (retén de las llaves)", "a elegir", 2, 0.007, "est"], ["C_hA, C_hB", "100 nF (retén)", "C1525", 2, 0.002, "lcsc"],
+    ["R_bleed, R6–R12, R_D2, retén", "Resistores 0402", "varios", 17, 0.0012, "doc"], ["R0, Ra, Rb, Rc", "Cadena de ajuste 15,6k / 1,09k / 1,03k / 959 Ω, 0,1 % y 25 ppm/°C (película delgada)", "varios", 4, 0.008, "est"], ["P1–P3", "Puentes de 0 Ω (hasta 3, según variante)", "básica", 3, 0.0012, "est"]];
   const BOM0 = [
     ["U1", "STM32L010F4P6 (TSSOP-20)", "C529415", 1, 0.697, "doc"], ["Y1", "Cristal 32,768 kHz", "C97604", 1, 0.111, "doc"], ["C1, C2", "10 pF C0G", "C32949", 2, 0.0015, "doc"],
     ["U2", "LDO HT7525S", "C22466410", 1, 0.029, "doc"], ["Q1, Q2", "AO3400A", "C20917", 2, 0.056, "doc"], ["Q3", "2N7002", "C8545", 1, 0.013, "doc"],
@@ -1811,7 +1841,7 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
     { n: "Original", mat: sum(BOM0), j: 70, feed: 16, prog: 30 },
     { n: "Mejorado", mat: sum(BOM0) + sum(DM), j: 95, feed: 22, prog: 30 },
     { n: "Micro + autoprueba", mat: sum(BOM0) + sum(DM) + sum(DR), j: 95, feed: 22, prog: 0 },
-    { n: "Recomendado: temporizador", mat: sum(RBOM), j: 84, feed: 27, prog: 0 }];
+    { n: "Recomendado: temporizador", mat: sum(RBOM), j: 112, feed: 29, prog: 0 }];
   const rowsP = [];
   cfg.forEach(c => {
     const parts = c.mat * N * 1.03, setup = 25.6, sten = 8.2, feed = c.feed * 1.53, jo = joints(c.j * N), misc = 15, pcb = 60;
@@ -1840,7 +1870,7 @@ const GCOL = { A: "var(--c-drive)", B: "var(--c-count)", C: "var(--c-store)", D:
     `<tr><td colspan="7"><b>Cambios de micro + autoprueba</b></td></tr>` + DR.map(bomRow).join("") + `<tr class="tot"><td></td><td>Total micro + autoprueba</td><td></td><td></td><td></td><td class="n">${dec(sum(BOM0) + sum(DM) + sum(DR), 3)}</td><td></td></tr></tbody>`;
   window.PRICES = rowsP.map(r => ({ n: r.c.n, fob: r.fob / N, land: r.land / N }));
   window.COSTOF = (mat, j, feed) => { const fob = (mat * N * 1.03 + 25.6 + 8.2 + feed * 1.53 + joints(j * N) + 15 + 60) * 1.02; return { mat, fob: fob / N, land: ((fob + 70) * 1.19 + 350) / N }; };
-  window.REC_BOM = { mat: sum(RBOM), j: 84, feed: 27 };
+  window.REC_BOM = { mat: sum(RBOM), j: 112, feed: 29 };
   const ROWS = [["Original (documento de diseño)", RO3, 0], ["Micro, T fijo, solo banco", RMB, 2], ["Micro + autoprueba antes del uso (no aplicable)", RMA, 2], ["Recomendado: temporizador TPL5110-Q1", RT, 3]];
   $("rec-box").innerHTML = `<div class="scroll"><table style="min-width:760px"><thead><tr><th>Configuración</th><th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>FOB por placa</th><th>Puesta en Argentina</th></tr></thead><tbody>` +
     ROWS.map(([n, r, pi], i) => `<tr${i === 3 ? ' style="font-weight:600;color:var(--c-new)"' : ""}><td>${n}</td>${["P1", "P2", "P3", "P4"].map(k => `<td class="n">${pv(r.tot[k])}</td>`).join("")}<td class="n">${dec(window.PRICES[pi].fob, 2)} USD</td><td class="n">${dec(window.PRICES[pi].land, 2)} USD</td></tr>`).join("") +
@@ -1862,9 +1892,9 @@ function dualTot(sa, sb, scen) {
   };
 }
 (function () {
-  const S0 = X(TREC, { rs: 0.1, kd: 1 / 30, m: { one: true, hs: false, t1: false, vdd: false, pd: false } });
+  const S0 = X(TREC, { rs: 0.1, kd: 1 / 30, m: { one: true, hs: false, t1: false, vdd: false, pd: false, latch: false } });
   const S1 = X(S0, { m: { one: false } }), S2 = X(S1, { m: { hs: true } }), S3 = X(S2, { m: { t1: true } });
-  const S4 = X(S3, { m: { vdd: true } }), S5 = X(S4, { rs: 2.2, m: { pd: true } }), S6 = X(S5, { kd: 1 / 60 });
+  const S4 = X(S3, { m: { vdd: true } }), S5 = X(S4, { rs: 2.2, m: { pd: true } }), S5b = X(S5, { m: { latch: true } }), S6 = X(S5b, { kd: 1 / 60 });
   const SA1 = X(S6, { m: { div: true } }), SB = X(TREC, { m: { tmr: false } });
   const one = st => ({ t: compute(st).tot, lo: compute(X(st, { scen: "lo" })).tot, hi: compute(X(st, { scen: "hi" })).tot, dv: dvdt(st) });
   const two = (sa, sb) => ({ t: dualTot(sa, sb, "geo"), lo: dualTot(sa, sb, "lo"), hi: dualTot(sa, sb, "hi"), dv: dvdt(sa) });
@@ -1875,6 +1905,7 @@ function dualTot(sa, sb, scen) {
     ["Enclavamiento de t1 (U3)", "Salida del temporizador trabada en alto, R_T en corto: sin U3 disparan en t0", one(S3), 0.11 + 0.006, 8, 2, 0, "U3 TPS3808, C7 1,5 µF", "A"],
     ["Clamp de VDD (D5)", "LDO con salida alta: daña U4/U3 y puede dejar la salida de U4 en alto (causa común)", one(S4), 0.0108, 2, 1, 0, "D5 zener 4,7 V", "A"],
     ["Pull-down 10 kΩ + C_GS y R_s 2,2 Ω", "Acople dV/dt en las gates durante el pulso de carga (determinista, se ve en el chequeo)", one(S5), 2 * 0.002, 4, 1, 0, "C8, C9 4,7 nF; R_s 1206 y cambio de valores", "A"],
+    ["Retén de las llaves", "Que las llaves se abran al terminar el pulso WAKE (20 ms solo típico, sin mínimo en la hoja de datos) antes de vaciar C_F; con el retén quedan cerradas hasta que se agota la energía", one(S5b), 2 * 0.0061 + 2 * 0.007 + 2 * 0.002 + 8 * 0.0012, 28, 2, 0, "2 × MMBT3904, 2 × MMBT3906, 6 × 100 kΩ, 2 × 10 kΩ, 2 × 100 nF", "A"],
     ["Almacenamiento controlado", "Envejecimiento durante 2–3 años: bolsa barrera, desecante, temperatura moderada (k_d 1/30 → 1/60)", one(S6), 0, 0, 0, 0.015, "Bolsa y desecante por panel (estimado)", "A"],
     ["Alimentación por divisor (sin LDO ni D5)", "Fallas del LDO (sin salida, salida alta descargada por el clamp) y corto de D5", one(SA1), -0.021 - 0.0108 + 2 * 0.0012, -1, -1, 0, "Sale U2 y D5; entran 2 resistores (≈ 10 µA de consumo desde C_F)", "B"],
     ["TPL5010 comercial en lugar del TPL5010-Q1", "Costo: el mismo integrado sin calificación AEC-Q100, 0,20 USD contra 0,52. No cambia el número (ninguno de los dos tiene FIT publicado)", one(SA1), 0.2018 - 0.52, 0, 0, 0, "U4 TPL5010DDCT (LCSC C125800)", "B"],
