@@ -1,0 +1,333 @@
+<title>Banco de I²t del iniciador</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: hoja de banco de ensayo — una columna de 880 px, esquema arriba, procedimiento numerado, planilla y materiales al final */
+:root{
+  --bg:#f6f7f5; --paper:#ffffff; --fg:#1b2420; --muted:#5d6a64; --line:#d5dbd7;
+  --accent:#1f6f5c; --ch1:#b07d00; --ch2:#0b7f99; --danger:#b3261e; --ok:#2e7d32; --warn:#9a6200;
+  --soft:color-mix(in srgb,var(--accent) 9%,transparent);
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111614; --paper:#171e1b; --fg:#e4ebe7; --muted:#9aa8a1; --line:#2c3833;
+  --accent:#5cc3a6; --ch1:#f0c040; --ch2:#4fc8e3; --danger:#ff7b70; --ok:#7cd283; --warn:#e6b04a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111614; --paper:#171e1b; --fg:#e4ebe7; --muted:#9aa8a1; --line:#2c3833;
+  --accent:#5cc3a6; --ch1:#f0c040; --ch2:#4fc8e3; --danger:#ff7b70; --ok:#7cd283; --warn:#e6b04a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.6 var(--f-body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px}
+main{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(28px,5vw,40px)}
+h2{font-size:24px;display:flex;gap:12px;align-items:baseline}
+h2 .n{font-family:var(--f-mono);font-size:14px;color:var(--accent);font-weight:600}
+h3{font-size:17px}
+p{margin:0;max-width:68ch}
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+.lead{color:var(--muted);font-size:17px}
+.eyebrow{font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.hdr{display:flex;flex-direction:column;gap:12px;border-bottom:2px solid var(--fg);padding-bottom:20px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;font:13px var(--f-mono);color:var(--muted)}
+.fig{background:var(--paper);border:1px solid var(--line);border-radius:6px;overflow-x:auto}
+.fig svg{display:block}
+.cap{font-size:13px;color:var(--muted)}
+.formula{font-family:var(--f-mono);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:grid;gap:6px;overflow-x:auto}
+.formula b{color:var(--accent)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.grid2>*{min-width:0}
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;counter-reset:s}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:40px 1fr;gap:12px;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+ol.steps>li::before{content:counter(s,decimal-leading-zero);font:600 14px var(--f-mono);color:var(--accent);padding-top:2px}
+ol.steps>li>div{min-width:0;display:flex;flex-direction:column;gap:6px}
+ol.steps ul{margin:0;padding-left:18px}
+.seq{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font:13px var(--f-mono)}
+.seq span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--bg)}
+.seq i{font-style:normal;color:var(--muted)}
+.tw{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px var(--f-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f-mono)}
+tr:last-child td{border-bottom:0}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.calc{display:flex;flex-wrap:wrap;gap:12px;align-items:end;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+.calc label{display:flex;flex-direction:column;gap:4px;font:12px var(--f-mono);color:var(--muted)}
+input,select{font:14px var(--f-mono);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:6px 8px;width:100%}
+.calc input{width:110px}
+.out{font:600 20px var(--f-mono);color:var(--accent)}
+.warnbox{border:1px solid var(--danger);border-left-width:4px;border-radius:6px;padding:14px 16px;background:color-mix(in srgb,var(--danger) 6%,var(--paper));display:flex;flex-direction:column;gap:8px}
+.warnbox h3{color:var(--danger)}
+.warnbox ul{margin:0;padding-left:18px}
+.pill{display:inline-block;font:600 11px var(--f-mono);padding:2px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.pill.ok{color:var(--ok)} .pill.warn{color:var(--warn)} .pill.bad{color:var(--danger)}
+button{font:600 13px var(--f-body);border:1px solid var(--accent);background:var(--accent);color:var(--paper);border-radius:4px;padding:7px 12px;cursor:pointer}
+button.ghost{background:transparent;color:var(--accent)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#log td{padding:4px 6px}
+#log input,#log select{min-width:70px;padding:4px 6px;font-size:13px}
+#log td.i2t{font:600 14px var(--f-mono);color:var(--accent);white-space:nowrap}
+.note{font-size:13px;color:var(--muted)}
+/* svg */
+.w{stroke:var(--fg);stroke-width:2;fill:none}
+.cmp{fill:var(--paper);stroke:var(--fg);stroke-width:2}
+.t{fill:var(--fg);font:13px var(--f-body)}
+.tl{fill:var(--fg);font:600 12px var(--f-mono)}
+.ts{fill:var(--muted);font:11.5px var(--f-body)}
+.dot{fill:var(--fg)}
+.box{fill:none;stroke:var(--danger);stroke-width:1.5;stroke-dasharray:6 5}
+.tb{fill:var(--danger);font:600 11.5px var(--f-mono);letter-spacing:.06em}
+.c1{stroke:var(--ch1);fill:none;stroke-width:2.2}
+.c2{stroke:var(--ch2);fill:none;stroke-width:2.2}
+.t1{fill:var(--ch1);font:600 12px var(--f-mono)}
+.t2{fill:var(--ch2);font:600 12px var(--f-mono)}
+.ax{stroke:var(--muted);stroke-width:1}
+.gd{stroke:var(--line);stroke-width:1}
+.dash{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4;fill:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<main>
+<header class="hdr">
+  <div class="eyebrow">Retardo autoalimentado · ensayo de energía</div>
+  <h1>Banco de I²t del iniciador</h1>
+  <p class="lead">Cómo medir cuánta energía necesita el iniciador para funcionar, con un osciloscopio de dos canales, un shunt de 0,1 Ω y un capacitor común. El resultado fija el C_F del diseño (hoy 2 × 330 µF híbrido, que entrega 5,4 A²·ms en el peor caso).</p>
+  <div class="meta"><span>I²t en A²·ms</span><span>τ ≈ 1,5 ms, como el diseño</span><span>10–20 disparos</span><span>1 osciloscopio + 1 multímetro</span></div>
+</header>
+
+<section>
+  <h2><span class="n">1</span>Esquema del banco</h2>
+  <div class="fig">
+  <svg viewBox="0 0 900 520" width="900" height="520" role="img" aria-label="Esquema: fuente con resistor de carga y llave de carga hacia el capacitor de 680 µF; desde el capacitor, llave de armado, iniciador dentro de caja con puente de seguridad en paralelo, MOSFET IRLZ44N y shunt de 0,1 Ω a masa. El gate se maneja con pila de 9 V, pulsador, 1 kΩ y 10 kΩ a masa. CH1 en el shunt, CH2 en el capacitor, masa del osciloscopio bajo el shunt.">
+    <!-- caja de contención -->
+    <rect class="box" x="612" y="104" width="276" height="150" rx="6"/>
+    <text class="tb" x="878" y="246" text-anchor="end">CAJA DE CONTENCIÓN</text>
+    <!-- fuente -->
+    <rect class="cmp" x="30" y="120" width="100" height="140" rx="4"/>
+    <text class="tl" x="44" y="150">FUENTE</text><text class="ts" x="44" y="168">0–15 V</text><text class="ts" x="44" y="184">límite 0,2 A</text>
+    <text class="tl" x="114" y="146">+</text><text class="tl" x="116" y="244">−</text>
+    <path class="w" d="M130 140H160V90H170M240 90H270M330 90H370"/>
+    <path class="w" d="M130 240H160V460"/>
+    <!-- R carga -->
+    <rect class="cmp" x="170" y="80" width="70" height="20" rx="2"/>
+    <text class="t" x="166" y="66">R_carga 100 Ω 5 W</text>
+    <!-- llave de carga -->
+    <circle class="cmp" cx="272" cy="90" r="3"/><circle class="cmp" cx="328" cy="90" r="3"/>
+    <path class="w" d="M274 89L322 70"/>
+    <text class="ts" x="250" y="118">LLAVE DE CARGA</text><text class="ts" x="250" y="133">se abre antes de disparar</text>
+    <!-- nodo A y capacitor -->
+    <circle class="dot" cx="370" cy="90" r="4"/>
+    <path class="w" d="M370 90V250M370 264V460"/>
+    <path class="w" d="M348 250H392" style="stroke-width:3"/><path class="w" d="M348 264H392" style="stroke-width:3"/>
+    <text class="tl" x="354" y="244">+</text>
+    <text class="t" x="398" y="252">C 680 µF</text><text class="ts" x="398" y="268">25 V común</text>
+    <!-- CH2 -->
+    <path class="c2" d="M370 90V44H420"/><circle cx="370" cy="90" r="6" class="c2"/>
+    <text class="t2" x="426" y="48">CH2 · punta ×10 · tensión de C</text>
+    <!-- llave de armado -->
+    <path class="w" d="M370 90H480M548 90H660V140"/>
+    <circle class="cmp" cx="482" cy="90" r="3"/><circle class="cmp" cx="546" cy="90" r="3"/>
+    <path class="w" d="M484 89L540 70"/>
+    <text class="ts" x="474" y="118">LLAVE DE ARMADO</text><text class="ts" x="474" y="133">con llave física</text>
+    <!-- iniciador -->
+    <rect class="cmp" x="644" y="140" width="32" height="80" rx="3"/>
+    <path class="w" d="M650 150L670 168L650 186L670 204" style="stroke-width:1.5"/>
+    <text class="t" x="630" y="242" text-anchor="end"></text>
+    <!-- puente de seguridad -->
+    <path class="w" d="M660 128H760V150M760 206V232H660"/>
+    <circle class="dot" cx="660" cy="128" r="3.5"/><circle class="dot" cx="660" cy="232" r="3.5"/>
+    <circle class="cmp" cx="760" cy="152" r="3"/><circle class="cmp" cx="760" cy="204" r="3"/>
+    <path class="w" d="M760 154L760 202"/>
+    <text class="tl" x="772" y="164">PUENTE DE</text><text class="tl" x="772" y="180">SEGURIDAD</text>
+    <text class="ts" x="772" y="198">cerrado hasta armar</text>
+    <text class="tl" x="686" y="160">INICIADOR</text><text class="ts" x="686" y="176">puente</text><text class="ts" x="686" y="191">1–2 Ω</text>
+    <path class="w" d="M660 220V270"/>
+    <!-- MOSFET -->
+    <path class="w" d="M660 270V282H652M652 318H660V340" />
+    <path class="w" d="M652 276V324" style="stroke-width:3"/>
+    <path class="w" d="M642 280V320M600 300H642"/>
+    <path class="w" d="M660 300H652" /><path d="M652 300l8-5v10z" style="fill:var(--fg)"/>
+    <text class="tl" x="676" y="290">Q · IRLZ44N</text><text class="ts" x="676" y="306">D arriba · S abajo</text><text class="ts" x="676" y="321">G desde la izquierda</text>
+    <!-- nodo B, shunt -->
+    <circle class="dot" cx="660" cy="350" r="4"/>
+    <path class="w" d="M660 340V360M660 420V460"/>
+    <rect class="cmp" x="650" y="360" width="20" height="60" rx="2"/>
+    <text class="t" x="560" y="388" text-anchor="end"></text>
+    <text class="tl" x="682" y="386">R_shunt</text><text class="ts" x="682" y="402">0,1 Ω 1 %</text>
+    <!-- CH1 -->
+    <path class="c1" d="M660 350H790"/><circle cx="660" cy="350" r="6" class="c1"/>
+    <text class="t1" x="772" y="340" >CH1 · punta ×1</text><text class="ts" x="772" y="372">i = V / R_shunt</text>
+    <!-- masa -->
+    <path class="w" d="M160 460H760"/>
+    <circle class="dot" cx="660" cy="460" r="5"/>
+    <path class="w" d="M760 460V478"/>
+    <path class="w" d="M748 478H772M752 484H768M757 490H763"/>
+    <path class="w" d="M760 460H760" />
+    <text class="ts" x="560" y="500">masa del osciloscopio en este punto (uno solo)</text>
+    <text class="tl" x="168" y="452">GND</text>
+    <!-- gate -->
+    <circle class="dot" cx="600" cy="300" r="3.5"/>
+    <path class="w" d="M600 300V330M600 400V460"/>
+    <rect class="cmp" x="590" y="330" width="20" height="70" rx="2"/>
+    <text class="ts" x="560" y="372" text-anchor="end">10 kΩ</text>
+    <path class="w" d="M600 300H584M534 300H520"/>
+    <rect class="cmp" x="534" y="290" width="50" height="20" rx="2"/>
+    <text class="ts" x="545" y="282">1 kΩ</text>
+    <!-- pulsador -->
+    <circle class="cmp" cx="518" cy="300" r="3"/><circle class="cmp" cx="482" cy="300" r="3"/>
+    <path class="w" d="M478 286H522M500 286V274"/>
+    <text class="ts" x="470" y="330">PULSADOR</text><text class="ts" x="470" y="345">de disparo</text>
+    <path class="w" d="M479 300H450V360M450 376V460"/>
+    <path class="w" d="M434 360H466" style="stroke-width:3"/><path class="w" d="M442 376H458" style="stroke-width:3"/>
+    <text class="tl" x="414" y="356">+</text><text class="ts" x="400" y="400">pila 9 V</text>
+  </svg>
+  </div>
+  <p class="cap">El capacitor se carga desde la fuente y se descarga por el iniciador cuando el pulsador enciende el MOSFET. El MOSFET no rebota como un relé o un pulsador directo, así que el pulso queda limpio. CH1 lee la corriente en el shunt; CH2, la tensión del capacitor. Tirá el circuito de descarga con cable de 1 mm² y lo más corto posible: cada 10 cm suman ~5 mΩ.</p>
+</section>
+
+<section>
+  <h2><span class="n">2</span>Qué se mide y cómo se calcula</h2>
+  <div class="grid2">
+    <div class="fig">
+      <svg viewBox="0 0 600 240" width="100%" role="img" aria-label="Forma de onda de corriente: arranca en el pico y cae exponencialmente; en τ vale 37 % del pico. Si el iniciador funciona, la corriente cae a cero en t_f.">
+        <path class="gd" d="M60 40H560M60 115H560M185 30V190M310 30V190M435 30V190"/>
+        <path class="ax" d="M60 30V190H565"/>
+        <polyline class="dash" points="60.0,40.0 64.2,44.9 68.3,49.7 72.5,54.3 76.7,58.7 80.8,63.0 85.0,67.2 89.2,71.2 93.3,75.1 97.5,78.9 101.7,82.5 105.8,86.0 110.0,89.5 114.2,92.7 118.3,95.9 122.5,99.0 126.7,102.0 130.8,104.9 135.0,107.7 139.2,110.4 143.3,113.0 147.5,115.5 151.7,118.0 155.8,120.3 160.0,122.6 164.2,124.8 168.3,126.9 172.5,129.0 176.7,131.0 180.8,132.9 185.0,134.8 189.2,136.6 193.3,138.4 197.5,140.1 201.7,141.7 205.8,143.3 210.0,144.8 214.2,146.3 218.3,147.7 222.5,149.1 226.7,150.5 230.8,151.8 235.0,153.0 239.2,154.2 243.3,155.4 247.5,156.5 251.7,157.6 255.8,158.7 260.0,159.7 264.2,160.7 268.3,161.7 272.5,162.6 276.7,163.5 280.8,164.4 285.0,165.2 289.2,166.0 293.3,166.8 297.5,167.6 301.7,168.3 305.8,169.0 310.0,169.7 314.2,170.4 318.3,171.0 322.5,171.6 326.7,172.2 330.8,172.8 335.0,173.4 339.2,173.9 343.3,174.5 347.5,175.0 351.7,175.5 355.8,175.9 360.0,176.4 364.2,176.8 368.3,177.3 372.5,177.7 376.7,178.1 380.8,178.5 385.0,178.9 389.2,179.2 393.3,179.6 397.5,179.9 401.7,180.2 405.8,180.6 410.0,180.9 414.2,181.2 418.3,181.5 422.5,181.7 426.7,182.0 430.8,182.3 435.0,182.5 439.2,182.8 443.3,183.0 447.5,183.2 451.7,183.5 455.8,183.7 460.0,183.9 464.2,184.1 468.3,184.3 472.5,184.5 476.7,184.6 480.8,184.8 485.0,185.0 489.2,185.2 493.3,185.3 497.5,185.5 501.7,185.6 505.8,185.8 510.0,185.9 514.2,186.0 518.3,186.2 522.5,186.3 526.7,186.4 530.8,186.5 535.0,186.6 539.2,186.8 543.3,186.9 547.5,187.0 551.7,187.1 555.8,187.2 560.0,187.3"/>
+        <polyline class="c1" points="60.0,40.0 64.2,44.9 68.3,49.7 72.5,54.3 76.7,58.7 80.8,63.0 85.0,67.2 89.2,71.2 93.3,75.1 97.5,78.9 101.7,82.5 105.8,86.0 110.0,89.5 114.2,92.7 118.3,95.9 122.5,99.0 126.7,102.0 130.8,104.9 135.0,107.7 139.2,110.4 143.3,113.0 147.5,115.5 151.7,118.0"/>
+        <path class="c1" d="M151.7 117.95V190"/>
+        <path class="dash" d="M60 134.8H185V190"/>
+        <circle cx="60" cy="40" r="4" style="fill:var(--ch1)"/>
+        <text class="t1" x="68" y="34">I_pico = V_CH1 / R_shunt</text>
+        <text class="ts" x="8" y="139">0,37·I</text>
+        <text class="tl" x="180" y="206">τ</text>
+        <text class="t1" x="158" y="100">t_f: se abre el puente</text>
+        <text class="ts" x="420" y="182">sin funcionar: sigue la curva</text>
+        <text class="ts" x="60" y="228">0</text><text class="ts" x="300" y="228">1,5 ms/div aprox.</text>
+      </svg>
+    </div>
+    <div class="formula">
+      <div>i(t) = V<sub>CH1</sub>(t) / R<sub>shunt</sub></div>
+      <div>τ = tiempo hasta 0,37 · I<sub>pico</sub></div>
+      <div><b>I²t total = I<sub>pico</sub>² · τ / 2</b></div>
+      <div><b>I²t hasta funcionar = I<sub>pico</sub>² · τ/2 · (1 − e<sup>−2·t_f/τ</sup>)</b></div>
+      <div style="color:var(--muted);font-size:13px;font-family:var(--f-body)">Control: I²t total ≈ V₀² · C / (2 · R), con R = V₀ / I<sub>pico</sub>. Si el osciloscopio exporta datos, I²t = Σ i² · Δt.</div>
+    </div>
+  </div>
+  <p>La capacidad exacta del capacitor de prueba y su ESR no entran en la cuenta, porque se mide la corriente real. Lo que importa es que el pulso dure parecido al del diseño (τ de 1–2 ms): un iniciador lento necesita más I²t con pulsos largos. El dato más valioso es el I²t hasta funcionar, medido con t_f.</p>
+</section>
+
+<section>
+  <h2><span class="n">3</span>Procedimiento</h2>
+  <ol class="steps">
+    <li><div><h3>Calibrar el shunt</h3>
+      <p>Pasá ~1 A por el shunt con la fuente en modo corriente y una carga de 2–5 Ω en serie. Medí la corriente con el UT61E en serie (rango 10 A) y la tensión con CH1 en DC, con la punta en las patas mismas del shunt.</p>
+      <p><b>R_shunt = V / I.</b> Así quedan calibrados juntos el shunt y la ganancia del osciloscopio.</p></div></li>
+    <li><div><h3>Medir el puente del iniciador</h3>
+      <p>Fuente a 5 V con un resistor de 470 Ω en serie (~10 mA). Medí la corriente con el multímetro y los mV directamente en los bornes del iniciador, con cables separados para la medición (4 hilos). <b>R_puente = mV / mA.</b></p>
+      <p class="note">Nunca con el ohmímetro. Confirmá antes en la hoja de datos que 10 mA está por debajo de la corriente de no-fuego.</p></div></li>
+    <li><div><h3>Configurar el osciloscopio</h3>
+      <ul>
+        <li>CH1: punta ×1, DC, 100–200 mV/div (5 A en 0,1 Ω son 0,5 V).</li>
+        <li>CH2: punta ×10, DC, 2 V/div.</li>
+        <li>Base de tiempo 0,5 ms/div, predisparo ~20 %.</li>
+        <li>Disparo único (Single), flanco de subida en CH1, nivel ~50 mV.</li>
+        <li>Cargador USB desconectado: a batería la masa queda aislada.</li>
+      </ul></div></li>
+    <li><div><h3>Secuencia de cada disparo</h3>
+      <div class="seq"><span>Puente de seguridad cerrado</span><i>→</i><span>Iniciador nuevo en la caja</span><i>→</i><span>Cargar C a V₀ (CH2)</span><i>→</i><span>Abrir llave de carga</span><i>→</i><span>Osciloscopio en Single</span><i>→</i><span>Abrir puente de seguridad</span><i>→</i><span>Armar</span><i>→</i><span>Pulsador</span><i>→</i><span>Desarmar y cerrar puente</span><i>→</i><span>Leer y anotar</span></div>
+      <p class="note">Antes de abrir la caja, comprobá en CH2 que C quedó en 0 V. Si no, descargalo con un resistor de 100 Ω.</p></div></li>
+    <li><div><h3>Buscar el valor con una escalera de energía</h3>
+      <p>Empezá en ~0,5 A²·ms y subí la tensión ~10 % por disparo hasta que funcione. Después hacé 10–20 disparos con iniciadores nuevos alrededor de ese valor: si funciona, el próximo baja un escalón; si no, sube uno (método de escalera o Bruceton). Un iniciador que recibió un pulso sin funcionar no se vuelve a usar.</p></div></li>
+    <li><div><h3>Leer el resultado</h3>
+      <p>De la planilla salen el I²t con 50 % de funcionamiento y su dispersión. El all-fire de diseño es el de 99,9 % con 95 % de confianza; hasta tener suficientes disparos, usá 1,5 veces el mayor I²t hasta funcionar que hayas medido.</p>
+      <div class="bar"><span class="pill ok">≤ 2,7 A²·ms</span><span class="note">660 µF deja al menos el doble en el peor caso.</span></div>
+      <div class="bar"><span class="pill warn">2,7–5,4 A²·ms</span><span class="note">Funciona, con menos margen: evaluar un tercer híbrido.</span></div>
+      <div class="bar"><span class="pill bad">&gt; 5,4 A²·ms</span><span class="note">Hay que subir C_F o la tensión de carga.</span></div></div></li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="n">4</span>Tensión de carga para cada escalón</h2>
+  <p>V₀ = √(2 · I²t · R / C). R es todo el lazo: puente + shunt + MOSFET + cables. Después del primer disparo podés recalcularla como R = V₀ / I<sub>pico</sub>.</p>
+  <div class="calc">
+    <label for="cC">C (µF)<input id="cC" type="number" value="680" min="1" step="10"></label>
+    <label for="cR">R del lazo (Ω)<input id="cR" type="number" value="2.3" min="0.1" step="0.1"></label>
+    <label for="cE">I²t buscado (A²·ms)<input id="cE" type="number" value="2" min="0.1" step="0.1"></label>
+    <div><div class="note">Cargar a</div><div class="out" id="cV">—</div></div>
+  </div>
+  <div class="tw"><table><thead><tr><th class="n">I²t (A²·ms)</th><th class="n">V₀</th><th class="n">I pico</th><th>Uso</th></tr></thead><tbody id="ladder"></tbody></table></div>
+</section>
+
+<section>
+  <h2><span class="n">5</span>Planilla de disparos</h2>
+  <p>Cargá I<sub>pico</sub>, τ y t_f de los cursores; el I²t se calcula solo. Los datos quedan guardados en este navegador. La primera fila es un ejemplo: borrala cuando empieces.</p>
+  <div class="tw"><table id="log" style="min-width:860px"><thead><tr><th>#</th><th>Iniciador</th><th class="n">R puente Ω</th><th class="n">V₀ V</th><th class="n">I pico A</th><th class="n">τ ms</th><th>¿Funcionó?</th><th class="n">t_f ms</th><th class="n">I²t A²·ms</th><th></th></tr></thead><tbody></tbody></table></div>
+  <div class="bar"><button id="add" type="button">Agregar disparo</button><button id="csv" type="button" class="ghost">Copiar como CSV</button><span class="note" id="msg" role="status"></span></div>
+</section>
+
+<section>
+  <h2><span class="n">6</span>Lista de materiales</h2>
+  <div class="tw"><table style="min-width:720px"><thead><tr><th>Ítem</th><th class="n">Cant.</th><th>Para qué</th><th>Dónde</th></tr></thead><tbody>
+    <tr><td><b>Osciloscopio FNIRSI 2C53P</b><br><span class="note">2 canales, 50 MHz, a batería</span></td><td class="n">1</td><td>Corriente (CH1) y tensión (CH2), disparo único</td><td><a href="https://www.mercadolibre.com.ar/osciloscopio-tablet-fnirsi-2c53p-50mhz-2-canales-3-en-1/p/MLA42236152" target="_blank" rel="noopener">Publicación</a> · <a href="https://listado.mercadolibre.com.ar/osciloscopio-fnirsi-2c53p" target="_blank" rel="noopener">listado</a></td></tr>
+    <tr><td><b>Multímetro UNI-T UT61E+</b></td><td class="n">1</td><td>Calibrar el shunt, medir el puente en mV y mA</td><td><a href="https://articulo.mercadolibre.com.ar/MLA-700395923-uni-t-multimetro-digital-ut61e-true-rms-usb-_JM" target="_blank" rel="noopener">Publicación</a> · <a href="https://listado.mercadolibre.com.ar/multimetro-ut61e" target="_blank" rel="noopener">listado</a></td></tr>
+    <tr><td><b>Fuente regulable 0–30 V 5 A</b><br><span class="note">con límite de corriente</span></td><td class="n">1</td><td>Cargar C, calibrar el shunt, medir el puente</td><td><a href="https://articulo.mercadolibre.com.ar/MLA-1701837396-fuente-de-laboratorio-regulable-de-30v-5a-digital-etheos-_JM" target="_blank" rel="noopener">Etheos</a> · <a href="https://listado.mercadolibre.com.ar/fuente-laboratorio-regulada-30v-5a" target="_blank" rel="noopener">listado</a></td></tr>
+    <tr><td><b>Shunt 0,1 Ω 1 % SMD 2512, 2 W</b></td><td class="n">5</td><td>R_shunt (uno en uso, el resto de repuesto)</td><td><a href="https://articulo.mercadolibre.com.ar/MLA-1139370365-resistencia-smd-2512-2w-0100-r-r100-100-miliohm-1-5-unidad-_JM" target="_blank" rel="noopener">Pack × 5</a> · <a href="https://articulo.mercadolibre.com.ar/MLA-693618599-resistencia-potencia-smd-1w-01-ohms-01r-1-2512-itytarg-_JM" target="_blank" rel="noopener">1 W Itytarg</a></td></tr>
+    <tr><td>Alternativa sin soldar SMD: 0,1 Ω cerámico 5 W</td><td class="n">2</td><td>Sirve igual si se calibra (paso 1)</td><td><a href="https://listado.mercadolibre.com.ar/resistencia-0,1-ohm" target="_blank" rel="noopener">Listado</a></td></tr>
+    <tr><td><b>Capacitor electrolítico 680 µF 25 V</b></td><td class="n">20</td><td>Energía del disparo (uno por vez; también 470 + 220)</td><td><a href="https://articulo.mercadolibre.com.ar/MLA-1423830479-20-x-capacitor-electrolitico-680-uf-105-25v-35v-50v-_JM" target="_blank" rel="noopener">Pack × 20</a> · <a href="https://listado.mercadolibre.com.ar/capacitor-680uf-25v" target="_blank" rel="noopener">listado</a></td></tr>
+    <tr><td><b>MOSFET IRLZ44N</b><br><span class="note">no IRFZ44N</span></td><td class="n">3</td><td>Llave de disparo sin rebote</td><td><a href="https://articulo.mercadolibre.com.ar/MLA-612079600-irlz-44-irlz-44-irlz44-irlz44n-transistor-mosfet-n-55-v-47-a-_JM" target="_blank" rel="noopener">Publicación</a></td></tr>
+    <tr><td>Resistor 100 Ω 5 W</td><td class="n">2</td><td>R_carga y descarga manual de C</td><td><a href="https://listado.mercadolibre.com.ar/resistencia-100-ohm-5w" target="_blank" rel="noopener">Listado</a></td></tr>
+    <tr><td>Resistores 1 kΩ, 10 kΩ y 470 Ω, ¼ W</td><td class="n">2 c/u</td><td>Gate y medición del puente</td><td>Casa de electrónica</td></tr>
+    <tr><td>Pulsador, dos interruptores y una llave con llave física</td><td class="n">—</td><td>Disparo, carga, puente de seguridad y armado</td><td><a href="https://listado.mercadolibre.com.ar/interruptor-con-llave" target="_blank" rel="noopener">Llave con llave</a></td></tr>
+    <tr><td>Pila 9 V con broche, borneras, cable 1 mm², placa perforada</td><td class="n">—</td><td>Gate y montaje</td><td>Casa de electrónica</td></tr>
+    <tr><td>Caja de contención</td><td class="n">1</td><td>Iniciador durante el disparo</td><td>Según el iniciador</td></tr>
+  </tbody></table></div>
+  <p class="note">Los links salen de un buscador y no se pudieron abrir para confirmar stock ni precio. Revisá vendedor y garantía antes de comprar.</p>
+</section>
+
+<section>
+  <div class="warnbox">
+    <h3>Seguridad</h3>
+    <ul>
+      <li>Solo personal habilitado (ANMaC) y en un lugar autorizado para iniciadores.</li>
+      <li>El iniciador queda puenteado y la llave de armado abierta hasta el último paso. Nadie frente a la caja al disparar.</li>
+      <li>Iniciadores nuevos en cada disparo. Los que no funcionaron se separan y se destruyen según el procedimiento del fabricante.</li>
+      <li>La fuente nunca queda conectada durante el disparo.</li>
+    </ul>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const nf=(x,d)=>isFinite(x)?x.toLocaleString("es-AR",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
+  function calc(){const C=+$("cC").value*1e-6,R=+$("cR").value,E=+$("cE").value*1e-3;
+    $("cV").textContent=C>0&&R>0&&E>0?nf(Math.sqrt(2*E*R/C),2)+" V":"—";
+    const uses={0.5:"Primer escalón",1:"",2:"Referencia del diseño",2.7:"Límite con margen 2× (660 µF)",4:"",5.4:"Peor caso del diseño",8:""};
+    $("ladder").innerHTML=[0.5,1,2,2.7,4,5.4,8].map(e=>{const v=C>0&&R>0?Math.sqrt(2*e*1e-3*R/C):NaN;return `<tr><td class="n">${nf(e,1)}</td><td class="n">${nf(v,2)} V</td><td class="n">${nf(v/R,2)} A</td><td>${uses[e]||""}</td></tr>`}).join("");}
+  ["cC","cR","cE"].forEach(k=>$(k).addEventListener("input",calc));calc();
+
+  const KEY="banco-i2t-log";
+  const ex=[{id:"Ejemplo",rp:"1,9",v0:"3,8",ip:"1,62",tau:"1,55",fn:"si",tf:"1,1"}];
+  let rows; try{rows=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){rows=null}
+  if(!Array.isArray(rows))rows=ex;
+  const num=s=>parseFloat(String(s).replace(",","."));
+  function i2t(r){const I=num(r.ip),t=num(r.tau),tf=num(r.tf);if(!(I>0&&t>0))return NaN;const tot=I*I*t/2;return r.fn==="si"&&tf>0?tot*(1-Math.exp(-2*tf/t)):tot;}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(rows))}catch(e){}}
+  const F=[["id","text"],["rp","text"],["v0","text"],["ip","text"],["tau","text"]];
+  function draw(){
+    $("log").querySelector("tbody").innerHTML=rows.map((r,i)=>`<tr data-i="${i}"><td class="n">${i+1}</td>${F.map(([k])=>`<td><input id="r${i}-${k}" data-k="${k}" value="${(r[k]||"").replace(/"/g,"&quot;")}" inputmode="${k==="id"?"text":"decimal"}" aria-label="${k} disparo ${i+1}"></td>`).join("")}<td><select id="r${i}-fn" data-k="fn" aria-label="funcionó disparo ${i+1}"><option value="">—</option><option value="si"${r.fn==="si"?" selected":""}>Sí</option><option value="no"${r.fn==="no"?" selected":""}>No</option></select></td><td><input id="r${i}-tf" data-k="tf" value="${r.tf||""}" inputmode="decimal" aria-label="t_f disparo ${i+1}"></td><td class="i2t" id="r${i}-e">${nf(i2t(r),2)}</td><td><button type="button" class="ghost" data-del="${i}" aria-label="Borrar disparo ${i+1}">Borrar</button></td></tr>`).join("");}
+  $("log").addEventListener("input",e=>{const tr=e.target.closest("tr"),k=e.target.dataset.k;if(!tr||!k)return;const i=+tr.dataset.i;rows[i][k]=e.target.value;$("r"+i+"-e").textContent=nf(i2t(rows[i]),2);save();});
+  $("log").addEventListener("click",e=>{const d=e.target.dataset.del;if(d===undefined)return;rows.splice(+d,1);save();draw();});
+  $("add").addEventListener("click",()=>{rows.push({id:"",rp:"",v0:"",ip:"",tau:"",fn:"",tf:""});save();draw();});
+  $("csv").addEventListener("click",()=>{const h="n;iniciador;R_puente_ohm;V0_V;Ipico_A;tau_ms;funciono;tf_ms;I2t_A2ms";
+    const t=[h].concat(rows.map((r,i)=>[i+1,r.id,r.rp,r.v0,r.ip,r.tau,r.fn,r.tf,nf(i2t(r),3)].join(";"))).join("\n");
+    const done=m=>{$("msg").textContent=m};
+    try{navigator.clipboard.writeText(t).then(()=>done("CSV copiado."),()=>done("No se pudo copiar: seleccioná la tabla a mano."))}catch(e){done("No se pudo copiar: seleccioná la tabla a mano.")}});
+  draw();
+})();
+</script>
