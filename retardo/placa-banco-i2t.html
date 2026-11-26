@@ -124,6 +124,7 @@ button.ghost{background:transparent;color:var(--accent)}
 .ban{stroke:var(--fg);stroke-width:1.6} .ban.red{fill:#c62828} .ban.blk{fill:#222}
 .banh{fill:var(--bg);stroke:var(--fg);stroke-width:1.2}
 .lug{fill:none;stroke:var(--cu);stroke-width:5} .lugt{stroke:var(--cu);stroke-width:5;stroke-linecap:round} .drill{fill:var(--bg);stroke:var(--muted);stroke-width:1}
+.sw1{fill:var(--part);stroke:var(--fg);stroke-width:1.6} .swb{fill:var(--bg);stroke:var(--fg);stroke-width:1.6}
 .peg{fill:none;stroke:var(--fg);stroke-width:1.5}
 .bnco{fill:var(--part);stroke:var(--fg);stroke-width:2} .bnci{fill:var(--bg);stroke:var(--muted);stroke-width:1.5}
 .net{fill:var(--cu);font:600 11px var(--f-mono)}
@@ -141,8 +142,8 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
 <header class="hdr">
   <div class="eyebrow">Banco de I²t · circuito de descarga</div>
   <h1>Placa del banco de I²t</h1>
-  <p class="lead">Circuito y armado en placa perforada de paso 2,54 mm (36 × 18 agujeros, unos 92 × 46 mm; entra en una de 10 × 5 cm). Todo va soldado en la placa, sin cables sueltos: pistas de un solo lado y sin cruces, los dos BNC del osciloscopio en el borde de abajo y dos bornes banana para la fuente. El iniciador, la llave de armado, el pulsador y la pila entran por borneras.</p>
-  <div class="meta"><span>Q1 IRLZ44N</span><span>C1 680 µF 25 V</span><span>RS 0,1 Ω</span><span>2 bananas · 3 borneras · 2 BNC</span></div>
+  <p class="lead">Circuito y armado en placa perforada de paso 2,54 mm (36 × 18 agujeros, unos 92 × 46 mm; entra en una de 10 × 5 cm). Todo va soldado en la placa, sin cables sueltos: pistas de un solo lado y sin cruces, los dos BNC del osciloscopio en el borde de abajo y dos bornes banana para la fuente. El pulsador de disparo también va soldado en la placa. Solo el iniciador, la llave de armado y la pila entran por borneras.</p>
+  <div class="meta"><span>Q1 IRLZ44N</span><span>C1 680 µF 25 V</span><span>RS 0,1 Ω</span><span>2 bananas · 3 borneras · 2 BNC · pulsador en placa</span></div>
 </header>
 
 <section>
@@ -225,7 +226,7 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
     <!-- pulsador -->
     <circle class="cmp" cx="518" cy="300" r="3"/><circle class="cmp" cx="482" cy="300" r="3"/>
     <path class="w" d="M478 286H522M500 286V274"/>
-    <text class="ts" x="470" y="330">PULSADOR (J1)</text><text class="ts" x="470" y="345">de disparo</text>
+    <text class="ts" x="470" y="330">SW1 PULSADOR</text><text class="ts" x="470" y="345">en la placa</text>
     <path class="w" d="M479 300H450V360M450 376V460"/>
     <path class="w" d="M434 360H466" style="stroke-width:3"/><path class="w" d="M442 376H458" style="stroke-width:3"/>
     <text class="tl" x="414" y="356">+</text><text class="ts" x="400" y="400">pila 9 V (J1)</text>
@@ -264,17 +265,19 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
 <polyline class="trn ghost" points="320,84 320,40 782,40"/>
 <polyline class="trn ghost" points="782,238 848,238"/>
 <polyline class="trn ghost" points="782,370 782,282 848,282"/>
-<polyline class="trn ghost" points="232,172 298,172"/>
-<polyline class="trn ghost" points="408,172 408,150 518,150"/>
-<polyline class="trn ghost" points="496,238 496,414"/>
-<polyline class="trn ghost" points="232,216 232,260 320,260 320,348 320,414 562,414"/>
+<polyline class="trn ghost" points="232,172 342,172 342,194"/>
+<polyline class="trn ghost" points="452,238 474,238"/>
+<polyline class="trn ghost" points="474,150 518,150"/>
+<polyline class="trn ghost" points="518,150 518,172"/>
+<polyline class="trn ghost" points="518,260 518,414"/>
+<polyline class="trn ghost" points="232,216 232,260 320,260 320,370 320,414 562,414"/>
 <polyline class="trn ghost" points="562,194 584,194 584,304 650,304 650,370"/>
 <rect class="cmpo bor" x="211.1" y="151.1" width="41.8" height="85.8" rx="3"/>
 <circle class="cmpo" cx="232" cy="172" r="6"/><path class="scr" d="M228 172h8"/>
 <circle class="cmpo" cx="232" cy="216" r="6"/><path class="scr" d="M228 216h8"/>
 <text class="ref" x="259.5" y="198.0" text-anchor="start">J1</text>
-<text class="nm" x="201.2" y="158" text-anchor="end">PULSADOR Y PILA</text>
-<text class="off" x="201.2" y="176" text-anchor="end">pulsador (el otro lado al + de la pila)</text>
+<text class="nm" x="201.2" y="158" text-anchor="end">PILA 9 V</text>
+<text class="off" x="201.2" y="176" text-anchor="end">+ pila 9 V</text>
 <text class="off" x="201.2" y="220" text-anchor="end">− pila 9 V</text>
 <rect class="cmpo bor" x="937.1" y="85.1" width="41.8" height="85.8" rx="3"/>
 <circle class="cmpo" cx="958" cy="106" r="6"/><path class="scr" d="M954 106h8"/>
@@ -294,22 +297,29 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
 <circle class="ban red" cx="254" cy="84" r="27.5"/><circle class="banh" cx="254" cy="84" r="9.9"/>
 <text class="ref" x="254" y="136.5" text-anchor="middle">B+</text>
 <text class="off" x="179.2" y="88" text-anchor="end">rojo · + fuente</text>
-<circle class="kout" cx="254" cy="348" r="38.5"/>
-<circle class="ban blk" cx="254" cy="348" r="27.5"/><circle class="banh" cx="254" cy="348" r="9.9"/>
-<text class="ref" x="254" y="400.5" text-anchor="middle">B−</text>
-<text class="off" x="179.2" y="352" text-anchor="end">negro · − fuente</text>
+<circle class="kout" cx="254" cy="370" r="38.5"/>
+<circle class="ban blk" cx="254" cy="370" r="27.5"/><circle class="banh" cx="254" cy="370" r="9.9"/>
+<text class="ref" x="254" y="422.5" text-anchor="middle">B−</text>
+<text class="off" x="179.2" y="374" text-anchor="end">negro · − fuente</text>
 <path class="lead" d="M782 40L782 238"/>
 <rect class="cmpo res" x="755.6" y="64.2" width="52.8" height="149.6" rx="4"/>
 <text class="ref" x="750.6" y="137.0" text-anchor="end">R1</text><text class="val" x="750.6" y="151.0" text-anchor="end">100 Ω 3 W</text>
-<path class="lead" d="M298 172L408 172"/>
-<rect class="cmpo res" x="322.2" y="161.0" width="61.599999999999994" height="22.0" rx="4"/>
-<text class="ref" x="353.0" y="155.0" text-anchor="middle">R2 · 1 kΩ</text>
-<path class="lead" d="M496 150L496 238"/>
-<rect class="cmpo res" x="485.0" y="174.2" width="22.0" height="39.599999999999994" rx="4"/>
-<text class="ref" x="480.0" y="192.0" text-anchor="end">R3</text><text class="val" x="480.0" y="206.0" text-anchor="end">10 kΩ</text>
+<path class="lead" d="M474 150L474 238"/>
+<rect class="cmpo res" x="463.0" y="174.2" width="22.0" height="39.599999999999994" rx="4"/>
+<text class="ref" x="443.2" y="135.7" text-anchor="middle">R2 · 1 kΩ</text>
+<path class="lead" d="M518 172L518 260"/>
+<rect class="cmpo res" x="507.0" y="196.2" width="22.0" height="39.599999999999994" rx="4"/>
+<text class="ref" x="502.0" y="214.0" text-anchor="end">R3</text><text class="val" x="502.0" y="228.0" text-anchor="end">10 kΩ</text>
 <path class="lead" d="M562 194L562 348"/>
 <rect class="cmpo res" x="542.2" y="218.2" width="39.6" height="105.6" rx="4"/>
 <text class="ref" x="537.2" y="269.0" text-anchor="end">RS</text><text class="val" x="537.2" y="283.0" text-anchor="end">0,1 Ω 2 W</text>
+<rect class="sw1" x="333.2" y="163.2" width="127.60000000000002" height="105.60000000000002" rx="3"/>
+<circle class="swb" cx="397.0" cy="216" r="30.799999999999997"/>
+<circle class="cmpo" cx="342" cy="194" r="4"/>
+<circle class="cmpo" cx="452" cy="194" r="4"/>
+<circle class="cmpo" cx="342" cy="238" r="4"/>
+<circle class="cmpo" cx="452" cy="238" r="4"/>
+<text class="ref" x="397.0" y="157.2" text-anchor="middle">SW1 · pulsador</text>
 <circle class="cmpo cap" cx="870" cy="304" r="47.3"/>
 <path class="stripe" d="M905.2 270.89V337.11"/>
 <text class="ref" x="870" y="290" text-anchor="middle">C1</text><text class="val" x="870" y="334" text-anchor="middle">680 µF</text>
@@ -360,12 +370,14 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
 <polyline class="trn" points="870,84 870,40 408,40"/>
 <polyline class="trn" points="408,238 342,238"/>
 <polyline class="trn" points="408,370 408,282 342,282"/>
-<polyline class="trn" points="958,172 892,172"/>
-<polyline class="trn" points="782,172 782,150 672,150"/>
-<polyline class="trn" points="694,238 694,414"/>
-<polyline class="trn" points="958,216 958,260 870,260 870,348 870,414 628,414"/>
+<polyline class="trn" points="958,172 848,172 848,194"/>
+<polyline class="trn" points="738,238 716,238"/>
+<polyline class="trn" points="716,150 672,150"/>
+<polyline class="trn" points="672,150 672,172"/>
+<polyline class="trn" points="672,260 672,414"/>
+<polyline class="trn" points="958,216 958,260 870,260 870,370 870,414 628,414"/>
 <polyline class="trn" points="628,194 606,194 606,304 540,304 540,370"/>
-<g class="pads"><circle cx="364" cy="414" r="5"/><circle cx="584" cy="414" r="5"/><circle cx="232" cy="194" r="5"/><circle cx="958" cy="216" r="5"/><circle cx="892" cy="172" r="5"/><circle cx="496" cy="414" r="5"/><circle cx="342" cy="304" r="5"/><circle cx="958" cy="172" r="5"/><circle cx="232" cy="150" r="5"/><circle cx="298" cy="304" r="5"/><circle cx="694" cy="150" r="5"/><circle cx="540" cy="370" r="5"/><circle cx="870" cy="84" r="5"/><circle cx="628" cy="194" r="5"/><circle cx="650" cy="150" r="5"/><circle cx="672" cy="150" r="5"/><circle cx="452" cy="414" r="5"/><circle cx="870" cy="348" r="5"/><circle cx="782" cy="172" r="5"/><circle cx="232" cy="106" r="5"/><circle cx="232" cy="238" r="5"/><circle cx="408" cy="40" r="5"/><circle cx="694" cy="238" r="5"/><circle cx="628" cy="150" r="5"/><circle cx="408" cy="238" r="5"/><circle cx="628" cy="348" r="5"/><circle cx="408" cy="370" r="5"/></g>
+<g class="pads"><circle cx="870" cy="370" r="5"/><circle cx="364" cy="414" r="5"/><circle cx="584" cy="414" r="5"/><circle cx="738" cy="194" r="5"/><circle cx="232" cy="194" r="5"/><circle cx="958" cy="216" r="5"/><circle cx="672" cy="260" r="5"/><circle cx="496" cy="414" r="5"/><circle cx="848" cy="194" r="5"/><circle cx="342" cy="304" r="5"/><circle cx="716" cy="150" r="5"/><circle cx="958" cy="172" r="5"/><circle cx="232" cy="150" r="5"/><circle cx="298" cy="304" r="5"/><circle cx="540" cy="370" r="5"/><circle cx="870" cy="84" r="5"/><circle cx="628" cy="194" r="5"/><circle cx="650" cy="150" r="5"/><circle cx="672" cy="150" r="5"/><circle cx="452" cy="414" r="5"/><circle cx="738" cy="238" r="5"/><circle cx="232" cy="106" r="5"/><circle cx="232" cy="238" r="5"/><circle cx="716" cy="238" r="5"/><circle cx="408" cy="40" r="5"/><circle cx="672" cy="172" r="5"/><circle cx="628" cy="150" r="5"/><circle cx="408" cy="238" r="5"/><circle cx="628" cy="348" r="5"/><circle cx="848" cy="238" r="5"/><circle cx="408" cy="370" r="5"/></g>
 <rect class="cmpg bor" x="937.1" y="151.1" width="41.8" height="85.8" rx="3"/>
 <circle class="cmpg" cx="958" cy="172" r="6"/><path class="scr" d="M954 172h8"/>
 <circle class="cmpg" cx="958" cy="216" r="6"/><path class="scr" d="M954 216h8"/>
@@ -381,21 +393,27 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
 <circle class="cmpg" cx="936" cy="84" r="38.5"/>
 <circle class="lug" cx="936" cy="84" r="19.8"/><path class="lugt" d="M936 84L870 84"/><circle class="drill" cx="936" cy="84" r="12.100000000000001"/>
 <text class="ref" x="936" y="136.5" text-anchor="middle">B+</text>
-<circle class="cmpg" cx="936" cy="348" r="38.5"/>
-<circle class="lug" cx="936" cy="348" r="19.8"/><path class="lugt" d="M936 348L870 348"/><circle class="drill" cx="936" cy="348" r="12.100000000000001"/>
-<text class="ref" x="936" y="400.5" text-anchor="middle">B−</text>
+<circle class="cmpg" cx="936" cy="370" r="38.5"/>
+<circle class="lug" cx="936" cy="370" r="19.8"/><path class="lugt" d="M936 370L870 370"/><circle class="drill" cx="936" cy="370" r="12.100000000000001"/>
+<text class="ref" x="936" y="422.5" text-anchor="middle">B−</text>
 <path class="lead" d="M408 40L408 238"/>
 <rect class="cmpg res" x="381.6" y="64.2" width="52.8" height="149.6" rx="4"/>
 <text class="ref" x="439.4" y="137.0" text-anchor="start">R1</text><text class="val" x="439.4" y="151.0" text-anchor="start">100 Ω 3 W</text>
-<path class="lead" d="M892 172L782 172"/>
-<rect class="cmpg res" x="806.2" y="161.0" width="61.599999999999994" height="22.0" rx="4"/>
-<text class="ref" x="837.0" y="155.0" text-anchor="middle">R2 · 1 kΩ</text>
-<path class="lead" d="M694 150L694 238"/>
-<rect class="cmpg res" x="683.0" y="174.2" width="22.0" height="39.599999999999994" rx="4"/>
-<text class="ref" x="710.0" y="192.0" text-anchor="start">R3</text><text class="val" x="710.0" y="206.0" text-anchor="start">10 kΩ</text>
+<path class="lead" d="M716 150L716 238"/>
+<rect class="cmpg res" x="705.0" y="174.2" width="22.0" height="39.599999999999994" rx="4"/>
+<text class="ref" x="746.8" y="135.7" text-anchor="middle">R2 · 1 kΩ</text>
+<path class="lead" d="M672 172L672 260"/>
+<rect class="cmpg res" x="661.0" y="196.2" width="22.0" height="39.599999999999994" rx="4"/>
+<text class="ref" x="688.0" y="214.0" text-anchor="start">R3</text><text class="val" x="688.0" y="228.0" text-anchor="start">10 kΩ</text>
 <path class="lead" d="M628 194L628 348"/>
 <rect class="cmpg res" x="608.2" y="218.2" width="39.6" height="105.6" rx="4"/>
 <text class="ref" x="652.8" y="269.0" text-anchor="start">RS</text><text class="val" x="652.8" y="283.0" text-anchor="start">0,1 Ω 2 W</text>
+<rect class="cmpg" x="729.2" y="163.2" width="127.59999999999991" height="105.60000000000002" rx="3"/>
+<circle class="cmpg" cx="848" cy="194" r="4"/>
+<circle class="cmpg" cx="738" cy="194" r="4"/>
+<circle class="cmpg" cx="848" cy="238" r="4"/>
+<circle class="cmpg" cx="738" cy="238" r="4"/>
+<text class="ref" x="793.0" y="157.2" text-anchor="middle">SW1 · pulsador</text>
 <circle class="cmpg cap" cx="320" cy="304" r="47.3"/>
 <path class="stripe" d="M284.79999999999995 270.89V337.11"/>
 <text class="ref" x="320" y="290" text-anchor="middle">C1</text><text class="val" x="320" y="334" text-anchor="middle">680 µF</text>
@@ -432,8 +450,9 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
     <li><b>Masa en estrella.</b> La pata inferior de RS es la estrella. El bus de abajo junta C1−, las mallas de los BNC, R3, la banana negra y el − de la pila.</li>
     <li><b>Medición Kelvin del shunt.</b> El centro de BNC1 sale por su propia pista desde la pata superior de RS, y su malla está a dos agujeros de la estrella. CH1 lee la caída en RS y casi nada de las pistas (menos del 0,2 %).</li>
     <li><b>BNC2 lee C1 directo.</b> Su centro va a la pista de C1+ y su malla al bus.</li>
-    <li><b>Gate protegido.</b> R2 y R3 están junto a Q1, y R3 lleva el gate a masa: si la pila o el pulsador quedan desconectados, Q1 queda apagado. Con la pila de 9 V el gate recibe 8,2 V.</li>
-    <li><b>Conectores por función.</b> A la izquierda, lo del operador: bananas de la fuente y bornera del pulsador y la pila. A la derecha, el iniciador y la llave de armado. Abajo, el osciloscopio.</li>
+    <li><b>Pulsador en la placa.</b> SW1 es un pulsador táctil de 12 × 12 mm; sus patas caen justo en la grilla (12,7 × 5,1 mm). Se usan dos patas en diagonal: así funciona en cualquier orientación, sin importar qué patas une por dentro.</li>
+    <li><b>Gate protegido.</b> R2 y R3 están junto a Q1, y R3 lleva el gate a masa: sin pila o con SW1 suelto, Q1 queda apagado. Con la pila de 9 V el gate recibe 8,2 V.</li>
+    <li><b>Conectores por función.</b> A la izquierda, lo del operador: bananas de la fuente, bornera de la pila y el pulsador. A la derecha, el iniciador y la llave de armado. Abajo, el osciloscopio.</li>
   </ul>
 </section>
 
@@ -441,7 +460,7 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
   <h2><span class="n">4</span>Revisión del diseño</h2>
   <p>Revisé el conexionado con un programa que recorre todas las pistas: cada una de las 8 redes (fuente, C1+, llave, drain, source, gate, pulsador, masa) conecta exactamente las patas que corresponde, y ninguna toca a otra. Además corregí esto:</p>
   <div class="tw"><table style="min-width:640px"><thead><tr><th>Qué había</th><th>Problema</th><th>Cómo quedó</th></tr></thead><tbody>
-    <tr><td>Fuente y pulsador en la misma bornera</td><td>Si se invertían los cables, la fuente quedaba en el gate: Q1 podía encenderse y, armado, disparar.</td><td>Fuente en bananas rojo/negro; pulsador y pila en su propia bornera J1.</td></tr>
+    <tr><td>Fuente y pulsador en la misma bornera</td><td>Si se invertían los cables, la fuente quedaba en el gate: Q1 podía encenderse y, armado, disparar.</td><td>Fuente en bananas rojo/negro, pila en su propia bornera J1 y pulsador soldado en la placa.</td></tr>
     <tr><td>R1 de 3 W con patas a 15 mm</td><td>Su cuerpo mide ~17 mm: no entraba.</td><td>Patas a 23 mm (9 agujeros).</td></tr>
     <tr><td>RS de 2 W con patas a 12,7 mm</td><td>Su cuerpo mide ~12 mm: las patas no se podían doblar.</td><td>Patas a 17,8 mm (7 agujeros).</td></tr>
     <tr><td>Fuente de 0–30 V</td><td>C1 es de 25 V.</td><td>Máximo 15 V, límite de corriente 0,1 A. Así R1 disipa como mucho 1 W.</td></tr>
@@ -456,18 +475,19 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
 <section>
   <h2><span class="n">5</span>Materiales de la placa</h2>
   <div class="tw"><table style="min-width:640px"><thead><tr><th>Ref.</th><th>Componente</th><th>Agujeros (col, fila)</th><th>Nota</th></tr></thead><tbody>
-    <tr><td>B+, B−</td><td>Borne banana 4 mm de panel, rojo y negro</td><td class="n">centros 2,2 · 2,14</td><td>Separados 30 mm. Agujero de 6–8 mm según el borne, arandela aislante a cada lado, y el terminal de ojal abajo, soldado a su pista (5,2 y 5,14).</td></tr>
+    <tr><td>B+, B−</td><td>Borne banana 4 mm de panel, rojo y negro</td><td class="n">centros 2,2 · 2,15</td><td>Separados 33 mm. Agujero de 6–8 mm según el borne, arandela aislante a cada lado, y el terminal de ojal abajo, soldado a su pista (5,2 y 5,15).</td></tr>
     <tr><td>Q1</td><td>MOSFET IRLZ44N (o IRL540N, IRLB8721)</td><td class="n">G 14,5 · D 15,5 · S 16,5</td><td>Parado, aleta hacia atrás. Sin disipador: el pulso dura milisegundos.</td></tr>
     <tr><td>C1</td><td>Electrolítico 680 µF 25 V 105 °C, radial 10 mm</td><td class="n">+ 29,12 · − 31,12</td><td>Franja (−) hacia la derecha.</td></tr>
     <tr><td>RS</td><td>0,1 Ω 1 %, 2 W, axial</td><td class="n">16,7 · 16,14</td><td>Patas a 17,8 mm.</td></tr>
     <tr><td>R1</td><td>100 Ω 3 W, óxido metálico</td><td class="n">26,0 · 26,9</td><td>Acostado, pasa por arriba de la pista del drain.</td></tr>
-    <tr><td>R2</td><td>1 kΩ ¼ W</td><td class="n">4,6 · 9,6</td><td></td></tr>
-    <tr><td>R3</td><td>10 kΩ ¼ W</td><td class="n">13,5 · 13,9</td><td></td></tr>
+    <tr><td>SW1</td><td>Pulsador táctil 12 × 12 mm, 4 patas</td><td class="n">6,7 · 11,7 · 6,9 · 11,9</td><td>Soldá las 4 patas. Las que se usan son 6,7 y 11,9 (en diagonal).</td></tr>
+    <tr><td>R2</td><td>1 kΩ ¼ W</td><td class="n">12,5 · 12,9</td><td>Parado entre SW1 y Q1.</td></tr>
+    <tr><td>R3</td><td>10 kΩ ¼ W</td><td class="n">14,6 · 14,10</td><td>Justo debajo del gate.</td></tr>
     <tr><td>BNC1, BNC2</td><td>BNC hembra para placa a 90°, 50 Ω</td><td class="n">centro 20,15 · 26,15</td><td>Patas de masa al bus (fila 17). Si son gruesas, agrandá esos agujeros con mecha de 1,5–2 mm.</td></tr>
-    <tr><td>J1, J3, J4</td><td>Bornera de 2 polos, paso 5 mm</td><td class="n">ver dibujo</td><td>Tornillos hacia afuera de la placa.</td></tr>
+    <tr><td>J1 (pila), J3, J4</td><td>Bornera de 2 polos, paso 5 mm</td><td class="n">ver dibujo</td><td>Tornillos hacia afuera de la placa.</td></tr>
     <tr><td>—</td><td>Alambre de cobre estañado de 1 mm y de 0,5 mm</td><td class="n">—</td><td>Pistas gruesas y finas.</td></tr>
   </tbody></table></div>
-  <p class="note">Fuera de la placa: fuente con cables banana–banana, llave de armado, pulsador, pila de 9 V, caja con el iniciador y su puente de seguridad, y el resistor de 2,2 Ω 5 W que va en J4 en lugar del iniciador para validar.</p>
+  <p class="note">Fuera de la placa: fuente con cables banana–banana, llave de armado, pila de 9 V con broche, caja con el iniciador y su puente de seguridad, y el resistor de 2,2 Ω 5 W que va en J4 en lugar del iniciador para validar.</p>
 </section>
 
 <section>
@@ -481,19 +501,20 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
     <tr><td class="n">1</td><td>Resistor 100 Ω 3 W óxido metálico</td><td></td></tr>
     <tr><td class="n">1 m + 1 m</td><td>Alambre de cobre estañado de 1 mm y de 0,5 mm</td><td></td></tr>
     <tr><td class="n">3</td><td>Bornera de 2 polos, paso 5 mm</td><td></td></tr>
+    <tr><td class="n">2</td><td>Pulsador táctil 12 × 12 mm, 4 patas (con capuchón)</td><td>Uno de repuesto.</td></tr>
     <tr><td class="n">1</td><td>Placa perforada de 10 × 5 cm, paso 2,54 mm, islas individuales</td><td></td></tr>
   </tbody></table></div>
-  <p class="note">Lo demás (IRLZ44N, 680 µF 25 V, 1 kΩ, 10 kΩ, pulsador, llave de armado, broche de 9 V) es igual que en la lista anterior. En el osciloscopio: CH1 y CH2 con atenuación ×1 y acoplamiento DC; CH1 a 100–200 mV/div, CH2 a 2–5 V/div.</p>
+  <p class="note">Lo demás (IRLZ44N, 680 µF 25 V, 1 kΩ, 10 kΩ, llave de armado, broche de 9 V) es igual que en la lista anterior. En el osciloscopio: CH1 y CH2 con atenuación ×1 y acoplamiento DC; CH1 a 100–200 mV/div, CH2 a 2–5 V/div.</p>
 </section>
 
 <section>
   <h2><span class="n">7</span>Orden de armado</h2>
   <ol class="steps">
     <li><div><h3>Agujeros de las bananas</h3><p>Antes de soldar nada, agujereá la placa en los centros de B+ y B− (2,2 y 2,14) y montá los bornes con sus arandelas aislantes y el terminal de ojal del lado del cobre.</p></div></li>
-    <li><div><h3>Componentes bajos</h3><p>R2, R3, RS y R1. Doblá cada pata hacia el lado de su pista: la misma pata sirve de pista hasta el agujero siguiente.</p></div></li>
+    <li><div><h3>Componentes bajos</h3><p>R2, R3, RS, R1 y SW1. Doblá cada pata hacia el lado de su pista: la misma pata sirve de pista hasta el agujero siguiente.</p></div></li>
     <li><div><h3>Pistas gruesas</h3><p>Del lado del cobre, el alambre de 1 mm siguiendo el lazo: J3 → C1+, J3 ↔ J4, J4 → drain, source → RS, RS → bus de masa → C1−. Soldalo en cada agujero por donde pasa.</p></div></li>
     <li><div><h3>Borneras, C1, Q1 y BNC</h3><p>Al final los componentes altos. Los BNC con el frente sobresaliendo del borde de abajo.</p></div></li>
-    <li><div><h3>Pistas finas</h3><p>Banana roja → R1, R1 → C1+, centro de BNC2 → C1+, gate, R3 a masa, la pista Kelvin desde RS hasta el centro de BNC1, y banana negra y − de pila al bus.</p></div></li>
+    <li><div><h3>Pistas finas</h3><p>Banana roja → R1, R1 → C1+, centro de BNC2 → C1+, + pila → SW1 → R2 → gate, R3 a masa, la pista Kelvin desde RS hasta el centro de BNC1, y banana negra y − de pila al bus.</p></div></li>
   </ol>
 </section>
 
@@ -503,6 +524,7 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
     <li>Con el tester en continuidad: no hay continuidad entre el centro y la malla de BNC2 (C1+ y masa), ni entre drain y source de Q1, ni entre las dos bananas.</li>
     <li>Entre el centro y la malla de BNC1 mide casi 0 Ω (el shunt).</li>
     <li>Entre el gate y la masa mide ~10 kΩ (R3). Entre la banana roja y el centro de BNC2 mide ~100 Ω (R1).</li>
+    <li>Entre el + de la pila (J1) y el gate: abierto con SW1 suelto, ~1 kΩ con SW1 apretado.</li>
     <li>Entre la banana negra y la malla de cualquier BNC mide 0 Ω.</li>
     <li>Revisá con lupa que no haya puentes de estaño entre pistas vecinas, sobre todo alrededor de Q1 y de los BNC.</li>
     <li>Primera prueba con el resistor de 2,2 Ω en J4 y C1 cargado a 3–5 V: el I²t medido tiene que coincidir con V₀²·C/(2·R).</li>

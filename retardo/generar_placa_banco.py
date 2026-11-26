@@ -6,29 +6,30 @@ def Y(j): return MT+j*P
 SVGW=ML*2+(W-1)*P; SVGH=MT+(H-1)*P+130
 
 bornes=[
- ("J1",[(1,6),(1,8)],["pulsador (el otro lado al + de la pila)","− pila 9 V"],"L","PULSADOR Y PILA"),
+ ("J1",[(1,6),(1,8)],["+ pila 9 V","− pila 9 V"],"L","PILA 9 V"),
  ("J4",[(34,3),(34,5)],["retorno del iniciador","al iniciador"],"R","INICIADOR"),
  ("J3",[(34,7),(34,9)],["retorno de la llave","a la llave de armado"],"R","ARMADO"),
 ]
-bananas=[("B+","rojo · + fuente",(2,2),(5,2),"red"),("B−","negro · − fuente",(2,14),(5,14),"blk")]
+bananas=[("B+","rojo · + fuente",(2,2),(5,2),"red"),("B−","negro · − fuente",(2,15),(5,15),"blk")]
+SW1=dict(a=(6,7),a2=(11,7),b1=(6,9),b=(11,9))
 axial=[ # ref,label,a,b,diam(holes)
  ("R1","100 Ω 3 W",(26,0),(26,9),2.4),
- ("R2","1 kΩ",(4,6),(9,6),1.0),
- ("R3","10 kΩ",(13,5),(13,9),1.0),
+ ("R2","1 kΩ",(12,5),(12,9),1.0),
+ ("R3","10 kΩ",(14,6),(14,10),1.0),
  ("RS","0,1 Ω 2 W",(16,7),(16,14),1.8),
 ]
 bncs=[("BNC1","CH1 · corriente",20,(20,15),[(18,17),(22,17)],"ch1"),("BNC2","CH2 · tensión de C1",26,(26,15),[(24,17),(28,17)],"ch2")]
 C1=dict(c=(30,12),neg=(31,12),pos=(29,12),r=2.15)
 Q1=dict(G=(14,5),D=(15,5),S=(16,5))
 thick=[[(29,12),(29,9),(34,9)],[(34,5),(34,7)],[(15,5),(15,3),(34,3)],[(16,5),(16,7)],[(16,14),(16,17)],[(16,17),(31,17)],[(31,12),(31,17)]]
-thin=[[(5,2),(5,0),(26,0)],[(26,9),(29,9)],[(26,15),(26,11),(29,11)],[(1,6),(4,6)],[(9,6),(9,5),(14,5)],
-      [(13,9),(13,17)],[(1,8),(1,10),(5,10),(5,14),(5,17),(16,17)],[(16,7),(17,7),(17,12),(20,12),(20,15)]]
+thin=[[(5,2),(5,0),(26,0)],[(26,9),(29,9)],[(26,15),(26,11),(29,11)],[(1,6),(6,6),(6,7)],[(11,9),(12,9)],[(12,5),(14,5)],[(14,5),(14,6)],
+      [(14,10),(14,17)],[(1,8),(1,10),(5,10),(5,15),(5,17),(16,17)],[(16,7),(17,7),(17,12),(20,12),(20,15)]]
 pins=set()
 for b in bornes: pins|=set(b[1])
 for b in bananas: pins.add(b[3])
 for a in axial: pins|={a[2],a[3]}
 for b in bncs: pins|={b[3]}|set(b[4])
-pins|=set(Q1.values())|{C1['neg'],C1['pos']}
+pins|=set(Q1.values())|{C1['neg'],C1['pos']}|set(SW1.values())
 
 # ---- verificación del conexionado (union-find sobre agujeros)
 def cells(tr):
@@ -54,11 +55,11 @@ for tr in thick+thin:
     for c in cs: u(c,cs[0])
 for b in bncs:
     for sp in b[4][1:]: u(sp,b[4][0])
-pinmap={"B+":(5,2),"B-":(5,14),"J1.PULS":(1,6),"J1.PILA":(1,8),"J4.RET":(34,3),"J4.INI":(34,5),"J3.RET":(34,7),"J3.LLAVE":(34,9),
- "R1.a":(26,0),"R1.b":(26,9),"R2.a":(4,6),"R2.b":(9,6),"R3.a":(13,5),"R3.b":(13,9),"RS.a":(16,7),"RS.b":(16,14),
+pinmap={"B+":(5,2),"B-":(5,15),"J1.BAT":(1,6),"J1.PILA":(1,8),"SW1.a":(6,7),"SW1.b":(11,9),"J4.RET":(34,3),"J4.INI":(34,5),"J3.RET":(34,7),"J3.LLAVE":(34,9),
+ "R1.a":(26,0),"R1.b":(26,9),"R2.a":(12,9),"R2.b":(12,5),"R3.a":(14,6),"R3.b":(14,10),"RS.a":(16,7),"RS.b":(16,14),
  "Q1.G":(14,5),"Q1.D":(15,5),"Q1.S":(16,5),"C1+":(29,12),"C1-":(31,12),"BNC1.c":(20,15),"BNC1.m":(18,17),"BNC2.c":(26,15),"BNC2.m":(24,17)}
 expected={"VIN":["B+","R1.a"],"A":["R1.b","C1+","J3.LLAVE","BNC2.c"],"K":["J3.RET","J4.INI"],"I":["J4.RET","Q1.D"],
- "S":["Q1.S","RS.a","BNC1.c"],"GND":["RS.b","C1-","B-","J1.PILA","R3.b","BNC1.m","BNC2.m"],"PB":["J1.PULS","R2.a"],"G":["R2.b","R3.a","Q1.G"]}
+ "S":["Q1.S","RS.a","BNC1.c"],"GND":["RS.b","C1-","B-","J1.PILA","R3.b","BNC1.m","BNC2.m"],"BAT":["J1.BAT","SW1.a"],"PB":["SW1.b","R2.a"],"G":["R2.b","R3.a","Q1.G"]}
 for p in pinmap.values(): f(p)
 for net,ps in expected.items():
     roots={f(pinmap[p]) for p in ps}
@@ -73,6 +74,7 @@ for name,p in pinmap.items():
     if p in allcells: assert allcells[p]==f(p)
 for c in pins:
     if c in allcells: assert allcells[c]==f(c)
+for p in (SW1["a2"],SW1["b1"]): assert p not in allcells, "pata libre de SW1 sobre una pista"
 print("conexionado OK:", {k:len(v) for k,v in expected.items()})
 def pts(tr,m): return " ".join(f"{X(i,m)},{Y(j)}" for i,j in tr)
 
@@ -125,12 +127,21 @@ def board(m, view):
         cx,cy=(xa+xb)/2,(ya+yb)/2
         if vert: o.append(f'<rect class="{g} res" x="{cx-T/2}" y="{cy-L/2}" width="{T}" height="{L}" rx="4"/>')
         else: o.append(f'<rect class="{g} res" x="{cx-L/2}" y="{cy-T/2}" width="{L}" height="{T}" rx="4"/>')
-        if vert:
+        if ref=="R2":
+            o.append(f'<text class="ref" x="{X(10.6,m)}" y="{Y(4.35)}" text-anchor="middle">R2 · 1 kΩ</text>')
+        elif vert:
             tx = cx-T/2-5 if not m else cx+T/2+5
             an = "end" if not m else "start"
             o.append(f'<text class="ref" x="{tx}" y="{cy-2}" text-anchor="{an}">{ref}</text><text class="val" x="{tx}" y="{cy+12}" text-anchor="{an}">{lab}</text>')
         else:
             o.append(f'<text class="ref" x="{cx}" y="{cy-T/2-6}" text-anchor="middle">{ref} · {lab}</text>')
+    # SW1 pulsador táctil 12x12
+    xa,xb=sorted([X(5.6,m),X(11.4,m)])
+    o.append(f'<rect class="{"sw1" if view=="comp" else "cmpg"}" x="{xa}" y="{Y(5.6)}" width="{xb-xa}" height="{Y(10.4)-Y(5.6)}" rx="3"/>')
+    if view=="comp": o.append(f'<circle class="swb" cx="{X(8.5,m)}" cy="{Y(8)}" r="{1.4*P}"/>')
+    for k in ("a","a2","b1","b"):
+        i,j=SW1[k]; o.append(f'<circle class="{g}" cx="{X(i,m)}" cy="{Y(j)}" r="4"/>')
+    o.append(f'<text class="ref" x="{X(8.5,m)}" y="{Y(5.6)-6}" text-anchor="middle">SW1 · pulsador</text>')
     # C1
     cx,cy=X(C1['c'][0],m),Y(C1['c'][1]); r=C1['r']*P
     o.append(f'<circle class="{g} cap" cx="{cx}" cy="{cy}" r="{r}"/>')
@@ -182,7 +193,7 @@ rep=[
  ('<text class="ts" x="560" y="372" text-anchor="end">10 kΩ</text>','<text class="ts" x="586" y="372" text-anchor="end">R3 10 kΩ</text>'),
  ('<text class="ts" x="545" y="282">1 kΩ</text>','<text class="ts" x="536" y="282">R2 1 kΩ</text>'),
  ('<text class="ts" x="400" y="400">pila 9 V</text>','<text class="ts" x="400" y="400">pila 9 V (J1)</text>'),
- ('<text class="ts" x="470" y="330">PULSADOR</text>','<text class="ts" x="470" y="330">PULSADOR (J1)</text>'),
+ ('<text class="ts" x="470" y="330">PULSADOR</text>','<text class="ts" x="470" y="330">SW1 PULSADOR</text>'),('<text class="ts" x="470" y="345">de disparo</text>','<text class="ts" x="470" y="345">en la placa</text>'),
 ]
 rep += [('<text class="ts" x="44" y="168">0–15 V</text><text class="ts" x="44" y="184">límite 0,2 A</text>','<text class="ts" x="44" y="168">máx. 15 V</text><text class="ts" x="44" y="184">límite 0,1 A</text>'),('<text class="tl" x="168" y="452">GND</text>','<text class="tl" x="168" y="452">GND · B−</text>')]
 for a,b in rep:
@@ -224,6 +235,7 @@ extra="""
 .ban{stroke:var(--fg);stroke-width:1.6} .ban.red{fill:#c62828} .ban.blk{fill:#222}
 .banh{fill:var(--bg);stroke:var(--fg);stroke-width:1.2}
 .lug{fill:none;stroke:var(--cu);stroke-width:5} .lugt{stroke:var(--cu);stroke-width:5;stroke-linecap:round} .drill{fill:var(--bg);stroke:var(--muted);stroke-width:1}
+.sw1{fill:var(--part);stroke:var(--fg);stroke-width:1.6} .swb{fill:var(--bg);stroke:var(--fg);stroke-width:1.6}
 .peg{fill:none;stroke:var(--fg);stroke-width:1.5}
 .bnco{fill:var(--part);stroke:var(--fg);stroke-width:2} .bnci{fill:var(--bg);stroke:var(--muted);stroke-width:1.5}
 .net{fill:var(--cu);font:600 11px var(--f-mono)}
@@ -248,8 +260,8 @@ body=f"""<title>Placa del banco de I²t</title>
 <header class="hdr">
   <div class="eyebrow">Banco de I²t · circuito de descarga</div>
   <h1>Placa del banco de I²t</h1>
-  <p class="lead">Circuito y armado en placa perforada de paso 2,54 mm (36 × 18 agujeros, unos 92 × 46 mm; entra en una de 10 × 5 cm). Todo va soldado en la placa, sin cables sueltos: pistas de un solo lado y sin cruces, los dos BNC del osciloscopio en el borde de abajo y dos bornes banana para la fuente. El iniciador, la llave de armado, el pulsador y la pila entran por borneras.</p>
-  <div class="meta"><span>Q1 IRLZ44N</span><span>C1 680 µF 25 V</span><span>RS 0,1 Ω</span><span>2 bananas · 3 borneras · 2 BNC</span></div>
+  <p class="lead">Circuito y armado en placa perforada de paso 2,54 mm (36 × 18 agujeros, unos 92 × 46 mm; entra en una de 10 × 5 cm). Todo va soldado en la placa, sin cables sueltos: pistas de un solo lado y sin cruces, los dos BNC del osciloscopio en el borde de abajo y dos bornes banana para la fuente. El pulsador de disparo también va soldado en la placa. Solo el iniciador, la llave de armado y la pila entran por borneras.</p>
+  <div class="meta"><span>Q1 IRLZ44N</span><span>C1 680 µF 25 V</span><span>RS 0,1 Ω</span><span>2 bananas · 3 borneras · 2 BNC · pulsador en placa</span></div>
 </header>
 
 <section>
@@ -278,8 +290,9 @@ body=f"""<title>Placa del banco de I²t</title>
     <li><b>Masa en estrella.</b> La pata inferior de RS es la estrella. El bus de abajo junta C1−, las mallas de los BNC, R3, la banana negra y el − de la pila.</li>
     <li><b>Medición Kelvin del shunt.</b> El centro de BNC1 sale por su propia pista desde la pata superior de RS, y su malla está a dos agujeros de la estrella. CH1 lee la caída en RS y casi nada de las pistas (menos del 0,2 %).</li>
     <li><b>BNC2 lee C1 directo.</b> Su centro va a la pista de C1+ y su malla al bus.</li>
-    <li><b>Gate protegido.</b> R2 y R3 están junto a Q1, y R3 lleva el gate a masa: si la pila o el pulsador quedan desconectados, Q1 queda apagado. Con la pila de 9 V el gate recibe 8,2 V.</li>
-    <li><b>Conectores por función.</b> A la izquierda, lo del operador: bananas de la fuente y bornera del pulsador y la pila. A la derecha, el iniciador y la llave de armado. Abajo, el osciloscopio.</li>
+    <li><b>Pulsador en la placa.</b> SW1 es un pulsador táctil de 12 × 12 mm; sus patas caen justo en la grilla (12,7 × 5,1 mm). Se usan dos patas en diagonal: así funciona en cualquier orientación, sin importar qué patas une por dentro.</li>
+    <li><b>Gate protegido.</b> R2 y R3 están junto a Q1, y R3 lleva el gate a masa: sin pila o con SW1 suelto, Q1 queda apagado. Con la pila de 9 V el gate recibe 8,2 V.</li>
+    <li><b>Conectores por función.</b> A la izquierda, lo del operador: bananas de la fuente, bornera de la pila y el pulsador. A la derecha, el iniciador y la llave de armado. Abajo, el osciloscopio.</li>
   </ul>
 </section>
 
@@ -287,7 +300,7 @@ body=f"""<title>Placa del banco de I²t</title>
   <h2><span class="n">4</span>Revisión del diseño</h2>
   <p>Revisé el conexionado con un programa que recorre todas las pistas: cada una de las 8 redes (fuente, C1+, llave, drain, source, gate, pulsador, masa) conecta exactamente las patas que corresponde, y ninguna toca a otra. Además corregí esto:</p>
   <div class="tw"><table style="min-width:640px"><thead><tr><th>Qué había</th><th>Problema</th><th>Cómo quedó</th></tr></thead><tbody>
-    <tr><td>Fuente y pulsador en la misma bornera</td><td>Si se invertían los cables, la fuente quedaba en el gate: Q1 podía encenderse y, armado, disparar.</td><td>Fuente en bananas rojo/negro; pulsador y pila en su propia bornera J1.</td></tr>
+    <tr><td>Fuente y pulsador en la misma bornera</td><td>Si se invertían los cables, la fuente quedaba en el gate: Q1 podía encenderse y, armado, disparar.</td><td>Fuente en bananas rojo/negro, pila en su propia bornera J1 y pulsador soldado en la placa.</td></tr>
     <tr><td>R1 de 3 W con patas a 15 mm</td><td>Su cuerpo mide ~17 mm: no entraba.</td><td>Patas a 23 mm (9 agujeros).</td></tr>
     <tr><td>RS de 2 W con patas a 12,7 mm</td><td>Su cuerpo mide ~12 mm: las patas no se podían doblar.</td><td>Patas a 17,8 mm (7 agujeros).</td></tr>
     <tr><td>Fuente de 0–30 V</td><td>C1 es de 25 V.</td><td>Máximo 15 V, límite de corriente 0,1 A. Así R1 disipa como mucho 1 W.</td></tr>
@@ -302,18 +315,19 @@ body=f"""<title>Placa del banco de I²t</title>
 <section>
   <h2><span class="n">5</span>Materiales de la placa</h2>
   <div class="tw"><table style="min-width:640px"><thead><tr><th>Ref.</th><th>Componente</th><th>Agujeros (col, fila)</th><th>Nota</th></tr></thead><tbody>
-    <tr><td>B+, B−</td><td>Borne banana 4 mm de panel, rojo y negro</td><td class="n">centros 2,2 · 2,14</td><td>Separados 30 mm. Agujero de 6–8 mm según el borne, arandela aislante a cada lado, y el terminal de ojal abajo, soldado a su pista (5,2 y 5,14).</td></tr>
+    <tr><td>B+, B−</td><td>Borne banana 4 mm de panel, rojo y negro</td><td class="n">centros 2,2 · 2,15</td><td>Separados 33 mm. Agujero de 6–8 mm según el borne, arandela aislante a cada lado, y el terminal de ojal abajo, soldado a su pista (5,2 y 5,15).</td></tr>
     <tr><td>Q1</td><td>MOSFET IRLZ44N (o IRL540N, IRLB8721)</td><td class="n">G 14,5 · D 15,5 · S 16,5</td><td>Parado, aleta hacia atrás. Sin disipador: el pulso dura milisegundos.</td></tr>
     <tr><td>C1</td><td>Electrolítico 680 µF 25 V 105 °C, radial 10 mm</td><td class="n">+ 29,12 · − 31,12</td><td>Franja (−) hacia la derecha.</td></tr>
     <tr><td>RS</td><td>0,1 Ω 1 %, 2 W, axial</td><td class="n">16,7 · 16,14</td><td>Patas a 17,8 mm.</td></tr>
     <tr><td>R1</td><td>100 Ω 3 W, óxido metálico</td><td class="n">26,0 · 26,9</td><td>Acostado, pasa por arriba de la pista del drain.</td></tr>
-    <tr><td>R2</td><td>1 kΩ ¼ W</td><td class="n">4,6 · 9,6</td><td></td></tr>
-    <tr><td>R3</td><td>10 kΩ ¼ W</td><td class="n">13,5 · 13,9</td><td></td></tr>
+    <tr><td>SW1</td><td>Pulsador táctil 12 × 12 mm, 4 patas</td><td class="n">6,7 · 11,7 · 6,9 · 11,9</td><td>Soldá las 4 patas. Las que se usan son 6,7 y 11,9 (en diagonal).</td></tr>
+    <tr><td>R2</td><td>1 kΩ ¼ W</td><td class="n">12,5 · 12,9</td><td>Parado entre SW1 y Q1.</td></tr>
+    <tr><td>R3</td><td>10 kΩ ¼ W</td><td class="n">14,6 · 14,10</td><td>Justo debajo del gate.</td></tr>
     <tr><td>BNC1, BNC2</td><td>BNC hembra para placa a 90°, 50 Ω</td><td class="n">centro 20,15 · 26,15</td><td>Patas de masa al bus (fila 17). Si son gruesas, agrandá esos agujeros con mecha de 1,5–2 mm.</td></tr>
-    <tr><td>J1, J3, J4</td><td>Bornera de 2 polos, paso 5 mm</td><td class="n">ver dibujo</td><td>Tornillos hacia afuera de la placa.</td></tr>
+    <tr><td>J1 (pila), J3, J4</td><td>Bornera de 2 polos, paso 5 mm</td><td class="n">ver dibujo</td><td>Tornillos hacia afuera de la placa.</td></tr>
     <tr><td>—</td><td>Alambre de cobre estañado de 1 mm y de 0,5 mm</td><td class="n">—</td><td>Pistas gruesas y finas.</td></tr>
   </tbody></table></div>
-  <p class="note">Fuera de la placa: fuente con cables banana–banana, llave de armado, pulsador, pila de 9 V, caja con el iniciador y su puente de seguridad, y el resistor de 2,2 Ω 5 W que va en J4 en lugar del iniciador para validar.</p>
+  <p class="note">Fuera de la placa: fuente con cables banana–banana, llave de armado, pila de 9 V con broche, caja con el iniciador y su puente de seguridad, y el resistor de 2,2 Ω 5 W que va en J4 en lugar del iniciador para validar.</p>
 </section>
 
 <section>
@@ -327,19 +341,20 @@ body=f"""<title>Placa del banco de I²t</title>
     <tr><td class="n">1</td><td>Resistor 100 Ω 3 W óxido metálico</td><td></td></tr>
     <tr><td class="n">1 m + 1 m</td><td>Alambre de cobre estañado de 1 mm y de 0,5 mm</td><td></td></tr>
     <tr><td class="n">3</td><td>Bornera de 2 polos, paso 5 mm</td><td></td></tr>
+    <tr><td class="n">2</td><td>Pulsador táctil 12 × 12 mm, 4 patas (con capuchón)</td><td>Uno de repuesto.</td></tr>
     <tr><td class="n">1</td><td>Placa perforada de 10 × 5 cm, paso 2,54 mm, islas individuales</td><td></td></tr>
   </tbody></table></div>
-  <p class="note">Lo demás (IRLZ44N, 680 µF 25 V, 1 kΩ, 10 kΩ, pulsador, llave de armado, broche de 9 V) es igual que en la lista anterior. En el osciloscopio: CH1 y CH2 con atenuación ×1 y acoplamiento DC; CH1 a 100–200 mV/div, CH2 a 2–5 V/div.</p>
+  <p class="note">Lo demás (IRLZ44N, 680 µF 25 V, 1 kΩ, 10 kΩ, llave de armado, broche de 9 V) es igual que en la lista anterior. En el osciloscopio: CH1 y CH2 con atenuación ×1 y acoplamiento DC; CH1 a 100–200 mV/div, CH2 a 2–5 V/div.</p>
 </section>
 
 <section>
   <h2><span class="n">7</span>Orden de armado</h2>
   <ol class="steps">
     <li><div><h3>Agujeros de las bananas</h3><p>Antes de soldar nada, agujereá la placa en los centros de B+ y B− (2,2 y 2,14) y montá los bornes con sus arandelas aislantes y el terminal de ojal del lado del cobre.</p></div></li>
-    <li><div><h3>Componentes bajos</h3><p>R2, R3, RS y R1. Doblá cada pata hacia el lado de su pista: la misma pata sirve de pista hasta el agujero siguiente.</p></div></li>
+    <li><div><h3>Componentes bajos</h3><p>R2, R3, RS, R1 y SW1. Doblá cada pata hacia el lado de su pista: la misma pata sirve de pista hasta el agujero siguiente.</p></div></li>
     <li><div><h3>Pistas gruesas</h3><p>Del lado del cobre, el alambre de 1 mm siguiendo el lazo: J3 → C1+, J3 ↔ J4, J4 → drain, source → RS, RS → bus de masa → C1−. Soldalo en cada agujero por donde pasa.</p></div></li>
     <li><div><h3>Borneras, C1, Q1 y BNC</h3><p>Al final los componentes altos. Los BNC con el frente sobresaliendo del borde de abajo.</p></div></li>
-    <li><div><h3>Pistas finas</h3><p>Banana roja → R1, R1 → C1+, centro de BNC2 → C1+, gate, R3 a masa, la pista Kelvin desde RS hasta el centro de BNC1, y banana negra y − de pila al bus.</p></div></li>
+    <li><div><h3>Pistas finas</h3><p>Banana roja → R1, R1 → C1+, centro de BNC2 → C1+, + pila → SW1 → R2 → gate, R3 a masa, la pista Kelvin desde RS hasta el centro de BNC1, y banana negra y − de pila al bus.</p></div></li>
   </ol>
 </section>
 
@@ -349,6 +364,7 @@ body=f"""<title>Placa del banco de I²t</title>
     <li>Con el tester en continuidad: no hay continuidad entre el centro y la malla de BNC2 (C1+ y masa), ni entre drain y source de Q1, ni entre las dos bananas.</li>
     <li>Entre el centro y la malla de BNC1 mide casi 0 Ω (el shunt).</li>
     <li>Entre el gate y la masa mide ~10 kΩ (R3). Entre la banana roja y el centro de BNC2 mide ~100 Ω (R1).</li>
+    <li>Entre el + de la pila (J1) y el gate: abierto con SW1 suelto, ~1 kΩ con SW1 apretado.</li>
     <li>Entre la banana negra y la malla de cualquier BNC mide 0 Ω.</li>
     <li>Revisá con lupa que no haya puentes de estaño entre pistas vecinas, sobre todo alrededor de Q1 y de los BNC.</li>
     <li>Primera prueba con el resistor de 2,2 Ω en J4 y C1 cargado a 3–5 V: el I²t medido tiene que coincidir con V₀²·C/(2·R).</li>
