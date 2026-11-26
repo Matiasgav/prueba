@@ -1,0 +1,539 @@
+<title>Placa del banco de I²t</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: hoja de banco de ensayo — una columna de 880 px, esquema arriba, procedimiento numerado, planilla y materiales al final */
+:root{
+  --bg:#f6f7f5; --paper:#ffffff; --fg:#1b2420; --muted:#5d6a64; --line:#d5dbd7;
+  --accent:#1f6f5c; --ch1:#b07d00; --ch2:#0b7f99; --danger:#b3261e; --ok:#2e7d32; --warn:#9a6200;
+  --soft:color-mix(in srgb,var(--accent) 9%,transparent);
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111614; --paper:#171e1b; --fg:#e4ebe7; --muted:#9aa8a1; --line:#2c3833;
+  --accent:#5cc3a6; --ch1:#f0c040; --ch2:#4fc8e3; --danger:#ff7b70; --ok:#7cd283; --warn:#e6b04a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111614; --paper:#171e1b; --fg:#e4ebe7; --muted:#9aa8a1; --line:#2c3833;
+  --accent:#5cc3a6; --ch1:#f0c040; --ch2:#4fc8e3; --danger:#ff7b70; --ok:#7cd283; --warn:#e6b04a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.6 var(--f-body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px}
+main{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(28px,5vw,40px)}
+h2{font-size:24px;display:flex;gap:12px;align-items:baseline}
+h2 .n{font-family:var(--f-mono);font-size:14px;color:var(--accent);font-weight:600}
+h3{font-size:17px}
+p{margin:0;max-width:68ch}
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+.lead{color:var(--muted);font-size:17px}
+.eyebrow{font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.hdr{display:flex;flex-direction:column;gap:12px;border-bottom:2px solid var(--fg);padding-bottom:20px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;font:13px var(--f-mono);color:var(--muted)}
+.fig{background:var(--paper);border:1px solid var(--line);border-radius:6px;overflow-x:auto}
+.fig svg{display:block}
+.cap{font-size:13px;color:var(--muted)}
+.formula{font-family:var(--f-mono);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:grid;gap:6px;overflow-x:auto}
+.formula b{color:var(--accent)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.grid2>*{min-width:0}
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;counter-reset:s}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:40px 1fr;gap:12px;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+ol.steps>li::before{content:counter(s,decimal-leading-zero);font:600 14px var(--f-mono);color:var(--accent);padding-top:2px}
+ol.steps>li>div{min-width:0;display:flex;flex-direction:column;gap:6px}
+ol.steps ul{margin:0;padding-left:18px}
+.seq{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font:13px var(--f-mono)}
+.seq span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--bg)}
+.seq i{font-style:normal;color:var(--muted)}
+.tw{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px var(--f-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f-mono)}
+tr:last-child td{border-bottom:0}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.calc{display:flex;flex-wrap:wrap;gap:12px;align-items:end;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+.calc label{display:flex;flex-direction:column;gap:4px;font:12px var(--f-mono);color:var(--muted)}
+input,select{font:14px var(--f-mono);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:6px 8px;width:100%}
+.calc input{width:110px}
+.out{font:600 20px var(--f-mono);color:var(--accent)}
+.warnbox{border:1px solid var(--danger);border-left-width:4px;border-radius:6px;padding:14px 16px;background:color-mix(in srgb,var(--danger) 6%,var(--paper));display:flex;flex-direction:column;gap:8px}
+.warnbox h3{color:var(--danger)}
+.warnbox ul{margin:0;padding-left:18px}
+.pill{display:inline-block;font:600 11px var(--f-mono);padding:2px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.pill.ok{color:var(--ok)} .pill.warn{color:var(--warn)} .pill.bad{color:var(--danger)}
+button{font:600 13px var(--f-body);border:1px solid var(--accent);background:var(--accent);color:var(--paper);border-radius:4px;padding:7px 12px;cursor:pointer}
+button.ghost{background:transparent;color:var(--accent)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#log td{padding:4px 6px}
+#log input,#log select{min-width:70px;padding:4px 6px;font-size:13px}
+#log td.i2t{font:600 14px var(--f-mono);color:var(--accent);white-space:nowrap}
+.note{font-size:13px;color:var(--muted)}
+/* svg */
+.w{stroke:var(--fg);stroke-width:2;fill:none}
+.cmp{fill:var(--paper);stroke:var(--fg);stroke-width:2}
+.t{fill:var(--fg);font:13px var(--f-body)}
+.tl{fill:var(--fg);font:600 12px var(--f-mono)}
+.ts{fill:var(--muted);font:11.5px var(--f-body)}
+.dot{fill:var(--fg)}
+.box{fill:none;stroke:var(--danger);stroke-width:1.5;stroke-dasharray:6 5}
+.tb{fill:var(--danger);font:600 11.5px var(--f-mono);letter-spacing:.06em}
+.c1{stroke:var(--ch1);fill:none;stroke-width:2.2}
+.c2{stroke:var(--ch2);fill:none;stroke-width:2.2}
+.t1{fill:var(--ch1);font:600 12px var(--f-mono)}
+.t2{fill:var(--ch2);font:600 12px var(--f-mono)}
+.ax{stroke:var(--muted);stroke-width:1}
+.gd{stroke:var(--line);stroke-width:1}
+.dash{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4;fill:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+:root{--pcb:#dfe8d6;--hole:#9fae95;--cu:#b06a22;--cuf:color-mix(in srgb,var(--cu) 30%,transparent);--part:#ffffff;--jump:#7a3fb5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--pcb:#1f2a22;--hole:#4c5d50;--cu:#e0964f;--part:#25302b;--jump:#c79bff}}
+:root[data-theme="dark"]{--pcb:#1f2a22;--hole:#4c5d50;--cu:#e0964f;--part:#25302b;--jump:#c79bff}
+.pcb{fill:var(--pcb);stroke:var(--line);stroke-width:1.5}
+.holes circle{fill:var(--hole)}
+.gx{fill:var(--muted);font:10px var(--f-mono)}
+.trk{fill:none;stroke:var(--cu);stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+.trn{fill:none;stroke:var(--cu);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.ghost{opacity:.28}
+.pads circle{fill:var(--cu);stroke:var(--pcb);stroke-width:1.5}
+.cmpo{fill:var(--part);stroke:var(--fg);stroke-width:1.6}
+.cmpg{fill:none;stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3}
+.lead{stroke:var(--muted);stroke-width:2}
+.scr{stroke:var(--muted);stroke-width:1.5}
+.stripe{stroke:var(--muted);stroke-width:5;opacity:.6}
+.ref{fill:var(--fg);font:600 12px var(--f-mono)}
+.val{fill:var(--muted);font:11px var(--f-mono)}
+.pin{fill:var(--muted);font:600 10px var(--f-mono)}
+.pol{fill:var(--fg);font:700 14px var(--f-mono)}
+.nm{fill:var(--accent);font:600 11.5px var(--f-mono);letter-spacing:.04em}
+.off{fill:var(--muted);font:11px var(--f-body)}
+.wire{stroke:var(--muted);stroke-width:1.5;stroke-dasharray:2 3}
+.tp{fill:none;stroke-width:3}
+.tp.ch1{stroke:var(--ch1)} .tp.ch2{stroke:var(--ch2)} .tp.gnd{stroke:var(--fg)}
+.tpl{font:600 11.5px var(--f-mono)} .tpl.ch1{fill:var(--ch1)} .tpl.ch2{fill:var(--ch2)} .tpl.gnd{fill:var(--fg)}
+.jump{fill:none;stroke:var(--jump);stroke-width:2.4;stroke-dasharray:7 4}
+.jl{fill:var(--jump);font:11px var(--f-body)}
+.net{fill:var(--cu);font:600 11px var(--f-mono)}
+.jt{fill:var(--accent);font:600 11px var(--f-mono)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button[aria-pressed="false"]{background:transparent;color:var(--accent)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:22px;height:0;border-top:7px solid var(--cu);border-radius:3px}
+.sw.thin{border-top-width:3px}
+.sw.j{border-top:2px dashed var(--jump)}
+ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:72ch}
+</style>
+<main>
+<header class="hdr">
+  <div class="eyebrow">Banco de I²t · circuito de descarga</div>
+  <h1>Placa del banco de I²t</h1>
+  <p class="lead">Circuito y armado en placa perforada de paso 2,54 mm (32 × 15 agujeros, unos 80 × 38 mm). Lo único que va en la placa es el lazo de descarga y el manejo del gate. La fuente, el osciloscopio, las llaves, el pulsador, la pila y el iniciador se conectan por borneras.</p>
+  <div class="meta"><span>Q1 IRLZ44N</span><span>C1 680 µF 25 V</span><span>RS 0,1 Ω</span><span>5 borneras · 4 puntos de prueba</span></div>
+</header>
+
+<section>
+  <h2><span class="n">1</span>Circuito</h2>
+  <div class="fig"><svg viewBox="0 0 900 520" width="900" height="520" role="img" aria-label="Esquema: fuente con resistor de carga y llave de carga hacia el capacitor de 680 µF; desde el capacitor, llave de armado, iniciador dentro de caja con puente de seguridad en paralelo, MOSFET IRLZ44N y shunt de 0,1 Ω a masa. El gate se maneja con pila de 9 V, pulsador, 1 kΩ y 10 kΩ a masa. CH1 en el shunt, CH2 en el capacitor, masa del osciloscopio bajo el shunt.">
+    <!-- caja de contención -->
+    <rect class="box" x="612" y="104" width="276" height="150" rx="6"/>
+    <text class="tb" x="878" y="246" text-anchor="end">CAJA DE CONTENCIÓN</text>
+    <!-- fuente -->
+    <rect class="cmp" x="30" y="120" width="100" height="140" rx="4"/>
+    <text class="tl" x="44" y="150">FUENTE</text><text class="ts" x="44" y="168">0–15 V</text><text class="ts" x="44" y="184">límite 0,2 A</text>
+    <text class="tl" x="114" y="146">+</text><text class="tl" x="116" y="244">−</text>
+    <path class="w" d="M130 140H160V90H169M231 90H262M332 90H370"/>
+    <path class="w" d="M130 240H160V460"/>
+    <!-- R carga -->
+    <rect class="cmp" x="262" y="80" width="70" height="20" rx="2"/>
+    <text class="t" x="262" y="66">R1 · 100 Ω 5 W</text><text class="jt" x="240" y="82" text-anchor="middle">J1+</text>
+    <!-- llave de carga -->
+    <circle class="cmp" cx="172" cy="90" r="3"/><circle class="cmp" cx="228" cy="90" r="3"/>
+    <path class="w" d="M174 89L222 70"/>
+    <text class="ts" x="150" y="118">LLAVE DE CARGA</text><text class="ts" x="150" y="133">en el cable de la fuente</text>
+    <!-- nodo A y capacitor -->
+    <circle class="dot" cx="370" cy="90" r="4"/>
+    <path class="w" d="M370 90V250M370 264V460"/>
+    <path class="w" d="M348 250H392" style="stroke-width:3"/><path class="w" d="M348 264H392" style="stroke-width:3"/>
+    <text class="tl" x="354" y="244">+</text>
+    <text class="t" x="398" y="252">C1 680 µF</text><text class="ts" x="398" y="268">25 V común</text>
+    <!-- CH2 -->
+    <path class="c2" d="M370 90V44H420"/><circle cx="370" cy="90" r="6" class="c2"/>
+    <text class="t2" x="426" y="48">TP2 · CH2 punta ×10 · tensión de C1</text>
+    <!-- llave de armado -->
+    <path class="w" d="M370 90H480M548 90H660V140"/>
+    <circle class="cmp" cx="482" cy="90" r="3"/><circle class="cmp" cx="546" cy="90" r="3"/>
+    <path class="w" d="M484 89L540 70"/>
+    <text class="ts" x="474" y="118">LLAVE DE ARMADO (J3)</text><text class="ts" x="474" y="133">con llave física</text>
+    <!-- iniciador -->
+    <rect class="cmp" x="644" y="140" width="32" height="80" rx="3"/>
+    <path class="w" d="M650 150L670 168L650 186L670 204" style="stroke-width:1.5"/>
+    <text class="t" x="630" y="242" text-anchor="end"></text>
+    <!-- puente de seguridad -->
+    <path class="w" d="M660 128H760V150M760 206V232H660"/>
+    <circle class="dot" cx="660" cy="128" r="3.5"/><circle class="dot" cx="660" cy="232" r="3.5"/>
+    <circle class="cmp" cx="760" cy="152" r="3"/><circle class="cmp" cx="760" cy="204" r="3"/>
+    <path class="w" d="M760 154L760 202"/>
+    <text class="tl" x="772" y="164">PUENTE DE</text><text class="tl" x="772" y="180">SEGURIDAD</text>
+    <text class="ts" x="772" y="198">cerrado hasta armar</text>
+    <text class="tl" x="686" y="160">INICIADOR</text><text class="jt" x="686" y="208">en J4</text><text class="ts" x="686" y="176">puente</text><text class="ts" x="686" y="191">1–2 Ω</text>
+    <path class="w" d="M660 220V270"/>
+    <!-- MOSFET -->
+    <path class="w" d="M660 270V282H652M652 318H660V340" />
+    <path class="w" d="M652 276V324" style="stroke-width:3"/>
+    <path class="w" d="M642 280V320M600 300H642"/>
+    <path class="w" d="M660 300H652" /><path d="M652 300l8-5v10z" style="fill:var(--fg)"/>
+    <text class="tl" x="676" y="290">Q1 · IRLZ44N</text><text class="ts" x="676" y="306">D arriba · S abajo</text><text class="ts" x="676" y="321">G desde la izquierda</text>
+    <!-- nodo B, shunt -->
+    <circle class="dot" cx="660" cy="350" r="4"/>
+    <path class="w" d="M660 340V360M660 420V460"/>
+    <rect class="cmp" x="650" y="360" width="20" height="60" rx="2"/>
+    <text class="t" x="560" y="388" text-anchor="end"></text>
+    <text class="tl" x="682" y="386">RS shunt</text><text class="ts" x="682" y="402">0,1 Ω 1 %</text>
+    <!-- CH1 -->
+    <path class="c1" d="M660 350H790"/><circle cx="660" cy="350" r="6" class="c1"/>
+    <text class="t1" x="694" y="340" >TP1 · CH1 punta ×1</text><text class="ts" x="772" y="372">i = V / R_shunt</text>
+    <!-- masa -->
+    <path class="w" d="M160 460H760"/>
+    <circle class="dot" cx="660" cy="460" r="5"/>
+    <path class="w" d="M760 460V478"/>
+    <path class="w" d="M748 478H772M752 484H768M757 490H763"/>
+    <path class="w" d="M760 460H760" />
+    <text class="ts" x="520" y="500">TP3 y TP4: masas de las dos puntas, en este punto</text>
+    <text class="tl" x="168" y="452">GND</text>
+    <!-- gate -->
+    <circle class="dot" cx="600" cy="300" r="3.5"/>
+    <path class="w" d="M600 300V330M600 400V460"/>
+    <rect class="cmp" x="590" y="330" width="20" height="70" rx="2"/>
+    <text class="ts" x="586" y="372" text-anchor="end">R3 10 kΩ</text>
+    <path class="w" d="M600 300H584M534 300H520"/>
+    <rect class="cmp" x="534" y="290" width="50" height="20" rx="2"/>
+    <text class="ts" x="536" y="282">R2 1 kΩ</text>
+    <!-- pulsador -->
+    <circle class="cmp" cx="518" cy="300" r="3"/><circle class="cmp" cx="482" cy="300" r="3"/>
+    <path class="w" d="M478 286H522M500 286V274"/>
+    <text class="ts" x="470" y="330">PULSADOR (J5)</text><text class="ts" x="470" y="345">de disparo</text>
+    <path class="w" d="M479 300H450V360M450 376V460"/>
+    <path class="w" d="M434 360H466" style="stroke-width:3"/><path class="w" d="M442 376H458" style="stroke-width:3"/>
+    <text class="tl" x="414" y="356">+</text><text class="ts" x="400" y="400">pila 9 V</text>
+  </svg></div>
+  <p class="cap">Mismas referencias que en la placa. La llave de carga va en el cable + de la fuente, antes de J1. El puente de seguridad se monta en la caja, sobre los bornes del iniciador, para que también proteja el cable.</p>
+</section>
+
+<section>
+  <h2><span class="n">2</span>Ubicación en la placa</h2>
+  <div class="tabs" role="group" aria-label="Vista de la placa">
+    <button type="button" id="v-comp" aria-pressed="true">Lado de los componentes</button>
+    <button type="button" id="v-cu" aria-pressed="false">Lado del cobre (espejado)</button>
+  </div>
+  <div class="fig" id="f-comp"><svg viewBox="0 0 1082 424" width="100%" style="min-width:860px" role="img" aria-label="Placa perforada vista desde el lado de los componentes">
+<rect class="pcb" x="184.6" y="30.6" width="712.8" height="338.8" rx="6"/>
+<text class="gx" x="200" y="25.1" text-anchor="middle">0</text>
+<text class="gx" x="222" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="244" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="266" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="288" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="310" y="25.1" text-anchor="middle">5</text>
+<text class="gx" x="332" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="354" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="376" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="398" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="420" y="25.1" text-anchor="middle">10</text>
+<text class="gx" x="442" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="464" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="486" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="508" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="530" y="25.1" text-anchor="middle">15</text>
+<text class="gx" x="552" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="574" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="596" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="618" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="640" y="25.1" text-anchor="middle">20</text>
+<text class="gx" x="662" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="684" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="706" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="728" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="750" y="25.1" text-anchor="middle">25</text>
+<text class="gx" x="772" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="794" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="816" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="838" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="860" y="25.1" text-anchor="middle">30</text>
+<text class="gx" x="882" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="49" text-anchor="middle">0</text>
+<text class="gx" x="189.0" y="71" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="93" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="115" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="137" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="159" text-anchor="middle">5</text>
+<text class="gx" x="189.0" y="181" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="203" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="225" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="247" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="269" text-anchor="middle">10</text>
+<text class="gx" x="189.0" y="291" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="313" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="335" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="357" text-anchor="middle"></text>
+<g class="holes"><circle cx="200" cy="46" r="2.3"/><circle cx="200" cy="68" r="2.3"/><circle cx="200" cy="90" r="2.3"/><circle cx="200" cy="112" r="2.3"/><circle cx="200" cy="134" r="2.3"/><circle cx="200" cy="156" r="2.3"/><circle cx="200" cy="178" r="2.3"/><circle cx="200" cy="200" r="2.3"/><circle cx="200" cy="222" r="2.3"/><circle cx="200" cy="244" r="2.3"/><circle cx="200" cy="266" r="2.3"/><circle cx="200" cy="288" r="2.3"/><circle cx="200" cy="310" r="2.3"/><circle cx="200" cy="332" r="2.3"/><circle cx="200" cy="354" r="2.3"/><circle cx="222" cy="46" r="2.3"/><circle cx="222" cy="68" r="2.3"/><circle cx="222" cy="90" r="2.3"/><circle cx="222" cy="112" r="2.3"/><circle cx="222" cy="134" r="2.3"/><circle cx="222" cy="156" r="2.3"/><circle cx="222" cy="178" r="2.3"/><circle cx="222" cy="200" r="2.3"/><circle cx="222" cy="222" r="2.3"/><circle cx="222" cy="244" r="2.3"/><circle cx="222" cy="266" r="2.3"/><circle cx="222" cy="288" r="2.3"/><circle cx="222" cy="310" r="2.3"/><circle cx="222" cy="332" r="2.3"/><circle cx="222" cy="354" r="2.3"/><circle cx="244" cy="46" r="2.3"/><circle cx="244" cy="68" r="2.3"/><circle cx="244" cy="90" r="2.3"/><circle cx="244" cy="112" r="2.3"/><circle cx="244" cy="134" r="2.3"/><circle cx="244" cy="156" r="2.3"/><circle cx="244" cy="178" r="2.3"/><circle cx="244" cy="200" r="2.3"/><circle cx="244" cy="222" r="2.3"/><circle cx="244" cy="244" r="2.3"/><circle cx="244" cy="266" r="2.3"/><circle cx="244" cy="288" r="2.3"/><circle cx="244" cy="310" r="2.3"/><circle cx="244" cy="332" r="2.3"/><circle cx="244" cy="354" r="2.3"/><circle cx="266" cy="46" r="2.3"/><circle cx="266" cy="68" r="2.3"/><circle cx="266" cy="90" r="2.3"/><circle cx="266" cy="112" r="2.3"/><circle cx="266" cy="134" r="2.3"/><circle cx="266" cy="156" r="2.3"/><circle cx="266" cy="178" r="2.3"/><circle cx="266" cy="200" r="2.3"/><circle cx="266" cy="222" r="2.3"/><circle cx="266" cy="244" r="2.3"/><circle cx="266" cy="266" r="2.3"/><circle cx="266" cy="288" r="2.3"/><circle cx="266" cy="310" r="2.3"/><circle cx="266" cy="332" r="2.3"/><circle cx="266" cy="354" r="2.3"/><circle cx="288" cy="46" r="2.3"/><circle cx="288" cy="68" r="2.3"/><circle cx="288" cy="90" r="2.3"/><circle cx="288" cy="112" r="2.3"/><circle cx="288" cy="134" r="2.3"/><circle cx="288" cy="156" r="2.3"/><circle cx="288" cy="178" r="2.3"/><circle cx="288" cy="200" r="2.3"/><circle cx="288" cy="222" r="2.3"/><circle cx="288" cy="244" r="2.3"/><circle cx="288" cy="266" r="2.3"/><circle cx="288" cy="288" r="2.3"/><circle cx="288" cy="310" r="2.3"/><circle cx="288" cy="332" r="2.3"/><circle cx="288" cy="354" r="2.3"/><circle cx="310" cy="46" r="2.3"/><circle cx="310" cy="68" r="2.3"/><circle cx="310" cy="90" r="2.3"/><circle cx="310" cy="112" r="2.3"/><circle cx="310" cy="134" r="2.3"/><circle cx="310" cy="156" r="2.3"/><circle cx="310" cy="178" r="2.3"/><circle cx="310" cy="200" r="2.3"/><circle cx="310" cy="222" r="2.3"/><circle cx="310" cy="244" r="2.3"/><circle cx="310" cy="266" r="2.3"/><circle cx="310" cy="288" r="2.3"/><circle cx="310" cy="310" r="2.3"/><circle cx="310" cy="332" r="2.3"/><circle cx="310" cy="354" r="2.3"/><circle cx="332" cy="46" r="2.3"/><circle cx="332" cy="68" r="2.3"/><circle cx="332" cy="90" r="2.3"/><circle cx="332" cy="112" r="2.3"/><circle cx="332" cy="134" r="2.3"/><circle cx="332" cy="156" r="2.3"/><circle cx="332" cy="178" r="2.3"/><circle cx="332" cy="200" r="2.3"/><circle cx="332" cy="222" r="2.3"/><circle cx="332" cy="244" r="2.3"/><circle cx="332" cy="266" r="2.3"/><circle cx="332" cy="288" r="2.3"/><circle cx="332" cy="310" r="2.3"/><circle cx="332" cy="332" r="2.3"/><circle cx="332" cy="354" r="2.3"/><circle cx="354" cy="46" r="2.3"/><circle cx="354" cy="68" r="2.3"/><circle cx="354" cy="90" r="2.3"/><circle cx="354" cy="112" r="2.3"/><circle cx="354" cy="134" r="2.3"/><circle cx="354" cy="156" r="2.3"/><circle cx="354" cy="178" r="2.3"/><circle cx="354" cy="200" r="2.3"/><circle cx="354" cy="222" r="2.3"/><circle cx="354" cy="244" r="2.3"/><circle cx="354" cy="266" r="2.3"/><circle cx="354" cy="288" r="2.3"/><circle cx="354" cy="310" r="2.3"/><circle cx="354" cy="332" r="2.3"/><circle cx="354" cy="354" r="2.3"/><circle cx="376" cy="46" r="2.3"/><circle cx="376" cy="68" r="2.3"/><circle cx="376" cy="90" r="2.3"/><circle cx="376" cy="112" r="2.3"/><circle cx="376" cy="134" r="2.3"/><circle cx="376" cy="156" r="2.3"/><circle cx="376" cy="178" r="2.3"/><circle cx="376" cy="200" r="2.3"/><circle cx="376" cy="222" r="2.3"/><circle cx="376" cy="244" r="2.3"/><circle cx="376" cy="266" r="2.3"/><circle cx="376" cy="288" r="2.3"/><circle cx="376" cy="310" r="2.3"/><circle cx="376" cy="332" r="2.3"/><circle cx="376" cy="354" r="2.3"/><circle cx="398" cy="46" r="2.3"/><circle cx="398" cy="68" r="2.3"/><circle cx="398" cy="90" r="2.3"/><circle cx="398" cy="112" r="2.3"/><circle cx="398" cy="134" r="2.3"/><circle cx="398" cy="156" r="2.3"/><circle cx="398" cy="178" r="2.3"/><circle cx="398" cy="200" r="2.3"/><circle cx="398" cy="222" r="2.3"/><circle cx="398" cy="244" r="2.3"/><circle cx="398" cy="266" r="2.3"/><circle cx="398" cy="288" r="2.3"/><circle cx="398" cy="310" r="2.3"/><circle cx="398" cy="332" r="2.3"/><circle cx="398" cy="354" r="2.3"/><circle cx="420" cy="46" r="2.3"/><circle cx="420" cy="68" r="2.3"/><circle cx="420" cy="90" r="2.3"/><circle cx="420" cy="112" r="2.3"/><circle cx="420" cy="134" r="2.3"/><circle cx="420" cy="156" r="2.3"/><circle cx="420" cy="178" r="2.3"/><circle cx="420" cy="200" r="2.3"/><circle cx="420" cy="222" r="2.3"/><circle cx="420" cy="244" r="2.3"/><circle cx="420" cy="266" r="2.3"/><circle cx="420" cy="288" r="2.3"/><circle cx="420" cy="310" r="2.3"/><circle cx="420" cy="332" r="2.3"/><circle cx="420" cy="354" r="2.3"/><circle cx="442" cy="46" r="2.3"/><circle cx="442" cy="68" r="2.3"/><circle cx="442" cy="90" r="2.3"/><circle cx="442" cy="112" r="2.3"/><circle cx="442" cy="134" r="2.3"/><circle cx="442" cy="156" r="2.3"/><circle cx="442" cy="178" r="2.3"/><circle cx="442" cy="200" r="2.3"/><circle cx="442" cy="222" r="2.3"/><circle cx="442" cy="244" r="2.3"/><circle cx="442" cy="266" r="2.3"/><circle cx="442" cy="288" r="2.3"/><circle cx="442" cy="310" r="2.3"/><circle cx="442" cy="332" r="2.3"/><circle cx="442" cy="354" r="2.3"/><circle cx="464" cy="46" r="2.3"/><circle cx="464" cy="68" r="2.3"/><circle cx="464" cy="90" r="2.3"/><circle cx="464" cy="112" r="2.3"/><circle cx="464" cy="134" r="2.3"/><circle cx="464" cy="156" r="2.3"/><circle cx="464" cy="178" r="2.3"/><circle cx="464" cy="200" r="2.3"/><circle cx="464" cy="222" r="2.3"/><circle cx="464" cy="244" r="2.3"/><circle cx="464" cy="266" r="2.3"/><circle cx="464" cy="288" r="2.3"/><circle cx="464" cy="310" r="2.3"/><circle cx="464" cy="332" r="2.3"/><circle cx="464" cy="354" r="2.3"/><circle cx="486" cy="46" r="2.3"/><circle cx="486" cy="68" r="2.3"/><circle cx="486" cy="90" r="2.3"/><circle cx="486" cy="112" r="2.3"/><circle cx="486" cy="134" r="2.3"/><circle cx="486" cy="156" r="2.3"/><circle cx="486" cy="178" r="2.3"/><circle cx="486" cy="200" r="2.3"/><circle cx="486" cy="222" r="2.3"/><circle cx="486" cy="244" r="2.3"/><circle cx="486" cy="266" r="2.3"/><circle cx="486" cy="288" r="2.3"/><circle cx="486" cy="310" r="2.3"/><circle cx="486" cy="332" r="2.3"/><circle cx="486" cy="354" r="2.3"/><circle cx="508" cy="46" r="2.3"/><circle cx="508" cy="68" r="2.3"/><circle cx="508" cy="90" r="2.3"/><circle cx="508" cy="112" r="2.3"/><circle cx="508" cy="134" r="2.3"/><circle cx="508" cy="156" r="2.3"/><circle cx="508" cy="178" r="2.3"/><circle cx="508" cy="200" r="2.3"/><circle cx="508" cy="222" r="2.3"/><circle cx="508" cy="244" r="2.3"/><circle cx="508" cy="266" r="2.3"/><circle cx="508" cy="288" r="2.3"/><circle cx="508" cy="310" r="2.3"/><circle cx="508" cy="332" r="2.3"/><circle cx="508" cy="354" r="2.3"/><circle cx="530" cy="46" r="2.3"/><circle cx="530" cy="68" r="2.3"/><circle cx="530" cy="90" r="2.3"/><circle cx="530" cy="112" r="2.3"/><circle cx="530" cy="134" r="2.3"/><circle cx="530" cy="156" r="2.3"/><circle cx="530" cy="178" r="2.3"/><circle cx="530" cy="200" r="2.3"/><circle cx="530" cy="222" r="2.3"/><circle cx="530" cy="244" r="2.3"/><circle cx="530" cy="266" r="2.3"/><circle cx="530" cy="288" r="2.3"/><circle cx="530" cy="310" r="2.3"/><circle cx="530" cy="332" r="2.3"/><circle cx="530" cy="354" r="2.3"/><circle cx="552" cy="46" r="2.3"/><circle cx="552" cy="68" r="2.3"/><circle cx="552" cy="90" r="2.3"/><circle cx="552" cy="112" r="2.3"/><circle cx="552" cy="134" r="2.3"/><circle cx="552" cy="156" r="2.3"/><circle cx="552" cy="178" r="2.3"/><circle cx="552" cy="200" r="2.3"/><circle cx="552" cy="222" r="2.3"/><circle cx="552" cy="244" r="2.3"/><circle cx="552" cy="266" r="2.3"/><circle cx="552" cy="288" r="2.3"/><circle cx="552" cy="310" r="2.3"/><circle cx="552" cy="332" r="2.3"/><circle cx="552" cy="354" r="2.3"/><circle cx="574" cy="46" r="2.3"/><circle cx="574" cy="68" r="2.3"/><circle cx="574" cy="90" r="2.3"/><circle cx="574" cy="112" r="2.3"/><circle cx="574" cy="134" r="2.3"/><circle cx="574" cy="156" r="2.3"/><circle cx="574" cy="178" r="2.3"/><circle cx="574" cy="200" r="2.3"/><circle cx="574" cy="222" r="2.3"/><circle cx="574" cy="244" r="2.3"/><circle cx="574" cy="266" r="2.3"/><circle cx="574" cy="288" r="2.3"/><circle cx="574" cy="310" r="2.3"/><circle cx="574" cy="332" r="2.3"/><circle cx="574" cy="354" r="2.3"/><circle cx="596" cy="46" r="2.3"/><circle cx="596" cy="68" r="2.3"/><circle cx="596" cy="90" r="2.3"/><circle cx="596" cy="112" r="2.3"/><circle cx="596" cy="134" r="2.3"/><circle cx="596" cy="156" r="2.3"/><circle cx="596" cy="178" r="2.3"/><circle cx="596" cy="200" r="2.3"/><circle cx="596" cy="222" r="2.3"/><circle cx="596" cy="244" r="2.3"/><circle cx="596" cy="266" r="2.3"/><circle cx="596" cy="288" r="2.3"/><circle cx="596" cy="310" r="2.3"/><circle cx="596" cy="332" r="2.3"/><circle cx="596" cy="354" r="2.3"/><circle cx="618" cy="46" r="2.3"/><circle cx="618" cy="68" r="2.3"/><circle cx="618" cy="90" r="2.3"/><circle cx="618" cy="112" r="2.3"/><circle cx="618" cy="134" r="2.3"/><circle cx="618" cy="156" r="2.3"/><circle cx="618" cy="178" r="2.3"/><circle cx="618" cy="200" r="2.3"/><circle cx="618" cy="222" r="2.3"/><circle cx="618" cy="244" r="2.3"/><circle cx="618" cy="266" r="2.3"/><circle cx="618" cy="288" r="2.3"/><circle cx="618" cy="310" r="2.3"/><circle cx="618" cy="332" r="2.3"/><circle cx="618" cy="354" r="2.3"/><circle cx="640" cy="46" r="2.3"/><circle cx="640" cy="68" r="2.3"/><circle cx="640" cy="90" r="2.3"/><circle cx="640" cy="112" r="2.3"/><circle cx="640" cy="134" r="2.3"/><circle cx="640" cy="156" r="2.3"/><circle cx="640" cy="178" r="2.3"/><circle cx="640" cy="200" r="2.3"/><circle cx="640" cy="222" r="2.3"/><circle cx="640" cy="244" r="2.3"/><circle cx="640" cy="266" r="2.3"/><circle cx="640" cy="288" r="2.3"/><circle cx="640" cy="310" r="2.3"/><circle cx="640" cy="332" r="2.3"/><circle cx="640" cy="354" r="2.3"/><circle cx="662" cy="46" r="2.3"/><circle cx="662" cy="68" r="2.3"/><circle cx="662" cy="90" r="2.3"/><circle cx="662" cy="112" r="2.3"/><circle cx="662" cy="134" r="2.3"/><circle cx="662" cy="156" r="2.3"/><circle cx="662" cy="178" r="2.3"/><circle cx="662" cy="200" r="2.3"/><circle cx="662" cy="222" r="2.3"/><circle cx="662" cy="244" r="2.3"/><circle cx="662" cy="266" r="2.3"/><circle cx="662" cy="288" r="2.3"/><circle cx="662" cy="310" r="2.3"/><circle cx="662" cy="332" r="2.3"/><circle cx="662" cy="354" r="2.3"/><circle cx="684" cy="46" r="2.3"/><circle cx="684" cy="68" r="2.3"/><circle cx="684" cy="90" r="2.3"/><circle cx="684" cy="112" r="2.3"/><circle cx="684" cy="134" r="2.3"/><circle cx="684" cy="156" r="2.3"/><circle cx="684" cy="178" r="2.3"/><circle cx="684" cy="200" r="2.3"/><circle cx="684" cy="222" r="2.3"/><circle cx="684" cy="244" r="2.3"/><circle cx="684" cy="266" r="2.3"/><circle cx="684" cy="288" r="2.3"/><circle cx="684" cy="310" r="2.3"/><circle cx="684" cy="332" r="2.3"/><circle cx="684" cy="354" r="2.3"/><circle cx="706" cy="46" r="2.3"/><circle cx="706" cy="68" r="2.3"/><circle cx="706" cy="90" r="2.3"/><circle cx="706" cy="112" r="2.3"/><circle cx="706" cy="134" r="2.3"/><circle cx="706" cy="156" r="2.3"/><circle cx="706" cy="178" r="2.3"/><circle cx="706" cy="200" r="2.3"/><circle cx="706" cy="222" r="2.3"/><circle cx="706" cy="244" r="2.3"/><circle cx="706" cy="266" r="2.3"/><circle cx="706" cy="288" r="2.3"/><circle cx="706" cy="310" r="2.3"/><circle cx="706" cy="332" r="2.3"/><circle cx="706" cy="354" r="2.3"/><circle cx="728" cy="46" r="2.3"/><circle cx="728" cy="68" r="2.3"/><circle cx="728" cy="90" r="2.3"/><circle cx="728" cy="112" r="2.3"/><circle cx="728" cy="134" r="2.3"/><circle cx="728" cy="156" r="2.3"/><circle cx="728" cy="178" r="2.3"/><circle cx="728" cy="200" r="2.3"/><circle cx="728" cy="222" r="2.3"/><circle cx="728" cy="244" r="2.3"/><circle cx="728" cy="266" r="2.3"/><circle cx="728" cy="288" r="2.3"/><circle cx="728" cy="310" r="2.3"/><circle cx="728" cy="332" r="2.3"/><circle cx="728" cy="354" r="2.3"/><circle cx="750" cy="46" r="2.3"/><circle cx="750" cy="68" r="2.3"/><circle cx="750" cy="90" r="2.3"/><circle cx="750" cy="112" r="2.3"/><circle cx="750" cy="134" r="2.3"/><circle cx="750" cy="156" r="2.3"/><circle cx="750" cy="178" r="2.3"/><circle cx="750" cy="200" r="2.3"/><circle cx="750" cy="222" r="2.3"/><circle cx="750" cy="244" r="2.3"/><circle cx="750" cy="266" r="2.3"/><circle cx="750" cy="288" r="2.3"/><circle cx="750" cy="310" r="2.3"/><circle cx="750" cy="332" r="2.3"/><circle cx="750" cy="354" r="2.3"/><circle cx="772" cy="46" r="2.3"/><circle cx="772" cy="68" r="2.3"/><circle cx="772" cy="90" r="2.3"/><circle cx="772" cy="112" r="2.3"/><circle cx="772" cy="134" r="2.3"/><circle cx="772" cy="156" r="2.3"/><circle cx="772" cy="178" r="2.3"/><circle cx="772" cy="200" r="2.3"/><circle cx="772" cy="222" r="2.3"/><circle cx="772" cy="244" r="2.3"/><circle cx="772" cy="266" r="2.3"/><circle cx="772" cy="288" r="2.3"/><circle cx="772" cy="310" r="2.3"/><circle cx="772" cy="332" r="2.3"/><circle cx="772" cy="354" r="2.3"/><circle cx="794" cy="46" r="2.3"/><circle cx="794" cy="68" r="2.3"/><circle cx="794" cy="90" r="2.3"/><circle cx="794" cy="112" r="2.3"/><circle cx="794" cy="134" r="2.3"/><circle cx="794" cy="156" r="2.3"/><circle cx="794" cy="178" r="2.3"/><circle cx="794" cy="200" r="2.3"/><circle cx="794" cy="222" r="2.3"/><circle cx="794" cy="244" r="2.3"/><circle cx="794" cy="266" r="2.3"/><circle cx="794" cy="288" r="2.3"/><circle cx="794" cy="310" r="2.3"/><circle cx="794" cy="332" r="2.3"/><circle cx="794" cy="354" r="2.3"/><circle cx="816" cy="46" r="2.3"/><circle cx="816" cy="68" r="2.3"/><circle cx="816" cy="90" r="2.3"/><circle cx="816" cy="112" r="2.3"/><circle cx="816" cy="134" r="2.3"/><circle cx="816" cy="156" r="2.3"/><circle cx="816" cy="178" r="2.3"/><circle cx="816" cy="200" r="2.3"/><circle cx="816" cy="222" r="2.3"/><circle cx="816" cy="244" r="2.3"/><circle cx="816" cy="266" r="2.3"/><circle cx="816" cy="288" r="2.3"/><circle cx="816" cy="310" r="2.3"/><circle cx="816" cy="332" r="2.3"/><circle cx="816" cy="354" r="2.3"/><circle cx="838" cy="46" r="2.3"/><circle cx="838" cy="68" r="2.3"/><circle cx="838" cy="90" r="2.3"/><circle cx="838" cy="112" r="2.3"/><circle cx="838" cy="134" r="2.3"/><circle cx="838" cy="156" r="2.3"/><circle cx="838" cy="178" r="2.3"/><circle cx="838" cy="200" r="2.3"/><circle cx="838" cy="222" r="2.3"/><circle cx="838" cy="244" r="2.3"/><circle cx="838" cy="266" r="2.3"/><circle cx="838" cy="288" r="2.3"/><circle cx="838" cy="310" r="2.3"/><circle cx="838" cy="332" r="2.3"/><circle cx="838" cy="354" r="2.3"/><circle cx="860" cy="46" r="2.3"/><circle cx="860" cy="68" r="2.3"/><circle cx="860" cy="90" r="2.3"/><circle cx="860" cy="112" r="2.3"/><circle cx="860" cy="134" r="2.3"/><circle cx="860" cy="156" r="2.3"/><circle cx="860" cy="178" r="2.3"/><circle cx="860" cy="200" r="2.3"/><circle cx="860" cy="222" r="2.3"/><circle cx="860" cy="244" r="2.3"/><circle cx="860" cy="266" r="2.3"/><circle cx="860" cy="288" r="2.3"/><circle cx="860" cy="310" r="2.3"/><circle cx="860" cy="332" r="2.3"/><circle cx="860" cy="354" r="2.3"/><circle cx="882" cy="46" r="2.3"/><circle cx="882" cy="68" r="2.3"/><circle cx="882" cy="90" r="2.3"/><circle cx="882" cy="112" r="2.3"/><circle cx="882" cy="134" r="2.3"/><circle cx="882" cy="156" r="2.3"/><circle cx="882" cy="178" r="2.3"/><circle cx="882" cy="200" r="2.3"/><circle cx="882" cy="222" r="2.3"/><circle cx="882" cy="244" r="2.3"/><circle cx="882" cy="266" r="2.3"/><circle cx="882" cy="288" r="2.3"/><circle cx="882" cy="310" r="2.3"/><circle cx="882" cy="332" r="2.3"/><circle cx="882" cy="354" r="2.3"/></g>
+<polyline class="trk ghost" points="794,266 860,266"/>
+<polyline class="trk ghost" points="860,222 860,134"/>
+<polyline class="trk ghost" points="860,90 684,90 684,134"/>
+<polyline class="trk ghost" points="706,134 706,178"/>
+<polyline class="trk ghost" points="706,288 750,288 750,266"/>
+<polyline class="trn ghost" points="706,178 728,178"/>
+<polyline class="trn ghost" points="794,266 794,332 816,332"/>
+<polyline class="trn ghost" points="728,288 728,310"/>
+<polyline class="trn ghost" points="222,310 222,332 684,332 684,288 706,288"/>
+<polyline class="trn ghost" points="662,310 684,310"/>
+<polyline class="trn ghost" points="640,266 640,288 684,288"/>
+<polyline class="trn ghost" points="640,156 640,134 662,134"/>
+<polyline class="trn ghost" points="618,134 640,134"/>
+<polyline class="trn ghost" points="222,134 508,134"/>
+<polyline class="trn ghost" points="222,178 310,178 310,332"/>
+<polyline class="trn ghost" points="222,266 288,266 288,222"/>
+<polyline class="trn ghost" points="508,222 508,244"/>
+<rect class="cmpo bor" x="201.1" y="245.1" width="41.8" height="85.8" rx="3"/>
+<circle class="cmpo" cx="222" cy="266" r="6"/><path class="scr" d="M218 266h8"/>
+<circle class="cmpo" cx="222" cy="310" r="6"/><path class="scr" d="M218 310h8"/>
+<text class="ref" x="222" y="240.1" text-anchor="middle">J1</text>
+<text class="nm" x="191.2" y="254" text-anchor="end">FUENTE</text>
+<path class="wire" d="M222 266H197.2"/>
+<text class="off" x="191.2" y="282" text-anchor="end">+ fuente (por la llave de carga)</text>
+<path class="wire" d="M222 310H197.2"/>
+<text class="off" x="191.2" y="326" text-anchor="end">− fuente</text>
+<rect class="cmpo bor" x="201.1" y="113.1" width="41.8" height="85.8" rx="3"/>
+<circle class="cmpo" cx="222" cy="134" r="6"/><path class="scr" d="M218 134h8"/>
+<circle class="cmpo" cx="222" cy="178" r="6"/><path class="scr" d="M218 178h8"/>
+<text class="ref" x="222" y="108.1" text-anchor="middle">J5</text>
+<text class="nm" x="191.2" y="122" text-anchor="end">DISPARO</text>
+<path class="wire" d="M222 134H197.2"/>
+<text class="off" x="191.2" y="150" text-anchor="end">pulsador (otro lado al + de la pila)</text>
+<path class="wire" d="M222 178H197.2"/>
+<text class="off" x="191.2" y="194" text-anchor="end">− pila 9 V</text>
+<rect class="cmpo bor" x="839.1" y="201.1" width="41.8" height="85.8" rx="3"/>
+<circle class="cmpo" cx="860" cy="222" r="6"/><path class="scr" d="M856 222h8"/>
+<circle class="cmpo" cx="860" cy="266" r="6"/><path class="scr" d="M856 266h8"/>
+<text class="ref" x="860" y="196.1" text-anchor="middle">J3</text>
+<text class="nm" x="890.8" y="210" text-anchor="start">ARMADO</text>
+<path class="wire" d="M860 222H884.8"/>
+<text class="off" x="890.8" y="238" text-anchor="start">retorno de la llave</text>
+<path class="wire" d="M860 266H884.8"/>
+<text class="off" x="890.8" y="282" text-anchor="start">a la llave</text>
+<rect class="cmpo bor" x="839.1" y="69.1" width="41.8" height="85.8" rx="3"/>
+<circle class="cmpo" cx="860" cy="90" r="6"/><path class="scr" d="M856 90h8"/>
+<circle class="cmpo" cx="860" cy="134" r="6"/><path class="scr" d="M856 134h8"/>
+<text class="ref" x="860" y="64.1" text-anchor="middle">J4</text>
+<text class="nm" x="890.8" y="78" text-anchor="start">INICIADOR</text>
+<path class="wire" d="M860 90H884.8"/>
+<text class="off" x="890.8" y="106" text-anchor="start">retorno del iniciador</text>
+<path class="wire" d="M860 134H884.8"/>
+<text class="off" x="890.8" y="150" text-anchor="start">al iniciador</text>
+<path class="lead" d="M288 222L508 222"/>
+<rect class="cmpo res" x="305.6" y="211.275" width="184.8" height="21.450000000000003" rx="4"/>
+<text class="ref" x="398.0" y="226.0" text-anchor="middle">R1 · 100 Ω 5 W</text>
+<path class="lead" d="M508 134L618 134"/>
+<rect class="cmpo res" x="525.6" y="127.4" width="74.8" height="13.200000000000001" rx="4"/>
+<text class="ref" x="563.0" y="138.0" text-anchor="middle">R2 · 1 kΩ</text>
+<path class="lead" d="M640 156L640 266"/>
+<rect class="cmpo res" x="633.4" y="173.6" width="13.200000000000001" height="74.8" rx="4"/>
+<text class="ref" x="628.4" y="209.0" text-anchor="end">R3</text><text class="val" x="628.4" y="223.0" text-anchor="end">10 kΩ</text>
+<path class="lead" d="M706 178L706 288"/>
+<rect class="cmpo res" x="696.925" y="195.6" width="18.150000000000002" height="74.8" rx="4"/>
+<text class="ref" x="691.925" y="231.0" text-anchor="end">RS</text><text class="val" x="691.925" y="245.0" text-anchor="end">0,1 Ω</text>
+<circle class="cmpo cap" cx="772" cy="266" r="47.3"/>
+<path class="stripe" d="M737.9 231.94400000000002V300.056" />
+<text class="ref" x="772" y="254" text-anchor="middle">C1</text><text class="val" x="772" y="296" text-anchor="middle">680 µF</text>
+<text class="pol" x="794" y="258" text-anchor="middle">+</text><text class="pol" x="750" y="258" text-anchor="middle">−</text>
+<rect class="cmpo tab" x="648.8" y="88.89999999999998" width="70.40000000000009" height="11.0" rx="2"/>
+<rect class="cmpo q" x="648.8" y="99.89999999999998" width="70.40000000000009" height="26.4" rx="2"/>
+<path class="lead" d="M662 126.30000000000001V134"/><text class="pin" x="662" y="152" text-anchor="middle">G</text>
+<path class="lead" d="M684 126.30000000000001V134"/><text class="pin" x="684" y="152" text-anchor="middle">D</text>
+<path class="lead" d="M706 126.30000000000001V134"/><text class="pin" x="706" y="152" text-anchor="middle">S</text>
+<text class="ref" x="684.0" y="116.39999999999998" text-anchor="middle">Q1</text>
+<circle class="tp ch1" cx="728" cy="178" r="7"/>
+<circle class="tp ch2" cx="816" cy="332" r="7"/>
+<circle class="tp gnd" cx="728" cy="310" r="7"/>
+<circle class="tp gnd" cx="662" cy="310" r="7"/>
+<path class="jump" d="M508 244C508 358.4 794 362.79999999999995 794 332"/>
+<text class="jl" x="651.0" y="385.4" text-anchor="middle">cable fino aislado (camino de carga)</text>
+<text class="tpl ch1" x="740" y="182" text-anchor="start">TP1</text>
+<text class="tpl ch2" x="828" y="336" text-anchor="start">TP2</text>
+<text class="tpl gnd" x="728" y="332" text-anchor="middle">TP3</text>
+<text class="tpl gnd" x="650" y="314" text-anchor="end">TP4</text>
+<text class="nm" x="662" y="82.89999999999998" text-anchor="middle">aleta metálica atrás · cara impresa hacia abajo</text>
+</svg></div>
+  <div class="fig" id="f-cu" hidden><svg viewBox="0 0 1082 424" width="100%" style="min-width:860px" role="img" aria-label="Placa perforada vista desde el lado del cobre, espejada">
+<rect class="pcb" x="184.6" y="30.6" width="712.8" height="338.8" rx="6"/>
+<text class="gx" x="882" y="25.1" text-anchor="middle">0</text>
+<text class="gx" x="860" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="838" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="816" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="794" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="772" y="25.1" text-anchor="middle">5</text>
+<text class="gx" x="750" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="728" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="706" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="684" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="662" y="25.1" text-anchor="middle">10</text>
+<text class="gx" x="640" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="618" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="596" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="574" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="552" y="25.1" text-anchor="middle">15</text>
+<text class="gx" x="530" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="508" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="486" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="464" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="442" y="25.1" text-anchor="middle">20</text>
+<text class="gx" x="420" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="398" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="376" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="354" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="332" y="25.1" text-anchor="middle">25</text>
+<text class="gx" x="310" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="288" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="266" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="244" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="222" y="25.1" text-anchor="middle">30</text>
+<text class="gx" x="200" y="25.1" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="49" text-anchor="middle">0</text>
+<text class="gx" x="189.0" y="71" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="93" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="115" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="137" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="159" text-anchor="middle">5</text>
+<text class="gx" x="189.0" y="181" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="203" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="225" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="247" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="269" text-anchor="middle">10</text>
+<text class="gx" x="189.0" y="291" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="313" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="335" text-anchor="middle"></text>
+<text class="gx" x="189.0" y="357" text-anchor="middle"></text>
+<g class="holes"><circle cx="882" cy="46" r="2.3"/><circle cx="882" cy="68" r="2.3"/><circle cx="882" cy="90" r="2.3"/><circle cx="882" cy="112" r="2.3"/><circle cx="882" cy="134" r="2.3"/><circle cx="882" cy="156" r="2.3"/><circle cx="882" cy="178" r="2.3"/><circle cx="882" cy="200" r="2.3"/><circle cx="882" cy="222" r="2.3"/><circle cx="882" cy="244" r="2.3"/><circle cx="882" cy="266" r="2.3"/><circle cx="882" cy="288" r="2.3"/><circle cx="882" cy="310" r="2.3"/><circle cx="882" cy="332" r="2.3"/><circle cx="882" cy="354" r="2.3"/><circle cx="860" cy="46" r="2.3"/><circle cx="860" cy="68" r="2.3"/><circle cx="860" cy="90" r="2.3"/><circle cx="860" cy="112" r="2.3"/><circle cx="860" cy="134" r="2.3"/><circle cx="860" cy="156" r="2.3"/><circle cx="860" cy="178" r="2.3"/><circle cx="860" cy="200" r="2.3"/><circle cx="860" cy="222" r="2.3"/><circle cx="860" cy="244" r="2.3"/><circle cx="860" cy="266" r="2.3"/><circle cx="860" cy="288" r="2.3"/><circle cx="860" cy="310" r="2.3"/><circle cx="860" cy="332" r="2.3"/><circle cx="860" cy="354" r="2.3"/><circle cx="838" cy="46" r="2.3"/><circle cx="838" cy="68" r="2.3"/><circle cx="838" cy="90" r="2.3"/><circle cx="838" cy="112" r="2.3"/><circle cx="838" cy="134" r="2.3"/><circle cx="838" cy="156" r="2.3"/><circle cx="838" cy="178" r="2.3"/><circle cx="838" cy="200" r="2.3"/><circle cx="838" cy="222" r="2.3"/><circle cx="838" cy="244" r="2.3"/><circle cx="838" cy="266" r="2.3"/><circle cx="838" cy="288" r="2.3"/><circle cx="838" cy="310" r="2.3"/><circle cx="838" cy="332" r="2.3"/><circle cx="838" cy="354" r="2.3"/><circle cx="816" cy="46" r="2.3"/><circle cx="816" cy="68" r="2.3"/><circle cx="816" cy="90" r="2.3"/><circle cx="816" cy="112" r="2.3"/><circle cx="816" cy="134" r="2.3"/><circle cx="816" cy="156" r="2.3"/><circle cx="816" cy="178" r="2.3"/><circle cx="816" cy="200" r="2.3"/><circle cx="816" cy="222" r="2.3"/><circle cx="816" cy="244" r="2.3"/><circle cx="816" cy="266" r="2.3"/><circle cx="816" cy="288" r="2.3"/><circle cx="816" cy="310" r="2.3"/><circle cx="816" cy="332" r="2.3"/><circle cx="816" cy="354" r="2.3"/><circle cx="794" cy="46" r="2.3"/><circle cx="794" cy="68" r="2.3"/><circle cx="794" cy="90" r="2.3"/><circle cx="794" cy="112" r="2.3"/><circle cx="794" cy="134" r="2.3"/><circle cx="794" cy="156" r="2.3"/><circle cx="794" cy="178" r="2.3"/><circle cx="794" cy="200" r="2.3"/><circle cx="794" cy="222" r="2.3"/><circle cx="794" cy="244" r="2.3"/><circle cx="794" cy="266" r="2.3"/><circle cx="794" cy="288" r="2.3"/><circle cx="794" cy="310" r="2.3"/><circle cx="794" cy="332" r="2.3"/><circle cx="794" cy="354" r="2.3"/><circle cx="772" cy="46" r="2.3"/><circle cx="772" cy="68" r="2.3"/><circle cx="772" cy="90" r="2.3"/><circle cx="772" cy="112" r="2.3"/><circle cx="772" cy="134" r="2.3"/><circle cx="772" cy="156" r="2.3"/><circle cx="772" cy="178" r="2.3"/><circle cx="772" cy="200" r="2.3"/><circle cx="772" cy="222" r="2.3"/><circle cx="772" cy="244" r="2.3"/><circle cx="772" cy="266" r="2.3"/><circle cx="772" cy="288" r="2.3"/><circle cx="772" cy="310" r="2.3"/><circle cx="772" cy="332" r="2.3"/><circle cx="772" cy="354" r="2.3"/><circle cx="750" cy="46" r="2.3"/><circle cx="750" cy="68" r="2.3"/><circle cx="750" cy="90" r="2.3"/><circle cx="750" cy="112" r="2.3"/><circle cx="750" cy="134" r="2.3"/><circle cx="750" cy="156" r="2.3"/><circle cx="750" cy="178" r="2.3"/><circle cx="750" cy="200" r="2.3"/><circle cx="750" cy="222" r="2.3"/><circle cx="750" cy="244" r="2.3"/><circle cx="750" cy="266" r="2.3"/><circle cx="750" cy="288" r="2.3"/><circle cx="750" cy="310" r="2.3"/><circle cx="750" cy="332" r="2.3"/><circle cx="750" cy="354" r="2.3"/><circle cx="728" cy="46" r="2.3"/><circle cx="728" cy="68" r="2.3"/><circle cx="728" cy="90" r="2.3"/><circle cx="728" cy="112" r="2.3"/><circle cx="728" cy="134" r="2.3"/><circle cx="728" cy="156" r="2.3"/><circle cx="728" cy="178" r="2.3"/><circle cx="728" cy="200" r="2.3"/><circle cx="728" cy="222" r="2.3"/><circle cx="728" cy="244" r="2.3"/><circle cx="728" cy="266" r="2.3"/><circle cx="728" cy="288" r="2.3"/><circle cx="728" cy="310" r="2.3"/><circle cx="728" cy="332" r="2.3"/><circle cx="728" cy="354" r="2.3"/><circle cx="706" cy="46" r="2.3"/><circle cx="706" cy="68" r="2.3"/><circle cx="706" cy="90" r="2.3"/><circle cx="706" cy="112" r="2.3"/><circle cx="706" cy="134" r="2.3"/><circle cx="706" cy="156" r="2.3"/><circle cx="706" cy="178" r="2.3"/><circle cx="706" cy="200" r="2.3"/><circle cx="706" cy="222" r="2.3"/><circle cx="706" cy="244" r="2.3"/><circle cx="706" cy="266" r="2.3"/><circle cx="706" cy="288" r="2.3"/><circle cx="706" cy="310" r="2.3"/><circle cx="706" cy="332" r="2.3"/><circle cx="706" cy="354" r="2.3"/><circle cx="684" cy="46" r="2.3"/><circle cx="684" cy="68" r="2.3"/><circle cx="684" cy="90" r="2.3"/><circle cx="684" cy="112" r="2.3"/><circle cx="684" cy="134" r="2.3"/><circle cx="684" cy="156" r="2.3"/><circle cx="684" cy="178" r="2.3"/><circle cx="684" cy="200" r="2.3"/><circle cx="684" cy="222" r="2.3"/><circle cx="684" cy="244" r="2.3"/><circle cx="684" cy="266" r="2.3"/><circle cx="684" cy="288" r="2.3"/><circle cx="684" cy="310" r="2.3"/><circle cx="684" cy="332" r="2.3"/><circle cx="684" cy="354" r="2.3"/><circle cx="662" cy="46" r="2.3"/><circle cx="662" cy="68" r="2.3"/><circle cx="662" cy="90" r="2.3"/><circle cx="662" cy="112" r="2.3"/><circle cx="662" cy="134" r="2.3"/><circle cx="662" cy="156" r="2.3"/><circle cx="662" cy="178" r="2.3"/><circle cx="662" cy="200" r="2.3"/><circle cx="662" cy="222" r="2.3"/><circle cx="662" cy="244" r="2.3"/><circle cx="662" cy="266" r="2.3"/><circle cx="662" cy="288" r="2.3"/><circle cx="662" cy="310" r="2.3"/><circle cx="662" cy="332" r="2.3"/><circle cx="662" cy="354" r="2.3"/><circle cx="640" cy="46" r="2.3"/><circle cx="640" cy="68" r="2.3"/><circle cx="640" cy="90" r="2.3"/><circle cx="640" cy="112" r="2.3"/><circle cx="640" cy="134" r="2.3"/><circle cx="640" cy="156" r="2.3"/><circle cx="640" cy="178" r="2.3"/><circle cx="640" cy="200" r="2.3"/><circle cx="640" cy="222" r="2.3"/><circle cx="640" cy="244" r="2.3"/><circle cx="640" cy="266" r="2.3"/><circle cx="640" cy="288" r="2.3"/><circle cx="640" cy="310" r="2.3"/><circle cx="640" cy="332" r="2.3"/><circle cx="640" cy="354" r="2.3"/><circle cx="618" cy="46" r="2.3"/><circle cx="618" cy="68" r="2.3"/><circle cx="618" cy="90" r="2.3"/><circle cx="618" cy="112" r="2.3"/><circle cx="618" cy="134" r="2.3"/><circle cx="618" cy="156" r="2.3"/><circle cx="618" cy="178" r="2.3"/><circle cx="618" cy="200" r="2.3"/><circle cx="618" cy="222" r="2.3"/><circle cx="618" cy="244" r="2.3"/><circle cx="618" cy="266" r="2.3"/><circle cx="618" cy="288" r="2.3"/><circle cx="618" cy="310" r="2.3"/><circle cx="618" cy="332" r="2.3"/><circle cx="618" cy="354" r="2.3"/><circle cx="596" cy="46" r="2.3"/><circle cx="596" cy="68" r="2.3"/><circle cx="596" cy="90" r="2.3"/><circle cx="596" cy="112" r="2.3"/><circle cx="596" cy="134" r="2.3"/><circle cx="596" cy="156" r="2.3"/><circle cx="596" cy="178" r="2.3"/><circle cx="596" cy="200" r="2.3"/><circle cx="596" cy="222" r="2.3"/><circle cx="596" cy="244" r="2.3"/><circle cx="596" cy="266" r="2.3"/><circle cx="596" cy="288" r="2.3"/><circle cx="596" cy="310" r="2.3"/><circle cx="596" cy="332" r="2.3"/><circle cx="596" cy="354" r="2.3"/><circle cx="574" cy="46" r="2.3"/><circle cx="574" cy="68" r="2.3"/><circle cx="574" cy="90" r="2.3"/><circle cx="574" cy="112" r="2.3"/><circle cx="574" cy="134" r="2.3"/><circle cx="574" cy="156" r="2.3"/><circle cx="574" cy="178" r="2.3"/><circle cx="574" cy="200" r="2.3"/><circle cx="574" cy="222" r="2.3"/><circle cx="574" cy="244" r="2.3"/><circle cx="574" cy="266" r="2.3"/><circle cx="574" cy="288" r="2.3"/><circle cx="574" cy="310" r="2.3"/><circle cx="574" cy="332" r="2.3"/><circle cx="574" cy="354" r="2.3"/><circle cx="552" cy="46" r="2.3"/><circle cx="552" cy="68" r="2.3"/><circle cx="552" cy="90" r="2.3"/><circle cx="552" cy="112" r="2.3"/><circle cx="552" cy="134" r="2.3"/><circle cx="552" cy="156" r="2.3"/><circle cx="552" cy="178" r="2.3"/><circle cx="552" cy="200" r="2.3"/><circle cx="552" cy="222" r="2.3"/><circle cx="552" cy="244" r="2.3"/><circle cx="552" cy="266" r="2.3"/><circle cx="552" cy="288" r="2.3"/><circle cx="552" cy="310" r="2.3"/><circle cx="552" cy="332" r="2.3"/><circle cx="552" cy="354" r="2.3"/><circle cx="530" cy="46" r="2.3"/><circle cx="530" cy="68" r="2.3"/><circle cx="530" cy="90" r="2.3"/><circle cx="530" cy="112" r="2.3"/><circle cx="530" cy="134" r="2.3"/><circle cx="530" cy="156" r="2.3"/><circle cx="530" cy="178" r="2.3"/><circle cx="530" cy="200" r="2.3"/><circle cx="530" cy="222" r="2.3"/><circle cx="530" cy="244" r="2.3"/><circle cx="530" cy="266" r="2.3"/><circle cx="530" cy="288" r="2.3"/><circle cx="530" cy="310" r="2.3"/><circle cx="530" cy="332" r="2.3"/><circle cx="530" cy="354" r="2.3"/><circle cx="508" cy="46" r="2.3"/><circle cx="508" cy="68" r="2.3"/><circle cx="508" cy="90" r="2.3"/><circle cx="508" cy="112" r="2.3"/><circle cx="508" cy="134" r="2.3"/><circle cx="508" cy="156" r="2.3"/><circle cx="508" cy="178" r="2.3"/><circle cx="508" cy="200" r="2.3"/><circle cx="508" cy="222" r="2.3"/><circle cx="508" cy="244" r="2.3"/><circle cx="508" cy="266" r="2.3"/><circle cx="508" cy="288" r="2.3"/><circle cx="508" cy="310" r="2.3"/><circle cx="508" cy="332" r="2.3"/><circle cx="508" cy="354" r="2.3"/><circle cx="486" cy="46" r="2.3"/><circle cx="486" cy="68" r="2.3"/><circle cx="486" cy="90" r="2.3"/><circle cx="486" cy="112" r="2.3"/><circle cx="486" cy="134" r="2.3"/><circle cx="486" cy="156" r="2.3"/><circle cx="486" cy="178" r="2.3"/><circle cx="486" cy="200" r="2.3"/><circle cx="486" cy="222" r="2.3"/><circle cx="486" cy="244" r="2.3"/><circle cx="486" cy="266" r="2.3"/><circle cx="486" cy="288" r="2.3"/><circle cx="486" cy="310" r="2.3"/><circle cx="486" cy="332" r="2.3"/><circle cx="486" cy="354" r="2.3"/><circle cx="464" cy="46" r="2.3"/><circle cx="464" cy="68" r="2.3"/><circle cx="464" cy="90" r="2.3"/><circle cx="464" cy="112" r="2.3"/><circle cx="464" cy="134" r="2.3"/><circle cx="464" cy="156" r="2.3"/><circle cx="464" cy="178" r="2.3"/><circle cx="464" cy="200" r="2.3"/><circle cx="464" cy="222" r="2.3"/><circle cx="464" cy="244" r="2.3"/><circle cx="464" cy="266" r="2.3"/><circle cx="464" cy="288" r="2.3"/><circle cx="464" cy="310" r="2.3"/><circle cx="464" cy="332" r="2.3"/><circle cx="464" cy="354" r="2.3"/><circle cx="442" cy="46" r="2.3"/><circle cx="442" cy="68" r="2.3"/><circle cx="442" cy="90" r="2.3"/><circle cx="442" cy="112" r="2.3"/><circle cx="442" cy="134" r="2.3"/><circle cx="442" cy="156" r="2.3"/><circle cx="442" cy="178" r="2.3"/><circle cx="442" cy="200" r="2.3"/><circle cx="442" cy="222" r="2.3"/><circle cx="442" cy="244" r="2.3"/><circle cx="442" cy="266" r="2.3"/><circle cx="442" cy="288" r="2.3"/><circle cx="442" cy="310" r="2.3"/><circle cx="442" cy="332" r="2.3"/><circle cx="442" cy="354" r="2.3"/><circle cx="420" cy="46" r="2.3"/><circle cx="420" cy="68" r="2.3"/><circle cx="420" cy="90" r="2.3"/><circle cx="420" cy="112" r="2.3"/><circle cx="420" cy="134" r="2.3"/><circle cx="420" cy="156" r="2.3"/><circle cx="420" cy="178" r="2.3"/><circle cx="420" cy="200" r="2.3"/><circle cx="420" cy="222" r="2.3"/><circle cx="420" cy="244" r="2.3"/><circle cx="420" cy="266" r="2.3"/><circle cx="420" cy="288" r="2.3"/><circle cx="420" cy="310" r="2.3"/><circle cx="420" cy="332" r="2.3"/><circle cx="420" cy="354" r="2.3"/><circle cx="398" cy="46" r="2.3"/><circle cx="398" cy="68" r="2.3"/><circle cx="398" cy="90" r="2.3"/><circle cx="398" cy="112" r="2.3"/><circle cx="398" cy="134" r="2.3"/><circle cx="398" cy="156" r="2.3"/><circle cx="398" cy="178" r="2.3"/><circle cx="398" cy="200" r="2.3"/><circle cx="398" cy="222" r="2.3"/><circle cx="398" cy="244" r="2.3"/><circle cx="398" cy="266" r="2.3"/><circle cx="398" cy="288" r="2.3"/><circle cx="398" cy="310" r="2.3"/><circle cx="398" cy="332" r="2.3"/><circle cx="398" cy="354" r="2.3"/><circle cx="376" cy="46" r="2.3"/><circle cx="376" cy="68" r="2.3"/><circle cx="376" cy="90" r="2.3"/><circle cx="376" cy="112" r="2.3"/><circle cx="376" cy="134" r="2.3"/><circle cx="376" cy="156" r="2.3"/><circle cx="376" cy="178" r="2.3"/><circle cx="376" cy="200" r="2.3"/><circle cx="376" cy="222" r="2.3"/><circle cx="376" cy="244" r="2.3"/><circle cx="376" cy="266" r="2.3"/><circle cx="376" cy="288" r="2.3"/><circle cx="376" cy="310" r="2.3"/><circle cx="376" cy="332" r="2.3"/><circle cx="376" cy="354" r="2.3"/><circle cx="354" cy="46" r="2.3"/><circle cx="354" cy="68" r="2.3"/><circle cx="354" cy="90" r="2.3"/><circle cx="354" cy="112" r="2.3"/><circle cx="354" cy="134" r="2.3"/><circle cx="354" cy="156" r="2.3"/><circle cx="354" cy="178" r="2.3"/><circle cx="354" cy="200" r="2.3"/><circle cx="354" cy="222" r="2.3"/><circle cx="354" cy="244" r="2.3"/><circle cx="354" cy="266" r="2.3"/><circle cx="354" cy="288" r="2.3"/><circle cx="354" cy="310" r="2.3"/><circle cx="354" cy="332" r="2.3"/><circle cx="354" cy="354" r="2.3"/><circle cx="332" cy="46" r="2.3"/><circle cx="332" cy="68" r="2.3"/><circle cx="332" cy="90" r="2.3"/><circle cx="332" cy="112" r="2.3"/><circle cx="332" cy="134" r="2.3"/><circle cx="332" cy="156" r="2.3"/><circle cx="332" cy="178" r="2.3"/><circle cx="332" cy="200" r="2.3"/><circle cx="332" cy="222" r="2.3"/><circle cx="332" cy="244" r="2.3"/><circle cx="332" cy="266" r="2.3"/><circle cx="332" cy="288" r="2.3"/><circle cx="332" cy="310" r="2.3"/><circle cx="332" cy="332" r="2.3"/><circle cx="332" cy="354" r="2.3"/><circle cx="310" cy="46" r="2.3"/><circle cx="310" cy="68" r="2.3"/><circle cx="310" cy="90" r="2.3"/><circle cx="310" cy="112" r="2.3"/><circle cx="310" cy="134" r="2.3"/><circle cx="310" cy="156" r="2.3"/><circle cx="310" cy="178" r="2.3"/><circle cx="310" cy="200" r="2.3"/><circle cx="310" cy="222" r="2.3"/><circle cx="310" cy="244" r="2.3"/><circle cx="310" cy="266" r="2.3"/><circle cx="310" cy="288" r="2.3"/><circle cx="310" cy="310" r="2.3"/><circle cx="310" cy="332" r="2.3"/><circle cx="310" cy="354" r="2.3"/><circle cx="288" cy="46" r="2.3"/><circle cx="288" cy="68" r="2.3"/><circle cx="288" cy="90" r="2.3"/><circle cx="288" cy="112" r="2.3"/><circle cx="288" cy="134" r="2.3"/><circle cx="288" cy="156" r="2.3"/><circle cx="288" cy="178" r="2.3"/><circle cx="288" cy="200" r="2.3"/><circle cx="288" cy="222" r="2.3"/><circle cx="288" cy="244" r="2.3"/><circle cx="288" cy="266" r="2.3"/><circle cx="288" cy="288" r="2.3"/><circle cx="288" cy="310" r="2.3"/><circle cx="288" cy="332" r="2.3"/><circle cx="288" cy="354" r="2.3"/><circle cx="266" cy="46" r="2.3"/><circle cx="266" cy="68" r="2.3"/><circle cx="266" cy="90" r="2.3"/><circle cx="266" cy="112" r="2.3"/><circle cx="266" cy="134" r="2.3"/><circle cx="266" cy="156" r="2.3"/><circle cx="266" cy="178" r="2.3"/><circle cx="266" cy="200" r="2.3"/><circle cx="266" cy="222" r="2.3"/><circle cx="266" cy="244" r="2.3"/><circle cx="266" cy="266" r="2.3"/><circle cx="266" cy="288" r="2.3"/><circle cx="266" cy="310" r="2.3"/><circle cx="266" cy="332" r="2.3"/><circle cx="266" cy="354" r="2.3"/><circle cx="244" cy="46" r="2.3"/><circle cx="244" cy="68" r="2.3"/><circle cx="244" cy="90" r="2.3"/><circle cx="244" cy="112" r="2.3"/><circle cx="244" cy="134" r="2.3"/><circle cx="244" cy="156" r="2.3"/><circle cx="244" cy="178" r="2.3"/><circle cx="244" cy="200" r="2.3"/><circle cx="244" cy="222" r="2.3"/><circle cx="244" cy="244" r="2.3"/><circle cx="244" cy="266" r="2.3"/><circle cx="244" cy="288" r="2.3"/><circle cx="244" cy="310" r="2.3"/><circle cx="244" cy="332" r="2.3"/><circle cx="244" cy="354" r="2.3"/><circle cx="222" cy="46" r="2.3"/><circle cx="222" cy="68" r="2.3"/><circle cx="222" cy="90" r="2.3"/><circle cx="222" cy="112" r="2.3"/><circle cx="222" cy="134" r="2.3"/><circle cx="222" cy="156" r="2.3"/><circle cx="222" cy="178" r="2.3"/><circle cx="222" cy="200" r="2.3"/><circle cx="222" cy="222" r="2.3"/><circle cx="222" cy="244" r="2.3"/><circle cx="222" cy="266" r="2.3"/><circle cx="222" cy="288" r="2.3"/><circle cx="222" cy="310" r="2.3"/><circle cx="222" cy="332" r="2.3"/><circle cx="222" cy="354" r="2.3"/><circle cx="200" cy="46" r="2.3"/><circle cx="200" cy="68" r="2.3"/><circle cx="200" cy="90" r="2.3"/><circle cx="200" cy="112" r="2.3"/><circle cx="200" cy="134" r="2.3"/><circle cx="200" cy="156" r="2.3"/><circle cx="200" cy="178" r="2.3"/><circle cx="200" cy="200" r="2.3"/><circle cx="200" cy="222" r="2.3"/><circle cx="200" cy="244" r="2.3"/><circle cx="200" cy="266" r="2.3"/><circle cx="200" cy="288" r="2.3"/><circle cx="200" cy="310" r="2.3"/><circle cx="200" cy="332" r="2.3"/><circle cx="200" cy="354" r="2.3"/></g>
+<polyline class="trk" points="288,266 222,266"/>
+<polyline class="trk" points="222,222 222,134"/>
+<polyline class="trk" points="222,90 398,90 398,134"/>
+<polyline class="trk" points="376,134 376,178"/>
+<polyline class="trk" points="376,288 332,288 332,266"/>
+<polyline class="trn" points="376,178 354,178"/>
+<polyline class="trn" points="288,266 288,332 266,332"/>
+<polyline class="trn" points="354,288 354,310"/>
+<polyline class="trn" points="860,310 860,332 398,332 398,288 376,288"/>
+<polyline class="trn" points="420,310 398,310"/>
+<polyline class="trn" points="442,266 442,288 398,288"/>
+<polyline class="trn" points="442,156 442,134 420,134"/>
+<polyline class="trn" points="464,134 442,134"/>
+<polyline class="trn" points="860,134 574,134"/>
+<polyline class="trn" points="860,178 772,178 772,332"/>
+<polyline class="trn" points="860,266 794,266 794,222"/>
+<polyline class="trn" points="574,222 574,244"/>
+<g class="pads"><circle cx="442" cy="134" r="5"/><circle cx="398" cy="134" r="5"/><circle cx="420" cy="310" r="5"/><circle cx="442" cy="266" r="5"/><circle cx="376" cy="178" r="5"/><circle cx="574" cy="244" r="5"/><circle cx="794" cy="222" r="5"/><circle cx="222" cy="90" r="5"/><circle cx="222" cy="222" r="5"/><circle cx="376" cy="288" r="5"/><circle cx="398" cy="310" r="5"/><circle cx="574" cy="222" r="5"/><circle cx="464" cy="134" r="5"/><circle cx="222" cy="134" r="5"/><circle cx="266" cy="332" r="5"/><circle cx="222" cy="266" r="5"/><circle cx="860" cy="134" r="5"/><circle cx="354" cy="178" r="5"/><circle cx="860" cy="266" r="5"/><circle cx="354" cy="310" r="5"/><circle cx="442" cy="156" r="5"/><circle cx="376" cy="134" r="5"/><circle cx="420" cy="134" r="5"/><circle cx="574" cy="134" r="5"/><circle cx="398" cy="288" r="5"/><circle cx="288" cy="332" r="5"/><circle cx="288" cy="266" r="5"/><circle cx="772" cy="332" r="5"/><circle cx="860" cy="178" r="5"/><circle cx="354" cy="288" r="5"/><circle cx="332" cy="266" r="5"/><circle cx="860" cy="310" r="5"/></g>
+<rect class="cmpg bor" x="839.1" y="245.1" width="41.8" height="85.8" rx="3"/>
+<circle class="cmpg" cx="860" cy="266" r="6"/><path class="scr" d="M856 266h8"/>
+<circle class="cmpg" cx="860" cy="310" r="6"/><path class="scr" d="M856 310h8"/>
+<text class="ref" x="860" y="240.1" text-anchor="middle">J1</text>
+<rect class="cmpg bor" x="839.1" y="113.1" width="41.8" height="85.8" rx="3"/>
+<circle class="cmpg" cx="860" cy="134" r="6"/><path class="scr" d="M856 134h8"/>
+<circle class="cmpg" cx="860" cy="178" r="6"/><path class="scr" d="M856 178h8"/>
+<text class="ref" x="860" y="108.1" text-anchor="middle">J5</text>
+<rect class="cmpg bor" x="201.1" y="201.1" width="41.8" height="85.8" rx="3"/>
+<circle class="cmpg" cx="222" cy="222" r="6"/><path class="scr" d="M218 222h8"/>
+<circle class="cmpg" cx="222" cy="266" r="6"/><path class="scr" d="M218 266h8"/>
+<text class="ref" x="222" y="196.1" text-anchor="middle">J3</text>
+<rect class="cmpg bor" x="201.1" y="69.1" width="41.8" height="85.8" rx="3"/>
+<circle class="cmpg" cx="222" cy="90" r="6"/><path class="scr" d="M218 90h8"/>
+<circle class="cmpg" cx="222" cy="134" r="6"/><path class="scr" d="M218 134h8"/>
+<text class="ref" x="222" y="64.1" text-anchor="middle">J4</text>
+<path class="lead" d="M794 222L574 222"/>
+<rect class="cmpg res" x="591.6" y="211.275" width="184.8" height="21.450000000000003" rx="4"/>
+<text class="ref" x="684.0" y="206.275" text-anchor="middle">R1</text>
+<path class="lead" d="M574 134L464 134"/>
+<rect class="cmpg res" x="481.6" y="127.4" width="74.8" height="13.200000000000001" rx="4"/>
+<text class="ref" x="519.0" y="122.4" text-anchor="middle">R2</text>
+<path class="lead" d="M442 156L442 266"/>
+<rect class="cmpg res" x="435.4" y="173.6" width="13.200000000000001" height="74.8" rx="4"/>
+<text class="ref" x="453.6" y="209.0" text-anchor="start">R3</text><text class="val" x="453.6" y="223.0" text-anchor="start">10 kΩ</text>
+<path class="lead" d="M376 178L376 288"/>
+<rect class="cmpg res" x="366.925" y="195.6" width="18.150000000000002" height="74.8" rx="4"/>
+<text class="ref" x="390.075" y="231.0" text-anchor="start">RS</text><text class="val" x="390.075" y="245.0" text-anchor="start">0,1 Ω</text>
+<circle class="cmpg cap" cx="310" cy="266" r="47.3"/>
+<path class="stripe" d="M344.1 231.94400000000002V300.056" />
+<text class="ref" x="310" y="254" text-anchor="middle">C1</text><text class="val" x="310" y="296" text-anchor="middle">680 µF</text>
+<text class="pol" x="288" y="258" text-anchor="middle">+</text><text class="pol" x="332" y="258" text-anchor="middle">−</text>
+<rect class="cmpg tab" x="362.79999999999995" y="88.89999999999998" width="70.40000000000009" height="11.0" rx="2"/>
+<rect class="cmpg q" x="362.79999999999995" y="99.89999999999998" width="70.40000000000009" height="26.4" rx="2"/>
+<path class="lead" d="M420 126.30000000000001V134"/><text class="pin" x="420" y="152" text-anchor="middle">G</text>
+<path class="lead" d="M398 126.30000000000001V134"/><text class="pin" x="398" y="152" text-anchor="middle">D</text>
+<path class="lead" d="M376 126.30000000000001V134"/><text class="pin" x="376" y="152" text-anchor="middle">S</text>
+<text class="ref" x="398.0" y="116.39999999999998" text-anchor="middle">Q1</text>
+<circle class="tp ch1" cx="354" cy="178" r="7"/>
+<circle class="tp ch2" cx="266" cy="332" r="7"/>
+<circle class="tp gnd" cx="354" cy="310" r="7"/>
+<circle class="tp gnd" cx="420" cy="310" r="7"/>
+<text class="net" x="376" y="358" text-anchor="middle">estrella de masa</text>
+</svg></div>
+  <div class="legend"><span><i class="sw"></i>Lazo de descarga: alambre de cobre estañado de 1 mm o hilo de 1 mm² soldado sobre los agujeros</span><span><i class="sw thin"></i>Señal y masa: alambre fino o puentes de estaño</span><span><i class="sw j"></i>Cable fino aislado, del lado de los componentes</span></div>
+  <p class="cap">La vista del cobre está dada vuelta como la ves al girar la placa: lo que en los componentes está a la derecha, en el cobre queda a la izquierda. Los números de fila y columna sirven para ubicar cada agujero (columna, fila); en esa vista las columnas aparecen en orden inverso.</p>
+</section>
+
+<section>
+  <h2><span class="n">3</span>Por qué está ubicado así</h2>
+  <ul class="list">
+    <li><b>Lazo de descarga chico.</b> C1, Q1, RS y las borneras J3 y J4 están juntos en el borde derecho. La corriente de 2–8 A recorre unos 4 cm de placa: menos resistencia y menos inductancia, así el pulso se parece al del diseño.</li>
+    <li><b>Masa en estrella debajo de RS.</b> El − de C1, la masa de la fuente, la de la pila, R3 y las dos masas del osciloscopio llegan a un mismo punto. La corriente del disparo no pasa por la masa de las puntas.</li>
+    <li><b>Medición Kelvin del shunt.</b> TP1 sale de la misma pata superior de RS y TP3 está al lado de la pata inferior. CH1 lee solo la caída en RS, sin la de las pistas.</li>
+    <li><b>Gate corto.</b> R2 y R3 están pegados a Q1, y R3 va a la estrella. Si la pila o el pulsador quedan desconectados, R3 mantiene a Q1 apagado.</li>
+    <li><b>Carga separada.</b> El camino de carga (R1, unos mA) va por un cable fino. Así no comparte pistas con el lazo de descarga ni lo cruza.</li>
+    <li><b>Cables fuera de la placa:</b> los pares a la llave de armado (J3) y al iniciador (J4) van trenzados y lo más cortos posible, con cable de 1 mm². Son parte del lazo de descarga.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">4</span>Materiales de la placa</h2>
+  <div class="tw"><table style="min-width:640px"><thead><tr><th>Ref.</th><th>Componente</th><th>Agujeros (col, fila)</th><th>Nota</th></tr></thead><tbody>
+    <tr><td>Q1</td><td>MOSFET IRLZ44N (o IRL540N, IRLB8721)</td><td class="n">G 21,4 · D 22,4 · S 23,4</td><td>Parado, aleta hacia atrás. Sin disipador: el pulso dura milisegundos.</td></tr>
+    <tr><td>C1</td><td>Electrolítico 680 µF 25 V 105 °C, radial 10 mm</td><td class="n">− 25,10 · + 27,10</td><td>La franja (−) hacia la izquierda.</td></tr>
+    <tr><td>RS</td><td>0,1 Ω 1 %, 2–5 W</td><td class="n">23,6 · 23,11</td><td>Si es más largo, montalo parado. Si es SMD 2512, soldalo entre dos islas del lado del cobre.</td></tr>
+    <tr><td>R1</td><td>100 Ω 5 W</td><td class="n">4,8 · 14,8</td><td>Separado unos mm de la placa: calienta poco, pero es grande.</td></tr>
+    <tr><td>R2</td><td>1 kΩ ¼ W</td><td class="n">14,4 · 19,4</td><td></td></tr>
+    <tr><td>R3</td><td>10 kΩ ¼ W</td><td class="n">20,5 · 20,10</td><td></td></tr>
+    <tr><td>J1, J3, J4, J5</td><td>Bornera de 2 polos, paso 5 mm</td><td class="n">ver dibujo</td><td>Tornillos hacia afuera de la placa.</td></tr>
+    <tr><td>TP1–TP4</td><td>Lazo de alambre rígido (pata de resistor sobrante)</td><td class="n">24,6 · 28,13 · 24,12 · 21,12</td><td>Para enganchar las puntas y los cocodrilos de masa.</td></tr>
+    <tr><td>—</td><td>Alambre de cobre estañado de 1 mm o hilo de 1 mm²</td><td class="n">—</td><td>Para las pistas gruesas.</td></tr>
+  </tbody></table></div>
+  <p class="note">Fuera de la placa: fuente, llave de carga, llave de armado, pulsador, pila de 9 V, caja con el iniciador y el puente de seguridad, y el resistor de 2,2 Ω 5 W que va en J4 en lugar del iniciador para validar.</p>
+</section>
+
+<section>
+  <h2><span class="n">5</span>Orden de armado</h2>
+  <ol class="steps">
+    <li><div><h3>Pistas gruesas primero</h3><p>Del lado del cobre, soldá el alambre de 1 mm siguiendo el lazo de descarga, punto por punto en cada agujero: C1+ → J3, J3 → J4, J4 → D, S → RS, RS → estrella → C1−.</p></div></li>
+    <li><div><h3>Componentes de abajo hacia arriba</h3><p>R2, R3, RS, R1, después las borneras, C1 y por último Q1. Soldá cada pata a su pista y cortá lo que sobre.</p></div></li>
+    <li><div><h3>Pistas finas y puntos de prueba</h3><p>Masa de J1 y J5 hasta la estrella, gate, TP1–TP4 y el cable fino de carga del lado de los componentes, desde la pata de R1 (agujero 14,9) hasta el nodo de TP2 (27,13).</p></div></li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="n">6</span>Verificación antes de conectar nada</h2>
+  <ul class="list">
+    <li>Con el tester en continuidad: no hay continuidad entre C1+ (TP2) y la estrella (TP3), ni entre D y S de Q1.</li>
+    <li>Entre el gate (pata G) y la estrella mide ~10 kΩ (R3).</li>
+    <li>Entre J1+ y TP2 mide ~100 Ω (R1).</li>
+    <li>Entre TP1 y TP3 mide casi 0 Ω (el shunt).</li>
+    <li>Revisá con lupa que no haya puentes de estaño entre pistas vecinas, sobre todo alrededor de Q1.</li>
+    <li>Primera prueba con el resistor de 2,2 Ω en J4 y C1 cargado a 3–5 V: el I²t medido tiene que coincidir con V₀²·C/(2·R).</li>
+  </ul>
+</section>
+</main>
+<script>
+(function(){const b1=document.getElementById("v-comp"),b2=document.getElementById("v-cu"),f1=document.getElementById("f-comp"),f2=document.getElementById("f-cu");
+function set(cu){f1.hidden=cu;f2.hidden=!cu;b1.setAttribute("aria-pressed",String(!cu));b2.setAttribute("aria-pressed",String(cu));}
+b1.addEventListener("click",()=>set(false));b2.addEventListener("click",()=>set(true));})();
+</script>
