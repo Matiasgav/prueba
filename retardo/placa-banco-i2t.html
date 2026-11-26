@@ -117,6 +117,9 @@ button.ghost{background:transparent;color:var(--accent)}
 .tpl{font:600 11.5px var(--f-mono)} .tpl.ch1{fill:var(--ch1)} .tpl.ch2{fill:var(--ch2)} .tpl.gnd{fill:var(--fg)}
 .jump{fill:none;stroke:var(--jump);stroke-width:2.4;stroke-dasharray:7 4}
 .jl{fill:var(--jump);font:11px var(--f-body)}
+.coax{fill:none;stroke-width:2.6} .coax.ch1{stroke:var(--ch1)} .coax.ch2{stroke:var(--ch2)}
+.shd{fill:none;stroke:var(--fg);stroke-width:1.6;stroke-dasharray:4 3}
+.bnco{fill:var(--part);stroke:var(--fg);stroke-width:2} .bnci{fill:var(--bg);stroke:var(--muted);stroke-width:1.5}
 .net{fill:var(--cu);font:600 11px var(--f-mono)}
 .jt{fill:var(--accent);font:600 11px var(--f-mono)}
 .tabs{display:flex;gap:6px;flex-wrap:wrap}
@@ -133,7 +136,7 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
   <div class="eyebrow">Banco de I²t · circuito de descarga</div>
   <h1>Placa del banco de I²t</h1>
   <p class="lead">Circuito y armado en placa perforada de paso 2,54 mm (32 × 15 agujeros, unos 80 × 38 mm). Lo único que va en la placa es el lazo de descarga y el manejo del gate. La fuente, el osciloscopio, las llaves, el pulsador, la pila y el iniciador se conectan por borneras.</p>
-  <div class="meta"><span>Q1 IRLZ44N</span><span>C1 680 µF 25 V</span><span>RS 0,1 Ω</span><span>5 borneras · 4 puntos de prueba</span></div>
+  <div class="meta"><span>Q1 IRLZ44N</span><span>C1 680 µF 25 V</span><span>RS 0,1 Ω</span><span>4 borneras · 2 BNC al osciloscopio</span></div>
 </header>
 
 <section>
@@ -163,7 +166,7 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
     <text class="t" x="398" y="252">C1 680 µF</text><text class="ts" x="398" y="268">25 V común</text>
     <!-- CH2 -->
     <path class="c2" d="M370 90V44H420"/><circle cx="370" cy="90" r="6" class="c2"/>
-    <text class="t2" x="426" y="48">TP2 · CH2 punta ×10 · tensión de C1</text>
+    <text class="t2" x="426" y="48">BNC2 → CH2 · tensión de C1</text>
     <!-- llave de armado -->
     <path class="w" d="M370 90H480M548 90H660V140"/>
     <circle class="cmp" cx="482" cy="90" r="3"/><circle class="cmp" cx="546" cy="90" r="3"/>
@@ -196,14 +199,14 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
     <text class="tl" x="682" y="386">RS shunt</text><text class="ts" x="682" y="402">0,1 Ω 1 %</text>
     <!-- CH1 -->
     <path class="c1" d="M660 350H790"/><circle cx="660" cy="350" r="6" class="c1"/>
-    <text class="t1" x="694" y="340" >TP1 · CH1 punta ×1</text><text class="ts" x="772" y="372">i = V / R_shunt</text>
+    <text class="t1" x="694" y="340" >BNC1 → CH1 · corriente</text><text class="ts" x="772" y="372">i = V / R_shunt</text>
     <!-- masa -->
     <path class="w" d="M160 460H760"/>
     <circle class="dot" cx="660" cy="460" r="5"/>
     <path class="w" d="M760 460V478"/>
     <path class="w" d="M748 478H772M752 484H768M757 490H763"/>
     <path class="w" d="M760 460H760" />
-    <text class="ts" x="520" y="500">TP3 y TP4: masas de las dos puntas, en este punto</text>
+    <text class="ts" x="520" y="500">mallas de BNC1 y BNC2, solo en este punto</text>
     <text class="tl" x="168" y="452">GND</text>
     <!-- gate -->
     <circle class="dot" cx="600" cy="300" r="3.5"/>
@@ -230,7 +233,7 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
     <button type="button" id="v-comp" aria-pressed="true">Lado de los componentes</button>
     <button type="button" id="v-cu" aria-pressed="false">Lado del cobre (espejado)</button>
   </div>
-  <div class="fig" id="f-comp"><svg viewBox="0 0 1082 424" width="100%" style="min-width:860px" role="img" aria-label="Placa perforada vista desde el lado de los componentes">
+  <div class="fig" id="f-comp"><svg viewBox="0 0 1082 520" width="100%" style="min-width:860px" role="img" aria-label="Placa perforada vista desde el lado de los componentes">
 <rect class="pcb" x="184.6" y="30.6" width="712.8" height="338.8" rx="6"/>
 <text class="gx" x="200" y="25.1" text-anchor="middle">0</text>
 <text class="gx" x="222" y="25.1" text-anchor="middle"></text>
@@ -289,7 +292,7 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
 <polyline class="trn ghost" points="794,266 794,332 816,332"/>
 <polyline class="trn ghost" points="728,288 728,310"/>
 <polyline class="trn ghost" points="222,310 222,332 684,332 684,288 706,288"/>
-<polyline class="trn ghost" points="662,310 684,310"/>
+<polyline class="trn ghost" points="728,310 728,354 838,354"/>
 <polyline class="trn ghost" points="640,266 640,288 684,288"/>
 <polyline class="trn ghost" points="640,156 640,134 662,134"/>
 <polyline class="trn ghost" points="618,134 640,134"/>
@@ -358,16 +361,24 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
 <circle class="tp ch1" cx="728" cy="178" r="7"/>
 <circle class="tp ch2" cx="816" cy="332" r="7"/>
 <circle class="tp gnd" cx="728" cy="310" r="7"/>
-<circle class="tp gnd" cx="662" cy="310" r="7"/>
+<circle class="tp gnd" cx="838" cy="354" r="7"/>
 <path class="jump" d="M508 244C508 358.4 794 362.79999999999995 794 332"/>
-<text class="jl" x="651.0" y="385.4" text-anchor="middle">cable fino aislado (camino de carga)</text>
+<text class="jl" x="398" y="385.4" text-anchor="middle">cable fino aislado (camino de carga)</text>
+<path class="coax ch1" d="M728 178L728 184L707.4 415.4"/>
+<path class="shd" d="M728 310L715.4 415.4"/>
+<circle class="bnco" cx="710.4" cy="431.4" r="16"/><circle class="bnci" cx="710.4" cy="431.4" r="9"/><circle class="tp ch1" cx="710.4" cy="431.4" r="3"/>
+<text class="tpl ch1" x="734.4" y="435.4">BNC1 → CH1</text>
+<path class="coax ch2" d="M816 332L816 338L841.6 415.4"/>
+<path class="shd" d="M838 354L849.6 415.4"/>
+<circle class="bnco" cx="844.6" cy="431.4" r="16"/><circle class="bnci" cx="844.6" cy="431.4" r="9"/><circle class="tp ch2" cx="844.6" cy="431.4" r="3"/>
+<text class="tpl ch2" x="868.6" y="435.4">BNC2 → CH2</text>
 <text class="tpl ch1" x="740" y="182" text-anchor="start">TP1</text>
 <text class="tpl ch2" x="828" y="336" text-anchor="start">TP2</text>
-<text class="tpl gnd" x="728" y="332" text-anchor="middle">TP3</text>
-<text class="tpl gnd" x="650" y="314" text-anchor="end">TP4</text>
+<text class="tpl gnd" x="716" y="314" text-anchor="end">TP3</text>
+<text class="tpl gnd" x="850" y="358" text-anchor="start">TP4</text>
 <text class="nm" x="662" y="82.89999999999998" text-anchor="middle">aleta metálica atrás · cara impresa hacia abajo</text>
 </svg></div>
-  <div class="fig" id="f-cu" hidden><svg viewBox="0 0 1082 424" width="100%" style="min-width:860px" role="img" aria-label="Placa perforada vista desde el lado del cobre, espejada">
+  <div class="fig" id="f-cu" hidden><svg viewBox="0 0 1082 520" width="100%" style="min-width:860px" role="img" aria-label="Placa perforada vista desde el lado del cobre, espejada">
 <rect class="pcb" x="184.6" y="30.6" width="712.8" height="338.8" rx="6"/>
 <text class="gx" x="882" y="25.1" text-anchor="middle">0</text>
 <text class="gx" x="860" y="25.1" text-anchor="middle"></text>
@@ -426,7 +437,7 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
 <polyline class="trn" points="288,266 288,332 266,332"/>
 <polyline class="trn" points="354,288 354,310"/>
 <polyline class="trn" points="860,310 860,332 398,332 398,288 376,288"/>
-<polyline class="trn" points="420,310 398,310"/>
+<polyline class="trn" points="354,310 354,354 244,354"/>
 <polyline class="trn" points="442,266 442,288 398,288"/>
 <polyline class="trn" points="442,156 442,134 420,134"/>
 <polyline class="trn" points="464,134 442,134"/>
@@ -434,7 +445,7 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
 <polyline class="trn" points="860,178 772,178 772,332"/>
 <polyline class="trn" points="860,266 794,266 794,222"/>
 <polyline class="trn" points="574,222 574,244"/>
-<g class="pads"><circle cx="442" cy="134" r="5"/><circle cx="398" cy="134" r="5"/><circle cx="420" cy="310" r="5"/><circle cx="442" cy="266" r="5"/><circle cx="376" cy="178" r="5"/><circle cx="574" cy="244" r="5"/><circle cx="794" cy="222" r="5"/><circle cx="222" cy="90" r="5"/><circle cx="222" cy="222" r="5"/><circle cx="376" cy="288" r="5"/><circle cx="398" cy="310" r="5"/><circle cx="574" cy="222" r="5"/><circle cx="464" cy="134" r="5"/><circle cx="222" cy="134" r="5"/><circle cx="266" cy="332" r="5"/><circle cx="222" cy="266" r="5"/><circle cx="860" cy="134" r="5"/><circle cx="354" cy="178" r="5"/><circle cx="860" cy="266" r="5"/><circle cx="354" cy="310" r="5"/><circle cx="442" cy="156" r="5"/><circle cx="376" cy="134" r="5"/><circle cx="420" cy="134" r="5"/><circle cx="574" cy="134" r="5"/><circle cx="398" cy="288" r="5"/><circle cx="288" cy="332" r="5"/><circle cx="288" cy="266" r="5"/><circle cx="772" cy="332" r="5"/><circle cx="860" cy="178" r="5"/><circle cx="354" cy="288" r="5"/><circle cx="332" cy="266" r="5"/><circle cx="860" cy="310" r="5"/></g>
+<g class="pads"><circle cx="442" cy="134" r="5"/><circle cx="398" cy="134" r="5"/><circle cx="442" cy="266" r="5"/><circle cx="376" cy="178" r="5"/><circle cx="574" cy="244" r="5"/><circle cx="794" cy="222" r="5"/><circle cx="222" cy="90" r="5"/><circle cx="222" cy="222" r="5"/><circle cx="376" cy="288" r="5"/><circle cx="574" cy="222" r="5"/><circle cx="464" cy="134" r="5"/><circle cx="222" cy="134" r="5"/><circle cx="266" cy="332" r="5"/><circle cx="222" cy="266" r="5"/><circle cx="860" cy="134" r="5"/><circle cx="354" cy="178" r="5"/><circle cx="860" cy="266" r="5"/><circle cx="354" cy="310" r="5"/><circle cx="442" cy="156" r="5"/><circle cx="244" cy="354" r="5"/><circle cx="376" cy="134" r="5"/><circle cx="420" cy="134" r="5"/><circle cx="574" cy="134" r="5"/><circle cx="398" cy="288" r="5"/><circle cx="288" cy="332" r="5"/><circle cx="288" cy="266" r="5"/><circle cx="772" cy="332" r="5"/><circle cx="860" cy="178" r="5"/><circle cx="354" cy="288" r="5"/><circle cx="332" cy="266" r="5"/><circle cx="860" cy="310" r="5"/></g>
 <rect class="cmpg bor" x="839.1" y="245.1" width="41.8" height="85.8" rx="3"/>
 <circle class="cmpg" cx="860" cy="266" r="6"/><path class="scr" d="M856 266h8"/>
 <circle class="cmpg" cx="860" cy="310" r="6"/><path class="scr" d="M856 310h8"/>
@@ -476,8 +487,8 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
 <circle class="tp ch1" cx="354" cy="178" r="7"/>
 <circle class="tp ch2" cx="266" cy="332" r="7"/>
 <circle class="tp gnd" cx="354" cy="310" r="7"/>
-<circle class="tp gnd" cx="420" cy="310" r="7"/>
-<text class="net" x="376" y="358" text-anchor="middle">estrella de masa</text>
+<circle class="tp gnd" cx="244" cy="354" r="7"/>
+<text class="net" x="376" y="387.4" text-anchor="middle">estrella de masa: debajo de RS (C1−, TP3)</text>
 </svg></div>
   <div class="legend"><span><i class="sw"></i>Lazo de descarga: alambre de cobre estañado de 1 mm o hilo de 1 mm² soldado sobre los agujeros</span><span><i class="sw thin"></i>Señal y masa: alambre fino o puentes de estaño</span><span><i class="sw j"></i>Cable fino aislado, del lado de los componentes</span></div>
   <p class="cap">La vista del cobre está dada vuelta como la ves al girar la placa: lo que en los componentes está a la derecha, en el cobre queda a la izquierda. Los números de fila y columna sirven para ubicar cada agujero (columna, fila); en esa vista las columnas aparecen en orden inverso.</p>
@@ -488,7 +499,8 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
   <ul class="list">
     <li><b>Lazo de descarga chico.</b> C1, Q1, RS y las borneras J3 y J4 están juntos en el borde derecho. La corriente de 2–8 A recorre unos 4 cm de placa: menos resistencia y menos inductancia, así el pulso se parece al del diseño.</li>
     <li><b>Masa en estrella debajo de RS.</b> El − de C1, la masa de la fuente, la de la pila, R3 y las dos masas del osciloscopio llegan a un mismo punto. La corriente del disparo no pasa por la masa de las puntas.</li>
-    <li><b>Medición Kelvin del shunt.</b> TP1 sale de la misma pata superior de RS y TP3 está al lado de la pata inferior. CH1 lee solo la caída en RS, sin la de las pistas.</li>
+    <li><b>Medición Kelvin del shunt.</b> El centro de BNC1 sale de la pata superior de RS (TP1) y su malla de al lado de la pata inferior (TP3). CH1 lee solo la caída en RS, sin la de las pistas.</li>
+    <li><b>Mallas de los BNC solo en la estrella.</b> La malla de BNC2 vuelve por TP4 al mismo punto. Si la caja es metálica, los BNC tienen que ir aislados del chasis: si no, la tierra del osciloscopio encuentra otro camino y la medición de CH1 se ensucia.</li>
     <li><b>Gate corto.</b> R2 y R3 están pegados a Q1, y R3 va a la estrella. Si la pila o el pulsador quedan desconectados, R3 mantiene a Q1 apagado.</li>
     <li><b>Carga separada.</b> El camino de carga (R1, unos mA) va por un cable fino. Así no comparte pistas con el lazo de descarga ni lo cruza.</li>
     <li><b>Cables fuera de la placa:</b> los pares a la llave de armado (J3) y al iniciador (J4) van trenzados y lo más cortos posible, con cable de 1 mm². Son parte del lazo de descarga.</li>
@@ -505,28 +517,45 @@ ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;ma
     <tr><td>R2</td><td>1 kΩ ¼ W</td><td class="n">14,4 · 19,4</td><td></td></tr>
     <tr><td>R3</td><td>10 kΩ ¼ W</td><td class="n">20,5 · 20,10</td><td></td></tr>
     <tr><td>J1, J3, J4, J5</td><td>Bornera de 2 polos, paso 5 mm</td><td class="n">ver dibujo</td><td>Tornillos hacia afuera de la placa.</td></tr>
-    <tr><td>TP1–TP4</td><td>Lazo de alambre rígido (pata de resistor sobrante)</td><td class="n">24,6 · 28,13 · 24,12 · 21,12</td><td>Para enganchar las puntas y los cocodrilos de masa.</td></tr>
+    <tr><td>TP1–TP4</td><td>Pads de soldadura para los coaxiales</td><td class="n">24,6 · 28,13 · 24,12 · 29,14</td><td>TP1 y TP3: centro y malla de BNC1. TP2 y TP4: centro y malla de BNC2.</td></tr>
+    <tr><td>BNC1, BNC2</td><td>BNC hembra de chasis, con tuerca y terminal para soldar</td><td class="n">en la caja</td><td>Unidos a la placa con 10–15 cm de coaxial fino (RG174) o par trenzado.</td></tr>
     <tr><td>—</td><td>Alambre de cobre estañado de 1 mm o hilo de 1 mm²</td><td class="n">—</td><td>Para las pistas gruesas.</td></tr>
   </tbody></table></div>
   <p class="note">Fuera de la placa: fuente, llave de carga, llave de armado, pulsador, pila de 9 V, caja con el iniciador y el puente de seguridad, y el resistor de 2,2 Ω 5 W que va en J4 en lugar del iniciador para validar.</p>
 </section>
 
 <section>
-  <h2><span class="n">5</span>Orden de armado</h2>
+  <h2><span class="n">5</span>Conexión al osciloscopio con BNC</h2>
+  <p>Con dos BNC en la caja ya no hacen falta las puntas: se conecta con dos cables BNC–BNC y el osciloscopio queda listo en cada disparo, siempre igual.</p>
+  <div class="tw"><table style="min-width:640px"><thead><tr><th>Cant.</th><th>Qué pedir en Electrónica Mendoza</th><th>Nota</th></tr></thead><tbody>
+    <tr><td class="n">2</td><td>Conector BNC hembra de chasis (panel), con tuerca y terminal para soldar</td><td>Si la caja es de metal, pedilos aislados o usá caja plástica.</td></tr>
+    <tr><td class="n">2</td><td>Cable BNC macho–BNC macho, RG58, 50 cm a 1 m</td><td>Uno por canal.</td></tr>
+    <tr><td class="n">0,5 m</td><td>Cable coaxial fino RG174 (o RG58)</td><td>De cada BNC a la placa, 10–15 cm. Alternativa: par trenzado.</td></tr>
+    <tr><td class="n">1</td><td>Caja plástica para la placa y los BNC (unos 120 × 80 × 50 mm)</td><td>Opcional, pero hace más prolijo y seguro el banco.</td></tr>
+  </tbody></table></div>
+  <ul class="list">
+    <li><b>Si solo tienen BNC hembra para placa a 90°</b>, también sirve: va en el borde de abajo, en lugar de TP1–TP4, y hay que agrandar con mecha de 2 mm los agujeros de las patas de sujeción.</li>
+    <li><b>En el osciloscopio:</b> CH1 y CH2 con atenuación ×1 (ya no hay punta ×10), acoplamiento DC. CH1 a 100–200 mV/div; CH2 a 2–5 V/div. La entrada del osciloscopio aguanta los 15 V del capacitor sin divisor.</li>
+    <li>El cable coaxial suma unos 100 pF por metro. Con un pulso de milisegundos no afecta la medición.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">6</span>Orden de armado</h2>
   <ol class="steps">
     <li><div><h3>Pistas gruesas primero</h3><p>Del lado del cobre, soldá el alambre de 1 mm siguiendo el lazo de descarga, punto por punto en cada agujero: C1+ → J3, J3 → J4, J4 → D, S → RS, RS → estrella → C1−.</p></div></li>
     <li><div><h3>Componentes de abajo hacia arriba</h3><p>R2, R3, RS, R1, después las borneras, C1 y por último Q1. Soldá cada pata a su pista y cortá lo que sobre.</p></div></li>
-    <li><div><h3>Pistas finas y puntos de prueba</h3><p>Masa de J1 y J5 hasta la estrella, gate, TP1–TP4 y el cable fino de carga del lado de los componentes, desde la pata de R1 (agujero 14,9) hasta el nodo de TP2 (27,13).</p></div></li>
+    <li><div><h3>Pistas finas y puntos de prueba</h3><p>Masa de J1 y J5 hasta la estrella, gate, pads TP1–TP4 con sus coaxiales a los BNC, y el cable fino de carga del lado de los componentes, desde la pata de R1 (agujero 14,9) hasta el nodo de TP2 (27,13).</p></div></li>
   </ol>
 </section>
 
 <section>
-  <h2><span class="n">6</span>Verificación antes de conectar nada</h2>
+  <h2><span class="n">7</span>Verificación antes de conectar nada</h2>
   <ul class="list">
     <li>Con el tester en continuidad: no hay continuidad entre C1+ (TP2) y la estrella (TP3), ni entre D y S de Q1.</li>
     <li>Entre el gate (pata G) y la estrella mide ~10 kΩ (R3).</li>
     <li>Entre J1+ y TP2 mide ~100 Ω (R1).</li>
-    <li>Entre TP1 y TP3 mide casi 0 Ω (el shunt).</li>
+    <li>Entre el centro y la malla de BNC1 mide casi 0 Ω (el shunt). Entre el centro y la malla de BNC2 no hay continuidad (C1 descargado mide como circuito abierto o sube lento).</li>
     <li>Revisá con lupa que no haya puentes de estaño entre pistas vecinas, sobre todo alrededor de Q1.</li>
     <li>Primera prueba con el resistor de 2,2 Ω en J4 y C1 cargado a 3–5 V: el I²t medido tiene que coincidir con V₀²·C/(2·R).</li>
   </ul>
