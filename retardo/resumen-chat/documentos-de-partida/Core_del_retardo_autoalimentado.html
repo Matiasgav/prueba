@@ -1,0 +1,428 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Core del retardo autoalimentado</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600&display=swap">
+<style>
+/* Layout: hoja técnica de una columna; diagrama de bloques + línea de tiempo, luego esquemático a todo ancho con zonas por bloque */
+:root {
+  --bg: #f3f5f7;
+  --paper: #ffffff;
+  --ink: #1b2430;
+  --muted: #5a6676;
+  --rule: #d5dbe3;
+  --c-store: #b8730f;   /* almacenamiento */
+  --c-count: #2563a8;   /* contador */
+  --c-drive: #2f7d4f;   /* driver */
+  --c-init: #b8322d;    /* iniciador */
+  --f-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --f-head: "IBM Plex Sans Condensed", "IBM Plex Sans", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161c; --paper: #1a2029; --ink: #dfe5ec; --muted: #94a0b0; --rule: #303946;
+    --c-store: #e0a245; --c-count: #6ea6e6; --c-drive: #63bb86; --c-init: #ec6f68;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12161c; --paper: #1a2029; --ink: #dfe5ec; --muted: #94a0b0; --rule: #303946;
+  --c-store: #e0a245; --c-count: #6ea6e6; --c-drive: #63bb86; --c-init: #ec6f68;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--f-sans); font-size: 15px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 48px;
+}
+main { max-width: 1120px; margin: 0 auto; display: grid; gap: 28px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--f-head); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
+h2 { font-family: var(--f-head); font-weight: 600; font-size: 21px; margin: 0; text-wrap: balance; }
+h3 { font-family: var(--f-head); font-weight: 600; font-size: 16px; margin: 0; }
+p { margin: 0; max-width: 68ch; }
+.lead { color: var(--muted); }
+section { background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: 22px; display: grid; gap: 16px; min-width: 0; }
+.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
+.tag { font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+.scroll { overflow-x: auto; min-width: 0; }
+.scroll svg { display: block; width: 100%; height: auto; }
+.blk svg { min-width: 560px; }
+.sch svg { min-width: 940px; }
+.tl svg { min-width: 560px; }
+
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+@media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+
+dl.notes { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 14px; }
+dl.notes dt { font-family: var(--f-mono); font-weight: 600; font-size: 13px; white-space: nowrap; }
+dl.notes dd { margin: 0; font-size: 14px; }
+.pill { display: inline-block; font-family: var(--f-mono); font-size: 12px; font-weight: 600; padding: 1px 7px; border-radius: 3px; }
+.p1 { background: color-mix(in srgb, var(--c-init) 18%, transparent); color: var(--c-init); }
+.p2, .p4 { background: color-mix(in srgb, var(--c-store) 18%, transparent); color: var(--c-store); }
+.p3 { background: color-mix(in srgb, var(--muted) 18%, transparent); color: var(--muted); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 2px; border: 1.5px dashed currentColor; }
+
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--f-mono); font-size: 12px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+td.m { font-family: var(--f-mono); font-size: 13px; white-space: nowrap; }
+ol.obs { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; max-width: 80ch; }
+ol.obs li { padding-left: 4px; }
+code { font-family: var(--f-mono); font-size: .92em; }
+
+/* SVG */
+svg text { font-family: var(--f-mono); fill: var(--ink); }
+.ink { color: var(--ink); }
+.w { stroke: var(--ink); stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.dot { fill: var(--ink); }
+.lbl { font-size: 11px; }
+.val { font-size: 11px; fill: var(--muted); }
+.small { font-size: 10px; fill: var(--muted); }
+.btitle { font-family: var(--f-head); font-size: 14px; font-weight: 600; letter-spacing: .03em; }
+.bcap { font-size: 10.5px; fill: var(--muted); }
+.box { fill: var(--paper); stroke-width: 1.8; }
+.hollow { fill: var(--paper); stroke: var(--ink); stroke-width: 1.5; stroke-linejoin: round; }
+.sig { stroke: var(--ink); stroke-width: 1.5; fill: none; }
+.zone { stroke-width: 1.4; stroke-dasharray: 6 4; }
+.ztag { font-family: var(--f-head); font-size: 12px; font-weight: 600; letter-spacing: .08em; }
+.net rect { fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; }
+.net text { font-size: 10.5px; font-weight: 500; text-anchor: middle; }
+.store { stroke: var(--c-store); } .zstore { fill: color-mix(in srgb, var(--c-store) 7%, transparent); stroke: var(--c-store); } .tstore { fill: var(--c-store); }
+.count { stroke: var(--c-count); } .zcount { fill: color-mix(in srgb, var(--c-count) 7%, transparent); stroke: var(--c-count); } .tcount { fill: var(--c-count); }
+.drive { stroke: var(--c-drive); } .zdrive { fill: color-mix(in srgb, var(--c-drive) 7%, transparent); stroke: var(--c-drive); } .tdrive { fill: var(--c-drive); }
+.init { stroke: var(--c-init); } .zinit { fill: color-mix(in srgb, var(--c-init) 7%, transparent); stroke: var(--c-init); } .tinit { fill: var(--c-init); }
+.band-p1 { fill: color-mix(in srgb, var(--c-init) 30%, transparent); }
+.band-p2 { fill: color-mix(in srgb, var(--c-store) 26%, transparent); }
+.band-ok { fill: color-mix(in srgb, var(--c-drive) 45%, transparent); }
+.axis { stroke: var(--muted); stroke-width: 1.2; }
+</style>
+
+<main>
+  <header>
+    <div class="eyebrow">Sistema de retardo autoalimentado · núcleo</div>
+    <h1>Core del retardo autoalimentado</h1>
+    <p class="lead">Modelo mínimo del sistema: cuatro bloques, dos flujos (energía y señal), dos tiempos de referencia y cuatro modos de fallo. Debajo, el esquemático propuesto en el documento, recortado a esos cuatro bloques.</p>
+  </header>
+
+  <!-- 1. Diagrama de bloques -->
+  <section>
+    <div class="sec-head">
+      <h2>Diagrama de bloques</h2>
+      <span class="tag">entrada t0: pulso 12 V · ~300 ms</span>
+    </div>
+    <div class="grid2">
+      <div class="scroll blk">
+        <svg viewBox="0 0 760 430" role="img" aria-label="Diagrama de bloques: la línea t0 alimenta el almacenamiento de energía y da la señal al contador; el almacenamiento alimenta al driver y al contador; el contador habilita al driver, que activa al iniciador.">
+          <!-- barra t0 -->
+          <text x="34" y="22" class="btitle">t0</text>
+          <path d="M40 30V420M47 30V420" class="sig"/>
+          <text x="58" y="160" class="small">12 V · 300 ms</text>
+          <text x="58" y="340" class="small">detección de t0</text>
+
+          <!-- flechas de energía (huecas) -->
+          <polygon class="hollow" points="47,173 174,173 174,166 190,180 174,194 174,187 47,187"/>
+          <polygon class="hollow" points="340,173 404,173 404,166 420,180 404,194 404,187 340,187"/>
+          <polygon class="hollow" points="570,173 594,173 594,166 610,180 594,194 594,187 570,187"/>
+          <polygon class="hollow" points="258,230 258,284 251,284 265,300 279,284 272,284 272,230"/>
+
+          <!-- flechas de señal -->
+          <path d="M47 350H181" class="sig"/>
+          <polygon points="190,350 180,345 180,355" class="dot"/>
+          <path d="M340 350H495V239" class="sig"/>
+          <polygon points="495,230 490,240 500,240" class="dot"/>
+
+          <!-- bloques -->
+          <rect x="190" y="130" width="150" height="100" rx="3" class="box store"/>
+          <text x="265" y="166" text-anchor="middle" class="btitle tstore">ALMACENAMIENTO</text>
+          <text x="265" y="183" text-anchor="middle" class="btitle tstore">DE ENERGÍA</text>
+          <text x="265" y="210" text-anchor="middle" class="bcap">C_F · D1 · TVS</text>
+
+          <rect x="420" y="130" width="150" height="100" rx="3" class="box drive"/>
+          <text x="495" y="176" text-anchor="middle" class="btitle tdrive">DRIVER</text>
+          <text x="495" y="200" text-anchor="middle" class="bcap">Q1 + Q2 en serie</text>
+
+          <rect x="610" y="130" width="140" height="100" rx="3" class="box init"/>
+          <text x="680" y="176" text-anchor="middle" class="btitle tinit">INICIADOR</text>
+          <text x="680" y="200" text-anchor="middle" class="bcap">puente ≈ 1–2 Ω</text>
+
+          <rect x="190" y="300" width="150" height="100" rx="3" class="box count"/>
+          <text x="265" y="346" text-anchor="middle" class="btitle tcount">CONTADOR</text>
+          <text x="265" y="370" text-anchor="middle" class="bcap">MCU + cristal 32 kHz</text>
+
+          <!-- leyenda -->
+          <polygon class="hollow" points="560,315 590,315 590,310 602,320 590,330 590,325 560,325"/>
+          <text x="612" y="324" class="lbl">energía</text>
+          <path d="M560 352H596" class="sig"/>
+          <polygon points="604,352 595,347.5 595,356.5" class="dot"/>
+          <text x="612" y="356" class="lbl">señal</text>
+        </svg>
+      </div>
+
+      <div style="display:grid; gap:14px; min-width:0">
+        <h3>Tiempos de referencia</h3>
+        <dl class="notes">
+          <dt>t1 ≈ 4 s</dt><dd>Ventana de no activación. En este tiempo se consume el combustible; puede llevar un mecanismo de seguridad adicional.</dd>
+          <dt>t2 10–40 s</dt><dd>Tiempo de activación, programable. Tolerancia pedida ±5 %.</dd>
+        </dl>
+        <h3>Modos de fallo</h3>
+        <dl class="notes">
+          <dt><span class="pill p1">P1</span></dt><dd>Activa antes de t1. El más crítico.</dd>
+          <dt><span class="pill p2">P2</span></dt><dd>Activa entre t1 y t2.</dd>
+          <dt><span class="pill p3">P3</span></dt><dd>No activa después de t2.</dd>
+          <dt><span class="pill p4">P4</span></dt><dd>Activa después de t2 (tarde).</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="scroll tl">
+      <svg viewBox="0 0 720 165" role="img" aria-label="Línea de tiempo: P1 de 0 a t1 (4 s), P2 de t1 a t2, ventana correcta t2 ±5 %, P4 después; t2 programable de 10 a 40 s.">
+        <text x="90" y="20" text-anchor="middle" class="lbl">t1 ≈ 4 s</text>
+        <text x="330" y="20" text-anchor="middle" class="lbl">t2 (ej. 20 s ±5 %)</text>
+        <rect x="30" y="50" width="60" height="28" class="band-p1"/>
+        <rect x="90" y="50" width="225" height="28" class="band-p2"/>
+        <rect x="315" y="50" width="30" height="28" class="band-ok"/>
+        <rect x="345" y="50" width="360" height="28" class="band-p2"/>
+        <text x="60" y="44" text-anchor="middle" class="lbl">P1</text>
+        <text x="202" y="44" text-anchor="middle" class="lbl">P2</text>
+        <text x="330" y="44" text-anchor="middle" class="lbl">OK</text>
+        <text x="525" y="44" text-anchor="middle" class="lbl">P4</text>
+        <path d="M90 26V82M330 26V46" class="axis" stroke-dasharray="3 3"/>
+        <path d="M30 90H705" class="axis"/>
+        <g class="axis">
+          <path d="M30 86V94M90 86V94M180 86V94M330 86V94M480 86V94M630 86V94"/>
+        </g>
+        <text x="30" y="108" text-anchor="middle" class="small">0</text>
+        <text x="90" y="108" text-anchor="middle" class="small">4</text>
+        <text x="180" y="108" text-anchor="middle" class="small">10</text>
+        <text x="330" y="108" text-anchor="middle" class="small">20</text>
+        <text x="480" y="108" text-anchor="middle" class="small">30</text>
+        <text x="630" y="108" text-anchor="middle" class="small">40</text>
+        <text x="705" y="108" text-anchor="end" class="small">s desde t0</text>
+        <path d="M180 126V136M630 126V136M180 131H630" class="axis"/>
+        <text x="405" y="154" text-anchor="middle" class="small">rango programable de t2: 10–40 s · P3 = no activa nunca</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 2. Esquemático -->
+  <section>
+    <div class="sec-head">
+      <h2>Esquemático del core</h2>
+      <span class="tag">referencia PIC12LF1822 · equivalente STM32L010</span>
+    </div>
+    <div class="legend">
+      <span style="color:var(--c-store)"><i class="sw"></i>Almacenamiento</span>
+      <span style="color:var(--c-count)"><i class="sw"></i>Contador</span>
+      <span style="color:var(--c-drive)"><i class="sw"></i>Driver</span>
+      <span style="color:var(--c-init)"><i class="sw"></i>Iniciador</span>
+      <span>Las etiquetas de red con el mismo nombre están conectadas.</span>
+    </div>
+
+    <div class="scroll sch">
+      <svg viewBox="0 0 1090 800" class="ink" role="img" aria-label="Esquemático del núcleo: entrada con TVS, R_s y D1 hacia C_F; R_bleed y divisor de medición; iniciador en serie con Q1 y Q2 a masa; alimentación del micro por D2, C_loc y LDO de 2,5 V; microcontrolador con cristal de 32,768 kHz y salidas FIRE_A y FIRE_B.">
+        <defs>
+          <g id="res" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H14M46 0H60"/><rect x="14" y="-6" width="32" height="12"/></g>
+          <g id="cap" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H27M33 0H60M27 -13V13M33 -13V13"/></g>
+          <g id="pcap" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H27M34 0H60M27 -13V13"/><path d="M38 -13Q31 0 38 13"/><path d="M14 -16h6M17 -19v6" stroke-width="1.2"/></g>
+          <g id="sch" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H20M40 0H60"/><path d="M20 -10L40 0L20 10Z"/><path d="M44 -6V-10H40V10H36V6"/></g>
+          <g id="tvs" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H20M40 0H60"/><path d="M20 -10L40 0L20 10Z"/><path d="M44 -13L40 -10V10L36 13"/></g>
+          <g id="xtal" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0H20M40 0H60M20 -12V12M40 -12V12"/><rect x="24" y="-9" width="12" height="18"/></g>
+          <g id="gnd" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 0V8M-10 8H10M-6 12H6M-2 16H2"/></g>
+          <g id="nmos" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M-30 0H-9M-9 -13V13"/>
+            <path d="M-3 -16V-8M-3 -4V4M-3 8V16"/>
+            <path d="M-3 -12H14V-30M-3 12H14V30M14 0V12M14 0H3"/>
+            <path d="M-2 0L5 -4V4Z" fill="currentColor"/>
+          </g>
+        </defs>
+
+        <!-- ZONAS -->
+        <rect x="10" y="40" width="720" height="385" rx="4" class="zone zstore"/>
+        <text x="20" y="417" class="ztag tstore">ALMACENAMIENTO DE ENERGÍA</text>
+        <rect x="745" y="172" width="335" height="253" rx="4" class="zone zdrive"/>
+        <text x="1070" y="417" text-anchor="end" class="ztag tdrive">DRIVER</text>
+        <rect x="900" y="100" width="180" height="66" rx="4" class="zone zinit"/>
+        <text x="1070" y="118" text-anchor="end" class="ztag tinit">INICIADOR</text>
+        <rect x="10" y="450" width="1070" height="342" rx="4" class="zone zcount"/>
+        <text x="20" y="470" class="ztag tcount">CONTADOR</text>
+        <text x="20" y="486" class="small">alimentación local + MCU + base de tiempo</text>
+
+        <!-- ===== FILA 1: energía ===== -->
+        <!-- J1 -->
+        <rect x="22" y="70" width="22" height="340" rx="2" class="w"/>
+        <text x="22" y="62" class="lbl">J1</text>
+        <text x="52" y="82" class="lbl">+12 V</text>
+        <text x="52" y="392" class="lbl">GND</text>
+        <text x="27" y="245" class="small" transform="rotate(-90 33 240)">pulso 300–500 ms</text>
+
+        <path class="w" d="M44 90H160M220 90H300M360 90H940V110M940 170V180M940 240V280M940 340V400M44 400H940"/>
+        <use href="#res" transform="translate(160 90)"/>
+        <text x="190" y="76" text-anchor="middle" class="lbl">R_s 0,1–0,5 Ω</text>
+        <use href="#sch" transform="translate(300 90)"/>
+        <text x="330" y="76" text-anchor="middle" class="lbl">D1 SS34</text>
+        <text x="600" y="82" text-anchor="middle" class="lbl">V_CF ≈ 11,3 V</text>
+
+        <!-- TVS -->
+        <path class="w" d="M130 90V200M130 260V400"/>
+        <use href="#tvs" transform="translate(130 260) rotate(-90)"/>
+        <text x="146" y="226" class="lbl">D3</text>
+        <text x="146" y="240" class="val">SMAJ15A</text>
+
+        <!-- Divisor de línea -->
+        <path class="w" d="M250 90V130M250 190V230M250 290V400M250 210H262"/>
+        <use href="#res" transform="translate(250 130) rotate(90)"/>
+        <use href="#res" transform="translate(250 230) rotate(90)"/>
+        <text x="262" y="164" class="lbl">R1 100 kΩ</text>
+        <text x="262" y="264" class="lbl">R2 22 kΩ</text>
+        <g class="net"><rect x="262" y="202" width="90" height="16" rx="2"/><text x="307" y="214">LINE_SENSE</text></g>
+
+        <!-- Divisor de V_CF -->
+        <path class="w" d="M410 90V130M410 190V230M410 290V400M410 210H422"/>
+        <use href="#res" transform="translate(410 130) rotate(90)"/>
+        <use href="#res" transform="translate(410 230) rotate(90)"/>
+        <text x="422" y="164" class="lbl">R3 8,2 MΩ</text>
+        <text x="422" y="264" class="lbl">R4 1,8 MΩ</text>
+        <g class="net"><rect x="422" y="202" width="86" height="16" rx="2"/><text x="465" y="214">VCF_SENSE</text></g>
+
+        <!-- C_F -->
+        <path class="w" d="M540 90V200M540 260V400"/>
+        <use href="#pcap" transform="translate(540 200) rotate(90)"/>
+        <text x="558" y="226" class="lbl">C_F 330 µF</text>
+        <text x="558" y="240" class="val">25 V polímero</text>
+
+        <!-- R_bleed -->
+        <path class="w" d="M660 90V200M660 260V400"/>
+        <use href="#res" transform="translate(660 200) rotate(90)"/>
+        <text x="672" y="226" class="lbl">R_bleed</text>
+        <text x="672" y="240" class="val">4,7 MΩ</text>
+
+        <!-- Iniciador -->
+        <use href="#res" transform="translate(940 110) rotate(90)" style="color:var(--c-init)"/>
+        <text x="956" y="136" class="lbl">R_E</text>
+        <text x="956" y="150" class="val">1–2 Ω</text>
+
+        <!-- Driver -->
+        <use href="#nmos" transform="translate(926 210)"/>
+        <use href="#nmos" transform="translate(926 310)"/>
+        <text x="958" y="206" class="lbl">Q1</text>
+        <text x="958" y="220" class="val">AO3400A</text>
+        <text x="958" y="306" class="lbl">Q2</text>
+        <text x="958" y="320" class="val">AO3400A</text>
+        <path class="w" d="M840 210H896M866 210V220M840 310H896M880 310V320M880 380V400"/>
+        <use href="#res" transform="translate(866 220) rotate(90)"/>
+        <use href="#gnd" transform="translate(866 280)"/>
+        <use href="#res" transform="translate(880 320) rotate(90)"/>
+        <text x="856" y="254" text-anchor="end" class="lbl">R5 100 kΩ</text>
+        <text x="870" y="354" text-anchor="end" class="lbl">R6 100 kΩ</text>
+        <g class="net"><rect x="760" y="202" width="80" height="16" rx="2"/><text x="800" y="214">FIRE_A</text></g>
+        <g class="net"><rect x="760" y="302" width="80" height="16" rx="2"/><text x="800" y="314">FIRE_B</text></g>
+
+        <!-- nodos fila 1 -->
+        <g class="dot">
+          <circle cx="44" cy="90" r="2.6"/><circle cx="44" cy="400" r="2.6"/>
+          <circle cx="130" cy="90" r="3"/><circle cx="250" cy="90" r="3"/><circle cx="410" cy="90" r="3"/><circle cx="540" cy="90" r="3"/><circle cx="660" cy="90" r="3"/>
+          <circle cx="130" cy="400" r="3"/><circle cx="250" cy="400" r="3"/><circle cx="410" cy="400" r="3"/><circle cx="540" cy="400" r="3"/><circle cx="660" cy="400" r="3"/><circle cx="880" cy="400" r="3"/>
+          <circle cx="250" cy="210" r="3"/><circle cx="410" cy="210" r="3"/><circle cx="866" cy="210" r="3"/><circle cx="880" cy="310" r="3"/>
+        </g>
+
+        <!-- ===== FILA 2: contador ===== -->
+        <g class="net"><rect x="40" y="512" width="60" height="16" rx="2"/><text x="70" y="524">V_CF</text></g>
+        <path class="w" d="M100 520H140M200 520H320M260 520V540M260 600V600M380 555V590M440 520H620M480 520V540M540 520V540M620 620H596"/>
+        <use href="#sch" transform="translate(140 520)"/>
+        <text x="170" y="506" text-anchor="middle" class="lbl">D2 BAT54WS</text>
+
+        <use href="#cap" transform="translate(260 540) rotate(90)"/>
+        <use href="#gnd" transform="translate(260 600)"/>
+        <text x="276" y="568" class="lbl">C_loc</text>
+        <text x="276" y="582" class="val">10 µF 25 V</text>
+
+        <rect x="320" y="495" width="120" height="60" rx="2" class="w"/>
+        <text x="380" y="516" text-anchor="middle" class="lbl">U2 HT7525S</text>
+        <text x="380" y="532" text-anchor="middle" class="val">LDO 2,5 V</text>
+        <text x="326" y="550" class="small">IN</text>
+        <text x="434" y="550" text-anchor="end" class="small">OUT</text>
+        <use href="#gnd" transform="translate(380 590)"/>
+
+        <text x="580" y="512" text-anchor="middle" class="lbl">VDD</text>
+        <use href="#cap" transform="translate(480 540) rotate(90)"/>
+        <use href="#gnd" transform="translate(480 600)"/>
+        <text x="494" y="568" class="lbl">C4</text>
+        <text x="494" y="582" class="val">1 µF</text>
+        <use href="#cap" transform="translate(540 540) rotate(90)"/>
+        <use href="#gnd" transform="translate(540 600)"/>
+        <text x="555" y="568" class="lbl">C5</text>
+        <text x="555" y="582" class="val">100 nF</text>
+        <use href="#gnd" transform="translate(596 620)"/>
+
+        <!-- MCU -->
+        <rect x="620" y="490" width="220" height="160" rx="2" class="w"/>
+        <text x="730" y="552" text-anchor="middle" class="lbl" style="font-weight:600">U1 PIC12LF1822</text>
+        <text x="730" y="568" text-anchor="middle" class="val">alt. STM32L010</text>
+        <text x="628" y="524" class="small">1 VDD</text>
+        <text x="628" y="624" class="small">8 VSS</text>
+        <text x="832" y="519" text-anchor="end" class="small">RA2 5</text>
+        <text x="832" y="559" text-anchor="end" class="small">RA1 6</text>
+        <text x="832" y="599" text-anchor="end" class="small">AN0/RA0 7</text>
+        <text x="832" y="639" text-anchor="end" class="small">RA3 4</text>
+        <text x="660" y="642" text-anchor="middle" class="small">RA5 2</text>
+        <text x="760" y="642" text-anchor="middle" class="small">RA4 3</text>
+
+        <path class="w" d="M840 515H880M840 555H880M840 595H880M840 635H880"/>
+        <g class="net"><rect x="880" y="507" width="90" height="16" rx="2"/><text x="925" y="519">FIRE_A</text></g>
+        <g class="net"><rect x="880" y="547" width="90" height="16" rx="2"/><text x="925" y="559">FIRE_B</text></g>
+        <g class="net"><rect x="880" y="587" width="90" height="16" rx="2"/><text x="925" y="599">VCF_SENSE</text></g>
+        <g class="net"><rect x="880" y="627" width="90" height="16" rx="2"/><text x="925" y="639">LINE_SENSE</text></g>
+
+        <!-- Cristal -->
+        <path class="w" d="M660 650V710M660 700H690M750 700H760M760 650V710"/>
+        <use href="#xtal" transform="translate(690 700)"/>
+        <text x="720" y="684" text-anchor="middle" class="lbl">Y1</text>
+        <text x="720" y="728" text-anchor="middle" class="small">32,768 kHz</text>
+        <use href="#cap" transform="translate(660 710) rotate(90)"/>
+        <use href="#gnd" transform="translate(660 770)"/>
+        <use href="#cap" transform="translate(760 710) rotate(90)"/>
+        <use href="#gnd" transform="translate(760 770)"/>
+        <text x="642" y="744" text-anchor="end" class="lbl">C1 10 pF</text>
+        <text x="778" y="744" class="lbl">C2 10 pF</text>
+
+        <g class="dot">
+          <circle cx="260" cy="520" r="3"/><circle cx="480" cy="520" r="3"/><circle cx="540" cy="520" r="3"/>
+          <circle cx="660" cy="700" r="3"/><circle cx="760" cy="700" r="3"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Bloque</th><th>Componentes</th><th>Qué hace en el core</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--c-store);font-weight:600">Almacenamiento</td><td class="m">J1 · D3 · R_s · D1 · C_F · R_bleed</td><td>D1 carga C_F durante el pulso y bloquea la descarga hacia la línea. D3 recorta sobretensión. R_bleed vacía C_F en minutos si no hubo disparo.</td></tr>
+          <tr><td style="color:var(--c-count);font-weight:600">Contador</td><td class="m">D2 · C_loc · U2 · U1 · Y1</td><td>D2 y C_loc mantienen al micro alimentado mientras C_F cae durante el disparo. U1 cuenta con Y1 y lee <code>LINE_SENSE</code> (modo) y <code>VCF_SENSE</code> (energía disponible).</td></tr>
+          <tr><td style="color:var(--c-drive);font-weight:600">Driver</td><td class="m">Q1 · Q2 · R5 · R6</td><td>Dos llaves en serie, cada una con su pull-down y su pin. Hacen falta <code>FIRE_A</code> y <code>FIRE_B</code> en alto a la vez para cerrar el circuito.</td></tr>
+          <tr><td style="color:var(--c-init);font-weight:600">Iniciador</td><td class="m">R_E</td><td>Puente de 1–2 Ω entre V_CF y el drain de Q1. Recibe la descarga de C_F durante ~20 ms.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Puntos a revisar en este esquemático</h2>
+    <ol class="obs">
+      <li><strong>RA3 es solo entrada digital y además es MCLR</strong> en el PIC12LF1822. No tiene ADC, así que no puede medir el umbral de 5–6 V que pide el modo programación (§8). Con 100 k/22 k la línea a 12 V da 2,16 V en el pin, apenas encima de V<sub>IH</sub> con VDD = 2,5 V. Conviene mover <code>LINE_SENSE</code> a un pin analógico o usar el comparador interno, y desactivar MCLR en la configuración.</li>
+      <li><strong>VCF_SENSE tiene ~1,5 MΩ de impedancia de fuente.</strong> Hace falta un capacitor de 10–100 nF en ese nodo para que el ADC muestree bien. Con 8,2 M/1,8 M, 11,3 V se leen como 2,03 V; el fondo de escala queda en 12,5 V. Estos dos valores son propuesta mía para el divisor de ~10 MΩ del documento.</li>
+      <li><strong>t0 en la práctica es el arranque del micro</strong>, no el flanco del pulso. Entre uno y otro hay que sumar la carga de C_loc, el arranque del LDO y el POR. Ese retardo debe entrar en <code>T_compensacion</code> y medirse en el banco.</li>
+      <li><strong>Las gates se manejan con 2,5 V.</strong> El AO3400A está especificado con R<sub>DS(on)</sub> a V<sub>GS</sub> = 2,5 V, así que funciona, pero son ~2 × 50 mΩ sumados al puente. Eso ya está contemplado en la R total de ≈ 2 Ω del §5.2.</li>
+      <li><strong>Para P1 cuentan las fallas simples.</strong> Un MOSFET en corto o un pin glitcheado no alcanzan para activar. El caso a analizar es Q1 + Q2 cerrados juntos por un mismo evento: reset con pines indefinidos, ESD o fuga entre gate y drain. Los pull-downs de 100 kΩ son la única defensa mientras VDD no existe.</li>
+    </ol>
+  </section>
+</main>
+
+</body></html>
